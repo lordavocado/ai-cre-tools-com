@@ -1,11 +1,10 @@
 
 import type { DirectoryItem, Category, Guide } from '@/types';
-import { GoogleSpreadsheet, type GoogleSpreadsheetRow } from 'google-spreadsheet';
+import { GoogleSpreadsheet, type GoogleSpreadsheetRow, type GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
 import { Briefcase, Users, Palette, BarChart, Settings, ShieldCheck, FileText, Lightbulb, Zap, SearchCode } from 'lucide-react';
 import type React from 'react';
 
-// Helper to map icon names from sheet to Lucide components
 const lucideIconMap: { [key: string]: React.ElementType } = {
   Briefcase,
   Users,
@@ -16,23 +15,69 @@ const lucideIconMap: { [key: string]: React.ElementType } = {
   FileText,
   Lightbulb,
   Zap,
-  SearchCode, // Added for 'seo' example if needed
-  // Add more mappings here as you define them in your sheet
+  SearchCode,
 };
 
-const SHEET_ID = process.env.GOOGLE_SHEET_ID!;
-const SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!;
-const PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, '\n');
+let docInstance: GoogleSpreadsheet | null = null;
+let docInfoLoaded: boolean = false; 
+let currentSheetId: string | null = null;
+let currentServiceAccountEmail: string | null = null;
 
-const jwt = new JWT({
-  email: SERVICE_ACCOUNT_EMAIL,
-  key: PRIVATE_KEY,
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
 
-const doc = new GoogleSpreadsheet(SHEET_ID, jwt);
+async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
+  const sheetIdEnv = process.env.GOOGLE_SHEET_ID;
+  const serviceAccountEmailEnv = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const rawPrivateKeyEnv = process.env.GOOGLE_PRIVATE_KEY;
 
-// Helper to safely get string value from row
+  if (!sheetIdEnv) {
+    throw new Error('GOOGLE_SHEET_ID is not defined in .env.local. Please ensure it is set.');
+  }
+  if (!serviceAccountEmailEnv) {
+    throw new Error('GOOGLE_SERVICE_ACCOUNT_EMAIL is not defined in .env.local. Please ensure it is set.');
+  }
+  if (!rawPrivateKeyEnv) {
+    throw new Error('GOOGLE_PRIVATE_KEY is not defined in .env.local. Please ensure it is set and properly formatted (e.g., newlines escaped as \\n in the .env.local file).');
+  }
+
+  // Check if configuration has changed or if the doc was never initialized/loaded properly
+  if (docInstance && docInfoLoaded && 
+      currentSheetId === sheetIdEnv && 
+      currentServiceAccountEmail === serviceAccountEmailEnv) {
+    return docInstance;
+  }
+
+  // If config changed or not loaded, re-initialize
+  console.log("Initializing Google Sheets connection...");
+  currentSheetId = sheetIdEnv;
+  currentServiceAccountEmail = serviceAccountEmailEnv;
+
+  const privateKeyProcessed = rawPrivateKeyEnv.replace(/\\n/g, '\n');
+  
+  const jwt = new JWT({
+    email: serviceAccountEmailEnv,
+    key: privateKeyProcessed,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
+  docInstance = new GoogleSpreadsheet(sheetIdEnv, jwt);
+  docInfoLoaded = false; 
+
+  try {
+    await docInstance.loadInfo();
+    docInfoLoaded = true;
+    console.log("Successfully loaded Google Sheet document info.");
+  } catch (error) {
+    console.error("Failed to load Google Sheet document info:", error);
+    docInstance = null; 
+    docInfoLoaded = false;
+    currentSheetId = null; // Reset tracking vars on error
+    currentServiceAccountEmail = null;
+    throw new Error(`Failed to load Google Sheet. Check sheet ID, permissions, and credentials. Original error: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  
+  return docInstance;
+}
+
 const getString = (row: GoogleSpreadsheetRow<any>, header: string): string => row.get(header)?.toString().trim() || '';
 const getOptionalString = (row: GoogleSpreadsheetRow<any>, header: string): string | undefined => {
   const val = row.get(header)?.toString().trim();
@@ -61,18 +106,12 @@ let allItemsCache: DirectoryItem[] | null = null;
 let allCategoriesCache: Category[] | null = null;
 let allGuidesCache: Guide[] | null = null;
 
-async function loadDocInfo() {
-  if (!doc.title) { // Check if doc info is already loaded
-    await doc.loadInfo();
-  }
-}
-
 export async function getDirectoryItems(searchTerm?: string, categoryFilter?: string): Promise<DirectoryItem[]> {
-  if (allItemsCache && !searchTerm && !categoryFilter) { // Basic caching for full list
+  if (allItemsCache && !searchTerm && !categoryFilter) {
     return allItemsCache;
   }
 
-  await loadDocInfo();
+  const doc = await getInitializedDoc();
   const sheet = doc.sheetsByTitle['Items'];
   if (!sheet) {
     console.error("Sheet 'Items' not found.");
@@ -81,7 +120,7 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
   const rows = await sheet.getRows();
   
   let items: DirectoryItem[] = rows.map((row): DirectoryItem => ({
-    id: getString(row, 'ID') || `row-${row.rowNumber}`, // Fallback ID
+    id: getString(row, 'ID') || `row-${row.rowNumber}`,
     slug: getString(row, 'Slug'),
     name: getString(row, 'Name'),
     tagline: getString(row, 'Tagline'),
@@ -96,13 +135,13 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
     reviewCount: getNumber(row, 'Review Count'),
     pros: getArrayStrings(row, 'Pros'),
     cons: getArrayStrings(row, 'Cons'),
-    lastUpdated: getOptionalString(row, 'Last Updated'), // Ensure this is a valid date string or handle conversion
+    lastUpdated: getOptionalString(row, 'Last Updated'),
     foundedYear: getNumber(row, 'Founded Year'),
     socials: getJSON<{ twitter?: string; linkedin?: string; facebook?: string }>(row, 'Socials JSON'),
   }));
 
   if (!searchTerm && !categoryFilter) {
-    allItemsCache = items; // Cache the full list
+    allItemsCache = items;
   }
 
   if (searchTerm) {
@@ -120,21 +159,21 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
 }
 
 export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryItem | undefined> {
-  const items = await getDirectoryItems(); // This will use cache if available for full list
+  const items = await getDirectoryItems();
   return items.find(item => item.slug === slug);
 }
 
 export async function getCategories(): Promise<Category[]> {
   if (allCategoriesCache) return allCategoriesCache;
 
-  await loadDocInfo();
+  const doc = await getInitializedDoc();
   const sheet = doc.sheetsByTitle['Categories'];
    if (!sheet) {
     console.error("Sheet 'Categories' not found.");
     return [];
   }
   const rows = await sheet.getRows();
-  const allDirItems = await getDirectoryItems(); // For itemCount
+  const allDirItems = await getDirectoryItems(); 
 
   allCategoriesCache = rows.map((row): Category => {
     const slug = getString(row, 'Slug');
@@ -147,21 +186,21 @@ export async function getCategories(): Promise<Category[]> {
       longDescription: getOptionalString(row, 'Long Description'),
       imageUrl: getOptionalString(row, 'Image URL'),
       itemCount: allDirItems.filter(item => item.category === slug).length,
-      icon: lucideIconMap[iconName] || Lightbulb, // Default to Lightbulb if not found
+      icon: lucideIconMap[iconName] || Lightbulb,
     };
   });
   return allCategoriesCache;
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
-  const categories = await getCategories(); // Uses cache
+  const categories = await getCategories();
   return categories.find(cat => cat.slug === slug);
 }
 
 export async function getGuides(searchTerm?: string): Promise<Guide[]> {
    if (allGuidesCache && !searchTerm) return allGuidesCache;
 
-  await loadDocInfo();
+  const doc = await getInitializedDoc();
   const sheet = doc.sheetsByTitle['Guides'];
   if (!sheet) {
     console.error("Sheet 'Guides' not found.");
@@ -174,11 +213,11 @@ export async function getGuides(searchTerm?: string): Promise<Guide[]> {
     slug: getString(row, 'Slug'),
     title: getString(row, 'Title'),
     excerpt: getString(row, 'Excerpt'),
-    content: getString(row, 'Content'), // Assuming Markdown
+    content: getString(row, 'Content'),
     imageUrl: getOptionalString(row, 'Image URL'),
     category: getOptionalString(row, 'Category Slug'),
     relatedItemSlugs: getArrayStrings(row, 'Related Item Slugs'),
-    publishedDate: getString(row, 'Published Date'), // Ensure this is a valid date string
+    publishedDate: getString(row, 'Published Date'),
     author: getOptionalString(row, 'Author'),
     readingTime: getOptionalString(row, 'Reading Time'),
   }));
@@ -198,7 +237,7 @@ export async function getGuides(searchTerm?: string): Promise<Guide[]> {
 }
 
 export async function getGuideBySlug(slug: string): Promise<Guide | undefined> {
-  const guides = await getGuides(); // Uses cache
+  const guides = await getGuides();
   return guides.find(guide => guide.slug === slug);
 }
 
@@ -207,7 +246,7 @@ export async function submitNewsletter(email: string): Promise<{ success: boolea
     return { success: false, message: 'Please enter a valid email address.' };
   }
   try {
-    await loadDocInfo();
+    const doc = await getInitializedDoc();
     const sheet = doc.sheetsByTitle['Newsletter'];
     if (!sheet) {
       console.error("Sheet 'Newsletter' not found.");
@@ -221,18 +260,15 @@ export async function submitNewsletter(email: string): Promise<{ success: boolea
   }
 }
 
-// --- Functions that operate on fetched data ---
-
 export async function getItemsForComparison(ids: string[]): Promise<DirectoryItem[]> {
   const allItems = await getDirectoryItems();
   return allItems.filter(item => ids.includes(item.id));
 }
 
-// This is a mock for the AI feature. In a real app, this would call a Genkit flow.
-// It now operates on live data fetched from sheets if allItems is populated.
 export async function getAISuggestedDifferences(itemsToCompare: DirectoryItem[]): Promise<string[]> {
   if (itemsToCompare.length < 2) return ["Please select at least two items to compare."];
 
+  // This is still mock data as per previous implementation
   const suggestions = [
     `${itemsToCompare[0].name} excels in ${itemsToCompare[0].pros?.[0] || 'key areas'}, while ${itemsToCompare[1].name} offers strong ${itemsToCompare[1].features?.[0]?.name || 'alternative features'}.`,
     `Consider ${itemsToCompare[0].name}'s pricing (${itemsToCompare[0].pricing || 'N/A'}) versus ${itemsToCompare[1].name}'s (${itemsToCompare[1].pricing || 'N/A'}) for your budget.`,
@@ -246,8 +282,6 @@ export async function getAISuggestedDifferences(itemsToCompare: DirectoryItem[])
 
 export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem[]> {
   const allItems = await getDirectoryItems();
-  // Add logic to determine "featured" items, e.g., highest rating, or a specific "Featured" column in sheet
-  // For now, just taking top rated or first few.
   return allItems.sort((a,b) => (b.rating || 0) - (a.rating || 0) ).slice(0, limit);
 }
 
@@ -265,10 +299,15 @@ export async function getTopCategories(limit: number = 4): Promise<Category[]> {
     .slice(0, limit);
 }
 
-// Function to clear cache, e.g., if data is updated
 export function clearSheetCache() {
   allItemsCache = null;
   allCategoriesCache = null;
   allGuidesCache = null;
-  console.log("Sheet cache cleared.");
+  docInstance = null; 
+  docInfoLoaded = false;
+  currentSheetId = null;
+  currentServiceAccountEmail = null;
+  console.log("Sheet cache and doc instance cleared.");
 }
+
+    
