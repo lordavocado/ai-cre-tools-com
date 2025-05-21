@@ -26,7 +26,7 @@ export function Hero() {
             </Link>
           </Button>
         </div>
-        <div>
+        <div className="flex flex-col items-center">
           <h3 className="text-md font-semibold mb-3">Stay Updated</h3>
           <NewsletterForm />
         </div>
