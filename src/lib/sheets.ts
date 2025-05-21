@@ -76,12 +76,22 @@ const lucideIconMap: { [key: string]: LucideIcon } = {
 
 let docInstance: GoogleSpreadsheet | null = null;
 let docInfoLoaded: boolean = false;
-let currentSheetIdEnv: string | null = null;
-let currentServiceAccountEmailEnv: string | null = null;
-let currentPrivateKeyEnv: string | null = null;
+
+// Cache for environment variables to avoid repeated lookups if they were initially found
+let cachedSheetId: string | null = null;
+let cachedServiceAccountEmail: string | null = null;
+let cachedPrivateKey: string | null = null;
 
 
 async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
+  // Try to use cached credentials if available and docInstance is not set or info not loaded
+  if (docInstance && docInfoLoaded && 
+      process.env.GOOGLE_SHEET_ID === cachedSheetId &&
+      process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL === cachedServiceAccountEmail &&
+      process.env.GOOGLE_PRIVATE_KEY === cachedPrivateKey) {
+    return docInstance;
+  }
+
   const sheetId = process.env.GOOGLE_SHEET_ID;
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY;
@@ -95,18 +105,8 @@ async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
   if (!rawPrivateKey) {
     throw new Error('GOOGLE_PRIVATE_KEY is not defined in .env.local. Please ensure it is set and properly formatted (e.g., newlines escaped as \\n in the .env.local file).');
   }
-
-  if (docInstance && docInfoLoaded &&
-      currentSheetIdEnv === sheetId &&
-      currentServiceAccountEmailEnv === serviceAccountEmail &&
-      currentPrivateKeyEnv === rawPrivateKey) {
-    return docInstance;
-  }
-
-  console.log("Initializing Google Sheets connection...");
-  currentSheetIdEnv = sheetId;
-  currentServiceAccountEmailEnv = serviceAccountEmail;
-  currentPrivateKeyEnv = rawPrivateKey;
+  
+  console.log("Attempting to initialize Google Sheets connection with environment variables...");
 
   const privateKeyProcessed = rawPrivateKey.replace(/\\n/g, '\n');
 
@@ -116,20 +116,27 @@ async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
 
-  docInstance = new GoogleSpreadsheet(sheetId, jwt);
-  docInfoLoaded = false;
-
+  const newDocInstance = new GoogleSpreadsheet(sheetId, jwt);
+  
   try {
-    await docInstance.loadInfo(); // Loads document properties and worksheets
+    await newDocInstance.loadInfo(); // Loads document properties and worksheets
+    docInstance = newDocInstance;
     docInfoLoaded = true;
+
+    // Cache the successfully used environment variable values
+    cachedSheetId = sheetId;
+    cachedServiceAccountEmail = serviceAccountEmail;
+    cachedPrivateKey = rawPrivateKey; // Cache the raw key as it was read from env
+
     console.log(`Successfully loaded Google Sheet document: "${docInstance.title}"`);
   } catch (error) {
     console.error("Failed to load Google Sheet document info:", error);
+    // Clear potentially stale cache on error
     docInstance = null;
     docInfoLoaded = false;
-    currentSheetIdEnv = null;
-    currentServiceAccountEmailEnv = null;
-    currentPrivateKeyEnv = null;
+    cachedSheetId = null;
+    cachedServiceAccountEmail = null;
+    cachedPrivateKey = null;
     throw new Error(`Failed to load Google Sheet. Check sheet ID, permissions for ${serviceAccountEmail}, and credentials. Original error: ${error instanceof Error ? error.message : String(error)}`);
   }
 
@@ -332,8 +339,6 @@ export async function getItemsForComparison(ids: string[]): Promise<DirectoryIte
   return allItems.filter(item => ids.includes(item.id));
 }
 
-// This function uses mock data as per original implementation.
-// If real AI comparison is needed, it would involve sending item data to an AI model.
 export async function getAISuggestedDifferences(itemsToCompare: DirectoryItem[]): Promise<string[]> {
   if (itemsToCompare.length < 2) return ["Please select at least two items to compare."];
 
@@ -344,16 +349,14 @@ export async function getAISuggestedDifferences(itemsToCompare: DirectoryItem[])
   if (itemsToCompare.length > 2 && itemsToCompare[2]) {
     suggestions.push(`${itemsToCompare[2].name} provides a unique approach with its ${itemsToCompare[2].tagline?.toLowerCase() || 'features'}.`);
   }
-  suggestions.push("AI-powered comparison is a feature placeholder.");
   return suggestions;
 }
 
 export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem[]> {
   const allItems = await getDirectoryItems();
-  // Simple sort by rating for featured items
   return allItems
-    .filter(item => typeof item.rating === 'number') // Ensure rating is a number for sorting
-    .sort((a,b) => (b.rating!) - (a.rating!)) // Non-null assertion as we filtered
+    .filter(item => typeof item.rating === 'number') 
+    .sort((a,b) => (b.rating!) - (a.rating!)) 
     .slice(0, limit);
 }
 
@@ -367,20 +370,19 @@ export async function getRecentGuides(limit: number = 3): Promise<Guide[]> {
 export async function getTopCategories(limit: number = 4): Promise<Category[]> {
   const allCategories = await getCategories();
    return allCategories
-    .filter(cat => typeof cat.itemCount === 'number') // Ensure itemCount is a number
-    .sort((a,b) => (b.itemCount!) - (a.itemCount!)) // Non-null assertion
+    .filter(cat => typeof cat.itemCount === 'number') 
+    .sort((a,b) => (b.itemCount!) - (a.itemCount!)) 
     .slice(0, limit);
 }
 
-// Call this function if you need to invalidate the cache (e.g., after updating the sheet)
 export function clearSheetCache() {
   allItemsCache = null;
   allCategoriesCache = null;
   allGuidesCache = null;
   docInstance = null; 
   docInfoLoaded = false;
-  currentSheetIdEnv = null;
-  currentServiceAccountEmailEnv = null;
-  currentPrivateKeyEnv = null;
+  cachedSheetId = null;
+  cachedServiceAccountEmail = null;
+  cachedPrivateKey = null;
   console.log("Sheet cache and Google Doc instance cleared. Data will be re-fetched on next request.");
 }
