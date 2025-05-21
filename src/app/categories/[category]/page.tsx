@@ -1,16 +1,18 @@
 
+import type { Category } from "@/types";
 import { getCategories, getCategoryBySlug, getDirectoryItems } from "@/lib/sheets";
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
-import { DirectorySearch } from "@/components/listing/DirectorySearch";
+import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
-  params: { category: string };
+  params: { category: string }; // This is the category slug from the path
   searchParams: {
     search?: string;
+    // category?: string; // This would be from query params, potentially overriding path
   };
 };
 
@@ -48,16 +50,23 @@ export async function generateMetadata(
 export const revalidate = 3600;
 
 export default async function CategoryDetailPage({ params, searchParams }: Props) {
-  const categorySlug = params.category;
+  const categorySlugFromPath = params.category;
   const searchTerm = searchParams.search || "";
-  
-  const category = await getCategoryBySlug(categorySlug);
+  // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
+
+  const category = await getCategoryBySlug(categorySlugFromPath);
   if (!category) {
     notFound();
   }
 
-  const itemsInCategory = await getDirectoryItems(searchTerm, categorySlug);
-  const allCategories = await getCategories(); // For search filter, though it will be pre-filled
+  // Items are always fetched based on the category slug from the path for this page.
+  // Search term applies within this path-defined category.
+  const itemsInCategory = await getDirectoryItems(searchTerm, categorySlugFromPath);
+  
+  const allCategoriesForSearch: Category[] = await getCategories(); 
+  const searchCategories: DirectorySearchCategory[] = allCategoriesForSearch.map(
+    ({ id, slug, name }) => ({ id, slug, name })
+  );
 
   return (
     <div className="container py-12 md:py-16">
@@ -86,10 +95,9 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
       )}
 
       <DirectorySearch 
-        categories={allCategories} 
-        onSearch={async (s, c) => { /* Server-side filtering */ }} 
+        categories={searchCategories} 
         initialSearchTerm={searchTerm}
-        initialCategoryFilter={categorySlug}
+        initialCategoryFilter={categorySlugFromPath} // Pre-select current category
       />
       <DirectoryGrid items={itemsInCategory} />
     </div>

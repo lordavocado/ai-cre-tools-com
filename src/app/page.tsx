@@ -1,6 +1,7 @@
 
+import type { Category } from "@/types";
 import { Hero } from "@/components/landing/Hero";
-import { DirectorySearch } from "@/components/listing/DirectorySearch";
+import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { GuideCard } from "@/components/guide/GuideCard";
@@ -24,9 +25,13 @@ export default async function Home({ searchParams }: HomeProps) {
   const categoryFilter = searchParams.category || "";
 
   const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
-  const categories = await getCategories(); // For search filter
-  const topCategories = await getTopCategories(4);
+  const categoriesFromSheet: Category[] = await getCategories(); 
+  const topCategories = await getTopCategories(4); 
   const recentGuides = await getRecentGuides(3);
+
+  const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
+    ({ id, slug, name }) => ({ id, slug, name })
+  );
 
   return (
     <>
@@ -40,19 +45,10 @@ export default async function Home({ searchParams }: HomeProps) {
           <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
             Explore our curated directory of tools and services. Use the filters below to find exactly what you need.
           </p>
-          <DirectorySearch categories={categories} onSearch={async (s, c) => {
-            // This is a client component, search is handled by URL params and server re-render
-            // For a fully client-side search experience, you'd fetch items here and update state.
-            // But for SEO and server components, we rely on navigation.
-            // This function is primarily for the client-side debouncing effect.
-            // The actual data fetching for display is done above via searchParams.
-            const query = new URLSearchParams();
-            if (s) query.set('search', s);
-            if (c) query.set('category', c);
-            // router.push(`/?${query.toString()}`); // If using client-side router
-          }} 
-          initialSearchTerm={searchTerm}
-          initialCategoryFilter={categoryFilter}
+          <DirectorySearch 
+            categories={searchCategories} 
+            initialSearchTerm={searchTerm}
+            initialCategoryFilter={categoryFilter}
           />
           <DirectoryGrid items={initialItems} />
         </div>

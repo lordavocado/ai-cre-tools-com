@@ -2,36 +2,68 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Category } from "@/types";
 import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 
+export interface DirectorySearchCategory {
+  id: string;
+  slug: string;
+  name: string;
+}
+
 interface DirectorySearchProps {
-  categories: Category[];
-  onSearch: (searchTerm: string, categoryFilter: string) => void;
+  categories: DirectorySearchCategory[];
   initialSearchTerm?: string;
   initialCategoryFilter?: string;
 }
 
-export function DirectorySearch({ categories, onSearch, initialSearchTerm = "", initialCategoryFilter = "" }: DirectorySearchProps) {
+export function DirectorySearch({ categories, initialSearchTerm = "", initialCategoryFilter = "" }: DirectorySearchProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [categoryFilter, setCategoryFilter] = useState(initialCategoryFilter);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const currentPathname = usePathname();
 
   useEffect(() => {
-    // Debounce search to avoid excessive calls
     const handler = setTimeout(() => {
       startTransition(() => {
-        onSearch(searchTerm, categoryFilter);
+        const queryParams = new URLSearchParams();
+        if (searchTerm) {
+          queryParams.set('search', searchTerm);
+        }
+
+        let targetPathname = currentPathname;
+
+        if (currentPathname.startsWith('/categories/')) {
+          // On a specific category page (e.g., /categories/cat-a)
+          // initialCategoryFilter is the slug of cat-a
+          if (categoryFilter && categoryFilter !== initialCategoryFilter) {
+            // User selected a *different* category in the dropdown
+            targetPathname = `/categories/${categoryFilter}`;
+          } else if (categoryFilter === "") { // User selected "All Categories"
+            targetPathname = '/'; 
+          }
+          // If categoryFilter matches initialCategoryFilter or is cleared to imply current page's category,
+          // targetPathname remains currentPathname, and no 'category' query param is needed.
+        } else {
+          // On a non-category-specific page (e.g., home page '/')
+          if (categoryFilter) {
+            queryParams.set('category', categoryFilter);
+          }
+        }
+        
+        const queryString = queryParams.toString();
+        router.push(queryString ? `${targetPathname}?${queryString}` : targetPathname);
       });
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm, categoryFilter, onSearch]);
+  }, [searchTerm, categoryFilter, router, currentPathname, initialCategoryFilter, startTransition]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -44,10 +76,6 @@ export function DirectorySearch({ categories, onSearch, initialSearchTerm = "", 
   const clearSearch = () => {
     setSearchTerm("");
   };
-
-  const clearCategory = () => {
-    setCategoryFilter("");
-  }
 
   return (
     <div className="mb-8 p-6 bg-card rounded-lg shadow-md">
@@ -63,7 +91,7 @@ export function DirectorySearch({ categories, onSearch, initialSearchTerm = "", 
             placeholder="e.g., 'Productivity App' or 'CRM'"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="pl-10 pr-10 w-full" // Added pr-10 for clear button
+            className="pl-10 pr-10 w-full"
             aria-label="Search directory items"
           />
           {searchTerm && (
