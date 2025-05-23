@@ -1,4 +1,3 @@
-
 import type { Category } from "@/types";
 import { getCategories, getCategoryBySlug, getDirectoryItems } from "@/lib/sheets";
 import type { Metadata, ResolvingMetadata } from 'next';
@@ -97,7 +96,8 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
       <DirectorySearch 
         categories={searchCategories} 
         initialSearchTerm={searchTerm}
-        initialCategoryFilter={categorySlugFromPath} // Pre-select current category
+        initialCategoryFilter={categorySlugFromPath}
+        totalItems={itemsInCategory.length}
       />
       <DirectoryGrid items={itemsInCategory} />
     </div>

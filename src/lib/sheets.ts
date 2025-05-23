@@ -1,65 +1,37 @@
+if (typeof window !== 'undefined') {
+  throw new Error('This module can only be used on the server side');
+}
 
-import type { DirectoryItem, Category, Guide } from '@/types';
+import type { DirectoryItem, Category } from '@/types';
 import { GoogleSpreadsheet, type GoogleSpreadsheetRow, type GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { Briefcase, Users, Palette, BarChart, Settings, ShieldCheck, FileText, Lightbulb, Zap, SearchCode, type LucideIcon } from 'lucide-react';
+import { Briefcase, Users, Palette, BarChart, Settings, ShieldCheck, FileText, Lightbulb, Zap, SearchCode, Code, type LucideIcon } from 'lucide-react';
 import type React from 'react';
 
 // --- Configuration ---
 
 // 1. Sheet Names Configuration:
-//    Update these values if your sheet (tab) names are different.
 const SHEET_NAMES = {
-  ITEMS: 'Items',
-  CATEGORIES: 'Categories',
-  GUIDES: 'Guides',
+  ITEMS: 'productanalyticstools',
   NEWSLETTER: 'Newsletter',
 };
 
 // 2. Column Name Mappings Configuration:
-//    Update these values to match the exact column headers in your Google Sheet for each corresponding data field.
 const COLUMN_MAPPINGS = {
   ITEMS: {
-    ID: 'ID',
-    SLUG: 'Slug',
-    NAME: 'Name',
-    TAGLINE: 'Tagline',
-    DESCRIPTION: 'Description',
-    LONG_DESCRIPTION: 'Long Description',
-    CATEGORY_SLUG: 'Category Slug',
-    WEBSITE: 'Website',
-    IMAGE_URL: 'Image URL',
-    FEATURES_JSON: 'Features JSON', // Expects: [{"name": "Feature 1", "description": "Optional desc"}, {"name": "Feature 2"}]
-    PRICING: 'Pricing',
-    RATING: 'Rating',
-    REVIEW_COUNT: 'Review Count',
-    PROS: 'Pros', // Expects: Comma-separated string, e.g., "Pro 1,Pro 2,Pro 3"
-    CONS: 'Cons', // Expects: Comma-separated string, e.g., "Con 1,Con 2"
-    LAST_UPDATED: 'Last Updated', // Expects: Date string, e.g., "2024-05-20"
-    FOUNDED_YEAR: 'Founded Year',
-    SOCIALS_JSON: 'Socials JSON', // Expects: {"twitter": "handle", "linkedin": "company/handle"}
-  },
-  CATEGORIES: {
-    ID: 'ID',
-    SLUG: 'Slug',
-    NAME: 'Name',
-    DESCRIPTION: 'Description',
-    LONG_DESCRIPTION: 'Long Description',
-    IMAGE_URL: 'Image URL',
-    ICON_NAME: 'Icon Name', // Name of a Lucide icon, e.g., "Zap"
-  },
-  GUIDES: {
-    ID: 'ID',
-    SLUG: 'Slug',
-    TITLE: 'Title',
-    EXCERPT: 'Excerpt',
-    CONTENT: 'Content', // Markdown content
-    IMAGE_URL: 'Image URL',
-    CATEGORY_SLUG: 'Category Slug',
-    RELATED_ITEM_SLUGS: 'Related Item Slugs', // Expects: Comma-separated string of item slugs
-    PUBLISHED_DATE: 'Published Date', // Expects: Date string, e.g., "2024-05-01"
-    AUTHOR: 'Author',
-    READING_TIME: 'Reading Time', // E.g., "5 min read"
+    ID: 'id',
+    SLUG: 'id', // Using id as slug since there's no dedicated slug column
+    NAME: 'name',
+    TAGLINE: 'one_liner',
+    DESCRIPTION: 'description',
+    CATEGORY_SLUG: 'category',
+    WEBSITE: 'website',
+    IMAGE_URL: 'icon_link',
+    FEATURES_JSON: 'key_features', // Expects: [{"name": "Feature 1", "description": "Optional desc"}, {"name": "Feature 2"}]
+    PRICING: 'pricing',
+    BEST_FOR: 'best_for',
+    TAGS: 'tags',
+    RATING: 'rating',
   },
   NEWSLETTER: {
     EMAIL: 'Email',
@@ -71,8 +43,71 @@ const COLUMN_MAPPINGS = {
 
 const lucideIconMap: { [key: string]: LucideIcon } = {
   Briefcase, Users, Palette, BarChart, Settings, ShieldCheck, FileText, Lightbulb, Zap, SearchCode,
-  // Add more icons here if needed and reference them by key in your "Categories" sheet "Icon Name" column
 };
+
+// Hardcoded categories
+const HARDCODED_CATEGORIES: Category[] = [
+  {
+    id: 'analytics',
+    slug: 'analytics',
+    name: 'Analytics',
+    description: 'Tools for tracking and analyzing user behavior and website performance',
+    longDescription: 'Comprehensive analytics solutions for understanding user behavior, tracking conversions, and measuring website performance.',
+    imageUrl: '/categories/analytics.jpg',
+    itemCount: 0, // Will be calculated dynamically
+    icon: BarChart,
+  },
+  {
+    id: 'product',
+    slug: 'product',
+    name: 'Product Analytics',
+    description: 'Tools for understanding product usage and user engagement',
+    longDescription: 'Deep insights into how users interact with your product, feature usage, and user engagement metrics.',
+    imageUrl: '/categories/product.jpg',
+    itemCount: 0,
+    icon: Users,
+  },
+  {
+    id: 'design',
+    slug: 'design',
+    name: 'Design Tools',
+    description: 'Tools for creating and managing design assets',
+    longDescription: 'Professional design tools for creating, managing, and collaborating on design assets and prototypes.',
+    imageUrl: '/categories/design.jpg',
+    itemCount: 0,
+    icon: Palette,
+  },
+  {
+    id: 'development',
+    slug: 'development',
+    name: 'Development',
+    description: 'Tools for developers and technical teams',
+    longDescription: 'Essential tools for developers, from code editors to deployment platforms and development utilities.',
+    imageUrl: '/categories/development.jpg',
+    itemCount: 0,
+    icon: Code,
+  },
+  {
+    id: 'marketing',
+    slug: 'marketing',
+    name: 'Marketing',
+    description: 'Tools for marketing and growth teams',
+    longDescription: 'Comprehensive marketing tools for campaigns, automation, and growth strategies.',
+    imageUrl: '/categories/marketing.jpg',
+    itemCount: 0,
+    icon: Zap,
+  },
+  {
+    id: 'security',
+    slug: 'security',
+    name: 'Security',
+    description: 'Tools for protecting your application and data',
+    longDescription: 'Enterprise-grade security solutions for protecting your applications, data, and infrastructure.',
+    imageUrl: '/categories/security.jpg',
+    itemCount: 0,
+    icon: ShieldCheck,
+  }
+];
 
 let docInstance: GoogleSpreadsheet | null = null;
 let docInfoLoaded: boolean = false;
@@ -82,6 +117,7 @@ let cachedSheetId: string | null = null;
 let cachedServiceAccountEmail: string | null = null;
 let cachedPrivateKey: string | null = null;
 
+let allItemsCache: DirectoryItem[] | null = null;
 
 async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
   // Try to use cached credentials if available and docInstance is not set or info not loaded
@@ -156,7 +192,13 @@ const getNumber = (row: GoogleSpreadsheetRow<any>, header: string): number | und
 }
 const getArrayStrings = (row: GoogleSpreadsheetRow<any>, header: string): string[] | undefined => {
   const val = row.get(header)?.toString().trim();
-  return val ? val.split(',').map(s => s.trim()).filter(s => s) : undefined;
+  if (!val) return undefined;
+  
+  return val
+    .split(',')
+    .map((s: string) => s.trim())
+    .map((s: string) => s.replace(/^#/, '').trim()) // Remove leading # if present
+    .filter((s: string) => s); // Remove empty strings
 }
 const getJSON = <T>(row: GoogleSpreadsheetRow<any>, header: string): T | undefined => {
   const val = row.get(header)?.toString().trim();
@@ -169,10 +211,29 @@ const getJSON = <T>(row: GoogleSpreadsheetRow<any>, header: string): T | undefin
   }
 }
 
-let allItemsCache: DirectoryItem[] | null = null;
-let allCategoriesCache: Category[] | null = null;
-let allGuidesCache: Guide[] | null = null;
+// Add this helper function after the other helper functions
+const parseFeatures = (featuresString: string): { name: string; description?: string }[] => {
+  if (!featuresString) return [];
+  
+  return featuresString.split(',').map(feature => {
+    const trimmed = feature.trim();
+    const match = trimmed.match(/^(.+?)(?:\s*\((.*)\))?$/);
+    
+    if (match) {
+      return {
+        name: match[1].trim(),
+        description: match[2]?.trim()
+      };
+    }
+    
+    return {
+      name: trimmed,
+      description: undefined
+    };
+  });
+};
 
+// Update the getDirectoryItems function
 export async function getDirectoryItems(searchTerm?: string, categoryFilter?: string): Promise<DirectoryItem[]> {
   if (allItemsCache && !searchTerm && !categoryFilter) {
     return allItemsCache;
@@ -187,26 +248,24 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
   const rows = await sheet.getRows();
   const CM = COLUMN_MAPPINGS.ITEMS; // Alias for brevity
   
-  let items: DirectoryItem[] = rows.map((row): DirectoryItem => ({
-    id: getString(row, CM.ID) || `item-row-${row.rowNumber}`, // Fallback ID
-    slug: getString(row, CM.SLUG),
-    name: getString(row, CM.NAME),
-    tagline: getString(row, CM.TAGLINE),
-    description: getString(row, CM.DESCRIPTION),
-    longDescription: getOptionalString(row, CM.LONG_DESCRIPTION),
-    category: getString(row, CM.CATEGORY_SLUG),
-    website: getString(row, CM.WEBSITE),
-    imageUrl: getOptionalString(row, CM.IMAGE_URL),
-    features: getJSON<{ name: string; description?: string }[]>(row, CM.FEATURES_JSON) || [],
-    pricing: getOptionalString(row, CM.PRICING),
-    rating: getNumber(row, CM.RATING),
-    reviewCount: getNumber(row, CM.REVIEW_COUNT),
-    pros: getArrayStrings(row, CM.PROS),
-    cons: getArrayStrings(row, CM.CONS),
-    lastUpdated: getOptionalString(row, CM.LAST_UPDATED),
-    foundedYear: getNumber(row, CM.FOUNDED_YEAR),
-    socials: getJSON<{ twitter?: string; linkedin?: string; facebook?: string }>(row, CM.SOCIALS_JSON),
-  }));
+  let items: DirectoryItem[] = rows.map((row): DirectoryItem => {
+    const baseId = getString(row, CM.ID);
+    return {
+      id: `${baseId}-${row.rowNumber}`, // Make ID unique by combining with row number
+      slug: baseId, // Keep the original ID as the slug
+      name: getString(row, CM.NAME),
+      tagline: getString(row, CM.TAGLINE),
+      description: getString(row, CM.DESCRIPTION),
+      category: getString(row, CM.CATEGORY_SLUG),
+      website: getString(row, CM.WEBSITE),
+      imageUrl: getOptionalString(row, CM.IMAGE_URL),
+      features: parseFeatures(getString(row, CM.FEATURES_JSON)),
+      pricing: getOptionalString(row, CM.PRICING),
+      bestFor: getOptionalString(row, CM.BEST_FOR),
+      tags: getArrayStrings(row, CM.TAGS),
+      rating: getNumber(row, CM.RATING),
+    };
+  });
 
   if (!searchTerm && !categoryFilter) {
     allItemsCache = items;
@@ -214,14 +273,26 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
 
   if (searchTerm) {
     const lowerSearchTerm = searchTerm.toLowerCase();
-    items = items.filter(item => 
-      item.name.toLowerCase().includes(lowerSearchTerm) || 
-      item.description.toLowerCase().includes(lowerSearchTerm) ||
-      item.tagline.toLowerCase().includes(lowerSearchTerm)
-    );
+    const searchTerms = lowerSearchTerm.split(/\s+/).filter(term => term.length > 0);
+    
+    items = items.filter(item => {
+      const description = item.description.toLowerCase();
+      const tagline = item.tagline.toLowerCase();
+      const name = item.name.toLowerCase();
+      const tags = item.tags?.map(tag => tag.toLowerCase()) || [];
+      
+      // Check if all search terms are found in any of the fields
+      return searchTerms.every(term => 
+        description.includes(term) || 
+        tagline.includes(term) || 
+        name.includes(term) ||
+        tags.some(tag => tag.includes(term))
+      );
+    });
   }
   if (categoryFilter) {
-    items = items.filter(item => item.category === categoryFilter);
+    const categoryFilters = categoryFilter.split(',');
+    items = items.filter(item => categoryFilters.includes(item.category));
   }
   return items;
 }
@@ -232,33 +303,13 @@ export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryIte
 }
 
 export async function getCategories(): Promise<Category[]> {
-  if (allCategoriesCache) return allCategoriesCache;
-
-  const doc = await getInitializedDoc();
-  const sheet = doc.sheetsByTitle[SHEET_NAMES.CATEGORIES];
-   if (!sheet) {
-    console.error(`Sheet '${SHEET_NAMES.CATEGORIES}' not found. Check SHEET_NAMES configuration in src/lib/sheets.ts.`);
-    return [];
-  }
-  const rows = await sheet.getRows();
-  const allDirItems = await getDirectoryItems(); 
-  const CM = COLUMN_MAPPINGS.CATEGORIES; // Alias for brevity
-
-  allCategoriesCache = rows.map((row): Category => {
-    const slug = getString(row, CM.SLUG);
-    const iconName = getString(row, CM.ICON_NAME);
-    return {
-      id: getString(row, CM.ID) || `cat-row-${row.rowNumber}`, // Fallback ID
-      slug: slug,
-      name: getString(row, CM.NAME),
-      description: getString(row, CM.DESCRIPTION),
-      longDescription: getOptionalString(row, CM.LONG_DESCRIPTION),
-      imageUrl: getOptionalString(row, CM.IMAGE_URL),
-      itemCount: allDirItems.filter(item => item.category === slug).length,
-      icon: lucideIconMap[iconName] || Lightbulb, // Default icon if not found
-    };
-  });
-  return allCategoriesCache;
+  const allDirItems = await getDirectoryItems();
+  
+  // Update itemCount for each category based on actual items
+  return HARDCODED_CATEGORIES.map(category => ({
+    ...category,
+    itemCount: allDirItems.filter(item => item.category === category.slug).length
+  }));
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
@@ -266,72 +317,30 @@ export async function getCategoryBySlug(slug: string): Promise<Category | undefi
   return categories.find(cat => cat.slug === slug);
 }
 
-export async function getGuides(searchTerm?: string): Promise<Guide[]> {
-   if (allGuidesCache && !searchTerm) return allGuidesCache;
-
-  const doc = await getInitializedDoc();
-  const sheet = doc.sheetsByTitle[SHEET_NAMES.GUIDES];
-  if (!sheet) {
-    console.error(`Sheet '${SHEET_NAMES.GUIDES}' not found. Check SHEET_NAMES configuration in src/lib/sheets.ts.`);
-    return [];
-  }
-  const rows = await sheet.getRows();
-  const CM = COLUMN_MAPPINGS.GUIDES; // Alias for brevity
-
-  let guides: Guide[] = rows.map((row): Guide => ({
-    id: getString(row, CM.ID) || `guide-row-${row.rowNumber}`, // Fallback ID
-    slug: getString(row, CM.SLUG),
-    title: getString(row, CM.TITLE),
-    excerpt: getString(row, CM.EXCERPT),
-    content: getString(row, CM.CONTENT),
-    imageUrl: getOptionalString(row, CM.IMAGE_URL),
-    category: getOptionalString(row, CM.CATEGORY_SLUG),
-    relatedItemSlugs: getArrayStrings(row, CM.RELATED_ITEM_SLUGS),
-    publishedDate: getString(row, CM.PUBLISHED_DATE),
-    author: getOptionalString(row, CM.AUTHOR),
-    readingTime: getOptionalString(row, CM.READING_TIME),
-  }));
-  
-  if (!searchTerm) {
-    allGuidesCache = guides;
-  }
-
-  if (searchTerm) {
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    guides = guides.filter(guide => 
-      guide.title.toLowerCase().includes(lowerSearchTerm) || 
-      guide.excerpt.toLowerCase().includes(lowerSearchTerm)
-    );
-  }
-  return guides;
-}
-
-export async function getGuideBySlug(slug: string): Promise<Guide | undefined> {
-  const guides = await getGuides();
-  return guides.find(guide => guide.slug === slug);
-}
+// Newsletter subscription (Mailchimp integration placeholder)
+// To enable Mailchimp integration:
+// 1. Set MAILCHIMP_API_KEY and MAILCHIMP_LIST_ID in your environment variables.
+// 2. Implement the API call in the function below.
 
 export async function submitNewsletter(email: string): Promise<{ success: boolean; message: string }> {
   if (!email || !email.includes('@')) {
     return { success: false, message: 'Please enter a valid email address.' };
   }
-  try {
-    const doc = await getInitializedDoc();
-    const sheet = doc.sheetsByTitle[SHEET_NAMES.NEWSLETTER];
-    if (!sheet) {
-      console.error(`Sheet '${SHEET_NAMES.NEWSLETTER}' not found. Check SHEET_NAMES configuration in src/lib/sheets.ts.`);
-      return { success: false, message: 'Could not subscribe. Service error.' };
-    }
-    const CM = COLUMN_MAPPINGS.NEWSLETTER;
-    await sheet.addRow({ 
-      [CM.EMAIL]: email, 
-      [CM.TIMESTAMP]: new Date().toISOString() 
-    });
-    return { success: true, message: 'Successfully subscribed to the newsletter!' };
-  } catch (error) {
-    console.error('Newsletter subscription error:', error);
-    return { success: false, message: 'Subscription failed. Please try again later.' };
-  }
+
+  // TODO: Integrate with Mailchimp API
+  // Example:
+  // const response = await fetch('https://<dc>.api.mailchimp.com/3.0/lists/' + process.env.MAILCHIMP_LIST_ID + '/members', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Authorization': 'apikey ' + process.env.MAILCHIMP_API_KEY,
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({ email_address: email, status: 'subscribed' }),
+  // });
+  // if (response.ok) return { success: true, message: 'Successfully subscribed to the newsletter!' };
+  // else return { success: false, message: 'Subscription failed. Please try again later.' };
+
+  return { success: true, message: 'This would subscribe to Mailchimp. (Integration not yet implemented.)' };
 }
 
 export async function getItemsForComparison(ids: string[]): Promise<DirectoryItem[]> {
@@ -343,7 +352,7 @@ export async function getAISuggestedDifferences(itemsToCompare: DirectoryItem[])
   if (itemsToCompare.length < 2) return ["Please select at least two items to compare."];
 
   const suggestions = [
-    `${itemsToCompare[0].name} excels in ${itemsToCompare[0].pros?.[0] || 'key areas'}, while ${itemsToCompare[1].name} offers strong ${itemsToCompare[1].features?.[0]?.name || 'alternative features'}.`,
+    `${itemsToCompare[0].name} excels in ${itemsToCompare[0].features?.[0]?.name || 'key areas'}, while ${itemsToCompare[1].name} offers strong ${itemsToCompare[1].features?.[0]?.name || 'alternative features'}.`,
     `Consider ${itemsToCompare[0].name}'s pricing (${itemsToCompare[0].pricing || 'N/A'}) versus ${itemsToCompare[1].name}'s (${itemsToCompare[1].pricing || 'N/A'}) for your budget.`,
   ];
   if (itemsToCompare.length > 2 && itemsToCompare[2]) {
@@ -360,25 +369,8 @@ export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem
     .slice(0, limit);
 }
 
-export async function getRecentGuides(limit: number = 3): Promise<Guide[]> {
-  const allGuides = await getGuides();
-  return allGuides
-    .sort((a, b) => new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime())
-    .slice(0, limit);
-}
-
-export async function getTopCategories(limit: number = 4): Promise<Category[]> {
-  const allCategories = await getCategories();
-   return allCategories
-    .filter(cat => typeof cat.itemCount === 'number') 
-    .sort((a,b) => (b.itemCount!) - (a.itemCount!)) 
-    .slice(0, limit);
-}
-
 export function clearSheetCache() {
   allItemsCache = null;
-  allCategoriesCache = null;
-  allGuidesCache = null;
   docInstance = null; 
   docInfoLoaded = false;
   cachedSheetId = null;

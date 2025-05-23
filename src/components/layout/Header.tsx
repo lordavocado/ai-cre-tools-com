@@ -8,6 +8,7 @@ const navItems = [
   { href: '/', label: 'Home' },
   { href: '/categories', label: 'Categories' },
   { href: '/guides', label: 'Guides' },
+  { href: '/about', label: 'About' },
   { href: '/compare', label: 'Compare Tools' },
 ];
 
@@ -44,7 +45,7 @@ export function Header() {
               <nav className="grid gap-6 text-lg font-medium mt-8">
                 <Link href="/" className="flex items-center gap-2 mb-4">
                   <Rocket className="h-6 w-6 text-primary" />
-                  <span className="font-bold">Sheet2Site Pro</span>
+                  <span className="font-bold">Product Analytics Tools</span>
                 </Link>
                 {navItems.map((item) => (
                   <Link

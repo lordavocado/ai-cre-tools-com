@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import { getDirectoryItems, getCategories, getGuides } from '@/lib/sheets';
 
@@ -20,19 +19,11 @@ export async function GET(request: Request) {
     }
 
     if (type === 'categories') {
-      if (slug) {
-        const category = await getCategoryBySlug(slug);
-        return category ? NextResponse.json(category) : NextResponse.json({ error: 'Category not found' }, { status: 404 });
-      }
       const categories = await getCategories();
       return NextResponse.json(categories);
     }
 
     if (type === 'guides') {
-      if (slug) {
-        const guide = await getGuideBySlug(slug);
-        return guide ? NextResponse.json(guide) : NextResponse.json({ error: 'Guide not found' }, { status: 404 });
-      }
       const guides = await getGuides(searchTerm || undefined);
       return NextResponse.json(guides);
     }

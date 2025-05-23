@@ -1,5 +1,4 @@
-
-import { getGuides } from "@/lib/sheets";
+import { getGuides } from "@/lib/markdown";
 import { GuideCard } from "@/components/guide/GuideCard";
 import type { Metadata } from 'next';
 import { Input } from "@/components/ui/input";

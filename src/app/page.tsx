@@ -1,11 +1,11 @@
-
 import type { Category } from "@/types";
 import { Hero } from "@/components/landing/Hero";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { GuideCard } from "@/components/guide/GuideCard";
-import { getDirectoryItems, getCategories, getGuides, getFeaturedItems, getRecentGuides, getTopCategories } from "@/lib/sheets";
+import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/sheets";
+import { getGuides, getRecentGuides } from "@/lib/markdown";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -26,7 +26,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
   const categoriesFromSheet: Category[] = await getCategories(); 
-  const topCategories = await getTopCategories(4); 
+  const topCategories = categoriesFromSheet.slice(0, 4);
   const recentGuides = await getRecentGuides(3);
 
   const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
@@ -49,6 +49,7 @@ export default async function Home({ searchParams }: HomeProps) {
             categories={searchCategories} 
             initialSearchTerm={searchTerm}
             initialCategoryFilter={categoryFilter}
+            totalItems={initialItems.length}
           />
           <DirectoryGrid items={initialItems} />
         </div>

@@ -1,27 +1,17 @@
-
 export interface DirectoryItem {
   id: string;
   slug: string;
   name: string;
   tagline: string;
   description: string;
-  longDescription?: string;
-  category: string; // category slug
+  category: string;
   website: string;
   imageUrl?: string;
   features?: { name: string; description?: string }[];
-  pricing?: string; // e.g., "Free", "Paid", "Freemium", "$10/month"
-  rating?: number; // 1-5
-  reviewCount?: number;
-  pros?: string[];
-  cons?: string[];
-  lastUpdated?: string; // ISO Date string
-  foundedYear?: number;
-  socials?: {
-    twitter?: string;
-    linkedin?: string;
-    facebook?: string;
-  };
+  pricing?: string;
+  bestFor?: string;
+  tags?: string[];
+  rating?: number;
 }
 
 export interface Category {

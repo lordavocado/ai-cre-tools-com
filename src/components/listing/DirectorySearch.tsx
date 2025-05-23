@@ -1,12 +1,11 @@
-
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 
 export interface DirectorySearchCategory {
   id: string;
@@ -18,11 +17,19 @@ interface DirectorySearchProps {
   categories: DirectorySearchCategory[];
   initialSearchTerm?: string;
   initialCategoryFilter?: string;
+  totalItems?: number;
 }
 
-export function DirectorySearch({ categories, initialSearchTerm = "", initialCategoryFilter = "" }: DirectorySearchProps) {
+export function DirectorySearch({ 
+  categories, 
+  initialSearchTerm = "", 
+  initialCategoryFilter = "",
+  totalItems = 0 
+}: DirectorySearchProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
-  const [categoryFilter, setCategoryFilter] = useState(initialCategoryFilter);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    initialCategoryFilter ? [initialCategoryFilter] : []
+  );
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const currentPathname = usePathname();
@@ -38,20 +45,14 @@ export function DirectorySearch({ categories, initialSearchTerm = "", initialCat
         let targetPathname = currentPathname;
 
         if (currentPathname.startsWith('/categories/')) {
-          // On a specific category page (e.g., /categories/cat-a)
-          // initialCategoryFilter is the slug of cat-a
-          if (categoryFilter && categoryFilter !== initialCategoryFilter) {
-            // User selected a *different* category in the dropdown
-            targetPathname = `/categories/${categoryFilter}`;
-          } else if (categoryFilter === "") { // User selected "All Categories"
-            targetPathname = '/'; 
+          if (selectedCategories.length === 0) {
+            targetPathname = '/';
+          } else if (selectedCategories.length === 1 && selectedCategories[0] !== initialCategoryFilter) {
+            targetPathname = `/categories/${selectedCategories[0]}`;
           }
-          // If categoryFilter matches initialCategoryFilter or is cleared to imply current page's category,
-          // targetPathname remains currentPathname, and no 'category' query param is needed.
         } else {
-          // On a non-category-specific page (e.g., home page '/')
-          if (categoryFilter) {
-            queryParams.set('category', categoryFilter);
+          if (selectedCategories.length > 0) {
+            queryParams.set('category', selectedCategories.join(','));
           }
         }
         
@@ -63,14 +64,18 @@ export function DirectorySearch({ categories, initialSearchTerm = "", initialCat
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm, categoryFilter, router, currentPathname, initialCategoryFilter, startTransition]);
+  }, [searchTerm, selectedCategories, router, currentPathname, initialCategoryFilter]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleCategoryChange = (value: string) => {
-    setCategoryFilter(value === "all" ? "" : value);
+  const toggleCategory = (categorySlug: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categorySlug)
+        ? prev.filter(c => c !== categorySlug)
+        : [...prev, categorySlug]
+    );
   };
 
   const clearSearch = () => {
@@ -79,50 +84,62 @@ export function DirectorySearch({ categories, initialSearchTerm = "", initialCat
 
   return (
     <div className="mb-8 p-6 bg-card rounded-lg shadow-md">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-        <div className="md:col-span-2 relative">
-          <label htmlFor="search-term" className="block text-sm font-medium text-foreground mb-1">
-            Search Tools
-          </label>
-          <Search className="absolute left-3 top-1/2 mt-px h-5 w-5 text-muted-foreground transform -translate-y-1/2" />
-          <Input
-            id="search-term"
-            type="text"
-            placeholder="e.g., 'Productivity App' or 'CRM'"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="pl-10 pr-10 w-full"
-            aria-label="Search directory items"
-          />
-          {searchTerm && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 mt-px h-7 w-7 transform -translate-y-1/2"
-              onClick={clearSearch}
-              aria-label="Clear search term"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+      <div className="space-y-4">
+        {/* Header with total items */}
+        <div className="flex items-center justify-start">
+          {totalItems > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {totalItems} {totalItems === 1 ? 'tool' : 'tools'} found
+            </span>
           )}
         </div>
-        <div>
-          <label htmlFor="category-filter" className="block text-sm font-medium text-foreground mb-1">
-            Filter by Category
-          </label>
-          <Select value={categoryFilter || "all"} onValueChange={handleCategoryChange}>
-            <SelectTrigger id="category-filter" aria-label="Filter by category">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.slug}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+
+        {/* Categories Section */}
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Badge
+              key={category.id}
+              variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
+              className={`
+                cursor-pointer px-4 py-1.5 text-sm font-medium
+                transition-all duration-200
+                ${selectedCategories.includes(category.slug)
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'bg-secondary/50 hover:bg-secondary text-secondary-foreground'
+                }
+              `}
+              onClick={() => toggleCategory(category.slug)}
+            >
+              {category.name}
+            </Badge>
+          ))}
+        </div>
+
+        {/* Search Section */}
+        <div className="flex items-center gap-2 w-full max-w-md">
+          <Search className="h-5 w-5 text-muted-foreground" />
+          <div className="relative flex-1">
+            <Input
+              id="search-term"
+              type="text"
+              placeholder="Search by keywords..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="pr-9 h-9"
+              aria-label="Search directory items"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+                onClick={clearSearch}
+                aria-label="Clear search term"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       {isPending && <p className="text-sm text-muted-foreground mt-2">Loading...</p>}

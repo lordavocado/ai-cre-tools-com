@@ -1,5 +1,5 @@
-
-import { getGuideBySlug, getGuides, getDirectoryItems } from "@/lib/sheets";
+import { getGuideBySlug, getGuides } from "@/lib/markdown";
+import { getDirectoryItems } from "@/lib/sheets";
 import type { Metadata, ResolvingMetadata } from 'next';
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CalendarDays, UserCircle, Clock, Tag, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
-import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
+import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
+import { GuideImage } from "@/components/guide/GuideImage";
 
 // Basic Markdown to HTML (very simple, consider a library for complex needs)
 function markdownToHtml(markdown: string): string {
@@ -119,16 +120,7 @@ export default async function GuidePage({ params }: Props) {
         </header>
 
         {guide.imageUrl && (
-          <div className="relative aspect-video w-full mb-8 rounded-lg overflow-hidden shadow-lg">
-            <Image
-              src={guide.imageUrl}
-              alt={guide.title}
-              layout="fill"
-              objectFit="cover"
-              priority
-              data-ai-hint="blog post hero image"
-            />
-          </div>
+          <GuideImage src={guide.imageUrl} alt={guide.title} />
         )}
 
         <Separator className="my-8" />
