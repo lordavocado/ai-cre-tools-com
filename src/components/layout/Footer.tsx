@@ -1,6 +1,5 @@
-
 import Link from 'next/link';
-import { Rocket, Twitter, Linkedin, Github } from 'lucide-react';
+import { Rocket, Twitter, Linkedin, Github, Heart } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -11,10 +10,10 @@ export function Footer() {
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Rocket className="h-7 w-7 text-primary" />
-              <span className="font-bold text-lg">Sheet2Site Pro</span>
+              <span className="font-bold text-lg">Product Analytics Tools</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              The ultimate boilerplate for creating SEO-optimized directories using Google Sheets.
+              Discover and compare the best product analytics tools to make data-driven decisions and optimize your product's performance.
             </p>
           </div>
           <div>
@@ -29,15 +28,24 @@ export function Footer() {
           </div>
           <div>
             <h3 className="text-md font-semibold mb-3">Connect</h3>
-            <div className="flex space-x-4">
-              <Link href="#" aria-label="Twitter" className="text-muted-foreground hover:text-primary"><Twitter size={20} /></Link>
-              <Link href="#" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary"><Linkedin size={20} /></Link>
-              <Link href="#" aria-label="GitHub" className="text-muted-foreground hover:text-primary"><Github size={20} /></Link>
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                Made with <Heart className="h-4 w-4 text-red-500" /> by Nichlas
+              </div>
+              <div className="flex space-x-4">
+                <Link href="https://www.linkedin.com/in/nichlaskvist/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary"><Linkedin size={20} /></Link>
+                <Link href="https://x.com/nkjorg" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-muted-foreground hover:text-primary"><Twitter size={20} /></Link>
+              </div>
+              <div className="mt-4">
+                <Link href="https://www.productmanagercourses.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary">
+                  Looking for product manager courses? Check out Product Manager Courses
+                </Link>
+              </div>
             </div>
           </div>
         </div>
         <div className="mt-10 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Sheet2Site Pro. All rights reserved.</p>
+          <p>&copy; {currentYear} Product Analytics Tools. All rights reserved.</p>
         </div>
       </div>
     </footer>
