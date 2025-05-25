@@ -72,7 +72,7 @@ export default async function DirectoryItemPage({ params }: Props) {
 
 
   return (
-    <div className="container py-12 md:py-16">
+    <div className="container py-12 md:py-16 pl-6">
       <article className="grid lg:grid-cols-3 gap-8 md:gap-12">
         {/* Main Content Column */}
         <div className="lg:col-span-2 space-y-8">

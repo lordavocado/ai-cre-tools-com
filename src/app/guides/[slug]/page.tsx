@@ -89,7 +89,7 @@ export default async function GuidePage({ params }: Props) {
   const htmlContent = markdownToHtml(guide.content);
 
   return (
-    <div className="container py-12 md:py-16">
+    <div className="container py-12 md:py-16 pl-6">
       <article className="max-w-3xl mx-auto">
         <header className="mb-8">
           {guide.category && (

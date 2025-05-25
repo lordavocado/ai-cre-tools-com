@@ -68,7 +68,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
   );
 
   return (
-    <div className="container py-12 md:py-16">
+    <div className="container py-12 md:py-16 pl-6">
       <header className="mb-12 text-center">
         {category.imageUrl && (
            <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg border-4 border-primary/20">

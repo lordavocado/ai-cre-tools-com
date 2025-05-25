@@ -9,6 +9,7 @@ import { getGuides, getRecentGuides } from "@/lib/markdown";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 // Revalidate every hour
 export const revalidate = 3600; 
@@ -38,12 +39,12 @@ export default async function Home({ searchParams }: HomeProps) {
       <Hero />
 
       <section id="directory" className="py-16 md:py-24">
-        <div className="container">
+        <div className="container pl-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Discover Top Tools
+            Discover Top {siteConfig.categoryName}
           </h2>
           <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-            Explore our curated directory of tools and services. Use the filters below to find exactly what you need.
+            Explore our curated directory of {siteConfig.categoryName.toLowerCase()}. Use the filters below to find exactly what you need.
           </p>
           <DirectorySearch 
             categories={searchCategories} 
@@ -56,14 +57,14 @@ export default async function Home({ searchParams }: HomeProps) {
       </section>
 
       <section className="py-16 md:py-24 bg-secondary/30">
-        <div className="container">
+        <div className="container pl-6">
           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
-                Browse by Category
+                Browse {siteConfig.categoryName} by Category
               </h2>
               <p className="text-lg text-muted-foreground mb-4 md:mb-0">
-                Find tools tailored to specific needs across various categories.
+                Find {siteConfig.categoryName.toLowerCase()} tailored to specific needs across various categories.
               </p>
             </div>
             <Button asChild variant="outline">
@@ -81,14 +82,14 @@ export default async function Home({ searchParams }: HomeProps) {
       </section>
 
       <section className="py-16 md:py-24">
-        <div className="container">
+        <div className="container pl-6">
            <div className="flex flex-col md:flex-row justify-between items-center mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
-                Latest Guides & Insights
+                Latest {siteConfig.categoryName} Guides & Insights
               </h2>
               <p className="text-lg text-muted-foreground mb-4 md:mb-0">
-                Read our expert articles to get the most out of your tools and strategies.
+                Read our expert articles to get the most out of your {siteConfig.categoryName.toLowerCase()} and strategies.
               </p>
             </div>
             <Button asChild variant="outline">

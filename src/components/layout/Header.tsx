@@ -1,16 +1,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Rocket, Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-
-const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/categories', label: 'Categories' },
-  { href: '/guides', label: 'Guides' },
-  { href: '/about', label: 'About' },
-  { href: '/compare', label: 'Compare Tools' },
-];
+import { Menu, Rocket } from 'lucide-react';
+import { GlobalSearch } from './GlobalSearch';
+import { siteConfig } from '@/config/site';
 
 export function Header() {
   return (
@@ -18,12 +11,12 @@ export function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center pl-6">
         <Link href="/" className="flex items-center gap-2 mr-8" aria-label="Sheet2Site Pro Home">
           <Rocket className="h-7 w-7 text-primary" />
-          <span className="font-bold text-lg">Product Analytics Tools</span>
+          <span className="font-bold text-lg">{siteConfig.categoryName}</span>
         </Link>
         
         <div className="flex-1 flex justify-center">
           <nav className="hidden md:flex gap-6 items-center">
-            {navItems.map((item) => (
+            {siteConfig.nav.items.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
@@ -36,11 +29,9 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex relative w-64">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search tools..."
-              className="pl-8"
+          <div className="hidden md:flex w-64">
+            <GlobalSearch 
+              className="w-full"
             />
           </div>
 
@@ -56,9 +47,16 @@ export function Header() {
                 <nav className="grid gap-6 text-lg font-medium mt-8">
                   <Link href="/" className="flex items-center gap-2 mb-4">
                     <Rocket className="h-6 w-6 text-primary" />
-                    <span className="font-bold">Product Analytics Tools</span>
+                    <span className="font-bold">{siteConfig.categoryName}</span>
                   </Link>
-                  {navItems.map((item) => (
+                  
+                  <div className="mb-4">
+                    <GlobalSearch 
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  {siteConfig.nav.items.map((item) => (
                     <Link
                       key={item.label}
                       href={item.href}

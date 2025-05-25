@@ -25,7 +25,7 @@ export default async function GuidesPage({ searchParams }: GuidesPageProps) {
   const guides = await getGuides(searchTerm);
 
   return (
-    <div className="container py-12 md:py-16">
+    <div className="container py-12 md:py-16 pl-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
           Our Guides & Insights

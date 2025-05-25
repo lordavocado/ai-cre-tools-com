@@ -2,10 +2,11 @@
 import { getCategories } from "@/lib/sheets";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import type { Metadata } from 'next';
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: 'All Categories',
-  description: 'Explore all categories of tools and services available in our directory.',
+  title: `All ${siteConfig.categoryName} Categories`,
+  description: `Explore all categories of ${siteConfig.categoryName.toLowerCase()} available in our directory.`,
 };
 
 // Revalidate every hour
@@ -15,13 +16,13 @@ export default async function CategoriesPage() {
   const categories = await getCategories();
 
   return (
-    <div className="container py-12 md:py-16">
+    <div className="container py-12 md:py-16 pl-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Explore Our Categories
+          Explore {siteConfig.categoryName} Categories
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Discover a wide range of tools and services, neatly organized into categories to help you find exactly what you're looking for.
+          Discover a wide range of {siteConfig.categoryName.toLowerCase()}, neatly organized into categories to help you find exactly what you're looking for.
         </p>
       </div>
 

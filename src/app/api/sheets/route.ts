@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getDirectoryItems, getCategories, getGuides } from '@/lib/sheets';
+import { getDirectoryItems, getCategories, getDirectoryItemBySlug } from '@/lib/sheets';
+import { getGuides } from '@/lib/markdown';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

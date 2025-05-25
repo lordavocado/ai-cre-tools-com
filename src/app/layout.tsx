@@ -7,22 +7,23 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Sheet2Site Pro - Build SEO-Optimized Directories with Google Sheets',
-    template: '%s | Sheet2Site Pro',
+    default: `${siteConfig.name} - ${siteConfig.categoryName} Directory`,
+    template: `%s | ${siteConfig.categoryName}`,
   },
-  description: 'Create powerful, SEO-friendly directories using Google Sheets as your database. Easy to set up, highly customizable.',
-  keywords: ['directory builder', 'google sheets', 'seo optimized directory', 'nextjs directory', 'nocode directory'],
-  authors: [{ name: 'Sheet2Site Pro Team' }],
-  creator: 'Sheet2Site Pro',
-  publisher: 'Sheet2Site Pro',
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: [{ name: `${siteConfig.name} Team` }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
   openGraph: {
-    title: 'Sheet2Site Pro - Build SEO-Optimized Directories with Google Sheets',
-    description: 'Create powerful, SEO-friendly directories using Google Sheets as your database.',
-    url: 'https://yourdomain.com', // Replace with your actual domain
-    siteName: 'Sheet2Site Pro',
+    title: `${siteConfig.name} - ${siteConfig.categoryName} Directory`,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.categoryName,
     // images: [ // Add a default OG image
     //   {
     //     url: 'https://yourdomain.com/og-image.png',

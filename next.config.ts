@@ -189,6 +189,12 @@ const nextConfig: NextConfig = {
         hostname: 'www.prismreplay.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.g2crowd.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

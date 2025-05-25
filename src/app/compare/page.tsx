@@ -9,6 +9,7 @@ import { getDirectoryItems, getAISuggestedDifferences } from "@/lib/sheets"; // 
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { siteConfig } from "@/config/site";
 
 export default function ComparePageClient() {
   const [allItems, setAllItems] = useState<DirectoryItem[]>([]);
@@ -94,13 +95,13 @@ export default function ComparePageClient() {
 
 
   return (
-    <div className="container py-12 md:py-16">
+    <div className="container py-12 md:py-16 pl-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Compare Tools Side-by-Side
+          Compare {siteConfig.categoryName} Side-by-Side
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Select up to 3 tools from our directory to see a detailed comparison of their features, pricing, and more.
+          Select up to 3 {siteConfig.categoryName.toLowerCase()} from our directory to see a detailed comparison of their features, pricing, and more.
         </p>
       </div>
 

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { siteConfig } from "@/config/site";
 
 export interface DirectorySearchCategory {
   id: string;
@@ -89,7 +90,7 @@ export function DirectorySearch({
         <div className="flex items-center justify-start">
           {totalItems > 0 && (
             <span className="text-sm text-muted-foreground">
-              {totalItems} {totalItems === 1 ? 'tool' : 'tools'} found
+              {totalItems} {siteConfig.categoryName.toLowerCase()} {totalItems === 1 ? 'found' : 'found'}
             </span>
           )}
         </div>

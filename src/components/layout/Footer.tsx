@@ -1,19 +1,20 @@
 import Link from 'next/link';
 import { Rocket, Twitter, Linkedin, Github, Heart } from 'lucide-react';
+import { siteConfig, computedSiteConfig } from '@/config/site';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
   return (
     <footer className="border-t border-border/40">
-      <div className="container py-12 max-w-screen-2xl">
+      <div className="container py-12 max-w-screen-2xl pl-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Rocket className="h-7 w-7 text-primary" />
-              <span className="font-bold text-lg">Product Analytics Tools</span>
+              <span className="font-bold text-lg">{siteConfig.categoryName}</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Discover and compare the best product analytics tools to make data-driven decisions and optimize your product's performance.
+              {computedSiteConfig.footer.description}
             </p>
           </div>
           <div>
@@ -45,7 +46,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-10 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Product Analytics Tools. All rights reserved.</p>
+          <p>&copy; {currentYear} {computedSiteConfig.footer.copyright}</p>
         </div>
       </div>
     </footer>
