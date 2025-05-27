@@ -195,6 +195,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.g2crowd.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'developer.yahoo.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

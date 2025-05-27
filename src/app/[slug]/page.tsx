@@ -40,7 +40,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const item = await getDirectoryItemBySlug(params.slug);
+  const { slug } = await params;
+  const item = await getDirectoryItemBySlug(slug);
 
   if (!item) {
     return {
@@ -60,7 +61,8 @@ export async function generateMetadata(
 }
 
 export default async function DirectoryItemPage({ params }: Props) {
-  const item = await getDirectoryItemBySlug(params.slug);
+  const { slug } = await params;
+  const item = await getDirectoryItemBySlug(slug);
 
   if (!item) {
     notFound();

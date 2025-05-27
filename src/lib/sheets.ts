@@ -5,7 +5,7 @@ if (typeof window !== 'undefined') {
 import type { DirectoryItem, Category } from '@/types';
 import { GoogleSpreadsheet, type GoogleSpreadsheetRow, type GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { Briefcase, Users, Palette, BarChart, Settings, ShieldCheck, FileText, Lightbulb, Zap, SearchCode, Code, type LucideIcon } from 'lucide-react';
+import { Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, type LucideIcon } from 'lucide-react';
 import type React from 'react';
 
 // --- Configuration ---
@@ -42,70 +42,603 @@ const COLUMN_MAPPINGS = {
 // --- End Configuration ---
 
 const lucideIconMap: { [key: string]: LucideIcon } = {
-  Briefcase, Users, Palette, BarChart, Settings, ShieldCheck, FileText, Lightbulb, Zap, SearchCode,
+  Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare,
 };
 
 // Hardcoded categories
 const HARDCODED_CATEGORIES: Category[] = [
   {
-    id: 'analytics',
-    slug: 'analytics',
-    name: 'Analytics',
-    description: 'Tools for tracking and analyzing user behavior and website performance',
-    longDescription: 'Comprehensive analytics solutions for understanding user behavior, tracking conversions, and measuring website performance.',
-    imageUrl: '/categories/analytics.jpg',
+    id: 'event-tracking',
+    slug: 'event-tracking',
+    name: 'Event Tracking',
+    description: 'Basic behavioral data collection and monitoring',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is Event Tracking?</h3>
+          <p class="text-foreground mb-4">Event tracking is the foundation of modern analytics, capturing every meaningful user interaction across your digital platforms. From clicks and page views to form submissions and purchases, event tracking provides the raw data that powers all other analytics capabilities.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Key Value Propositions</h3>
+          <ul class="list-disc list-inside space-y-2 text-muted-foreground">
+            <li><strong class="text-foreground">Complete User Journey Visibility:</strong> See every step users take through your product</li>
+            <li><strong class="text-foreground">Data-Driven Decision Making:</strong> Base product decisions on actual user behavior, not assumptions</li>
+            <li><strong class="text-foreground">Performance Optimization:</strong> Identify bottlenecks and optimization opportunities</li>
+            <li><strong class="text-foreground">Cross-Platform Insights:</strong> Unified tracking across web, mobile, and other touchpoints</li>
+            <li><strong class="text-foreground">Real-Time Monitoring:</strong> Immediate alerts when user behavior patterns change</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Perfect For These Companies</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">E-commerce Platforms</h4>
+              <p class="text-sm text-blue-800 dark:text-blue-200">Track product views, cart additions, checkout steps, and purchase completions to optimize conversion funnels.</p>
+            </div>
+            <div class="bg-green-50 dark:bg-green-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+              <h4 class="font-semibold text-green-900 dark:text-green-100 mb-2">SaaS Applications</h4>
+              <p class="text-sm text-green-800 dark:text-green-200">Monitor feature usage, user onboarding progress, and subscription events to improve product adoption.</p>
+            </div>
+            <div class="bg-purple-50 dark:bg-purple-950/30 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+              <h4 class="font-semibold text-purple-900 dark:text-purple-100 mb-2">Content Platforms</h4>
+              <p class="text-sm text-purple-800 dark:text-purple-200">Understand content engagement, reading patterns, and user preferences to optimize content strategy.</p>
+            </div>
+            <div class="bg-orange-50 dark:bg-orange-950/30 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+              <h4 class="font-semibold text-orange-900 dark:text-orange-100 mb-2">Mobile Apps</h4>
+              <p class="text-sm text-orange-800 dark:text-orange-200">Track app launches, screen views, in-app purchases, and user interactions to improve user experience.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">How to Get Started</h3>
+          <ol class="list-decimal list-inside space-y-2 text-muted-foreground">
+            <li><strong class="text-foreground">Define key business events</strong> (signups, purchases, feature usage)</li>
+            <li><strong class="text-foreground">Choose a tracking platform</strong> that fits your technical requirements</li>
+            <li><strong class="text-foreground">Implement tracking code</strong> across all relevant touchpoints</li>
+            <li><strong class="text-foreground">Set up custom events</strong> for business-specific actions</li>
+            <li><strong class="text-foreground">Create dashboards</strong> to monitor your most important metrics</li>
+            <li><strong class="text-foreground">Establish review processes</strong> to act on insights regularly</li>
+          </ol>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/event-tracking.jpg',
     itemCount: 0, // Will be calculated dynamically
-    icon: BarChart,
+    icon: Activity,
   },
   {
-    id: 'product',
-    slug: 'product',
-    name: 'Product Analytics',
-    description: 'Tools for understanding product usage and user engagement',
-    longDescription: 'Deep insights into how users interact with your product, feature usage, and user engagement metrics.',
-    imageUrl: '/categories/product.jpg',
+    id: 'session-replay',
+    slug: 'session-replay',
+    name: 'Session Replay',
+    description: 'Visual analysis through recordings and heatmaps',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is Session Replay?</h3>
+          <p class="text-foreground mb-4">Session replay technology captures and recreates actual user sessions, showing you exactly how users navigate, interact, and experience your product. Unlike traditional analytics that show you what happened, session replay shows you how it happened.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Key Value Propositions</h3>
+          <ul class="list-disc list-inside space-y-2 text-muted-foreground">
+            <li><strong class="text-foreground">Visual Bug Detection:</strong> See exactly where users encounter issues or get stuck</li>
+            <li><strong class="text-foreground">UX Optimization:</strong> Understand user frustrations and friction points in real-time</li>
+            <li><strong class="text-foreground">Conversion Analysis:</strong> Watch successful vs. failed conversion attempts</li>
+            <li><strong class="text-foreground">Customer Support:</strong> Quickly understand and resolve user issues</li>
+            <li><strong class="text-foreground">Heat Map Insights:</strong> See where users click, scroll, and focus attention</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Perfect For These Industries</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-red-50 dark:bg-red-950/30 p-4 rounded-lg border border-red-200 dark:border-red-800">
+              <h4 class="font-semibold text-red-900 dark:text-red-100 mb-2">Financial Services</h4>
+              <p class="text-sm text-red-800 dark:text-red-200">Ensure smooth application processes and identify security concerns in user behavior patterns.</p>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">E-commerce Sites</h4>
+              <p class="text-sm text-blue-800 dark:text-blue-200">Optimize checkout flows and product discovery by watching real user interactions.</p>
+            </div>
+            <div class="bg-indigo-50 dark:bg-indigo-950/30 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
+              <h4 class="font-semibold text-indigo-900 dark:text-indigo-100 mb-2">SaaS Platforms</h4>
+              <p class="text-sm text-indigo-800 dark:text-indigo-200">Improve user onboarding and feature adoption by seeing where users struggle.</p>
+            </div>
+            <div class="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200 dark:border-teal-800">
+              <h4 class="font-semibold text-teal-900 dark:text-teal-100 mb-2">Healthcare Apps</h4>
+              <p class="text-sm text-teal-800 dark:text-teal-200">Ensure critical workflows function smoothly and patients can easily access services.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Implementation Strategy</h3>
+          <div class="bg-muted/50 p-4 rounded-lg">
+            <ol class="list-decimal list-inside space-y-2 text-muted-foreground">
+              <li><strong class="text-foreground">Start with high-value pages</strong> (checkout, signup, key features)</li>
+              <li><strong class="text-foreground">Set up privacy controls</strong> to exclude sensitive data</li>
+              <li><strong class="text-foreground">Create automated alerts</strong> for rage clicks and errors</li>
+              <li><strong class="text-foreground">Establish review workflows</strong> with your UX and development teams</li>
+              <li><strong class="text-foreground">Use insights to prioritize</strong> UX improvements and bug fixes</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/session-replay.jpg',
+    itemCount: 0,
+    icon: Play,
+  },
+  {
+    id: 'funnel-analytics',
+    slug: 'funnel-analytics',
+    name: 'Funnel Analytics',
+    description: 'Conversion optimization and drop-off analysis',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is Funnel Analytics?</h3>
+          <p class="text-foreground mb-4">Funnel analytics tracks users through multi-step processes, revealing exactly where potential customers drop off and why conversions fail. It's essential for understanding and optimizing any sequential user journey that drives business value.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Business Impact</h3>
+          <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/30 dark:to-blue-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+            <p class="text-sm text-foreground mb-2"><strong>ROI Focus:</strong> Every percentage point improvement in conversion can significantly impact revenue</p>
+            <ul class="list-disc list-inside space-y-1 text-muted-foreground text-sm">
+              <li>Identify the highest-impact optimization opportunities</li>
+              <li>Reduce customer acquisition costs by improving existing traffic</li>
+              <li>Increase lifetime value through better onboarding flows</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Critical Use Cases</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+              <h4 class="font-semibold text-amber-900 dark:text-amber-100 mb-2">E-commerce</h4>
+              <p class="text-sm text-amber-800 dark:text-amber-200">Product discovery → Cart → Checkout → Purchase</p>
+            </div>
+            <div class="bg-violet-50 dark:bg-violet-950/30 p-4 rounded-lg border border-violet-200 dark:border-violet-800">
+              <h4 class="font-semibold text-violet-900 dark:text-violet-100 mb-2">SaaS Signup</h4>
+              <p class="text-sm text-violet-800 dark:text-violet-200">Landing → Trial → Onboarding → Paid Conversion</p>
+            </div>
+            <div class="bg-cyan-50 dark:bg-cyan-950/30 p-4 rounded-lg border border-cyan-200 dark:border-cyan-800">
+              <h4 class="font-semibold text-cyan-900 dark:text-cyan-100 mb-2">Lead Generation</h4>
+              <p class="text-sm text-cyan-800 dark:text-cyan-200">Ad Click → Landing Page → Form → Qualified Lead</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Optimization Framework</h3>
+          <div class="space-y-3">
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">1. Measure Baseline</h4>
+              <p class="text-sm text-muted-foreground">Establish current conversion rates for each funnel step</p>
+            </div>
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">2. Identify Drop-off Points</h4>
+              <p class="text-sm text-muted-foreground">Focus on steps with the highest abandonment rates</p>
+            </div>
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">3. Hypothesis Testing</h4>
+              <p class="text-sm text-muted-foreground">Test improvements with A/B experiments</p>
+            </div>
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">4. Continuous Monitoring</h4>
+              <p class="text-sm text-muted-foreground">Track performance and iterate based on results</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/funnel-analytics.jpg',
+    itemCount: 0,
+    icon: TrendingUp,
+  },
+  {
+    id: 'user-segmentation',
+    slug: 'user-segmentation',
+    name: 'User Segmentation',
+    description: 'Grouping users for targeted insights',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is User Segmentation?</h3>
+          <p class="text-foreground mb-4">User segmentation divides your audience into distinct groups based on shared characteristics, behaviors, or needs. This enables personalized experiences, targeted marketing, and more relevant product development decisions.</p>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Segmentation Strategies</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200 dark:border-emerald-800">
+              <h4 class="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">Behavioral Segmentation</h4>
+              <ul class="text-sm text-emerald-800 dark:text-emerald-200 space-y-1">
+                <li>• Feature usage patterns</li>
+                <li>• Purchase frequency</li>
+                <li>• Engagement levels</li>
+                <li>• User journey stages</li>
+              </ul>
+            </div>
+            <div class="bg-rose-50 dark:bg-rose-950/30 p-4 rounded-lg border border-rose-200 dark:border-rose-800">
+              <h4 class="font-semibold text-rose-900 dark:text-rose-100 mb-2">Demographic Segmentation</h4>
+              <ul class="text-sm text-rose-800 dark:text-rose-200 space-y-1">
+                <li>• Geographic location</li>
+                <li>• Company size (B2B)</li>
+                <li>• Industry vertical</li>
+                <li>• Device preferences</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Business Applications</h3>
+          <div class="space-y-4">
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+              <h4 class="font-semibold text-purple-900 dark:text-purple-100 mb-2">Personalization at Scale</h4>
+              <p class="text-sm text-purple-800 dark:text-purple-200">Deliver tailored experiences to different user groups without manual intervention. Increase engagement and conversion rates through relevant content and features.</p>
+            </div>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">Product Development</h4>
+              <p class="text-sm text-blue-800 dark:text-blue-200">Understand which features resonate with different user types. Prioritize development based on segment value and needs.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Implementation Roadmap</h3>
+          <div class="bg-muted/50 p-4 rounded-lg">
+            <ol class="list-decimal list-inside space-y-2 text-muted-foreground">
+              <li><strong class="text-foreground">Data Collection:</strong> Ensure you're tracking relevant user attributes and behaviors</li>
+              <li><strong class="text-foreground">Segment Definition:</strong> Create meaningful, actionable segments based on business goals</li>
+              <li><strong class="text-foreground">Validation:</strong> Test segment performance and refine criteria</li>
+              <li><strong class="text-foreground">Activation:</strong> Use segments for targeted campaigns and product decisions</li>
+              <li><strong class="text-foreground">Monitoring:</strong> Track segment performance and evolution over time</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/user-segmentation.jpg',
     itemCount: 0,
     icon: Users,
   },
   {
-    id: 'design',
-    slug: 'design',
-    name: 'Design Tools',
-    description: 'Tools for creating and managing design assets',
-    longDescription: 'Professional design tools for creating, managing, and collaborating on design assets and prototypes.',
-    imageUrl: '/categories/design.jpg',
+    id: 'retention-analytics',
+    slug: 'retention-analytics',
+    name: 'Retention Analytics',
+    description: 'Long-term engagement and churn prevention',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is Retention Analytics?</h3>
+          <p class="text-foreground mb-4">Retention analytics focuses on keeping users engaged over time, measuring loyalty, and preventing churn. It's often more cost-effective to retain existing users than acquire new ones, making retention a critical business metric.</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800 mb-4">
+          <h4 class="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Key Insight</h4>
+          <p class="text-sm text-yellow-800 dark:text-yellow-200">A 5% increase in customer retention can increase profits by 25-95%. Retention analytics helps you identify and fix leaky buckets in your user experience.</p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Essential Metrics</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-3">
+              <div class="bg-green-50 dark:bg-green-950/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
+                <h4 class="font-semibold text-green-900 dark:text-green-100 text-sm">Cohort Retention Rates</h4>
+                <p class="text-xs text-green-800 dark:text-green-200">Track how different user groups behave over time</p>
+              </div>
+              <div class="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 class="font-semibold text-blue-900 dark:text-blue-100 text-sm">Churn Prediction</h4>
+                <p class="text-xs text-blue-800 dark:text-blue-200">Identify at-risk users before they leave</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="bg-purple-50 dark:bg-purple-950/30 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+                <h4 class="font-semibold text-purple-900 dark:text-purple-100 text-sm">Feature Stickiness</h4>
+                <p class="text-xs text-purple-800 dark:text-purple-200">Measure which features drive long-term usage</p>
+              </div>
+              <div class="bg-indigo-50 dark:bg-indigo-950/30 p-3 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                <h4 class="font-semibold text-indigo-900 dark:text-indigo-100 text-sm">Lifecycle Value</h4>
+                <p class="text-xs text-indigo-800 dark:text-indigo-200">Calculate long-term user worth</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">High-Impact Industries</h3>
+          <div class="grid md:grid-cols-3 gap-3">
+            <div class="bg-pink-50 dark:bg-pink-950/30 p-3 rounded-lg border border-pink-200 dark:border-pink-800 text-center">
+              <h4 class="font-semibold text-pink-900 dark:text-pink-100 text-sm">Subscription Services</h4>
+              <p class="text-xs text-pink-800 dark:text-pink-200">Reduce monthly/annual churn</p>
+            </div>
+            <div class="bg-teal-50 dark:bg-teal-950/30 p-3 rounded-lg border border-teal-200 dark:border-teal-800 text-center">
+              <h4 class="font-semibold text-teal-900 dark:text-teal-100 text-sm">Mobile Apps</h4>
+              <p class="text-xs text-teal-800 dark:text-teal-200">Improve daily/weekly active users</p>
+            </div>
+            <div class="bg-orange-50 dark:bg-orange-950/30 p-3 rounded-lg border border-orange-200 dark:border-orange-800 text-center">
+              <h4 class="font-semibold text-orange-900 dark:text-orange-100 text-sm">E-commerce</h4>
+              <p class="text-xs text-orange-800 dark:text-orange-200">Build repeat customer base</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/retention-analytics.jpg',
     itemCount: 0,
-    icon: Palette,
+    icon: RotateCcw,
   },
   {
-    id: 'development',
-    slug: 'development',
-    name: 'Development',
-    description: 'Tools for developers and technical teams',
-    longDescription: 'Essential tools for developers, from code editors to deployment platforms and development utilities.',
-    imageUrl: '/categories/development.jpg',
+    id: 'ab-testing',
+    slug: 'ab-testing',
+    name: 'A/B Testing',
+    description: 'Experimentation and optimization testing',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is A/B Testing?</h3>
+          <p class="text-foreground mb-4">A/B testing allows you to scientifically test different versions of your product to see which performs better. It's the gold standard for making data-driven decisions and optimizing user experiences.</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+          <h4 class="font-semibold text-green-900 dark:text-green-100 mb-2">🧪 Scientific Approach</h4>
+          <p class="text-sm text-green-800 dark:text-green-200">Move beyond opinions and hunches. A/B testing provides statistical confidence in your product decisions, reducing risk and maximizing impact.</p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Testing Opportunities</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <h4 class="font-semibold text-foreground">UI/UX Elements</h4>
+              <ul class="text-sm text-muted-foreground space-y-1">
+                <li>• Button colors and copy</li>
+                <li>• Page layouts and flows</li>
+                <li>• Form designs</li>
+                <li>• Navigation structures</li>
+              </ul>
+            </div>
+            <div class="space-y-2">
+              <h4 class="font-semibold text-foreground">Business Logic</h4>
+              <ul class="text-sm text-muted-foreground space-y-1">
+                <li>• Pricing strategies</li>
+                <li>• Feature rollouts</li>
+                <li>• Recommendation algorithms</li>
+                <li>• Onboarding flows</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Success Framework</h3>
+          <div class="space-y-2">
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">1</div>
+              <div>
+                <h4 class="font-semibold text-foreground">Hypothesis Formation</h4>
+                <p class="text-sm text-muted-foreground">Create clear, testable hypotheses with predicted outcomes</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">2</div>
+              <div>
+                <h4 class="font-semibold text-foreground">Test Design</h4>
+                <p class="text-sm text-muted-foreground">Plan sample sizes, duration, and success metrics</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-bold">3</div>
+              <div>
+                <h4 class="font-semibold text-foreground">Statistical Analysis</h4>
+                <p class="text-sm text-muted-foreground">Ensure results reach statistical significance before acting</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/ab-testing.jpg',
     itemCount: 0,
-    icon: Code,
+    icon: TestTube,
   },
   {
-    id: 'marketing',
-    slug: 'marketing',
-    name: 'Marketing',
-    description: 'Tools for marketing and growth teams',
-    longDescription: 'Comprehensive marketing tools for campaigns, automation, and growth strategies.',
-    imageUrl: '/categories/marketing.jpg',
+    id: 'revenue-analytics',
+    slug: 'revenue-analytics',
+    name: 'Revenue Analytics',
+    description: 'Business outcome tracking and attribution',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is Revenue Analytics?</h3>
+          <p class="text-foreground mb-4">Revenue analytics connects user behavior directly to business outcomes, helping you understand which actions, features, and campaigns actually drive revenue growth and profitability.</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 p-4 rounded-lg border border-emerald-200 dark:border-emerald-800">
+          <h4 class="font-semibold text-emerald-900 dark:text-emerald-100 mb-2">💰 Business Impact</h4>
+          <p class="text-sm text-emerald-800 dark:text-emerald-200">Revenue analytics is the bridge between user actions and business results. It answers the critical question: "Which of our efforts actually make money?"</p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Key Revenue Metrics</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">Attribution Models</h4>
+              <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                <li>• First-touch attribution</li>
+                <li>• Last-touch attribution</li>
+                <li>• Multi-touch attribution</li>
+                <li>• Time-decay models</li>
+              </ul>
+            </div>
+            <div class="bg-purple-50 dark:bg-purple-950/30 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+              <h4 class="font-semibold text-purple-900 dark:text-purple-100 mb-2">Revenue Tracking</h4>
+              <ul class="text-sm text-purple-800 dark:text-purple-200 space-y-1">
+                <li>• Customer lifetime value</li>
+                <li>• Revenue per user</li>
+                <li>• Conversion value</li>
+                <li>• Subscription metrics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Industry Applications</h3>
+          <div class="grid md:grid-cols-3 gap-3">
+            <div class="bg-yellow-50 dark:bg-yellow-950/30 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800 text-center">
+              <h4 class="font-semibold text-yellow-900 dark:text-yellow-100 text-sm">E-commerce</h4>
+              <p class="text-xs text-yellow-800 dark:text-yellow-200">Track purchase attribution and customer value</p>
+            </div>
+            <div class="bg-indigo-50 dark:bg-indigo-950/30 p-3 rounded-lg border border-indigo-200 dark:border-indigo-800 text-center">
+              <h4 class="font-semibold text-indigo-900 dark:text-indigo-100 text-sm">SaaS</h4>
+              <p class="text-xs text-indigo-800 dark:text-indigo-200">Monitor subscription conversions and upgrades</p>
+            </div>
+            <div class="bg-rose-50 dark:bg-rose-950/30 p-3 rounded-lg border border-rose-200 dark:border-rose-800 text-center">
+              <h4 class="font-semibold text-rose-900 dark:text-rose-100 text-sm">Lead Gen</h4>
+              <p class="text-xs text-rose-800 dark:text-rose-200">Calculate qualified lead value and ROI</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/revenue-analytics.jpg',
     itemCount: 0,
-    icon: Zap,
+    icon: DollarSign,
+  },
+
+  {
+    id: 'ai-insights',
+    slug: 'ai-insights',
+    name: 'AI Insights',
+    description: 'Machine learning and predictive analytics',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What are AI Insights?</h3>
+          <p class="text-foreground mb-4">AI-powered analytics automatically discovers patterns, predicts future behavior, and surfaces insights that humans might miss. It's like having a data scientist working 24/7 on your analytics.</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30 p-4 rounded-lg border border-violet-200 dark:border-violet-800">
+          <h4 class="font-semibold text-violet-900 dark:text-violet-100 mb-2">🤖 AI Capabilities</h4>
+          <p class="text-sm text-violet-800 dark:text-violet-200">Modern AI can process vast amounts of data to identify trends, anomalies, and opportunities faster and more accurately than traditional analytics methods.</p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">AI-Powered Features</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-3">
+              <div class="bg-cyan-50 dark:bg-cyan-950/30 p-3 rounded-lg border border-cyan-200 dark:border-cyan-800">
+                <h4 class="font-semibold text-cyan-900 dark:text-cyan-100 text-sm">Predictive Analytics</h4>
+                <p class="text-xs text-cyan-800 dark:text-cyan-200">Forecast user behavior and business outcomes</p>
+              </div>
+              <div class="bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                <h4 class="font-semibold text-emerald-900 dark:text-emerald-100 text-sm">Anomaly Detection</h4>
+                <p class="text-xs text-emerald-800 dark:text-emerald-200">Automatically spot unusual patterns or issues</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="bg-orange-50 dark:bg-orange-950/30 p-3 rounded-lg border border-orange-200 dark:border-orange-800">
+                <h4 class="font-semibold text-orange-900 dark:text-orange-100 text-sm">Natural Language Queries</h4>
+                <p class="text-xs text-orange-800 dark:text-orange-200">Ask questions in plain English, get instant answers</p>
+              </div>
+              <div class="bg-pink-50 dark:bg-pink-950/30 p-3 rounded-lg border border-pink-200 dark:border-pink-800">
+                <h4 class="font-semibold text-pink-900 dark:text-pink-100 text-sm">Automated Insights</h4>
+                <p class="text-xs text-pink-800 dark:text-pink-200">Receive proactive alerts about important changes</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Perfect for Data-Driven Teams</h3>
+          <div class="bg-muted/50 p-4 rounded-lg">
+            <p class="text-sm text-muted-foreground mb-3">AI insights are especially valuable for teams that:</p>
+            <ul class="list-disc list-inside text-sm text-muted-foreground space-y-1">
+              <li>Need to process large volumes of complex data</li>
+              <li>Want to predict and prevent user churn</li>
+              <li>Require real-time anomaly detection</li>
+              <li>Seek competitive advantages through advanced analytics</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/ai-insights.jpg',
+    itemCount: 0,
+    icon: Brain,
   },
   {
-    id: 'security',
-    slug: 'security',
-    name: 'Security',
-    description: 'Tools for protecting your application and data',
-    longDescription: 'Enterprise-grade security solutions for protecting your applications, data, and infrastructure.',
-    imageUrl: '/categories/security.jpg',
+    id: 'user-feedback',
+    slug: 'user-feedback',
+    name: 'User Feedback',
+    description: 'Qualitative data collection and sentiment',
+    longDescription: `
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">What is User Feedback Analytics?</h3>
+          <p class="text-foreground mb-4">User feedback analytics combines quantitative behavioral data with qualitative user input to provide a complete picture of user experience, satisfaction, and needs.</p>
+        </div>
+        
+        <div class="bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/30 p-4 rounded-lg border border-teal-200 dark:border-teal-800">
+          <h4 class="font-semibold text-teal-900 dark:text-teal-100 mb-2">💬 The Voice of Your Users</h4>
+          <p class="text-sm text-teal-800 dark:text-teal-200">While analytics tell you what users do, feedback tells you why they do it. This combination is powerful for product improvement and user satisfaction.</p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Feedback Collection Methods</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-3">
+              <div class="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 class="font-semibold text-blue-900 dark:text-blue-100 text-sm">In-App Surveys</h4>
+                <p class="text-xs text-blue-800 dark:text-blue-200">Contextual feedback at key moments</p>
+              </div>
+              <div class="bg-green-50 dark:bg-green-950/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
+                <h4 class="font-semibold text-green-900 dark:text-green-100 text-sm">NPS Tracking</h4>
+                <p class="text-xs text-green-800 dark:text-green-200">Measure customer loyalty and satisfaction</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="bg-purple-50 dark:bg-purple-950/30 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+                <h4 class="font-semibold text-purple-900 dark:text-purple-100 text-sm">Sentiment Analysis</h4>
+                <p class="text-xs text-purple-800 dark:text-purple-200">Analyze emotions in user communications</p>
+              </div>
+              <div class="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-lg border border-amber-200 dark:border-amber-800">
+                <h4 class="font-semibold text-amber-900 dark:text-amber-100 text-sm">Feature Requests</h4>
+                <p class="text-xs text-amber-800 dark:text-amber-200">Prioritize development based on user needs</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-primary">Strategic Implementation</h3>
+          <div class="space-y-3">
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">Moment-Based Collection</h4>
+              <p class="text-sm text-muted-foreground">Trigger surveys after specific user actions or milestones</p>
+            </div>
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">Feedback Loop Closure</h4>
+              <p class="text-sm text-muted-foreground">Show users how their feedback influences product improvements</p>
+            </div>
+            <div class="border-l-4 border-primary pl-4">
+              <h4 class="font-semibold text-foreground">Cross-Team Integration</h4>
+              <p class="text-sm text-muted-foreground">Share insights with product, support, and marketing teams</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    imageUrl: '/categories/user-feedback.jpg',
     itemCount: 0,
-    icon: ShieldCheck,
+    icon: MessageSquare,
   }
 ];
 

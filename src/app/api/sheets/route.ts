@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDirectoryItems, getCategories, getDirectoryItemBySlug } from '@/lib/sheets';
+import { getDirectoryItems, getCategories, getDirectoryItemBySlug, getAISuggestedDifferences, getItemsForComparison } from '@/lib/sheets';
 import { getGuides } from '@/lib/markdown';
 
 export async function GET(request: Request) {
@@ -27,6 +27,16 @@ export async function GET(request: Request) {
     if (type === 'guides') {
       const guides = await getGuides(searchTerm || undefined);
       return NextResponse.json(guides);
+    }
+
+    if (type === 'ai-suggestions') {
+      const itemIds = searchParams.get('itemIds')?.split(',') || [];
+      if (itemIds.length < 2) {
+        return NextResponse.json({ error: 'At least 2 item IDs required for AI suggestions' }, { status: 400 });
+      }
+      const items = await getItemsForComparison(itemIds);
+      const suggestions = await getAISuggestedDifferences(items);
+      return NextResponse.json(suggestions);
     }
 
     return NextResponse.json({ error: 'Invalid type specified' }, { status: 400 });

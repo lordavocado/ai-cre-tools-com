@@ -21,13 +21,13 @@ export default async function CategoriesPage() {
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
           Explore {siteConfig.categoryName} Categories
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Discover a wide range of {siteConfig.categoryName.toLowerCase()}, neatly organized into categories to help you find exactly what you're looking for.
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          Discover the complete spectrum of {siteConfig.categoryName.toLowerCase()}, organized into 9 specialized categories covering everything from data collection to advanced analytics and insights.
         </p>
       </div>
 
       {categories.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}

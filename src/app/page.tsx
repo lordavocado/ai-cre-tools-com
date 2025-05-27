@@ -22,8 +22,9 @@ interface HomeProps {
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const searchTerm = searchParams.search || "";
-  const categoryFilter = searchParams.category || "";
+  const { search, category } = await searchParams;
+  const searchTerm = search || "";
+  const categoryFilter = category || "";
 
   const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
   const categoriesFromSheet: Category[] = await getCategories(); 

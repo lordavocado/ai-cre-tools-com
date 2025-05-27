@@ -21,7 +21,8 @@ interface GuidesPageProps {
 }
 
 export default async function GuidesPage({ searchParams }: GuidesPageProps) {
-  const searchTerm = searchParams.q || "";
+  const { q } = await searchParams;
+  const searchTerm = q || "";
   const guides = await getGuides(searchTerm);
 
   return (

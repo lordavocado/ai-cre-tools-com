@@ -26,7 +26,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const category = await getCategoryBySlug(params.category);
+  const { category: categorySlug } = await params;
+  const category = await getCategoryBySlug(categorySlug);
 
   if (!category) {
     return {
@@ -49,8 +50,9 @@ export async function generateMetadata(
 export const revalidate = 3600;
 
 export default async function CategoryDetailPage({ params, searchParams }: Props) {
-  const categorySlugFromPath = params.category;
-  const searchTerm = searchParams.search || "";
+  const { category: categorySlugFromPath } = await params;
+  const { search } = await searchParams;
+  const searchTerm = search || "";
   // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
 
   const category = await getCategoryBySlug(categorySlugFromPath);

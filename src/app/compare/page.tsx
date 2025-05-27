@@ -5,7 +5,6 @@ import { useState, useEffect, useMemo } from "react";
 import type { DirectoryItem } from "@/types";
 import { ItemSelector } from "@/components/compare/ItemSelector";
 import { ComparisonTable } from "@/components/compare/ComparisonTable";
-import { getDirectoryItems, getAISuggestedDifferences } from "@/lib/sheets"; // Fetch all items for selector
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,7 +21,8 @@ export default function ComparePageClient() {
     async function fetchData() {
       setLoading(true);
       try {
-        const items = await getDirectoryItems();
+        const response = await fetch('/api/sheets?type=items');
+        const items = await response.json();
         setAllItems(items);
       } catch (error) {
         console.error("Failed to fetch directory items:", error);
@@ -39,7 +39,9 @@ export default function ComparePageClient() {
       if (selectedItems.length >= 2) {
         setLoadingAISuggestions(true);
         try {
-          const suggestions = await getAISuggestedDifferences(selectedItems);
+          const itemIds = selectedItems.map(item => item.id).join(',');
+          const response = await fetch(`/api/sheets?type=ai-suggestions&itemIds=${itemIds}`);
+          const suggestions = await response.json();
           setAiSuggestions(suggestions);
         } catch (error) {
           console.error("Failed to fetch AI suggestions:", error);

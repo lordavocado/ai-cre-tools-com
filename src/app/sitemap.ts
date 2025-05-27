@@ -1,6 +1,7 @@
 
 import { MetadataRoute } from 'next';
-import { getDirectoryItems, getCategories, getGuides } from '@/lib/sheets';
+import { getDirectoryItems, getCategories } from '@/lib/sheets';
+import { getGuides } from '@/lib/markdown';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'; // Replace with your actual domain
 

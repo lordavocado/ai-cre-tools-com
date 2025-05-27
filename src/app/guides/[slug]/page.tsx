@@ -11,6 +11,9 @@ import { CalendarDays, UserCircle, Clock, Tag, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
 import { GuideImage } from "@/components/guide/GuideImage";
+import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
+import { GuideCard } from "@/components/guide/GuideCard";
 
 // Basic Markdown to HTML (very simple, consider a library for complex needs)
 function markdownToHtml(markdown: string): string {
@@ -44,7 +47,8 @@ export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const guide = await getGuideBySlug(params.slug);
+  const { slug } = await params;
+  const guide = await getGuideBySlug(slug);
 
   if (!guide) {
     return {
@@ -76,7 +80,8 @@ export async function generateMetadata(
 export const revalidate = 3600;
 
 export default async function GuidePage({ params }: Props) {
-  const guide = await getGuideBySlug(params.slug);
+  const { slug } = await params;
+  const guide = await getGuideBySlug(slug);
 
   if (!guide) {
     notFound();
