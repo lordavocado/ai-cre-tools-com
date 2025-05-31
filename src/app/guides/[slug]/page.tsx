@@ -87,8 +87,8 @@ export default async function GuidePage({ params }: Props) {
     notFound();
   }
 
-  const relatedItemsData = guide.relatedItemSlugs 
-    ? (await getDirectoryItems()).filter(item => guide.relatedItemSlugs?.includes(item.slug))
+  const relatedItemsData = guide.relatedItems && guide.relatedItems.length > 0
+    ? (await getDirectoryItems()).filter(item => guide.relatedItems?.includes(item.slug))
     : [];
 
   const htmlContent = markdownToHtml(guide.content);

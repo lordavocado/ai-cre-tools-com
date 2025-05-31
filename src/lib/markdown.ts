@@ -7,11 +7,12 @@ export interface GuideFrontmatter {
   slug: string;
   title: string;
   excerpt: string;
-  category: string;
+  category?: string;
   publishedDate: string;
-  author: string;
-  readingTime: string;
-  relatedItems: string[];
+  author?: string;
+  readingTime?: string;
+  imageUrl?: string;
+  relatedItems?: string[];
 }
 
 export interface Guide extends GuideFrontmatter {
@@ -19,6 +20,28 @@ export interface Guide extends GuideFrontmatter {
 }
 
 const guidesDirectory = path.join(process.cwd(), 'src/content/guides');
+
+// Helper function to normalize relatedItems from different formats
+function normalizeRelatedItems(relatedItems: any): string[] {
+  if (!relatedItems) return [];
+  
+  // If it's already an array of strings
+  if (Array.isArray(relatedItems) && relatedItems.every(item => typeof item === 'string')) {
+    return relatedItems;
+  }
+  
+  // If it's an array of objects (Pages CMS format)
+  if (Array.isArray(relatedItems) && relatedItems.every(item => typeof item === 'object' && item.slug)) {
+    return relatedItems.map(item => item.slug);
+  }
+  
+  // If it's a string (fallback)
+  if (typeof relatedItems === 'string') {
+    return [relatedItems];
+  }
+  
+  return [];
+}
 
 export async function getGuides(searchTerm?: string): Promise<Guide[]> {
   const fileNames = fs.readdirSync(guidesDirectory);
@@ -29,8 +52,14 @@ export async function getGuides(searchTerm?: string): Promise<Guide[]> {
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data, content } = matter(fileContents);
       
+      // Normalize the frontmatter data
+      const normalizedData = {
+        ...data,
+        relatedItems: normalizeRelatedItems(data.relatedItems),
+      } as GuideFrontmatter;
+      
       return {
-        ...(data as GuideFrontmatter),
+        ...normalizedData,
         content,
       };
     })
@@ -46,13 +75,15 @@ export async function getGuides(searchTerm?: string): Promise<Guide[]> {
       const excerpt = guide.excerpt.toLowerCase();
       const content = guide.content.toLowerCase();
       const category = guide.category?.toLowerCase() || '';
+      const author = guide.author?.toLowerCase() || '';
       
       // Check if all search terms are found in any of the fields
       return searchTerms.every(term => 
         title.includes(term) || 
         excerpt.includes(term) || 
         content.includes(term) ||
-        category.includes(term)
+        category.includes(term) ||
+        author.includes(term)
       );
     });
   }

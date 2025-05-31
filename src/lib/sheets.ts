@@ -105,7 +105,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/event-tracking.jpg',
+    imageUrl: '/event-tracking.png',
     itemCount: 0, // Will be calculated dynamically
     icon: Activity,
   },
@@ -168,7 +168,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/session-replay.jpg',
+    imageUrl: '/session-replay.png',
     itemCount: 0,
     icon: Play,
   },
@@ -237,7 +237,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/funnel-analytics.jpg',
+    imageUrl: '/funnel-analytics.png',
     itemCount: 0,
     icon: TrendingUp,
   },
@@ -305,7 +305,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/user-segmentation.jpg',
+    imageUrl: '/user-segmentation.png',
     itemCount: 0,
     icon: Users,
   },
@@ -371,7 +371,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/retention-analytics.jpg',
+    imageUrl: '/retention-analytics.png',
     itemCount: 0,
     icon: RotateCcw,
   },
@@ -444,7 +444,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/ab-testing.jpg',
+    imageUrl: '/a-b-testing.png',
     itemCount: 0,
     icon: TestTube,
   },
@@ -508,7 +508,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/revenue-analytics.jpg',
+    imageUrl: '/revenue-analytics.png',
     itemCount: 0,
     icon: DollarSign,
   },
@@ -570,7 +570,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/ai-insights.jpg',
+    imageUrl: '/ai-insights.png',
     itemCount: 0,
     icon: Brain,
   },
@@ -636,7 +636,7 @@ const HARDCODED_CATEGORIES: Category[] = [
         </div>
       </div>
     `,
-    imageUrl: '/categories/user-feedback.jpg',
+    imageUrl: '/user-feedback.png',
     itemCount: 0,
     icon: MessageSquare,
   }
@@ -650,7 +650,117 @@ let cachedSheetId: string | null = null;
 let cachedServiceAccountEmail: string | null = null;
 let cachedPrivateKey: string | null = null;
 
+// Enhanced caching with timestamps
 let allItemsCache: DirectoryItem[] | null = null;
+let allItemsCacheTimestamp: number = 0;
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes cache
+
+// Rate limiting
+let lastRequestTime: number = 0;
+const MIN_REQUEST_INTERVAL_MS = 1000; // Minimum 1 second between requests
+let requestQueue: Array<() => Promise<void>> = [];
+let isProcessingQueue = false;
+
+// Pending requests to prevent duplicate calls
+let pendingDocInitialization: Promise<GoogleSpreadsheet> | null = null;
+let pendingItemsRequest: Promise<DirectoryItem[]> | null = null;
+
+// Circuit breaker for rate limiting
+let circuitBreakerOpenUntil: number = 0;
+let consecutiveFailures: number = 0;
+const MAX_CONSECUTIVE_FAILURES = 3;
+const CIRCUIT_BREAKER_TIMEOUT_MS = 60 * 1000; // 1 minute
+
+// Circuit breaker utilities
+function isCircuitBreakerOpen(): boolean {
+  return Date.now() < circuitBreakerOpenUntil;
+}
+
+function openCircuitBreaker(): void {
+  circuitBreakerOpenUntil = Date.now() + CIRCUIT_BREAKER_TIMEOUT_MS;
+  console.warn(`Circuit breaker opened due to ${consecutiveFailures} consecutive failures. Will retry after ${CIRCUIT_BREAKER_TIMEOUT_MS / 1000} seconds.`);
+}
+
+function closeCircuitBreaker(): void {
+  circuitBreakerOpenUntil = 0;
+  consecutiveFailures = 0;
+}
+
+// Rate limiting utilities
+async function enforceRateLimit(): Promise<void> {
+  // Check circuit breaker first
+  if (isCircuitBreakerOpen()) {
+    throw new Error(`Service temporarily unavailable due to rate limiting. Please try again in ${Math.ceil((circuitBreakerOpenUntil - Date.now()) / 1000)} seconds.`);
+  }
+
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL_MS) {
+    const waitTime = MIN_REQUEST_INTERVAL_MS - timeSinceLastRequest;
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+  }
+  
+  lastRequestTime = Date.now();
+}
+
+// Exponential backoff retry utility
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 0) {
+        const delay = baseDelay * Math.pow(2, attempt - 1) + Math.random() * 1000;
+        console.log(`Retrying Google Sheets API call in ${Math.round(delay)}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+      
+      await enforceRateLimit();
+      const result = await operation();
+      
+      // Success - reset circuit breaker
+      closeCircuitBreaker();
+      return result;
+    } catch (error) {
+      lastError = error as Error;
+      
+      // Check if it's a rate limit error
+      if (error instanceof Error && (
+        error.message.includes('429') || 
+        error.message.includes('Quota exceeded') ||
+        error.message.includes('rate limit')
+      )) {
+        consecutiveFailures++;
+        
+        if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+          openCircuitBreaker();
+        }
+        
+        if (attempt === maxRetries) {
+          throw new Error(`Google Sheets API rate limit exceeded. Please try again in a few minutes. Original error: ${error.message}`);
+        }
+        console.warn(`Rate limit hit on attempt ${attempt + 1}, retrying...`);
+        continue;
+      }
+      
+      // For non-rate-limit errors, don't retry
+      consecutiveFailures++;
+      throw error;
+    }
+  }
+  
+  throw lastError!;
+}
+
+// Check if cache is still valid
+function isCacheValid(timestamp: number): boolean {
+  return Date.now() - timestamp < CACHE_DURATION_MS;
+}
 
 async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
   // Try to use cached credentials if available and docInstance is not set or info not loaded
@@ -661,6 +771,23 @@ async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
     return docInstance;
   }
 
+  // If there's already a pending initialization, wait for it
+  if (pendingDocInitialization) {
+    return pendingDocInitialization;
+  }
+
+  // Start the initialization and cache the promise
+  pendingDocInitialization = initializeDocWithRetry();
+
+  try {
+    const result = await pendingDocInitialization;
+    return result;
+  } finally {
+    pendingDocInitialization = null;
+  }
+}
+
+async function initializeDocWithRetry(): Promise<GoogleSpreadsheet> {
   const sheetId = process.env.GOOGLE_SHEET_ID;
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY;
@@ -687,29 +814,30 @@ async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
 
   const newDocInstance = new GoogleSpreadsheet(sheetId, jwt);
   
-  try {
-    await newDocInstance.loadInfo(); // Loads document properties and worksheets
-    docInstance = newDocInstance;
-    docInfoLoaded = true;
+  return retryWithBackoff(async () => {
+    try {
+      await newDocInstance.loadInfo(); // Loads document properties and worksheets
+      docInstance = newDocInstance;
+      docInfoLoaded = true;
 
-    // Cache the successfully used environment variable values
-    cachedSheetId = sheetId;
-    cachedServiceAccountEmail = serviceAccountEmail;
-    cachedPrivateKey = rawPrivateKey; // Cache the raw key as it was read from env
+      // Cache the successfully used environment variable values
+      cachedSheetId = sheetId;
+      cachedServiceAccountEmail = serviceAccountEmail;
+      cachedPrivateKey = rawPrivateKey; // Cache the raw key as it was read from env
 
-    console.log(`Successfully loaded Google Sheet document: "${docInstance.title}"`);
-  } catch (error) {
-    console.error("Failed to load Google Sheet document info:", error);
-    // Clear potentially stale cache on error
-    docInstance = null;
-    docInfoLoaded = false;
-    cachedSheetId = null;
-    cachedServiceAccountEmail = null;
-    cachedPrivateKey = null;
-    throw new Error(`Failed to load Google Sheet. Check sheet ID, permissions for ${serviceAccountEmail}, and credentials. Original error: ${error instanceof Error ? error.message : String(error)}`);
-  }
-
-  return docInstance;
+      console.log(`Successfully loaded Google Sheet document: "${docInstance.title}"`);
+      return docInstance;
+    } catch (error) {
+      console.error("Failed to load Google Sheet document info:", error);
+      // Clear potentially stale cache on error
+      docInstance = null;
+      docInfoLoaded = false;
+      cachedSheetId = null;
+      cachedServiceAccountEmail = null;
+      cachedPrivateKey = null;
+      throw new Error(`Failed to load Google Sheet. Check sheet ID, permissions for ${serviceAccountEmail}, and credentials. Original error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  });
 }
 
 const getString = (row: GoogleSpreadsheetRow<any>, header: string): string => row.get(header)?.toString().trim() || '';
@@ -768,41 +896,33 @@ const parseFeatures = (featuresString: string): { name: string; description?: st
 
 // Update the getDirectoryItems function
 export async function getDirectoryItems(searchTerm?: string, categoryFilter?: string): Promise<DirectoryItem[]> {
-  if (allItemsCache && !searchTerm && !categoryFilter) {
+  // Check if we have valid cached data and no specific search/filter
+  if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter) {
     return allItemsCache;
   }
 
-  const doc = await getInitializedDoc();
-  const sheet = doc.sheetsByTitle[SHEET_NAMES.ITEMS];
-  if (!sheet) {
-    console.error(`Sheet '${SHEET_NAMES.ITEMS}' not found. Check SHEET_NAMES configuration in src/lib/sheets.ts.`);
-    return [];
+  // If there's a pending request for items and no search/filter, wait for it
+  if (pendingItemsRequest && !searchTerm && !categoryFilter) {
+    return pendingItemsRequest;
   }
-  const rows = await sheet.getRows();
-  const CM = COLUMN_MAPPINGS.ITEMS; // Alias for brevity
-  
-  let items: DirectoryItem[] = rows.map((row): DirectoryItem => {
-    const baseId = getString(row, CM.ID);
-    return {
-      id: `${baseId}-${row.rowNumber}`, // Make ID unique by combining with row number
-      slug: baseId, // Keep the original ID as the slug
-      name: getString(row, CM.NAME),
-      tagline: getString(row, CM.TAGLINE),
-      description: getString(row, CM.DESCRIPTION),
-      category: getString(row, CM.CATEGORY_SLUG),
-      website: getString(row, CM.WEBSITE),
-      imageUrl: getOptionalString(row, CM.IMAGE_URL),
-      features: parseFeatures(getString(row, CM.FEATURES_JSON)),
-      pricing: getOptionalString(row, CM.PRICING),
-      bestFor: getOptionalString(row, CM.BEST_FOR),
-      tags: getArrayStrings(row, CM.TAGS),
-      rating: getNumber(row, CM.RATING),
-    };
-  });
 
-  if (!searchTerm && !categoryFilter) {
-    allItemsCache = items;
+  // For searches and filters, we still need the base data
+  if (!allItemsCache || !isCacheValid(allItemsCacheTimestamp)) {
+    if (!pendingItemsRequest) {
+      // Start fetching fresh data
+      pendingItemsRequest = fetchDirectoryItemsFromSheet();
+    }
+    
+    // Wait for the fresh data
+    try {
+      await pendingItemsRequest;
+    } finally {
+      pendingItemsRequest = null;
+    }
   }
+
+  // Now apply filters to the cached data
+  let items = allItemsCache!;
 
   if (searchTerm) {
     const lowerSearchTerm = searchTerm.toLowerCase();
@@ -823,11 +943,53 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
       );
     });
   }
+  
   if (categoryFilter) {
     const categoryFilters = categoryFilter.split(',');
     items = items.filter(item => categoryFilters.includes(item.category));
   }
+  
   return items;
+}
+
+async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
+  return retryWithBackoff(async () => {
+    const doc = await getInitializedDoc();
+    const sheet = doc.sheetsByTitle[SHEET_NAMES.ITEMS];
+    if (!sheet) {
+      console.error(`Sheet '${SHEET_NAMES.ITEMS}' not found. Check SHEET_NAMES configuration in src/lib/sheets.ts.`);
+      return [];
+    }
+    
+    const rows = await sheet.getRows();
+    const CM = COLUMN_MAPPINGS.ITEMS; // Alias for brevity
+    
+    const items: DirectoryItem[] = rows.map((row): DirectoryItem => {
+      const baseId = getString(row, CM.ID);
+      return {
+        id: `${baseId}-${row.rowNumber}`, // Make ID unique by combining with row number
+        slug: baseId, // Keep the original ID as the slug
+        name: getString(row, CM.NAME),
+        tagline: getString(row, CM.TAGLINE),
+        description: getString(row, CM.DESCRIPTION),
+        category: getString(row, CM.CATEGORY_SLUG),
+        website: getString(row, CM.WEBSITE),
+        imageUrl: getOptionalString(row, CM.IMAGE_URL),
+        features: parseFeatures(getString(row, CM.FEATURES_JSON)),
+        pricing: getOptionalString(row, CM.PRICING),
+        bestFor: getOptionalString(row, CM.BEST_FOR),
+        tags: getArrayStrings(row, CM.TAGS),
+        rating: getNumber(row, CM.RATING),
+      };
+    });
+
+    // Update cache
+    allItemsCache = items;
+    allItemsCacheTimestamp = Date.now();
+    
+    console.log(`Successfully fetched ${items.length} directory items from Google Sheets`);
+    return items;
+  });
 }
 
 export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryItem | undefined> {
@@ -904,10 +1066,25 @@ export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem
 
 export function clearSheetCache() {
   allItemsCache = null;
+  allItemsCacheTimestamp = 0;
   docInstance = null; 
   docInfoLoaded = false;
   cachedSheetId = null;
   cachedServiceAccountEmail = null;
   cachedPrivateKey = null;
+  pendingDocInitialization = null;
+  pendingItemsRequest = null;
+  // Reset circuit breaker
+  closeCircuitBreaker();
   console.log("Sheet cache and Google Doc instance cleared. Data will be re-fetched on next request.");
+}
+
+// Debug function to check circuit breaker status
+export function getCircuitBreakerStatus() {
+  return {
+    isOpen: isCircuitBreakerOpen(),
+    openUntil: circuitBreakerOpenUntil,
+    consecutiveFailures,
+    timeRemaining: Math.max(0, circuitBreakerOpenUntil - Date.now())
+  };
 }

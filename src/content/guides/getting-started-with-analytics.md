@@ -5,9 +5,12 @@ title: Getting Started with Analytics
 excerpt: Learn the fundamentals of web analytics and how to implement them in your project
 category: analytics
 publishedDate: '2024-03-15'
-author: 'Sheet2Site Team'
+author: 'Analytics Team'
 readingTime: '5 min read'
-relatedItems: ['google-analytics', 'mixpanel', 'amplitude']
+relatedItems: 
+  - google-analytics
+  - mixpanel
+  - amplitude
 ---
 
 # Getting Started with Analytics
