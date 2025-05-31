@@ -18,7 +18,12 @@ function SubmitButton() {
   );
 }
 
-export function NewsletterForm() {
+interface NewsletterFormProps {
+  source?: string;
+  className?: string;
+}
+
+export function NewsletterForm({ source = "homepage", className }: NewsletterFormProps) {
   const initialState = { message: null, success: false };
   const [state, formAction] = useActionState(subscribeToNewsletter, initialState);
   const { toast } = useToast();
@@ -34,7 +39,7 @@ export function NewsletterForm() {
   }, [state, toast]);
 
   return (
-    <form action={formAction} className="w-full max-w-md space-y-4">
+    <form action={formAction} className={`w-full max-w-md space-y-4 ${className || ""}`}>
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-grow">
            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -49,6 +54,8 @@ export function NewsletterForm() {
         </div>
         <SubmitButton />
       </div>
+      {/* Hidden field to track signup source */}
+      <input type="hidden" name="source" value={source} />
       {state.message && !state.success && (
         <p className="text-sm text-destructive">{state.message}</p>
       )}

@@ -12,6 +12,16 @@ export interface DirectoryItem {
   bestFor?: string;
   tags?: string[];
   rating?: number;
+  reviewCount?: number;
+  pros?: string[];
+  cons?: string[];
+  foundedYear?: number;
+  lastUpdated?: string;
+  socials?: {
+    twitter?: string;
+    linkedin?: string;
+    facebook?: string;
+  };
 }
 
 export interface Category {

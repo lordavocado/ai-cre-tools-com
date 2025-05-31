@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
         </ul>
 
         <h2>3. WILL YOUR INFORMATION BE SHARED WITH ANYONE?</h2>
-        <p>We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations.</p>
+        <p>We only share information with your consent, to comply with laws, to provide you with services, to protect your rights, or to fulfill business obligations. Newsletter email addresses are securely transmitted to Mailchimp, our email service provider, for the purpose of sending newsletters and managing subscriptions.</p>
 
         <h2>4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</h2>
         <p>We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Notice (if applicable).</p>

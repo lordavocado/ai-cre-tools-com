@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ExternalLink, Star, Tag } from "lucide-react";
 import { useState } from "react";
+import { CategoryChips } from "@/components/ui/category-chips";
 
 interface DirectoryItemCardProps {
   item: DirectoryItem;
@@ -40,7 +41,7 @@ export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
       <CardContent className="flex-grow p-4 pt-0">
         <div className="flex items-center gap-2">
           <Tag className="h-3 w-3 text-muted-foreground" />
-          <Badge variant="secondary" className="capitalize text-xs">{item.category.replace('-', ' ')}</Badge>
+          <CategoryChips categories={item.category} variant="secondary" size="sm" />
         </div>
         {item.rating && (
           <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">

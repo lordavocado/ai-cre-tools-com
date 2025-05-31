@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { DirectoryItem } from "@/types";
@@ -26,25 +25,18 @@ export function ItemSelector({
   slotIndex,
 }: ItemSelectorProps) {
   const [open, setOpen] = useState(false);
-  const currentItemInSlot = selectedItems.find(item => item.id === selectedItems[slotIndex]?.id);
+  const currentItemInSlot = selectedItems[slotIndex];
 
   const handleSelect = (item: DirectoryItem) => {
     const newSelection = [...selectedItems];
-    // Check if item is already selected in another slot
-    const itemIndexInSelection = newSelection.findIndex(sel => sel.id === item.id);
-
-    if (itemIndexInSelection !== -1 && itemIndexInSelection !== slotIndex) {
-      // Item selected in another slot, perhaps swap or notify? For now, just replace.
-      // This logic might need refinement based on desired UX for duplicate selections.
-    }
     
-    newSelection[slotIndex] = item; // Place or replace item in the current slot
+    // Place the item in the current slot
+    newSelection[slotIndex] = item;
     
-    // Filter out undefined/null slots if any, and ensure unique items
-    const finalSelection = newSelection.filter(Boolean);
-    const uniqueSelection = Array.from(new Map(finalSelection.map(sel => [sel.id, sel])).values());
-
-    onSelectionChange(uniqueSelection.slice(0, maxSelection));
+    // Remove any undefined slots and ensure we don't exceed maxSelection
+    const filteredSelection = newSelection.filter(Boolean).slice(0, maxSelection);
+    
+    onSelectionChange(filteredSelection);
     setOpen(false);
   };
 
@@ -55,11 +47,11 @@ export function ItemSelector({
 
   // Filter out items already selected in OTHER slots
   const availableItems = allItems.filter(
-    item => !selectedItems.some((selItem, idx) => selItem.id === item.id && idx !== slotIndex)
+    item => !selectedItems.some((selItem, idx) => selItem?.id === item.id && idx !== slotIndex)
   );
 
   return (
-    <div className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-card min-h-[180px] justify-center">
+    <div className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-card min-h-[180px] justify-center hover:shadow-sm transition-shadow">
       {currentItemInSlot ? (
         <div className="text-center w-full">
           {currentItemInSlot.imageUrl && (
@@ -85,7 +77,7 @@ export function ItemSelector({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full justify-between text-muted-foreground"
+              className="w-full justify-between text-muted-foreground hover:bg-muted/50"
             >
               Select Tool...
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -102,7 +94,7 @@ export function ItemSelector({
                       key={item.id}
                       value={item.name}
                       onSelect={() => handleSelect(item)}
-                      className="flex items-center justify-between"
+                      className="flex items-center justify-between cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         {item.imageUrl && (

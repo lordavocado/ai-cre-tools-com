@@ -24,6 +24,7 @@ import {
   Info
 } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
+import { CategoryChips } from "@/components/ui/category-chips";
 
 type Props = {
   params: { slug: string };
@@ -68,8 +69,12 @@ export default async function DirectoryItemPage({ params }: Props) {
     notFound();
   }
   
+  // Split categories and get the first one for related items lookup
+  const categories = item.category.split(',').map(cat => cat.trim());
+  const primaryCategory = categories[0];
+  
   // Fetch related items (e.g., same category, excluding current item)
-  const allItemsInCategory = await getDirectoryItems(undefined, item.category);
+  const allItemsInCategory = await getDirectoryItems(undefined, primaryCategory);
   const relatedItems = allItemsInCategory.filter(related => related.id !== item.id).slice(0, 3);
 
 
@@ -93,9 +98,9 @@ export default async function DirectoryItemPage({ params }: Props) {
                   </div>
                 )}
                 <div className="flex-grow">
-                  <Link href={`/categories/${item.category}`}>
-                    <Badge variant="secondary" className="mb-2 capitalize">{item.category.replace('-', ' ')}</Badge>
-                  </Link>
+                  <div className="mb-2">
+                    <CategoryChips categories={item.category} variant="secondary" />
+                  </div>
                   <CardTitle className="text-3xl md:text-4xl font-bold">{item.name}</CardTitle>
                   <CardDescription className="text-lg text-muted-foreground mt-1">{item.tagline}</CardDescription>
                   
@@ -119,10 +124,10 @@ export default async function DirectoryItemPage({ params }: Props) {
             
             <Separator />
 
-            {item.longDescription && (
+            {item.description && (
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-semibold mb-3">About {item.name}</h2>
-                <div className="prose prose-sm sm:prose-base max-w-none text-foreground" dangerouslySetInnerHTML={{ __html: item.longDescription }} />
+                <div className="prose prose-sm sm:prose-base max-w-none text-foreground" dangerouslySetInnerHTML={{ __html: item.description }} />
               </CardContent>
             )}
           </Card>
@@ -145,7 +150,7 @@ export default async function DirectoryItemPage({ params }: Props) {
             </Card>
           )}
 
-          {(item.pros && item.pros.length > 0 || item.cons && item.cons.length > 0) && (
+          {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Pros & Cons</CardTitle>
@@ -156,8 +161,12 @@ export default async function DirectoryItemPage({ params }: Props) {
                     <ThumbsUp className="mr-2 h-5 w-5"/> Pros
                   </h3>
                   <ul className="space-y-1 list-disc list-inside text-sm">
-                    {item.pros?.map((pro, index) => <li key={index}>{pro}</li>)}
-                    {(!item.pros || item.pros.length === 0) && <li className="text-muted-foreground">No pros listed.</li>}
+                    {item.pros && item.pros.map((pro: string, index: number) => (
+                      <li key={index}>{pro}</li>
+                    ))}
+                    {(!item.pros || item.pros.length === 0) && (
+                      <li className="text-muted-foreground">No pros listed.</li>
+                    )}
                   </ul>
                 </div>
                 <div>
@@ -195,10 +204,10 @@ export default async function DirectoryItemPage({ params }: Props) {
                 <div className="flex items-start">
                   <Tag className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
                   <div>
-                    <span className="font-semibold">Category: </span>
-                    <Link href={`/categories/${item.category}`} className="text-primary hover:underline capitalize">
-                      {item.category.replace('-', ' ')}
-                    </Link>
+                    <span className="font-semibold">Categor{categories.length > 1 ? 'ies' : 'y'}: </span>
+                    <div className="inline-flex flex-wrap gap-1 mt-1">
+                      <CategoryChips categories={item.category} variant="outline" size="sm" />
+                    </div>
                   </div>
                 </div>
               )}

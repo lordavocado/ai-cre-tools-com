@@ -3,14 +3,14 @@ export const siteConfig = {
   categoryName: "Product Analytics Tools",
   
   // Site metadata
-  name: "Sheet2Site Pro",
-  description: "Create powerful, SEO-friendly directories using Google Sheets as your database. Easy to set up, highly customizable.",
-  url: "https://yourdomain.com", // Replace with your actual domain
+  name: "Product Analytics Tools",
+  description: "Find and compare the best product analytics tools and solutions for your product needs.",
+  url: "https://productanalyticstools.com", // Replace with your actual domain
   
   // Hero section content
   hero: {
     title: "Find and compare the best {categoryName}",
-    subtitle: "Sheet2Site Pro is the ultimate boilerplate to create stunning, SEO-optimized directories using the simplicity of Google Sheets as your database. Launch your site in minutes.",
+    subtitle: "Product Analytics Tools is the best place to find and compare the best product analytics solutions that fits your needs.",
   },
   
   // Footer content
@@ -39,13 +39,18 @@ export const siteConfig = {
   
   // SEO keywords
   keywords: [
-    'directory builder', 
-    'google sheets', 
-    'seo optimized directory', 
-    'nextjs directory', 
-    'nocode directory',
-    'product analytics',
-    'analytics tools'
+    'product analytics tools',
+    'product analytics software',
+    'user behavior analytics',
+    'product metrics',
+    'user analytics',
+    'product data analysis',
+    'customer journey analytics',
+    'product tracking tools',
+    'user engagement analytics',
+    'product performance metrics',
+    'free product analytics tools',
+    'ai product analytics tools'
   ],
 } as const;
 

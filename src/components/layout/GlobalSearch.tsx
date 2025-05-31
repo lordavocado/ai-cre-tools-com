@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { DirectoryItem, Category, Guide } from "@/types";
+import { CategoryChips } from "@/components/ui/category-chips";
 
 interface SearchResult {
   type: 'tool' | 'category' | 'guide';
@@ -259,9 +260,12 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
                           {getResultTypeLabel(result.type)}
                         </Badge>
                         {result.category && (
-                          <Badge variant="secondary" className="text-xs capitalize shrink-0">
-                            {result.category.replace('-', ' ')}
-                          </Badge>
+                          <CategoryChips 
+                            categories={result.category} 
+                            variant="secondary" 
+                            size="sm" 
+                            showLinks={false}
+                          />
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-2">

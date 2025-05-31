@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
@@ -8,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { siteConfig } from '@/config/site';
+import { PostHogProvider } from '@/providers/PostHogProvider';
 
 export const metadata: Metadata = {
   title: {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.categoryName}`,
   },
   description: siteConfig.description,
-  keywords: siteConfig.keywords,
+  keywords: [...siteConfig.keywords], // Convert readonly array to mutable array
   authors: [{ name: `${siteConfig.name} Team` }],
   creator: siteConfig.name,
   publisher: siteConfig.name,
@@ -34,12 +34,13 @@ export const metadata: Metadata = {
     locale: 'en_US',
     type: 'website',
   },
-  // twitter: { // Add twitter specific card
-  //   card: 'summary_large_image',
-  //   title: 'Sheet2Site Pro - Build SEO-Optimized Directories with Google Sheets',
-  //   description: 'Create powerful, SEO-friendly directories using Google Sheets as your database.',
-  //   creator: '@yourtwitterhandle', // Replace with your Twitter handle
-  //   images: ['https://yourdomain.com/twitter-image.png'], // Replace
+  twitter: {
+    card: 'summary_large_image',
+    title: `${siteConfig.name} - ${siteConfig.categoryName} Directory`,
+    description: siteConfig.description,
+    creator: '@productanalyticstools',
+    images: [`${siteConfig.url}/og-image.png`],
+  },
   // },
   // icons: { // Add favicon links
   //   icon: '/favicon.ico',
@@ -56,19 +57,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body 
+      <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          'min-h-screen bg-background font-sans antialiased',
           GeistSans.variable,
           GeistMono.variable
         )}
       >
-        <div className="relative flex min-h-dvh flex-col bg-background">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-        <Toaster />
+        <PostHogProvider>
+          <div className="relative flex min-h-dvh flex-col bg-background">
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+          <Toaster />
+        </PostHogProvider>
       </body>
     </html>
   );

@@ -946,7 +946,11 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
   
   if (categoryFilter) {
     const categoryFilters = categoryFilter.split(',');
-    items = items.filter(item => categoryFilters.includes(item.category));
+    items = items.filter(item => {
+      // Split item's categories and check if any overlap with the filter
+      const itemCategories = item.category.split(',').map(cat => cat.trim());
+      return itemCategories.some(itemCat => categoryFilters.includes(itemCat));
+    });
   }
   
   return items;
@@ -1003,7 +1007,11 @@ export async function getCategories(): Promise<Category[]> {
   // Update itemCount for each category based on actual items
   return HARDCODED_CATEGORIES.map(category => ({
     ...category,
-    itemCount: allDirItems.filter(item => item.category === category.slug).length
+    itemCount: allDirItems.filter(item => {
+      // Split item's categories and check if this category is included
+      const itemCategories = item.category.split(',').map(cat => cat.trim());
+      return itemCategories.includes(category.slug);
+    }).length
   }));
 }
 
