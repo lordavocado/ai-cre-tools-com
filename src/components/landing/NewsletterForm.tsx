@@ -24,7 +24,7 @@ interface NewsletterFormProps {
 }
 
 export function NewsletterForm({ source = "homepage", className }: NewsletterFormProps) {
-  const initialState = { message: null, success: false };
+  const initialState = { message: "", success: false };
   const [state, formAction] = useActionState(subscribeToNewsletter, initialState);
   const { toast } = useToast();
 

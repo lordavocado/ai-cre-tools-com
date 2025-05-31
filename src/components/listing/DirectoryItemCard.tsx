@@ -2,33 +2,28 @@
 
 import type { DirectoryItem } from "@/types";
 import Link from "next/link";
-import Image from "next/image";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ExternalLink, Star, Tag } from "lucide-react";
-import { useState } from "react";
 import { CategoryChips } from "@/components/ui/category-chips";
+import { SafeImage } from "@/components/ui/safe-image";
 
 interface DirectoryItemCardProps {
   item: DirectoryItem;
 }
 
 export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
-  const [imgSrc, setImgSrc] = useState(item.imageUrl || "/product-analytics-tools-logo.png");
-
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-4">
         <div className="relative w-16 h-16 mx-auto mb-3 rounded-md overflow-hidden flex items-center justify-center bg-background">
-          <Image
-            src={imgSrc}
+          <SafeImage
+            src={item.imageUrl}
             alt={item.name}
-            width={64}
-            height={64}
-            className="object-contain transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint="software interface product"
-            onError={() => setImgSrc("/product-analytics-tools-logo.png")}
+            website={item.website}
+            className="w-16 h-16 object-contain transition-transform duration-300 group-hover:scale-105"
+            fallbackText={item.name.charAt(0)}
           />
         </div>
         <CardTitle className="text-lg text-center">

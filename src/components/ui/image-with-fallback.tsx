@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { getImageUrl } from "@/lib/image-utils";
 
 interface ImageWithFallbackProps {
   src: string;
@@ -22,7 +23,7 @@ export function ImageWithFallback({
   fallbackSrc = "/product-analytics-tools-logo.png",
   'data-ai-hint': dataAiHint,
 }: ImageWithFallbackProps) {
-  const [imageSrc, setImageSrc] = useState(src);
+  const [imageSrc, setImageSrc] = useState(getImageUrl(src, fallbackSrc));
 
   return (
     <Image

@@ -10,7 +10,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <Rocket className="h-7 w-7 text-primary" />
+              <img src="/product-analytics-tools-logo.png" alt="Logo" className="h-7 w-7" />
               <span className="font-bold text-lg">{siteConfig.categoryName}</span>
             </Link>
             <p className="text-sm text-muted-foreground">

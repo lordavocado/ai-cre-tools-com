@@ -92,7 +92,7 @@ export function Hero() {
             transition={{ delay: 1.4, duration: 0.8 }}
             className="flex flex-col items-center"
           >
-            <h3 className="text-md font-semibold mb-3">Stay Updated</h3>
+            <h3 className="text-md font-semibold mb-3">Stay Updated About New Product Analytics Tools</h3>
             <NewsletterForm />
           </motion.div>
         </motion.div>
