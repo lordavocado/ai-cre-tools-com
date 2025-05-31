@@ -7,6 +7,7 @@ category: analytics
 publishedDate: '2024-03-15'
 author: 'Analytics Team'
 readingTime: '5 min read'
+imageUrl: '/images/guides/product-analytics-get-started-guide.jpg'
 relatedItems: 
   - google-analytics
   - mixpanel

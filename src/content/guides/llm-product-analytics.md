@@ -7,7 +7,7 @@ category: analytics
 publishedDate: '2024-03-20'
 author: Analytics Team
 readingTime: 12 min read
-imageUrl: /images/guides/llm-analytics-hero.jpg
+imageUrl: /images/guides/product-analytics-llm-product-analytics.jpg
 relatedItems:
   - mixpanel
   - amplitude

@@ -7,7 +7,7 @@ category: tools
 publishedDate: '2024-03-20'
 author: Analytics Team
 readingTime: 10 min read
-imageUrl: /images/guides/free-analytics-tools-hero.jpg
+imageUrl: /images/guides/product-analytics-free-analytics.jpg
 relatedItems:
   - google-analytics
   - mixpanel

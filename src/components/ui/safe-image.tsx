@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { getImageUrl, getFaviconUrl } from '@/lib/image-utils';
 
 interface SafeImageProps {
   src?: string;
@@ -11,6 +10,24 @@ interface SafeImageProps {
   fallbackText?: string;
 }
 
+// Helper function to get favicon URL from website (same as comparison view)
+const getFaviconUrl = (website: string): string => {
+  if (!website) return "/product-analytics-tools-logo.png";
+  
+  try {
+    // Clean up the website URL
+    let cleanUrl = website;
+    if (!cleanUrl.startsWith('http')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+    
+    const domain = new URL(cleanUrl).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch {
+    return "/product-analytics-tools-logo.png";
+  }
+};
+
 export function SafeImage({ 
   src, 
   alt, 
@@ -19,24 +36,22 @@ export function SafeImage({
   fallbackText 
 }: SafeImageProps) {
   const [currentSrc, setCurrentSrc] = useState(() => {
-    if (src) return getImageUrl(src);
+    // If we have a direct image URL and it's local, use it
+    if (src && (src.startsWith('/') || src.startsWith('./'))) {
+      return src;
+    }
+    // Otherwise, always use favicon approach like the comparison view
     if (website) return getFaviconUrl(website);
     return '/product-analytics-tools-logo.png';
   });
   const [hasError, setHasError] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
 
   const handleError = () => {
-    if (retryCount === 0 && website) {
-      // First fallback: try favicon if we haven't already
-      setCurrentSrc(getFaviconUrl(website));
-      setRetryCount(1);
-    } else if (retryCount === 1) {
-      // Second fallback: try default logo
+    // If favicon fails, fallback to default logo
+    if (currentSrc !== '/product-analytics-tools-logo.png') {
       setCurrentSrc('/product-analytics-tools-logo.png');
-      setRetryCount(2);
     } else {
-      // Final fallback: show text or empty state
+      // Show text fallback if even default logo fails
       setHasError(true);
     }
   };

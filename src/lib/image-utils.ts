@@ -55,7 +55,7 @@ export function getImageUrl(imageUrl: string | undefined, fallbackUrl: string = 
 
 /**
  * Get favicon URL from website domain
- * Always routes through our proxy to avoid CORS issues
+ * Uses Google's favicon service directly (reliable and fast)
  */
 export function getFaviconUrl(website: string): string {
   if (!website) return "/product-analytics-tools-logo.png";
@@ -68,10 +68,8 @@ export function getFaviconUrl(website: string): string {
     }
     
     const domain = new URL(cleanUrl).hostname;
-    const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-    
-    // Route favicon through our proxy to ensure it works consistently
-    return `/api/image-proxy?url=${encodeURIComponent(faviconUrl)}`;
+    // Use Google's favicon service directly - it's reliable and doesn't have CORS issues
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
   } catch {
     return "/product-analytics-tools-logo.png";
   }
