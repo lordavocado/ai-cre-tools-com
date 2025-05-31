@@ -86,17 +86,20 @@ export default async function DirectoryItemPage({ params }: Props) {
           <Card className="overflow-hidden">
             <CardHeader>
               <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 mb-4">
-                {item.imageUrl && (
-                  <div className="relative w-full md:w-1/3 aspect-video md:aspect-square rounded-lg overflow-hidden shadow-md shrink-0">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      layout="fill"
-                      objectFit="cover"
-                      data-ai-hint="product logo company"
-                    />
-                  </div>
-                )}
+                <div className="relative w-24 h-24 mx-auto md:mx-0 rounded-lg overflow-hidden shadow-md shrink-0 flex items-center justify-center bg-background">
+                  <Image
+                    src={item.imageUrl || "/product-analytics-tools-logo.png"}
+                    alt={item.name}
+                    width={96}
+                    height={96}
+                    className="object-contain"
+                    data-ai-hint="product logo company"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/product-analytics-tools-logo.png";
+                    }}
+                  />
+                </div>
                 <div className="flex-grow">
                   <div className="mb-2">
                     <CategoryChips categories={item.category} variant="secondary" />

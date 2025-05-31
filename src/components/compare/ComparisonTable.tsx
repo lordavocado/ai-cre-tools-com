@@ -5,233 +5,156 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ExternalLink, Star, DollarSign, Zap, Brain, Gift, Building2, Crown } from "lucide-react";
+import { CheckCircle2, XCircle, ExternalLink, Star, Brain, BarChart3 } from "lucide-react";
+import { useMemo } from "react";
 
 interface ComparisonTableProps {
   items: DirectoryItem[];
   aiSuggestions?: string[];
-  category?: string;
 }
 
-const FeatureRow: React.FC<{ label: string; values: (string | number | undefined | string[])[] }> = ({ label, values }) => (
-  <TableRow className="hover:bg-muted/30 transition-colors">
-    <TableHead className="font-semibold text-foreground sticky left-0 bg-background/95 backdrop-blur-sm z-10 w-1/4 min-w-[150px] border-r">{label}</TableHead>
-    {values.map((value, index) => (
-      <TableCell key={index} className="text-sm">
-        {Array.isArray(value) ? (
-          <ul className="list-disc list-inside space-y-1">
-            {value.map((v, i) => <li key={i}>{v || '-'}</li>)}
-          </ul>
-        ) : typeof value === 'boolean' ? (
-          value ? <CheckCircle2 className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-red-500" />
-        ) : (
-          value || <span className="text-muted-foreground">-</span>
-        )}
-      </TableCell>
-    ))}
-  </TableRow>
-);
-
-const CategoryIcon = ({ category }: { category?: string }) => {
-  switch (category) {
-    case 'free':
-      return <Gift className="h-5 w-5 text-green-600" />;
-    case 'enterprise':
-      return <Building2 className="h-5 w-5 text-purple-600" />;
-    case 'premium':
-      return <Crown className="h-5 w-5 text-yellow-600" />;
-    default:
-      return <Zap className="h-5 w-5 text-blue-600" />;
-  }
+// Get all unique features from all items to create dynamic feature matrix
+const getAllAvailableFeatures = (allItems: DirectoryItem[]): string[] => {
+  const featureSet = new Set<string>();
+  
+  allItems.forEach(item => {
+    if (item.features) {
+      item.features.forEach(feature => {
+        featureSet.add(feature.name);
+      });
+    }
+  });
+  
+  return Array.from(featureSet).sort();
 };
 
-const getCategoryTitle = (category?: string) => {
-  switch (category) {
-    case 'free':
-      return 'Free Tools Comparison';
-    case 'enterprise':
-      return 'Enterprise Solutions Comparison';
-    case 'premium':
-      return 'Premium Tools Comparison';
-    default:
-      return 'Custom Tool Comparison';
-  }
+// Check if a tool has a specific feature
+const hasFeature = (item: DirectoryItem, featureName: string): boolean => {
+  if (!item.features) return false;
+  
+  return item.features.some(feature => 
+    feature.name === featureName
+  );
 };
 
-const getCategoryDescription = (category?: string) => {
-  switch (category) {
-    case 'free':
-      return 'Comparing the best free analytics tools with no upfront cost';
-    case 'enterprise':
-      return 'Enterprise-grade solutions for large-scale analytics needs';
-    case 'premium':
-      return 'Premium paid tools with advanced features and support';
-    default:
-      return 'Side-by-side comparison of your selected tools';
-  }
-};
+export function ComparisonTable({ items, aiSuggestions }: ComparisonTableProps) {
+  const maxSlots = 3;
 
-export function ComparisonTable({ items, aiSuggestions, category }: ComparisonTableProps) {
-  if (items.length === 0) {
-    return (
-      <Card className="mt-8">
-        <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="text-center space-y-4">
-            <CategoryIcon category={category} />
-            <div>
-              <h3 className="text-xl font-semibold mb-2">Ready to Compare?</h3>
-              <p className="text-muted-foreground max-w-md">
-                Select up to 3 tools using the selectors above to see a detailed comparison of their features, pricing, and more.
-              </p>
-            </div>
-            {category && category !== 'custom' && (
-              <Badge variant="outline" className="mt-4">
-                <CategoryIcon category={category} />
-                <span className="ml-1">{getCategoryTitle(category)}</span>
-              </Badge>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const maxItems = 3; // Ensure table structure supports up to 3 items even if fewer are selected
-  const displayItems = [...items];
-  while (displayItems.length < maxItems) {
-    displayItems.push({} as DirectoryItem); // Push empty objects for placeholder columns
-  }
-
-  const featuresToCompare = [
-    { 
-      label: "Overall Rating", 
-      getValue: (item: DirectoryItem) => item.rating ? `${item.rating.toFixed(1)}/5` : undefined,
-      getSecondaryValue: (item: DirectoryItem) => item.reviewCount ? `${item.reviewCount} reviews` : undefined
-    },
-    { 
-      label: "Pricing Model", 
-      getValue: (item: DirectoryItem) => item.pricing,
-      highlight: category === 'free' || category === 'premium'
-    },
-    { 
-      label: "Key Features", 
-      getValue: (item: DirectoryItem) => item.features?.map(f => f.name) 
-    },
-    { 
-      label: "Best Use Cases", 
-      getValue: (item: DirectoryItem) => item.bestFor 
-    },
-    { 
-      label: "Advantages", 
-      getValue: (item: DirectoryItem) => item.pros 
-    },
-    { 
-      label: "Limitations", 
-      getValue: (item: DirectoryItem) => item.cons 
-    },
-    { 
-      label: "Category", 
-      getValue: (item: DirectoryItem) => item.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) 
-    },
-    { 
-      label: "Company Founded", 
-      getValue: (item: DirectoryItem) => item.foundedYear 
-    },
-  ];
+  // Get all available features from selected items (or show message if no items selected)
+  const availableFeatures = useMemo(() => {
+    if (items.length === 0) return [];
+    
+    // For now, get features from selected items only
+    // If you want to show all possible features, you'd need to pass allItems as a prop
+    const featureSet = new Set<string>();
+    items.forEach(item => {
+      if (item.features) {
+        item.features.forEach(feature => {
+          featureSet.add(feature.name);
+        });
+      }
+    });
+    
+    return Array.from(featureSet).sort();
+  }, [items]);
 
   return (
     <Card className="mt-8 shadow-xl border-0 bg-gradient-to-br from-background to-muted/20">
       <CardHeader className="border-b bg-gradient-to-r from-background to-muted/30">
         <div className="flex items-center gap-3">
-          <CategoryIcon category={category} />
+          <BarChart3 className="h-6 w-6 text-primary" />
           <div>
-            <CardTitle className="text-2xl md:text-3xl">{getCategoryTitle(category)}</CardTitle>
+            <CardTitle className="text-2xl md:text-3xl">Feature Comparison</CardTitle>
             <CardDescription className="text-base mt-1">
-              {getCategoryDescription(category)}
+              {items.length > 0 
+                ? `Comparing ${items.length} selected tools across ${availableFeatures.length} features` 
+                : 'Select tools above to see their features compared side by side'
+              }
             </CardDescription>
           </div>
         </div>
-        {items.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4">
-            {items.map((item, index) => (
-              <Badge key={item.id} variant="secondary" className="text-xs">
-                #{index + 1} {item.name}
-              </Badge>
-            ))}
+      </CardHeader>
+      
+      <CardContent className="p-0">
+        {items.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 px-6">
+            <BarChart3 className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Ready to Compare Tools?</h3>
+            <p className="text-muted-foreground text-center max-w-md">
+              Select analytics tools above to see their detailed comparison information.
+            </p>
           </div>
         )}
-      </CardHeader>
-      <CardContent className="overflow-x-auto p-0">
-        <Table className="min-w-[800px]">
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="sticky left-0 bg-muted/80 backdrop-blur-sm z-10 w-1/4 min-w-[150px] border-r font-bold">Feature</TableHead>
-              {displayItems.map((item, index) => (
-                <TableHead key={item.id || `placeholder-${index}`} className="text-center w-1/4 min-w-[200px] p-4">
-                  {item.id ? (
-                    <div className="flex flex-col items-center gap-3">
-                       {item.imageUrl && (
-                        <div className="relative">
-                          <Image
-                            src={item.imageUrl}
-                            alt={item.name}
-                            width={80}
-                            height={80}
-                            className="rounded-lg object-cover h-20 w-20 border shadow-sm"
-                            data-ai-hint="product logo"
-                          />
-                          {item.rating && (
-                            <Badge 
-                              variant="secondary" 
-                              className="absolute -top-2 -right-2 text-xs min-w-[2rem] h-6 rounded-full"
-                            >
-                              <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
-                              {item.rating.toFixed(1)}
-                            </Badge>
-                          )}
+        
+        {/* Additional Info Section - Only show when items are selected */}
+        {items.length > 0 && (
+          <div className="p-6 border-t bg-muted/20">
+            <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
+            <div className="grid gap-4">
+              {/* Ratings Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="font-medium">Overall Rating</div>
+                {Array(maxSlots).fill(null).map((_, index) => {
+                  const item = items[index];
+                  return (
+                    <div key={`rating-${index}`} className="text-center">
+                      {item?.rating ? (
+                        <div className="flex items-center justify-center gap-1">
+                          <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                          <span className="font-semibold">{item.rating.toFixed(1)}/5</span>
                         </div>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
                       )}
-                      <Link 
-                        href={`/${item.slug}`} 
-                        className="font-bold text-lg hover:text-primary hover:underline text-center transition-colors"
-                      >
-                        {item.name}
-                      </Link>
-                      {item.tagline && (
-                        <p className="text-xs text-muted-foreground text-center leading-tight">
-                          {item.tagline}
-                        </p>
-                      )}
-                      <Button variant="outline" size="sm" asChild className="w-full">
-                        <Link href={item.website || '#'} target="_blank" rel="noopener noreferrer">
-                          Visit Site <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
                     </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-3 py-4">
-                      <div className="h-20 w-20 rounded-lg bg-muted/50 border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground">#{index + 1}</span>
-                      </div>
-                      <span className="text-muted-foreground italic text-sm">Select a tool</span>
+                  );
+                })}
+              </div>
+              
+              {/* Best For Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="font-medium">Best For</div>
+                {Array(maxSlots).fill(null).map((_, index) => {
+                  const item = items[index];
+                  return (
+                    <div key={`bestfor-${index}`} className="text-center text-sm">
+                      {item?.bestFor || <span className="text-muted-foreground">-</span>}
                     </div>
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {featuresToCompare.map(feature => (
-              <FeatureRow 
-                key={feature.label}
-                label={feature.label}
-                values={displayItems.map(item => item.id ? feature.getValue(item) : undefined)}
-              />
-            ))}
-          </TableBody>
-        </Table>
+                  );
+                })}
+              </div>
+
+              {/* Pricing Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="font-medium">Pricing</div>
+                {Array(maxSlots).fill(null).map((_, index) => {
+                  const item = items[index];
+                  return (
+                    <div key={`pricing-${index}`} className="text-center text-sm">
+                      {item?.pricing || <span className="text-muted-foreground">-</span>}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Category Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="font-medium">Category</div>
+                {Array(maxSlots).fill(null).map((_, index) => {
+                  const item = items[index];
+                  return (
+                    <div key={`category-${index}`} className="text-center text-sm">
+                      {item?.category || <span className="text-muted-foreground">-</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </CardContent>
-      {aiSuggestions && aiSuggestions.length > 0 && (
+      
+      {aiSuggestions && aiSuggestions.length > 0 && items.length >= 2 && (
         <CardFooter className="flex-col items-start gap-4 pt-6 border-t bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20">
           <div className="w-full">
             <h3 className="text-lg font-semibold flex items-center mb-3">
@@ -249,7 +172,7 @@ export function ComparisonTable({ items, aiSuggestions, category }: ComparisonTa
               ))}
             </div>
             <p className="text-xs text-muted-foreground italic mt-4 text-center">
-              💡 AI suggestions are generated based on the tools' features and characteristics. Always verify information with official sources.
+              💡 AI suggestions are generated based on the tools' actual features and data. Always verify information with official sources.
             </p>
           </div>
         </CardFooter>

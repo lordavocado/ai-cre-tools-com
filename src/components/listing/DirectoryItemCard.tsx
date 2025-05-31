@@ -15,36 +15,36 @@ interface DirectoryItemCardProps {
 }
 
 export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
-  const [imgSrc, setImgSrc] = useState(item.imageUrl || "/favicon.svg");
+  const [imgSrc, setImgSrc] = useState(item.imageUrl || "/product-analytics-tools-logo.png");
 
   return (
     <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-4">
-        <div className="relative aspect-[16/9] w-full mb-3 rounded-md overflow-hidden">
+        <div className="relative w-16 h-16 mx-auto mb-3 rounded-md overflow-hidden flex items-center justify-center bg-background">
           <Image
             src={imgSrc}
             alt={item.name}
-            layout="fill"
-            objectFit="cover"
-            className="transition-transform duration-300 group-hover:scale-105"
+            width={64}
+            height={64}
+            className="object-contain transition-transform duration-300 group-hover:scale-105"
             data-ai-hint="software interface product"
-            onError={() => setImgSrc("/favicon.svg")}
+            onError={() => setImgSrc("/product-analytics-tools-logo.png")}
           />
         </div>
-        <CardTitle className="text-lg">
+        <CardTitle className="text-lg text-center">
           <Link href={`/${item.slug}`} className="hover:text-primary transition-colors">
             {item.name}
           </Link>
         </CardTitle>
-        <CardDescription className="text-base mt-1">{item.tagline}</CardDescription>
+        <CardDescription className="text-base mt-1 text-center">{item.tagline}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow p-4 pt-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2 mb-2">
           <Tag className="h-3 w-3 text-muted-foreground" />
           <CategoryChips categories={item.category} variant="secondary" size="sm" />
         </div>
         {item.rating && (
-          <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
+          <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
             <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
             <span>{item.rating.toFixed(1)}</span>
             {item.reviewCount && <span>({item.reviewCount})</span>}

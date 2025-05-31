@@ -109,21 +109,19 @@ export function ComparisonSidebar({ selectedItems }: ComparisonSidebarProps) {
                   selectedItems.map((item, index) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg bg-background border hover:shadow-sm transition-all">
                       <div className="flex-shrink-0">
-                        {item.imageUrl ? (
+                        <div className="h-8 w-8 rounded-md bg-background flex items-center justify-center">
                           <Image
-                            src={item.imageUrl}
+                            src={item.imageUrl || "/product-analytics-tools-logo.png"}
                             alt={item.name}
                             width={32}
                             height={32}
-                            className="rounded-md object-cover h-8 w-8"
+                            className="rounded-md object-contain h-8 w-8"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/product-analytics-tools-logo.png";
+                            }}
                           />
-                        ) : (
-                          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
-                            <span className="text-xs font-medium text-primary">
-                              {item.name.charAt(0)}
-                            </span>
-                          </div>
-                        )}
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm truncate">
