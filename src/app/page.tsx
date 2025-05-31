@@ -10,6 +10,65 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import type { Metadata } from 'next';
+
+// Enhanced SEO metadata for homepage
+export const metadata: Metadata = {
+  title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
+  description: `Discover and compare the best ${siteConfig.categoryName.toLowerCase()} for your business. Expert reviews, detailed comparisons, and user ratings to help you choose the perfect product analytics solution.`,
+  keywords: [
+    ...siteConfig.seo.primaryKeywords,
+    ...siteConfig.seo.secondaryKeywords,
+    'directory',
+    'comparison',
+    'reviews',
+    'ratings'
+  ],
+  
+  openGraph: {
+    title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
+    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Expert reviews, detailed comparisons, and comprehensive directory of product analytics solutions.`,
+    url: siteConfig.url,
+    siteName: siteConfig.seo.openGraph.siteName,
+    images: [
+      {
+        url: siteConfig.seo.openGraph.images.default,
+        width: siteConfig.seo.openGraph.images.width,
+        height: siteConfig.seo.openGraph.images.height,
+        alt: siteConfig.seo.openGraph.images.alt,
+      },
+    ],
+    locale: siteConfig.seo.openGraph.locale,
+    type: 'website',
+  },
+  
+  twitter: {
+    card: siteConfig.seo.twitter.card,
+    title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
+    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Expert reviews and comprehensive directory.`,
+    site: siteConfig.seo.twitter.site,
+    creator: siteConfig.seo.twitter.creator,
+    images: [
+      {
+        url: siteConfig.seo.twitter.images.default,
+        width: siteConfig.seo.twitter.images.width,
+        height: siteConfig.seo.twitter.images.height,
+        alt: siteConfig.seo.twitter.images.alt,
+      },
+    ],
+  },
+  
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  
+  robots: {
+    index: true,
+    follow: true,
+    'max-image-preview': 'large',
+    'max-snippet': -1,
+  },
+};
 
 // Revalidate every hour
 export const revalidate = 3600; 
@@ -37,6 +96,75 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <>
+      {/* Enhanced Structured Data for Homepage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: siteConfig.name,
+            url: siteConfig.url,
+            description: siteConfig.description,
+            inLanguage: "en-US",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${siteConfig.url}/?search={search_term_string}`,
+              },
+              "query-input": "required name=search_term_string",
+            },
+            mainEntity: {
+              "@type": "ItemList",
+              name: `${siteConfig.categoryName} Directory`,
+              description: `Comprehensive directory of ${siteConfig.categoryName.toLowerCase()}`,
+              numberOfItems: initialItems.length,
+              itemListElement: initialItems.slice(0, 20).map((item, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                item: {
+                  "@type": "SoftwareApplication",
+                  name: item.name,
+                  description: item.tagline,
+                  url: `${siteConfig.url}/${item.slug}`,
+                  applicationCategory: "BusinessApplication",
+                  operatingSystem: "Web-based",
+                },
+              })),
+            },
+          }),
+        }}
+      />
+
+      {/* Business/Organization Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: siteConfig.name,
+            url: siteConfig.url,
+            logo: `${siteConfig.url}/logo.png`,
+            description: siteConfig.description,
+            sameAs: Object.values(siteConfig.social).map(handle => 
+              handle.includes('@') ? `https://twitter.com/${handle}` : 
+              handle.includes('company/') ? `https://linkedin.com/${handle}` :
+              `https://github.com/${handle}`
+            ),
+            knowsAbout: [
+              "Product Analytics",
+              "Software Tools",
+              "Business Intelligence",
+              "Data Analytics",
+              "User Behavior Analysis",
+              "Product Management Tools"
+            ],
+          }),
+        }}
+      />
+
       <Hero />
 
       <section id="directory" className="py-16 md:py-24">
