@@ -463,6 +463,57 @@ export default function Component() {
           </div>
         </div>
 
+        {/* Feature Matrix Table */}
+        {selectedToolsData.filter(Boolean).length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden mt-8">
+            <div className="p-6 bg-slate-50 border-b">
+              <h2 className="text-2xl font-semibold text-slate-900 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6" />
+                Feature Matrix Comparison
+              </h2>
+              <p className="text-slate-600 mt-1">Detailed feature availability across selected tools</p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-slate-50">
+                    <th className="text-left p-4 font-semibold text-slate-900 min-w-[200px]">Features</th>
+                    {selectedToolsData.map((tool, index) => (
+                      tool && (
+                        <th key={index} className="text-center p-4 min-w-[150px]">
+                          <div className="flex flex-col items-center gap-2">
+                            <span className="text-2xl">{tool.icon_link}</span>
+                            <span className="font-semibold text-slate-900">{tool.name}</span>
+                          </div>
+                        </th>
+                      )
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {FEATURE_MATRIX.map((feature) => (
+                    <tr key={feature} className="border-b hover:bg-slate-50">
+                      <td className="p-4 font-medium text-slate-700 bg-slate-50">{feature}</td>
+                      {selectedToolsData.map((tool, index) => (
+                        tool && (
+                          <td key={index} className="p-4 text-center">
+                            {featureMatrix[tool.id] && featureMatrix[tool.id][feature] ? (
+                              <CheckCircle2 className="w-5 h-5 text-green-500 mx-auto" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-red-400 mx-auto" />
+                            )}
+                          </td>
+                        )
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {selectedToolsData.filter(Boolean).length === 0 && (
           <div className="text-center py-12">
             <BarChart3 className="w-16 h-16 text-slate-400 mx-auto mb-4" />
