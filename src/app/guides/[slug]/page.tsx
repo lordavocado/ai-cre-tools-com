@@ -1,5 +1,8 @@
 import { getGuideBySlug, getGuides } from "@/lib/markdown";
 import { getDirectoryItems } from "@/lib/sheets";
+import { markdownToHtml } from "@/lib/markdown-renderer";
+import { ArticleStructuredData, BreadcrumbStructuredData } from "@/components/seo/StructuredData";
+import { RelatedGuides } from "@/components/guide/RelatedGuides";
 import type { Metadata, ResolvingMetadata } from 'next';
 import Image from "next/image";
 import Link from "next/link";
@@ -14,22 +17,6 @@ import { GuideImage } from "@/components/guide/GuideImage";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { GuideCard } from "@/components/guide/GuideCard";
-
-// Basic Markdown to HTML (very simple, consider a library for complex needs)
-function markdownToHtml(markdown: string): string {
-  return markdown
-    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-semibold mt-6 mb-3">$1</h2>')
-    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold mt-5 mb-2">$1</h3>')
-    .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-    .replace(/\*(.*)\*/gim, '<em>$1</em>')
-    .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" class="text-primary hover:underline">$1</a>')
-    .replace(/^- (.*$)/gim, '<li class="ml-4 mb-1">$1</li>')
-    .replace(/^\s*<li/gm, '<ul><li') // Wrap LIs in ULs (simple heuristic)
-    .replace(/<\/li>\s*([^\s<])/gm, '</li></ul>$1') // Close ULs
-    .replace(/\n/g, '<br />')
-    .replace(/<br \/><ul>/g, '<ul>') // Clean up extra breaks before lists
-    .replace(/<\/ul><br \/>/g, '</ul>');
-}
 
 
 type Props = {
@@ -52,27 +39,97 @@ export async function generateMetadata(
 
   if (!guide) {
     return {
-      title: "Guide Not Found",
+      title: "Guide Not Found | Product Analytics Tools",
+      description: "The guide you're looking for could not be found.",
     };
   }
 
+  const parentMetadata = await parent;
+  const siteUrl = siteConfig.url;
+  const guideUrl = `${siteUrl}/guides/${guide.slug}`;
+  const imageUrl = guide.imageUrl ? `${siteUrl}${guide.imageUrl}` : `${siteUrl}/og-image.png`;
+  
+  // Generate dynamic keywords based on guide content and category
+  const keywords = [
+    guide.title.toLowerCase(),
+    ...(guide.category ? [guide.category.replace('-', ' ')] : []),
+    'guide', 'tutorial', 'how-to',
+    'product analytics', 'analytics tools', 'data analysis',
+    ...(guide.author ? [guide.author.toLowerCase()] : [])
+  ].join(', ');
+
   return {
-    title: guide.title,
+    title: `${guide.title} | ${siteConfig.name}`,
     description: guide.excerpt,
+    keywords: keywords,
+    authors: guide.author ? [{ name: guide.author }] : [{ name: 'Analytics Team' }],
+    creator: guide.author || 'Analytics Team',
+    publisher: siteConfig.name,
+    category: guide.category ? guide.category.replace('-', ' ') : 'Guides',
+    
+    // Canonical URL
+    alternates: {
+      canonical: guideUrl,
+    },
+
+    // OpenGraph metadata
     openGraph: {
       title: guide.title,
       description: guide.excerpt,
-      images: guide.imageUrl ? [{ url: guide.imageUrl }] : [],
+      url: guideUrl,
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: guide.title,
+        },
+      ],
       type: 'article',
       publishedTime: guide.publishedDate,
-      authors: guide.author ? [guide.author] : [],
+      modifiedTime: guide.publishedDate, // You could add a lastModified field to frontmatter
+      authors: guide.author ? [guide.author] : ['Analytics Team'],
+      section: guide.category ? guide.category.replace('-', ' ') : 'Guides',
+      tags: guide.category ? [guide.category.replace('-', ' ')] : ['guide'],
     },
-    // twitter: { // Add if you have twitter specific images/creator
-    //   card: 'summary_large_image',
-    //   title: guide.title,
-    //   description: guide.excerpt,
-    //   images: guide.imageUrl ? [guide.imageUrl] : [],
-    // },
+
+    // Twitter metadata
+    twitter: {
+      card: 'summary_large_image',
+      title: guide.title,
+      description: guide.excerpt,
+      creator: siteConfig.social?.twitter || '@productanalyticstools',
+      site: siteConfig.social?.twitter || '@productanalyticstools',
+      images: [
+        {
+          url: imageUrl,
+          alt: guide.title,
+        },
+      ],
+    },
+
+    // Additional metadata for better indexing
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+
+    // Article-specific metadata
+    other: {
+      'article:author': guide.author || 'Analytics Team',
+      'article:published_time': guide.publishedDate,
+      'article:section': guide.category ? guide.category.replace('-', ' ') : 'Guides',
+      'article:tag': guide.category ? guide.category.replace('-', ' ') : 'guide',
+      'reading-time': guide.readingTime || '5 min read',
+    },
   };
 }
 
@@ -91,11 +148,27 @@ export default async function GuidePage({ params }: Props) {
     ? (await getDirectoryItems()).filter(item => guide.relatedItems?.includes(item.slug))
     : [];
 
+  // Get all guides for related guides component
+  const allGuides = await getGuides();
+
   const htmlContent = markdownToHtml(guide.content);
+  const guideUrl = `${siteConfig.url}/guides/${guide.slug}`;
+
+  // Breadcrumb data for structured data
+  const breadcrumbItems = [
+    { name: 'Home', url: siteConfig.url },
+    { name: 'Guides', url: `${siteConfig.url}/guides` },
+    { name: guide.title, url: guideUrl },
+  ];
 
   return (
-    <div className="container py-12 md:py-16 pl-6">
-      <article className="max-w-3xl mx-auto">
+    <>
+      {/* Structured Data */}
+      <ArticleStructuredData guide={guide} url={guideUrl} />
+      <BreadcrumbStructuredData items={breadcrumbItems} />
+      
+      <div className="container py-12 md:py-16 pl-6">
+        <article className="max-w-3xl mx-auto">
         <header className="mb-8">
           {guide.category && (
             <Link href={`/categories/${guide.category}`}>
@@ -131,7 +204,7 @@ export default async function GuidePage({ params }: Props) {
         <Separator className="my-8" />
 
         <div 
-          className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-bold prose-a:text-primary hover:prose-a:underline prose-img:rounded-md prose-img:shadow-md"
+          className="max-w-none"
           dangerouslySetInnerHTML={{ __html: htmlContent }} 
         />
 
@@ -146,6 +219,9 @@ export default async function GuidePage({ params }: Props) {
             </div>
           </section>
         )}
+
+        {/* Related Guides Section for Internal Linking */}
+        <RelatedGuides currentGuide={guide} allGuides={allGuides} maxItems={3} />
         
         <div className="mt-12 text-center">
             <Button asChild variant="outline">
@@ -157,5 +233,6 @@ export default async function GuidePage({ params }: Props) {
 
       </article>
     </div>
+    </>
   );
 }

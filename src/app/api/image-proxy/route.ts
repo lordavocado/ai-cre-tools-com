@@ -1,5 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Domain whitelist for security - only allow known safe domains
+const ALLOWED_DOMAINS = [
+  'placehold.co',
+  'logo.clearbit.com',
+  'upload.wikimedia.org',
+  'www.google.com',
+  't1.gstatic.com',
+  'images.unsplash.com',
+  'via.placeholder.com',
+  'picsum.photos',
+  // Add more trusted domains as needed
+];
+
+// Block private/internal network ranges
+const BLOCKED_IP_RANGES = [
+  /^127\./, // localhost
+  /^10\./, // private class A
+  /^172\.(1[6-9]|2[0-9]|3[0-1])\./, // private class B
+  /^192\.168\./, // private class C
+  /^169\.254\./, // link-local
+  /^::1$/, // IPv6 localhost
+  /^fe80::/i, // IPv6 link-local
+];
+
+function isAllowedDomain(hostname: string): boolean {
+  return ALLOWED_DOMAINS.some(domain => 
+    hostname === domain || hostname.endsWith('.' + domain)
+  );
+}
+
+function isBlockedIP(hostname: string): boolean {
+  return BLOCKED_IP_RANGES.some(range => range.test(hostname));
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const imageUrl = searchParams.get('url');
@@ -9,10 +43,26 @@ export async function GET(request: NextRequest) {
   }
 
   // Validate URL format
+  let parsedUrl: URL;
   try {
-    new URL(imageUrl);
+    parsedUrl = new URL(imageUrl);
   } catch {
     return new NextResponse('Invalid image URL', { status: 400 });
+  }
+
+  // Security checks
+  if (parsedUrl.protocol !== 'https:') {
+    return new NextResponse('Only HTTPS URLs are allowed', { status: 400 });
+  }
+
+  // Check domain whitelist
+  if (!isAllowedDomain(parsedUrl.hostname)) {
+    return new NextResponse('Domain not allowed', { status: 403 });
+  }
+
+  // Block private IP ranges
+  if (isBlockedIP(parsedUrl.hostname)) {
+    return new NextResponse('Access to private networks is forbidden', { status: 403 });
   }
 
   try {

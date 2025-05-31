@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
 
 function DataVisualizationPaths({ position }: { position: number }) {
   // Generate unified dashboard grid sections - smaller and further from center
@@ -370,9 +371,19 @@ function DataVisualizationPaths({ position }: { position: number }) {
 }
 
 export function AnimatedBackground() {
+  const [position, setPosition] = useState(0)
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPosition(prev => prev + 0.01)
+    }, 16)
+    
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <DataVisualizationPaths position={1} />
+      <DataVisualizationPaths position={position} />
     </div>
   )
 } 

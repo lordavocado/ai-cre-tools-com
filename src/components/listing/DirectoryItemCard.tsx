@@ -46,7 +46,7 @@ export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-2 p-4 pt-0 border-t">
+      <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-2 p-4 pt-3 border-t">
         <Button variant="ghost" size="sm" asChild className="w-full sm:w-auto">
           <Link href={item.website} target="_blank" rel="noopener noreferrer">
             Visit Website <ExternalLink className="ml-2 h-3 w-3" />

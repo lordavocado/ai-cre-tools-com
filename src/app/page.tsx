@@ -4,6 +4,7 @@ import { DirectorySearch, type DirectorySearchCategory } from "@/components/list
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { GuideCard } from "@/components/guide/GuideCard";
+import { FAQ } from "@/components/sections/FAQ";
 import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/sheets";
 import { getGuides, getRecentGuides } from "@/lib/markdown";
 import Link from "next/link";
@@ -234,6 +235,9 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQ />
     </>
   );
 }

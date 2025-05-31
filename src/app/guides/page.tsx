@@ -1,5 +1,7 @@
 import { getGuides } from "@/lib/markdown";
 import { GuideCard } from "@/components/guide/GuideCard";
+import { WebsiteStructuredData } from "@/components/seo/StructuredData";
+import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -7,8 +9,58 @@ import { Search } from "lucide-react";
 // import { GuidesSearch } from "@/components/guide/GuidesSearch";
 
 export const metadata: Metadata = {
-  title: 'Guides & Tutorials',
-  description: 'Explore our collection of guides, tutorials, and insights to help you make the most of various tools and strategies.',
+  title: `Guides & Tutorials | ${siteConfig.name}`,
+  description: 'Explore our comprehensive collection of product analytics guides, tutorials, and expert insights. Learn how to implement, optimize, and get the most value from analytics tools and strategies.',
+  keywords: 'product analytics guides, analytics tutorials, data analysis guides, analytics implementation, product metrics guide, user behavior analysis, analytics best practices, data-driven insights',
+  
+  // OpenGraph metadata
+  openGraph: {
+    title: `Product Analytics Guides & Tutorials | ${siteConfig.name}`,
+    description: 'Comprehensive guides and tutorials on product analytics tools, implementation strategies, and best practices for data-driven decision making.',
+    url: `${siteConfig.url}/guides`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: `${siteConfig.url}/og-guides.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Product Analytics Guides and Tutorials',
+      },
+    ],
+    type: 'website',
+  },
+
+  // Twitter metadata
+  twitter: {
+    card: 'summary_large_image',
+    title: `Product Analytics Guides & Tutorials | ${siteConfig.name}`,
+    description: 'Learn product analytics with our comprehensive guides and tutorials. Expert insights on implementation, optimization, and best practices.',
+    creator: siteConfig.social?.twitter || '@productanalyticstools',
+    site: siteConfig.social?.twitter || '@productanalyticstools',
+    images: [
+      {
+        url: `${siteConfig.url}/twitter-guides.png`,
+        alt: 'Product Analytics Guides and Tutorials',
+      },
+    ],
+  },
+
+  // Additional metadata
+  alternates: {
+    canonical: `${siteConfig.url}/guides`,
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 // Revalidate every hour
@@ -26,7 +78,11 @@ export default async function GuidesPage({ searchParams }: GuidesPageProps) {
   const guides = await getGuides(searchTerm);
 
   return (
-    <div className="container py-12 md:py-16 pl-6">
+    <>
+      {/* Structured Data for search functionality */}
+      <WebsiteStructuredData searchUrl={`${siteConfig.url}/guides`} />
+      
+      <div className="container py-12 md:py-16 pl-6">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
           Our Guides & Insights
@@ -63,5 +119,6 @@ export default async function GuidesPage({ searchParams }: GuidesPageProps) {
         </p>
       )}
     </div>
+    </>
   );
 }
