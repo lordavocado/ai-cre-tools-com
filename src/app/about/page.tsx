@@ -113,19 +113,6 @@ export default async function AboutPage() {
           </div>
         </div>
 
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold mb-6">The Story Behind This {siteConfig.categoryName} Directory</h2>
-          <p className="text-lg text-muted-foreground mb-4">
-            This directory was built by someone who's been working in product management for several years, mostly with tech companies that needed to make sense of their user data. You know the drill - stakeholders asking for metrics, trying to figure out which features actually work, and making decisions based on more than just gut feeling.
-          </p>
-          <p className="text-lg text-muted-foreground mb-4">
-            Through this work, Nichlas has had the chance (and sometimes the pain) of implementing and using quite a few different {siteConfig.categoryName.toLowerCase()}. Some were great, some were... well, let's just say they taught him what to avoid next time.
-          </p>
-          <p className="text-lg text-muted-foreground">
-            This hands-on experience with various {siteConfig.categoryName.toLowerCase()} is what we're sharing here. Not the polished marketing version, but the real story of what it's like to actually use these platforms day-to-day in product teams.
-          </p>
-        </div>
-
         {/* Featured Categories Section */}
         <div className="mb-16">
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">

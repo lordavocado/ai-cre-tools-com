@@ -3,12 +3,27 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { BarChart3, ExternalLink, Plus, X, Check, ChevronsUpDown } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { BarChart3, ExternalLink, Plus, X } from "lucide-react"
 import type { DirectoryItem } from "@/types"
-import { getImageUrl, getFaviconUrl } from "@/lib/image-utils"
-import { SafeImage } from "@/components/ui/safe-image"
+
+// Helper function to get favicon URL from website
+const getFaviconUrl = (website: string): string => {
+  if (!website) return "/product-analytics-tools-logo.png";
+  
+  try {
+    // Clean up the website URL
+    let cleanUrl = website;
+    if (!cleanUrl.startsWith('http')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+    
+    const domain = new URL(cleanUrl).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch {
+    return "/product-analytics-tools-logo.png";
+  }
+};
 
 // Category slug to display name mapping
 const categoryDisplayNames: Record<string, string> = {
@@ -57,11 +72,10 @@ const fieldLabels = {
 }
 
 export default function Component() {
-  const [selectedTools, setSelectedTools] = useState<string[]>([""])
+  const [selectedTools, setSelectedTools] = useState<string[]>([])
   const [analyticsTools, setAnalyticsTools] = useState<DirectoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [openDropdowns, setOpenDropdowns] = useState<boolean[]>([false])
 
   useEffect(() => {
     async function fetchData() {
@@ -160,33 +174,17 @@ export default function Component() {
     const newSelectedTools = [...selectedTools]
     newSelectedTools.splice(columnIndex, 1)
     setSelectedTools(newSelectedTools)
-    
-    // Also update openDropdowns to match the new length
-    const newOpenDropdowns = [...openDropdowns];
-    if (newOpenDropdowns.length > newSelectedTools.length) {
-      newOpenDropdowns.splice(columnIndex, 1);
-    }
-    setOpenDropdowns(newOpenDropdowns);
   }
 
   const handleAddColumn = () => {
     if (selectedTools.length < 3) {
       setSelectedTools([...selectedTools, ""])
-      // Also update openDropdowns to match the new length
-      const newOpenDropdowns = [...openDropdowns];
-      if (newOpenDropdowns.length <= selectedTools.length) {
-        newOpenDropdowns.push(false);
-      }
-      setOpenDropdowns(newOpenDropdowns);
     }
   }
 
   const selectedToolsData = selectedTools.map((id) => (id ? analyticsTools.find((tool: DirectoryItem) => tool.id === id) : null))
 
   const availableTools = analyticsTools.filter((tool: DirectoryItem) => !selectedTools.includes(tool.id))
-  
-  // Debug logging
-  console.log('Current state:', { selectedTools, openDropdowns, availableToolsCount: availableTools.length })
 
   if (loading) {
     return (
@@ -269,12 +267,14 @@ export default function Component() {
                           <>
                             <div className="flex items-center justify-between w-full">
                               <div className="flex items-center gap-2">
-                                <SafeImage
-                                  src={tool.imageUrl}
-                                  alt={tool.name}
-                                  website={tool.website}
+                                <img 
+                                  src={tool.imageUrl || getFaviconUrl(tool.website)} 
+                                  alt={tool.name} 
                                   className="w-6 h-6 rounded object-cover"
-                                  fallbackText={tool.name.charAt(0)}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = getFaviconUrl(tool.website);
+                                  }}
                                 />
                                 <span className="font-semibold text-slate-900">{tool.name}</span>
                               </div>
@@ -289,69 +289,36 @@ export default function Component() {
                             </div>
                           </>
                         ) : (
-                          <Popover 
-                            open={openDropdowns[index]} 
-                            onOpenChange={(open) => {
-                              const newOpenDropdowns = [...openDropdowns];
-                              newOpenDropdowns[index] = open;
-                              setOpenDropdowns(newOpenDropdowns);
-                            }}
-                          >
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={openDropdowns[index]}
-                                className="w-full justify-between"
-                              >
-                                Select a tool...
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[300px] p-0">
-                              <Command>
-                                <CommandInput placeholder="Search tools..." />
-                                <CommandList>
-                                  <CommandEmpty>No tool found.</CommandEmpty>
-                                  <CommandGroup>
-                                    {availableTools.map((tool) => (
-                                      <CommandItem
-                                        key={tool.id}
-                                        value={tool.name}
-                                        onSelect={() => {
-                                          handleToolSelect(tool.id, index);
-                                          const newOpenDropdowns = [...openDropdowns];
-                                          newOpenDropdowns[index] = false;
-                                          setOpenDropdowns(newOpenDropdowns);
-                                        }}
-                                        className="cursor-pointer hover:bg-slate-100"
-                                      >
-                                        <SafeImage
-                                          src={tool.imageUrl}
-                                          alt={tool.name}
-                                          website={tool.website}
-                                          className="w-4 h-4 rounded object-cover mr-2"
-                                          fallbackText={tool.name.charAt(0)}
-                                        />
-                                        <span>{tool.name}</span>
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
+                          <Select onValueChange={(value) => handleToolSelect(value, index)}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a tool" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableTools.map((tool) => (
+                                <SelectItem key={tool.id} value={tool.id}>
+                                  <div className="flex items-center gap-2">
+                                    <img 
+                                      src={tool.imageUrl || getFaviconUrl(tool.website)} 
+                                      alt={tool.name} 
+                                      className="w-4 h-4 rounded object-cover"
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = getFaviconUrl(tool.website);
+                                      }}
+                                    />
+                                    <span>{tool.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         )}
                       </div>
                     </th>
                   ))}
                   {selectedTools.length < 3 && (
                     <th className="text-center p-4 min-w-[200px]">
-                      <Button 
-                        variant="outline" 
-                        onClick={handleAddColumn} 
-                        className="flex items-center gap-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-                      >
+                      <Button variant="outline" onClick={handleAddColumn} className="flex items-center gap-2">
                         <Plus className="w-4 h-4" />
                         Add Tool
                       </Button>
@@ -439,11 +406,8 @@ export default function Component() {
           </div>
         </div>
         {selectedToolsData.filter(Boolean).length === 0 && (
-          <div className="text-center text-slate-500 py-12">
-            <div className="max-w-md mx-auto">
-              <h3 className="text-lg font-medium text-slate-700 mb-2">Ready to Compare Tools?</h3>
-              <p className="text-slate-500">Click "Add Tool" above to select analytics tools and see their detailed comparison</p>
-            </div>
+          <div className="text-center text-slate-500 py-8">
+            Select tools above to compare them
           </div>
         )}
       </div>
