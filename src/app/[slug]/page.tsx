@@ -1,7 +1,6 @@
 
 import { getDirectoryItemBySlug, getDirectoryItems, getCategories } from "@/lib/sheets";
 import type { Metadata, ResolvingMetadata } from 'next';
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +24,7 @@ import {
 } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
 import { CategoryChips } from "@/components/ui/category-chips";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 
 type Props = {
   params: { slug: string };
@@ -87,17 +87,13 @@ export default async function DirectoryItemPage({ params }: Props) {
             <CardHeader>
               <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 mb-4">
                 <div className="relative w-24 h-24 mx-auto md:mx-0 rounded-lg overflow-hidden shadow-md shrink-0 flex items-center justify-center bg-background">
-                  <Image
+                  <ImageWithFallback
                     src={item.imageUrl || "/product-analytics-tools-logo.png"}
                     alt={item.name}
                     width={96}
                     height={96}
                     className="object-contain"
                     data-ai-hint="product logo company"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/product-analytics-tools-logo.png";
-                    }}
                   />
                 </div>
                 <div className="flex-grow">

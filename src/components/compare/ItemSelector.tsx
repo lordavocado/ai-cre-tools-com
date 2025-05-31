@@ -17,6 +17,40 @@ interface ItemSelectorProps {
   slotIndex: number; // To identify which selector this is (0, 1, or 2)
 }
 
+// Helper function to get favicon URL from website
+const getFaviconUrl = (website: string): string => {
+  if (!website) return "/product-analytics-tools-logo.png";
+  
+  try {
+    // Clean up the website URL
+    let cleanUrl = website;
+    if (!cleanUrl.startsWith('http')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+    
+    const domain = new URL(cleanUrl).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch {
+    return "/product-analytics-tools-logo.png";
+  }
+};
+
+// Helper function to get the best available icon
+const getItemIcon = (item: DirectoryItem): string => {
+  // First try the provided imageUrl
+  if (item.imageUrl && item.imageUrl !== "/product-analytics-tools-logo.png") {
+    return item.imageUrl;
+  }
+  
+  // Fallback to favicon from website
+  if (item.website) {
+    return getFaviconUrl(item.website);
+  }
+  
+  // Final fallback
+  return "/product-analytics-tools-logo.png";
+};
+
 export function ItemSelector({
   allItems,
   selectedItems,
@@ -28,31 +62,32 @@ export function ItemSelector({
   const currentItemInSlot = selectedItems[slotIndex];
 
   const handleSelect = (item: DirectoryItem) => {
-    // Create a new array with up to maxSelection slots
-    const newSelection = Array(maxSelection).fill(null);
+    console.log('Selecting item:', item.name, 'for slot:', slotIndex); // Debug log
     
-    // Copy existing items to their positions
-    selectedItems.forEach((selectedItem, index) => {
-      if (index < maxSelection && selectedItem) {
-        newSelection[index] = selectedItem;
-      }
-    });
+    // Create a new array with the selected items
+    const newSelection = [...selectedItems];
     
-    // Place the new item in the current slot
+    // Add the item to the correct slot, extending the array if needed
+    while (newSelection.length <= slotIndex) {
+      newSelection.push(null as any);
+    }
     newSelection[slotIndex] = item;
     
-    // Convert to a clean array without null values for the parent component
-    const cleanedSelection = newSelection.filter(item => item !== null);
+    // Remove any null/undefined values and ensure we don't exceed maxSelection
+    const cleanedSelection = newSelection.filter(item => item != null).slice(0, maxSelection);
     
+    console.log('New selection:', cleanedSelection); // Debug log
     onSelectionChange(cleanedSelection);
     setOpen(false);
   };
 
   const handleRemove = () => {
-    // Create a new array and remove the item from this slot
-    const newSelection = [...selectedItems];
-    newSelection.splice(slotIndex, 1);
+    console.log('Removing item from slot:', slotIndex); // Debug log
     
+    // Create a new array and remove the item from this slot
+    const newSelection = selectedItems.filter((_, index) => index !== slotIndex);
+    
+    console.log('After removal:', newSelection); // Debug log
     onSelectionChange(newSelection);
   };
 
@@ -61,13 +96,15 @@ export function ItemSelector({
     item => !selectedItems.some(selItem => selItem?.id === item.id)
   );
 
+  console.log('Available items for slot', slotIndex, ':', availableItems.length, 'out of', allItems.length); // Debug log
+
   return (
     <div className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-card min-h-[180px] justify-center hover:shadow-sm transition-shadow">
       {currentItemInSlot ? (
         <div className="text-center w-full">
           <div className="w-16 h-16 mx-auto mb-2 rounded-md bg-background flex items-center justify-center">
             <Image
-              src={currentItemInSlot.imageUrl || "/product-analytics-tools-logo.png"}
+              src={getItemIcon(currentItemInSlot)}
               alt={currentItemInSlot.name}
               width={64}
               height={64}
@@ -75,7 +112,12 @@ export function ItemSelector({
               data-ai-hint="product logo"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "/product-analytics-tools-logo.png";
+                // Try favicon fallback first, then final fallback
+                if (target.src !== getFaviconUrl(currentItemInSlot.website) && currentItemInSlot.website) {
+                  target.src = getFaviconUrl(currentItemInSlot.website);
+                } else {
+                  target.src = "/product-analytics-tools-logo.png";
+                }
               }}
             />
           </div>
@@ -92,29 +134,31 @@ export function ItemSelector({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full justify-between text-muted-foreground hover:bg-muted/50"
+              className="w-full justify-between hover:bg-muted/50"
             >
-              Select Tool...
+              <span className="text-foreground">Select Tool...</span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className="w-[300px] p-0" align="start">
             <Command>
               <CommandInput placeholder="Search tool..." />
               <CommandList>
-                <CommandEmpty>No tool found.</CommandEmpty>
+                <CommandEmpty>
+                  {allItems.length === 0 ? "Loading tools..." : "No tool found."}
+                </CommandEmpty>
                 <CommandGroup>
                   {availableItems.map((item) => (
                     <CommandItem
                       key={item.id}
                       value={item.name}
                       onSelect={() => handleSelect(item)}
-                      className="flex items-center justify-between cursor-pointer"
+                      className="flex items-center justify-between cursor-pointer hover:bg-accent"
                     >
                       <div className="flex items-center gap-2">
                         <div className="h-6 w-6 rounded-sm bg-background flex items-center justify-center shrink-0">
                           <Image 
-                            src={item.imageUrl || "/product-analytics-tools-logo.png"} 
+                            src={getItemIcon(item)}
                             alt={item.name} 
                             width={24} 
                             height={24} 
@@ -122,11 +166,16 @@ export function ItemSelector({
                             data-ai-hint="tiny logo"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = "/product-analytics-tools-logo.png";
+                              // Try favicon fallback first, then final fallback
+                              if (target.src !== getFaviconUrl(item.website) && item.website) {
+                                target.src = getFaviconUrl(item.website);
+                              } else {
+                                target.src = "/product-analytics-tools-logo.png";
+                              }
                             }}
                           />
                         </div>
-                        <span className="truncate">{item.name}</span>
+                        <span className="truncate text-foreground">{item.name}</span>
                       </div>
                       <Check
                         className={cn(

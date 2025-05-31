@@ -4,15 +4,72 @@ import { useState, useEffect } from "react";
 import type { DirectoryItem } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RotateCcw, BarChart3, ExternalLink, Star, Brain, Plus, X } from "lucide-react";
+import { RotateCcw, BarChart3, ExternalLink, Star, Brain, CheckCircle2, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { siteConfig } from "@/config/site";
 import Image from "next/image";
 import Link from "next/link";
 import { ItemSelector } from "@/components/compare/ItemSelector";
+
+// Comprehensive list of analytics features to check for
+const ANALYTICS_FEATURES = [
+  "Real-time Analytics",
+  "Custom Events",
+  "Funnel Analysis", 
+  "Cohort Analysis",
+  "User Segmentation",
+  "A/B Testing",
+  "Heat Maps",
+  "Session Recordings",
+  "Conversion Tracking",
+  "Attribution Modeling",
+  "Custom Dashboards",
+  "API Access",
+  "Data Export",
+  "Mobile Analytics",
+  "E-commerce Tracking",
+  "Goal Setting",
+  "User Journey Mapping",
+  "Predictive Analytics",
+  "Behavioral Analytics",
+  "Cross-platform Tracking"
+];
+
+// Helper function to get favicon URL from website
+const getFaviconUrl = (website: string): string => {
+  if (!website) return "/product-analytics-tools-logo.png";
+  
+  try {
+    // Clean up the website URL
+    let cleanUrl = website;
+    if (!cleanUrl.startsWith('http')) {
+      cleanUrl = `https://${cleanUrl}`;
+    }
+    
+    const domain = new URL(cleanUrl).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch {
+    return "/product-analytics-tools-logo.png";
+  }
+};
+
+// Helper function to get the best available icon
+const getItemIcon = (item: DirectoryItem): string => {
+  // First try the provided imageUrl
+  if (item.imageUrl && item.imageUrl !== "/product-analytics-tools-logo.png") {
+    return item.imageUrl;
+  }
+  
+  // Fallback to favicon from website
+  if (item.website) {
+    return getFaviconUrl(item.website);
+  }
+  
+  // Final fallback
+  return "/product-analytics-tools-logo.png";
+};
 
 export default function ComparePageClient() {
   const [allItems, setAllItems] = useState<DirectoryItem[]>([]);
@@ -68,89 +125,41 @@ export default function ComparePageClient() {
     setAiSuggestions([]);
   };
 
-  // Comparison fields to display
-  const comparisonFields = [
-    { key: 'name', label: 'Tool Name', type: 'name' },
-    { key: 'tagline', label: 'One-liner', type: 'text' },
-    { key: 'website', label: 'Website', type: 'link' },
-    { key: 'category', label: 'Category', type: 'text' },
-    { key: 'key_features', label: 'Key Features', type: 'features' },
-    { key: 'bestFor', label: 'Best For', type: 'text' },
-    { key: 'pricing', label: 'Pricing', type: 'text' },
-    { key: 'rating', label: 'Rating', type: 'rating' },
-  ];
-
-  const renderCellContent = (item: DirectoryItem | null, field: any) => {
-    if (!item) {
-      return <span className="text-muted-foreground italic">-</span>;
-    }
-
-    switch (field.type) {
-      case 'name':
-        return (
-          <div className="flex items-center gap-3">
-            {item.imageUrl && (
-              <Image
-                src={item.imageUrl}
-                alt={item.name}
-                width={32}
-                height={32}
-                className="rounded-md object-cover h-8 w-8"
-              />
-            )}
-            <div>
-              <Link 
-                href={`/${item.slug}`} 
-                className="font-semibold hover:text-primary hover:underline transition-colors"
-              >
-                {item.name}
-              </Link>
-            </div>
-          </div>
-        );
-      case 'link':
-        return item.website ? (
-          <Link 
-            href={item.website} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline flex items-center gap-1"
-          >
-            Visit Site <ExternalLink className="h-3 w-3" />
-          </Link>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        );
-      case 'features':
-        return item.features && item.features.length > 0 ? (
-          <div className="space-y-1">
-            {item.features.slice(0, 3).map((feature, idx) => (
-              <div key={idx} className="text-sm bg-muted/50 px-2 py-1 rounded">
-                {feature.name}
-              </div>
-            ))}
-            {item.features.length > 3 && (
-              <div className="text-xs text-muted-foreground">
-                +{item.features.length - 3} more
-              </div>
-            )}
-          </div>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        );
-      case 'rating':
-        return item.rating ? (
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-            <span className="font-semibold">{item.rating.toFixed(1)}/5</span>
-          </div>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        );
-      default:
-        const value = item[field.key as keyof DirectoryItem];
-        return value && typeof value === 'string' ? value : <span className="text-muted-foreground">-</span>;
-    }
+  // Check if a tool has a specific feature
+  const hasFeature = (item: DirectoryItem, featureName: string): boolean => {
+    if (!item.features) return false;
+    
+    return item.features.some(feature => {
+      const normalizedFeature = feature.name.toLowerCase().trim();
+      const normalizedTarget = featureName.toLowerCase().trim();
+      
+      // Exact match
+      if (normalizedFeature === normalizedTarget) return true;
+      
+      // Partial matches for common variations
+      if (normalizedTarget.includes('real-time') && normalizedFeature.includes('real')) return true;
+      if (normalizedTarget.includes('custom events') && (normalizedFeature.includes('event') || normalizedFeature.includes('custom'))) return true;
+      if (normalizedTarget.includes('funnel') && normalizedFeature.includes('funnel')) return true;
+      if (normalizedTarget.includes('cohort') && normalizedFeature.includes('cohort')) return true;
+      if (normalizedTarget.includes('segmentation') && normalizedFeature.includes('segment')) return true;
+      if (normalizedTarget.includes('a/b testing') && (normalizedFeature.includes('a/b') || normalizedFeature.includes('test'))) return true;
+      if (normalizedTarget.includes('heat') && normalizedFeature.includes('heat')) return true;
+      if (normalizedTarget.includes('recording') && normalizedFeature.includes('record')) return true;
+      if (normalizedTarget.includes('conversion') && normalizedFeature.includes('conversion')) return true;
+      if (normalizedTarget.includes('attribution') && normalizedFeature.includes('attribution')) return true;
+      if (normalizedTarget.includes('dashboard') && normalizedFeature.includes('dashboard')) return true;
+      if (normalizedTarget.includes('api') && normalizedFeature.includes('api')) return true;
+      if (normalizedTarget.includes('export') && normalizedFeature.includes('export')) return true;
+      if (normalizedTarget.includes('mobile') && normalizedFeature.includes('mobile')) return true;
+      if (normalizedTarget.includes('e-commerce') && (normalizedFeature.includes('ecommerce') || normalizedFeature.includes('e-commerce'))) return true;
+      if (normalizedTarget.includes('goal') && normalizedFeature.includes('goal')) return true;
+      if (normalizedTarget.includes('journey') && normalizedFeature.includes('journey')) return true;
+      if (normalizedTarget.includes('predictive') && normalizedFeature.includes('predictive')) return true;
+      if (normalizedTarget.includes('behavioral') && normalizedFeature.includes('behavior')) return true;
+      if (normalizedTarget.includes('cross-platform') && (normalizedFeature.includes('cross') || normalizedFeature.includes('platform'))) return true;
+      
+      return false;
+    });
   };
 
   if (loading) {
@@ -178,15 +187,15 @@ export default function ComparePageClient() {
           </p>
         </div>
 
-        {/* Feature Comparison Section */}
+        {/* Feature Matrix Section */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-background to-muted/20">
           <CardHeader className="border-b bg-gradient-to-r from-background to-muted/30">
             <div className="flex items-center gap-3">
               <BarChart3 className="h-6 w-6 text-primary" />
               <div>
-                <CardTitle className="text-2xl md:text-3xl">Feature Comparison</CardTitle>
+                <CardTitle className="text-2xl md:text-3xl">Feature Matrix</CardTitle>
                 <CardDescription className="text-base mt-1">
-                  Select tools above and compare their features, pricing, and capabilities • {allItems.length} tools available
+                  Compare analytics capabilities across tools • {allItems.length} tools available
                 </CardDescription>
               </div>
             </div>
@@ -231,36 +240,62 @@ export default function ComparePageClient() {
               </div>
             </div>
 
-            {/* Comparison Table */}
+            {/* Feature Matrix Table */}
             {selectedItems.length > 0 ? (
               <div className="overflow-x-auto">
                 <Table className="min-w-[800px]">
                   <TableHeader className="bg-muted/50">
                     <TableRow>
                       <TableHead className="sticky left-0 bg-muted/80 backdrop-blur-sm z-10 w-1/4 min-w-[200px] border-r font-bold">
-                        Feature
+                        Features
                       </TableHead>
-                      {Array(3).fill(null).map((_, index) => (
-                        <TableHead key={index} className="text-center w-1/4 min-w-[250px] p-4">
-                          {selectedItems[index] ? (
-                            <div className="font-semibold">Tool {index + 1}</div>
-                          ) : (
-                            <div className="text-muted-foreground italic">Tool {index + 1}</div>
-                          )}
+                      {selectedItems.map((item, index) => (
+                        <TableHead key={item.id} className="text-center w-1/4 min-w-[250px] p-4">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={getItemIcon(item)}
+                                alt={item.name}
+                                width={24}
+                                height={24}
+                                className="rounded object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  // Try favicon fallback first, then final fallback
+                                  if (target.src !== getFaviconUrl(item.website) && item.website) {
+                                    target.src = getFaviconUrl(item.website);
+                                  } else {
+                                    target.src = "/product-analytics-tools-logo.png";
+                                  }
+                                }}
+                              />
+                              <span className="font-semibold">{item.name}</span>
+                            </div>
+                            {item.rating && (
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                                <span>{item.rating.toFixed(1)}</span>
+                              </div>
+                            )}
+                          </div>
                         </TableHead>
                       ))}
                     </TableRow>
                   </TableHeader>
                   
                   <TableBody>
-                    {comparisonFields.map((field) => (
-                      <TableRow key={field.key} className="hover:bg-muted/30 transition-colors">
+                    {ANALYTICS_FEATURES.map((feature) => (
+                      <TableRow key={feature} className="hover:bg-muted/30 transition-colors">
                         <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm z-10 border-r py-4">
-                          {field.label}
+                          {feature}
                         </TableCell>
-                        {Array(3).fill(null).map((_, index) => (
-                          <TableCell key={`${index}-${field.key}`} className="py-4 px-4">
-                            {renderCellContent(selectedItems[index] || null, field)}
+                        {selectedItems.map((item) => (
+                          <TableCell key={`${item.id}-${feature}`} className="py-4 px-4 text-center">
+                            {hasFeature(item, feature) ? (
+                              <CheckCircle2 className="h-5 w-5 text-green-500 mx-auto" />
+                            ) : (
+                              <XCircle className="h-5 w-5 text-red-400 mx-auto" />
+                            )}
                           </TableCell>
                         ))}
                       </TableRow>
@@ -273,8 +308,92 @@ export default function ComparePageClient() {
                 <BarChart3 className="h-16 w-16 text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Ready to Compare?</h3>
                 <p className="text-muted-foreground text-center max-w-md">
-                  Select analytics tools above to see their detailed comparison across all features.
+                  Select analytics tools above to see their detailed feature comparison matrix.
                 </p>
+              </div>
+            )}
+
+            {/* Additional Info Section - Only show when tools are selected */}
+            {selectedItems.length > 0 && (
+              <div className="mt-8 border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
+                <div className="overflow-x-auto">
+                  <Table className="min-w-[800px]">
+                    <TableHeader className="bg-muted/50">
+                      <TableRow>
+                        <TableHead className="sticky left-0 bg-muted/80 backdrop-blur-sm z-10 w-1/4 min-w-[200px] border-r font-bold">
+                          Details
+                        </TableHead>
+                        {selectedItems.map((item) => (
+                          <TableHead key={item.id} className="text-center w-1/4 min-w-[250px] p-4 font-semibold">
+                            {item.name}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    
+                    <TableBody>
+                      <TableRow className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm z-10 border-r py-4">
+                          Category
+                        </TableCell>
+                        {selectedItems.map((item) => (
+                          <TableCell key={`${item.id}-category`} className="py-4 px-4 text-center">
+                            <Badge variant="outline">{item.category}</Badge>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                      
+                      <TableRow className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm z-10 border-r py-4">
+                          Pricing
+                        </TableCell>
+                        {selectedItems.map((item) => (
+                          <TableCell key={`${item.id}-pricing`} className="py-4 px-4 text-center">
+                            <span className="text-sm text-green-600 font-semibold">
+                              {item.pricing || 'Not specified'}
+                            </span>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                      
+                      <TableRow className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm z-10 border-r py-4">
+                          Best For
+                        </TableCell>
+                        {selectedItems.map((item) => (
+                          <TableCell key={`${item.id}-bestfor`} className="py-4 px-4 text-center">
+                            <span className="text-sm">
+                              {item.bestFor || 'General analytics'}
+                            </span>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                      
+                      <TableRow className="hover:bg-muted/30 transition-colors">
+                        <TableCell className="font-medium sticky left-0 bg-background/95 backdrop-blur-sm z-10 border-r py-4">
+                          Website
+                        </TableCell>
+                        {selectedItems.map((item) => (
+                          <TableCell key={`${item.id}-website`} className="py-4 px-4 text-center">
+                            {item.website ? (
+                              <Link 
+                                href={item.website} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline flex items-center justify-center gap-1"
+                              >
+                                Visit Site <ExternalLink className="h-3 w-3" />
+                              </Link>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             )}
           </CardContent>
