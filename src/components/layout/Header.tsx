@@ -29,7 +29,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex w-64">
+          <div className="hidden md:flex w-96">
             <GlobalSearch 
               className="w-full"
             />
@@ -46,7 +46,7 @@ export function Header() {
               <SheetContent side="right">
                 <nav className="grid gap-6 text-lg font-medium mt-8">
                   <Link href="/" className="flex items-center gap-2 mb-4">
-                    <Rocket className="h-6 w-6 text-primary" />
+                    <img src="/product-analytics-tools-logo.png" alt="Product Analytics Tools Logo" className="h-6 w-auto" />
                     <span className="font-bold">{siteConfig.categoryName}</span>
                   </Link>
                   

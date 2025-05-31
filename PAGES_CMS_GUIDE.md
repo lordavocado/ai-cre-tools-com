@@ -166,6 +166,7 @@ Your markdown content here...
 **Issue**: Pages CMS not detecting configuration
 - **Solution**: Ensure `.pages.yml` is in repository root
 - **Check**: File syntax is valid YAML
+- **Updated**: Configuration has been fixed - use `type` instead of `widget` for fields
 
 **Issue**: Images not displaying
 - **Solution**: Check image path starts with `/images/guides/`

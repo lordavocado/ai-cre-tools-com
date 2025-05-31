@@ -118,7 +118,7 @@ export async function subscribeToMailchimp(
     // Add subscriber to Mailchimp list
     const response = await client.lists.addListMember(listId, subscriptionData);
     
-    if (response.id) {
+    if ('id' in response && response.id) {
       return {
         success: true,
         message: 'Successfully subscribed to our newsletter! Check your email to confirm.',
@@ -238,7 +238,7 @@ export async function checkSubscriptionStatus(email: string): Promise<{
     
     return {
       subscribed: response.status === 'subscribed',
-      status: response.status
+      status: typeof response.status === 'string' ? response.status : undefined
     };
   } catch (error: any) {
     if (error.response?.status === 404) {
@@ -256,14 +256,14 @@ export async function getListStats() {
     const { listId } = validateMailchimpConfig();
     const client = initializeMailchimp();
     
-    const response = await client.lists.getList(listId);
+    const response = await (client.lists as any).getList(listId);
     
     return {
       success: true,
       stats: {
-        memberCount: response.stats.member_count,
-        unsubscribeCount: response.stats.unsubscribe_count,
-        cleanedCount: response.stats.cleaned_count
+        memberCount: response.stats?.member_count || 0,
+        unsubscribeCount: response.stats?.unsubscribe_count || 0,
+        cleanedCount: response.stats?.cleaned_count || 0
       }
     };
   } catch (error) {
@@ -281,15 +281,16 @@ export async function getListTags() {
     const { listId } = validateMailchimpConfig();
     const client = initializeMailchimp();
     
-    const response = await client.lists.getListTags(listId);
+    // Use tagSearch instead of getListTags (which doesn't exist in the API)
+    const response = await (client.lists as any).tagSearch(listId, {});
     
     return {
       success: true,
-      tags: response.tags.map((tag: any) => ({
+      tags: response.tags?.map((tag: any) => ({
         id: tag.id,
         name: tag.name,
         memberCount: tag.member_count
-      }))
+      })) || []
     };
   } catch (error) {
     console.error('Error getting list tags:', error);
@@ -309,18 +310,20 @@ export async function getListInterests() {
     const response = await client.lists.getListInterestCategories(listId);
     
     const interestCategories = [];
-    for (const category of response.categories) {
-      const interests = await client.lists.getListInterestCategoryInterests(listId, category.id);
-      interestCategories.push({
-        id: category.id,
-        title: category.title,
-        type: category.type,
-        interests: interests.interests.map((interest: any) => ({
-          id: interest.id,
-          name: interest.name,
-          subscriberCount: interest.subscriber_count
-        }))
-      });
+    if ('categories' in response && response.categories) {
+      for (const category of response.categories) {
+        const interests = await client.lists.listInterestCategoryInterests(listId, category.id);
+        interestCategories.push({
+          id: category.id,
+          title: category.title,
+          type: category.type,
+          interests: ('interests' in interests && interests.interests) ? interests.interests.map((interest: any) => ({
+            id: interest.id,
+            name: interest.name,
+            subscriberCount: interest.subscriber_count
+          })) : []
+        });
+      }
     }
     
     return {

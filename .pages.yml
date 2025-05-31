@@ -18,32 +18,27 @@ content:
     fields:
       - name: id
         label: ID
-        widget: string
+        type: string
         required: true
-        hint: "Unique identifier for the guide (used internally)"
       
       - name: slug
         label: URL Slug
-        widget: string
+        type: string
         required: true
-        pattern: ["^[a-z0-9-]+$", "Must be lowercase letters, numbers, and hyphens only"]
-        hint: "URL-friendly version (e.g., 'getting-started-with-analytics')"
       
       - name: title
         label: Title
-        widget: string
+        type: string
         required: true
-        hint: "The main title of the guide"
       
       - name: excerpt
         label: Excerpt
-        widget: text
+        type: text
         required: true
-        hint: "Short description for previews and SEO (150-200 characters recommended)"
       
       - name: category
         label: Category
-        widget: select
+        type: select
         required: false
         options:
           - { label: "Analytics", value: "analytics" }
@@ -52,53 +47,38 @@ content:
           - { label: "Tools", value: "tools" }
           - { label: "Best Practices", value: "best-practices" }
           - { label: "Tutorials", value: "tutorials" }
-        hint: "Category for organizing guides"
       
       - name: publishedDate
         label: Published Date
-        widget: datetime
+        type: date
         required: true
-        date_format: "YYYY-MM-DD"
-        time_format: false
-        hint: "When this guide was published"
       
       - name: author
         label: Author
-        widget: string
+        type: string
         required: false
         default: "Analytics Team"
-        hint: "Author name"
       
       - name: readingTime
         label: Reading Time
-        widget: string
+        type: string
         required: false
-        pattern: ["^\\d+\\s+(min|mins|minute|minutes)\\s+read$", "Format: '5 min read' or '10 minutes read'"]
-        hint: "Estimated reading time (e.g., '5 min read')"
       
       - name: imageUrl
         label: Featured Image
-        widget: image
+        type: image
         required: false
-        media_folder: "/images/guides"
-        public_folder: "/images/guides"
-        hint: "Main image for the guide (recommended: 1200x630px)"
       
       - name: relatedItems
         label: Related Items
-        widget: list
+        type: string
+        list: true
         required: false
-        field: 
-          label: Item Slug
-          name: slug
-          widget: string
-        hint: "List of related tool/item slugs that will be shown at the bottom of the guide"
       
       - name: body
         label: Content
-        widget: markdown
+        type: rich-text
         required: true
-        hint: "Main content of the guide in Markdown format"
 
     # View configuration for the guides collection
     view:
@@ -106,4 +86,4 @@ content:
       sort: [ publishedDate ]
       default:
         sort: publishedDate
-        sortDirection: desc 
+        order: desc 

@@ -97,9 +97,6 @@ export default async function DirectoryItemPage({ params }: Props) {
                   />
                 </div>
                 <div className="flex-grow">
-                  <div className="mb-2">
-                    <CategoryChips categories={item.category} variant="secondary" />
-                  </div>
                   <CardTitle className="text-3xl md:text-4xl font-bold">{item.name}</CardTitle>
                   <CardDescription className="text-lg text-muted-foreground mt-1">{item.tagline}</CardDescription>
                   
@@ -176,6 +173,24 @@ export default async function DirectoryItemPage({ params }: Props) {
                     {item.cons?.map((con, index) => <li key={index}>{con}</li>)}
                     {(!item.cons || item.cons.length === 0) && <li className="text-muted-foreground">No cons listed.</li>}
                   </ul>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Tags Section */}
+          {item.tags && item.tags.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center"><Tag className="mr-2 h-6 w-6 text-primary"/> Tags</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {item.tags.map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-sm px-3 py-1">
+                      {typeof tag === 'string' ? tag.trim() : tag}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
