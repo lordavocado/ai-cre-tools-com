@@ -74,7 +74,7 @@ export const siteConfig = {
       organization: {
         name: 'Product Analytics Tools',
         url: 'https://productanalyticstools.com',
-        logo: 'https://productanalyticstools.com/logo.png',
+        logo: 'https://productanalyticstools.com/product-analytics-tools-logo.png',
         description: 'The most comprehensive directory of product analytics tools and solutions.',
         sameAs: [
           'https://twitter.com/productanalyticstools',
