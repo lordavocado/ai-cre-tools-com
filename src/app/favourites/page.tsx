@@ -5,16 +5,20 @@ import Link from "next/link";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
 import { useFavouritesContext } from "@/providers/FavouritesProvider";
 import { useEffect, useState } from "react";
+import React from "react";
 import type { DirectoryItem } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/ui/pagination";
 
 export default function FavouritesPage() {
   const { favourites, isLoading } = useFavouritesContext();
   const [favouriteTools, setFavouriteTools] = useState<DirectoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   // Fetch favourite tools data
   useEffect(() => {
@@ -46,9 +50,20 @@ export default function FavouritesPage() {
     tool.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination
+  const totalPages = Math.ceil(filteredTools.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentTools = filteredTools.slice(startIndex, endIndex);
+
+  // Reset pagination when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   if (loading || isLoading) {
     return (
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
+      <div className="container pl-6 py-16 md:py-24">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" size="sm" asChild>
             <Link href="/">
@@ -66,7 +81,7 @@ export default function FavouritesPage() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-7xl">
+    <div className="container pl-6 py-16 md:py-24">
       {/* Header with back button */}
       <div className="flex items-center gap-4 mb-8">
         <Button variant="outline" size="sm" asChild>
@@ -81,13 +96,13 @@ export default function FavouritesPage() {
       <div className="text-center mb-12">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Star className="h-8 w-8 text-yellow-500 fill-yellow-500" />
-          <h1 className="text-4xl md:text-5xl font-bold">My Favourite Tools</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">My Favourite Tools</h1>
         </div>
-        <p className="text-xl text-muted-foreground">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Your personal collection of saved analytics tools
         </p>
         {favourites.length > 0 && (
-          <Badge variant="secondary" className="mt-2">
+          <Badge variant="secondary" className="mt-4">
             {favourites.length} tool{favourites.length !== 1 ? 's' : ''} saved
           </Badge>
         )}
@@ -138,11 +153,24 @@ export default function FavouritesPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredTools.map((tool) => (
-                <DirectoryItemCard key={tool.id} item={tool} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {currentTools.map((tool) => (
+                  <DirectoryItemCard key={tool.id} item={tool} />
+                ))}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
+            </>
           )}
 
           {/* Browse More Tools CTA */}
