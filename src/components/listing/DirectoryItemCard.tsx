@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ExternalLink, Star, Tag } from "lucide-react";
 import { CategoryChips } from "@/components/ui/category-chips";
 import { SafeImage } from "@/components/ui/safe-image";
+import { FavouriteButton } from "@/components/ui/favourite-button";
 
 interface DirectoryItemCardProps {
   item: DirectoryItem;
@@ -15,8 +16,11 @@ interface DirectoryItemCardProps {
 
 export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative group">
       <CardHeader className="p-4">
+        <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <FavouriteButton toolId={item.id} size="sm" />
+        </div>
         <div className="relative w-16 h-16 mx-auto mb-3 rounded-md overflow-hidden flex items-center justify-center bg-background">
           <SafeImage
             src={item.imageUrl}

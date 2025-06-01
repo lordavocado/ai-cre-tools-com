@@ -1,0 +1,228 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Favourites Feature Implementation Plan
+
+## Overview
+
+Create a comprehensive Favourites feature that allows users to mark tools as favourites and view them in a dedicated page. The feature includes favourite buttons on tool cards and tool pages, local storage persistence, and a dedicated Favourites page in the navigation.
+
+## Step-by-Step Implementation
+
+### Phase 1: Core Infrastructure
+
+#### 1.1 Create Favourites Context and Hook
+**Files to create:**
+- `src/hooks/useFavourites.ts` - Custom hook for favourites management
+- `src/providers/FavouritesProvider.tsx` - Context provider for favourites state
+
+**Functionality:**
+- Local storage persistence using `localStorage`
+- Add/remove favourites functions
+- Check if item is favourited
+- Get all favourites list
+- Handle storage events for cross-tab synchronization
+
+#### 1.2 Update Type Definitions
+**Files to modify:**
+- `src/types/index.ts` - Add favourites-related types if needed
+
+### Phase 2: UI Components
+
+#### 2.1 Create Favourite Button Component
+**Files to create:**
+- `src/components/ui/favourite-button.tsx` - Reusable favourite star button
+
+**Features:**
+- Star icon (filled when favourited, outline when not)
+- Smooth animations (scale on click, fill transition)
+- Accessible with proper ARIA labels
+- Tooltip showing "Add to favourites" / "Remove from favourites"
+- Click handler to toggle favourite status
+- Visual feedback on state change
+
+#### 2.2 Enhanced Favourite Button for Tool Pages
+**Features:**
+- Larger size for tool pages
+- Text label alongside icon
+- More prominent styling
+
+### Phase 3: Integration with Existing Components
+
+#### 3.1 Update DirectoryItemCard Component
+**File to modify:**
+- `src/components/listing/DirectoryItemCard.tsx`
+
+**Changes:**
+- Add favourite button to top-right corner of card
+- Position absolutely in card header area
+- Maintain existing card layout and functionality
+- Handle click events without interfering with card links
+
+#### 3.2 Update Tool Detail Page
+**File to modify:**
+- `src/app/[slug]/page.tsx`
+
+**Changes:**
+- Add prominent favourite button near tool name/header
+- Position in the action area alongside "Visit Website" button
+- Integrate with existing tool metadata display
+
+### Phase 4: Favourites Page
+
+#### 4.1 Create Favourites Page Structure
+**Files to create:**
+- `src/app/favourites/page.tsx` - Main favourites page
+- `src/app/favourites/layout.tsx` - Layout if needed
+
+**Features:**
+- Header with title "My Favourite Tools"
+- Go back button/navigation breadcrumb
+- Tool count display
+- Empty state when no favourites
+- Grid layout showing favourite tools as cards
+- Search/filter functionality for favourites
+
+#### 4.2 Favourites Page Components
+**Features:**
+- Reuse DirectoryItemCard component for consistency
+- Add "Remove from favourites" quick action
+- Responsive grid layout (1/2/3/4 columns based on screen size)
+- Loading state while favourites are being loaded
+- Export favourites functionality (future enhancement)
+
+### Phase 5: Navigation Integration
+
+#### 5.1 Update Site Configuration
+**File to modify:**
+- `src/config/site.ts`
+
+**Changes:**
+- Add "Favourites" to navigation items
+- Position between "Compare Tools" and other nav items
+- Include proper href and label
+
+#### 5.2 Update Header Component
+**File to modify:**
+- `src/components/layout/Header.tsx`
+
+**Features:**
+- Favourite icon in navigation
+- Badge showing count of favourites (optional)
+- Responsive mobile menu integration
+
+### Phase 6: Enhanced Features
+
+#### 6.1 Favourites Counter
+**Implementation:**
+- Show favourite count in navigation (optional)
+- Update count dynamically when favourites change
+- Badge component for count display
+
+#### 6.2 Favourites Synchronization
+**Features:**
+- Cross-tab synchronization using storage events
+- Persist favourites across browser sessions
+- Handle edge cases (storage full, private browsing)
+
+### Phase 7: User Experience Enhancements
+
+#### 7.1 Animations and Feedback
+**Features:**
+- Smooth star fill animation when favouriting
+- Toast notifications for add/remove actions
+- Micro-interactions for better UX
+- Loading states and skeleton screens
+
+#### 7.2 Keyboard Accessibility
+**Features:**
+- Keyboard navigation support
+- Focus management
+- Screen reader compatibility
+- Proper ARIA labels and descriptions
+
+### Phase 8: Testing and Edge Cases
+
+#### 8.1 Handle Edge Cases
+**Scenarios:**
+- Tools removed from directory but still in favourites
+- Local storage disabled/unavailable
+- Large numbers of favourites (performance)
+- Duplicate favourite attempts
+
+#### 8.2 Error Handling
+**Features:**
+- Graceful degradation when localStorage unavailable
+- Error boundaries for favourites components
+- Fallback UI states
+
+## Technical Implementation Details
+
+### Favourites Storage Schema
+```typescript
+interface FavouritesStorage {
+  favourites: string[]; // Array of tool IDs
+  lastUpdated: string; // ISO timestamp
+  version: number; // Schema version for future migrations
+}
+```
+
+### Local Storage Key
+- Use consistent key: `'productAnalyticsTools_favourites'`
+- Namespace to avoid conflicts with other apps
+
+### Component Integration Pattern
+```typescript
+// In components that need favourites
+const { favourites, addFavourite, removeFavourite, isFavourite } = useFavourites();
+
+// Usage
+const isToolFavourited = isFavourite(tool.id);
+const handleToggleFavourite = () => {
+  if (isToolFavourited) {
+    removeFavourite(tool.id);
+  } else {
+    addFavourite(tool.id);
+  }
+};
+```
+
+### Icon Usage
+- Use Lucide React's `Star` icon
+- Filled variant: `<Star className="fill-current" />`
+- Outline variant: `<Star className="stroke-current" />`
+
+### Styling Guidelines
+- Follow existing color scheme (Soft blue #64B5F6, accent purple #957DAD)
+- Use consistent hover states and transitions
+- Maintain accessibility contrast ratios
+- Use shadcn/ui components for consistency
+
+## Implementation Order
+
+1. **Start with infrastructure** (Context, hooks, types)
+2. **Create UI components** (Favourite button)
+3. **Integrate with existing cards** (DirectoryItemCard)
+4. **Add to tool pages** (Individual tool detail pages)
+5. **Create Favourites page** (Dedicated page with grid)
+6. **Update navigation** (Header, site config)
+7. **Polish and test** (Animations, edge cases)
+
+## Success Metrics
+
+- Users can successfully add/remove favourites
+- Favourites persist across browser sessions
+- UI is responsive and accessible
+- Performance remains good with large favourite lists
+- Feature integrates seamlessly with existing design
+
+## Future Enhancements
+
+- Export favourites as JSON/CSV
+- Share favourite lists via URL
+- Favourite categories or collections
+- Sync favourites across devices (requires backend)
+- Advanced filtering/sorting of favourites
+- Favourite analytics and recommendations

@@ -8,6 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { siteConfig, getAllSEOKeywords } from '@/config/site';
 import { PostHogProvider } from '@/providers/PostHogProvider';
+import { FavouritesProvider } from '@/providers/FavouritesProvider';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -168,12 +169,14 @@ export default function RootLayout({
         )}
       >
         <PostHogProvider>
-          <div className="relative flex min-h-dvh flex-col bg-background">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
+          <FavouritesProvider>
+            <div className="relative flex min-h-dvh flex-col bg-background">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
+          </FavouritesProvider>
         </PostHogProvider>
       </body>
     </html>

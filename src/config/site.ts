@@ -124,6 +124,7 @@ export const siteConfig = {
       { href: '/guides', label: 'Guides' },
       { href: '/about', label: 'About' },
       { href: '/compare', label: 'Compare Tools' },
+      { href: '/favourites', label: 'Favourites' },
     ]
   },
   

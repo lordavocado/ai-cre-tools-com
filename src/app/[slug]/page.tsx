@@ -25,6 +25,7 @@ import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // F
 import { CategoryChips } from "@/components/ui/category-chips";
 import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { siteConfig, generateToolMeta } from "@/config/site";
+import { FavouriteButton } from "@/components/ui/favourite-button";
 
 type Props = {
   params: { slug: string };
@@ -250,7 +251,7 @@ export default async function DirectoryItemPage({ params }: Props) {
                     <CardTitle className="text-3xl md:text-4xl font-bold">{item.name}</CardTitle>
                     <CardDescription className="text-lg text-muted-foreground mt-1">{item.tagline}</CardDescription>
                     
-                    <div className="flex items-center gap-4 mt-4">
+                    <div className="flex items-center gap-4 mt-4 flex-wrap">
                       {item.rating && (
                         <div className="flex items-center gap-1 text-sm">
                           <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
@@ -258,11 +259,18 @@ export default async function DirectoryItemPage({ params }: Props) {
                           {item.reviewCount && <span className="text-muted-foreground">({item.reviewCount} reviews)</span>}
                         </div>
                       )}
-                       <Button asChild variant="default" size="sm">
+                      <div className="flex items-center gap-2">
+                        <Button asChild variant="default" size="sm">
                           <Link href={item.website} target="_blank" rel="noopener noreferrer">
                             Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>
+                        <FavouriteButton 
+                          toolId={item.id} 
+                          variant="with-text" 
+                          size="sm"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
