@@ -16,7 +16,7 @@ import type { Metadata } from 'next';
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
-  description: `Discover and compare the best ${siteConfig.categoryName.toLowerCase()} for your business. Expert reviews, detailed comparisons, and user ratings to help you choose the perfect product analytics solution.`,
+  description: `Discover and compare the best ${siteConfig.categoryName.toLowerCase()} for your business. Detailed information and comparisons to help you choose the perfect product analytics solution.`,
   keywords: [
     ...siteConfig.seo.primaryKeywords,
     ...siteConfig.seo.secondaryKeywords,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   
   openGraph: {
     title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
-    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Expert reviews, detailed comparisons, and comprehensive directory of product analytics solutions.`,
+    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect product analytics solution.`,
     url: siteConfig.url,
     siteName: siteConfig.seo.openGraph.siteName,
     images: [
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   twitter: {
     card: siteConfig.seo.twitter.card,
     title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
-    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Expert reviews and comprehensive directory.`,
+    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect product analytics solution.`,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
     images: [
