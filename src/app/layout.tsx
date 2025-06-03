@@ -10,6 +10,8 @@ import { siteConfig, getAllSEOKeywords } from '@/config/site';
 import { PostHogProvider } from '@/providers/PostHogProvider';
 import { FavouritesProvider } from '@/providers/FavouritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
+import { CSSOptimizer, InlineCriticalCSS, LoadNonCriticalCSS } from '@/components/performance/css-optimizer';
+import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/performance/posthog-optimizer';
 
 
 
@@ -126,7 +128,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Inline critical CSS to prevent render blocking */}
-        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+        <InlineCriticalCSS />
         
         {/* Preload critical resources */}
         <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
@@ -149,6 +151,10 @@ export default function RootLayout({
       >
         <PostHogProvider>
           <FavouritesProvider>
+            <CSSOptimizer />
+            <LoadNonCriticalCSS />
+            <PostHogOptimizer />
+            <AnalyticsPerformanceMonitor />
             <div className="relative flex min-h-dvh flex-col bg-background">
               <Header />
               <main className="flex-1">{children}</main>
