@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Critical above-the-fold CSS - inlined in layout.tsx */
+/* Non-critical Tailwind CSS loaded non-blocking */
+
 @layer base {
   :root {
     --background: 0 0% 100%; /* White */
@@ -97,6 +100,40 @@
     --chart-3: 0 0% 40%;
     --chart-4: 0 0% 70%;
     --chart-5: 0 0% 50%;
+  }
+
+  /* Prevent layout shift with minimum heights */
+  .critical-nav {
+    min-height: 64px;
+  }
+  
+  .critical-hero {
+    min-height: 400px;
+  }
+  
+  .critical-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+  
+  /* Performance skeleton loading */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+  }
+  
+  @keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  /* Font display optimization */
+  @font-face {
+    font-family: 'Inter';
+    font-display: swap; /* Critical for font performance */
   }
 }
 
@@ -244,5 +281,26 @@
   /* Line numbers and highlighting */
   .token.entity {
     cursor: help;
+  }
+
+  /* Component-specific optimizations */
+  .lazy-image {
+    background: #f0f0f0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .lazy-image.loaded {
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  /* Performance utilities */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .gpu-accelerated {
+    transform: translateZ(0);
   }
 }

@@ -11,6 +11,31 @@ import { PostHogProvider } from '@/providers/PostHogProvider';
 import { FavouritesProvider } from '@/providers/FavouritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
 
+
+
+// Critical CSS that must be inlined
+const criticalCSS = `
+  /* Critical above-the-fold styles */
+  .critical-nav { min-height: 64px; }
+  .critical-hero { min-height: 400px; }
+  .critical-loading { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    min-height: 200px; 
+  }
+  /* Prevent layout shift */
+  .skeleton { 
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+  }
+  @keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
@@ -52,23 +77,6 @@ export const metadata: Metadata = {
     images: [siteConfig.seo.openGraph.images.default],
   },
   
-  // Additional social platforms
-  other: {
-    'og:image:width': siteConfig.seo.openGraph.images.width.toString(),
-    'og:image:height': siteConfig.seo.openGraph.images.height.toString(),
-    'og:image:type': 'image/png',
-    'article:author': `${siteConfig.name} Team`,
-    'article:section': 'Technology',
-    'og:updated_time': new Date().toISOString(),
-  },
-  
-  // Verification tags for social platforms
-  verification: {
-    google: 'your-google-verification-code', // Replace with actual code
-    // facebook: 'your-facebook-verification-code', // Add if needed
-    // twitter: 'your-twitter-verification-code', // Add if needed
-  },
-  
   // Enhanced robots for better crawling
   robots: {
     index: true,
@@ -92,11 +100,6 @@ export const metadata: Metadata = {
     },
   },
   
-  // Additional SEO metadata
-  category: 'Technology',
-  classification: 'Software Directory',
-  referrer: 'origin-when-cross-origin',
-  
   // Enhanced favicon and app icons
   icons: {
     icon: [
@@ -116,15 +119,26 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Enhanced Structured Data for Better SEO */}
-        <StructuredData type="website" />
-        <StructuredData type="organization" />
+        {/* Inline critical CSS to prevent render blocking */}
+        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="//eu.i.posthog.com" />
+        
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
         className={cn(
@@ -143,6 +157,10 @@ export default function RootLayout({
             <Toaster />
           </FavouritesProvider>
         </PostHogProvider>
+        
+        {/* Enhanced Structured Data for Better SEO */}
+        <StructuredData type="website" />
+        <StructuredData type="organization" />
       </body>
     </html>
   );

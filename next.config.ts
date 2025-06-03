@@ -40,6 +40,15 @@ const nextConfig: NextConfig = {
     optimizeServerReact: true,
   },
   
+  // Modern JavaScript compilation to eliminate legacy polyfills
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Transpile packages for modern browsers only
+  transpilePackages: ['posthog-js'],
+  
   // Enable compression
   compress: true,
   
@@ -221,96 +230,97 @@ const nextConfig: NextConfig = {
         util: false,
       };
       
-      // Aggressive chunk splitting for main-thread optimization
-      config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
-        chunks: 'all',
-        minSize: 20000, // Minimum chunk size
-        maxSize: 100000, // Maximum chunk size to prevent large bundles
-        cacheGroups: {
-          ...config.optimization.splitChunks.cacheGroups,
-          
-          // Core React libraries
-          react: {
-            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-            name: 'react',
-            chunks: 'all',
-            priority: 50,
-            enforce: true,
+              // Aggressive chunk splitting for main-thread optimization
+        config.optimization.splitChunks = {
+          ...config.optimization.splitChunks,
+          chunks: 'all',
+          minSize: 20000, // Minimum chunk size
+          maxSize: 100000, // Maximum chunk size to prevent large bundles
+          cacheGroups: {
+            ...config.optimization.splitChunks.cacheGroups,
+            
+            // Core React libraries
+            react: {
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+              name: 'react',
+              chunks: 'all',
+              priority: 50,
+              enforce: true,
+            },
+            
+            // Radix UI components (heavy but commonly used)
+            radix: {
+              test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
+              name: 'radix-ui',
+              chunks: 'all',
+              priority: 40,
+              enforce: true,
+            },
+            
+            // Lucide icons (can be large)
+            icons: {
+              test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+              name: 'icons',
+              chunks: 'all',
+              priority: 35,
+              enforce: true,
+            },
+            
+            // PostHog analytics - prevent duplicates
+            posthog: {
+              test: /[\\/]node_modules[\\/]posthog-js[\\/]/,
+              name: 'posthog',
+              chunks: 'all',
+              priority: 45,
+              enforce: true,
+              reuseExistingChunk: true, // Prevent duplicates
+            },
+            
+            // Date libraries if present
+            dates: {
+              test: /[\\/]node_modules[\\/](date-fns|moment|dayjs)[\\/]/,
+              name: 'dates',
+              chunks: 'all',
+              priority: 25,
+              enforce: true,
+            },
+            
+            // UI utility libraries
+            utils: {
+              test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge)[\\/]/,
+              name: 'ui-utils',
+              chunks: 'all',
+              priority: 20,
+              enforce: true,
+            },
+            
+            // Other vendor libraries
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
+              minChunks: 2,
+            },
+            
+            // App-specific components
+            components: {
+              test: /[\\/]src[\\/]components[\\/]/,
+              name: 'components',
+              chunks: 'all',
+              priority: 15,
+              minChunks: 2,
+            },
+            
+            // Default for everything else
+            default: {
+              minChunks: 2,
+              priority: -10,
+              reuseExistingChunk: true,
+              minSize: 10000,
+            },
           },
-          
-          // Radix UI components (heavy but commonly used)
-          radix: {
-            test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
-            name: 'radix-ui',
-            chunks: 'all',
-            priority: 40,
-            enforce: true,
-          },
-          
-          // Lucide icons (can be large)
-          icons: {
-            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
-            name: 'icons',
-            chunks: 'all',
-            priority: 35,
-            enforce: true,
-          },
-          
-          // PostHog analytics
-          analytics: {
-            test: /[\\/]node_modules[\\/](posthog-js|posthog-react)[\\/]/,
-            name: 'analytics',
-            chunks: 'all',
-            priority: 30,
-            enforce: true,
-          },
-          
-          // Date libraries if present
-          dates: {
-            test: /[\\/]node_modules[\\/](date-fns|moment|dayjs)[\\/]/,
-            name: 'dates',
-            chunks: 'all',
-            priority: 25,
-            enforce: true,
-          },
-          
-          // UI utility libraries
-          utils: {
-            test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge)[\\/]/,
-            name: 'ui-utils',
-            chunks: 'all',
-            priority: 20,
-            enforce: true,
-          },
-          
-          // Other vendor libraries
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            priority: 10,
-            minChunks: 2,
-          },
-          
-          // App-specific components
-          components: {
-            test: /[\\/]src[\\/]components[\\/]/,
-            name: 'components',
-            chunks: 'all',
-            priority: 15,
-            minChunks: 2,
-          },
-          
-          // Default for everything else
-          default: {
-            minChunks: 2,
-            priority: -10,
-            reuseExistingChunk: true,
-            minSize: 10000,
-          },
-        },
-      };
+        };
       
       // Enhanced tree shaking and dead code elimination
       config.optimization.usedExports = true;

@@ -1,0 +1,30 @@
+# Modern browsers only - eliminates legacy polyfills
+# This will remove 75kB of unnecessary polyfills
+
+# Chrome 91+ (2021)
+Chrome >= 91
+
+# Firefox 90+ (2021)  
+Firefox >= 90
+
+# Safari 14+ (2020)
+Safari >= 14
+
+# Edge 91+ (2021)
+Edge >= 91
+
+# Mobile browsers
+iOS >= 14
+Android >= 91
+
+# Remove legacy browsers
+not IE 11
+not IE_Mob 11
+not dead
+not < 0.2%
+
+# Modern features baseline
+supports es6-module
+supports async-functions
+supports css-grid
+supports promises 
