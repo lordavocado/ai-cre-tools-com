@@ -1,5 +1,10 @@
 import type {NextConfig} from 'next';
 
+// Bundle analyzer for performance debugging
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
@@ -8,6 +13,40 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
+  // Performance optimizations to eliminate render-blocking resources
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react', 
+      '@radix-ui/react-avatar', 
+      '@radix-ui/react-select',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-popover',
+      'clsx',
+      'class-variance-authority',
+    ],
+    // Turbo mode for faster development
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+    // More aggressive tree shaking
+    optimizeServerReact: true,
+  },
+  
+  // Enable compression
+  compress: true,
+  
+  // Advanced performance settings
+  poweredByHeader: false, // Remove x-powered-by header
+  generateEtags: false, // Disable ETags for better caching control
+  
   // Security headers
   async headers() {
     return [
@@ -53,6 +92,19 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Enable modern image formats
+    formats: ['image/webp', 'image/avif'],
+    
+    // Add quality and size optimizations
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    
+    // Optimize images more aggressively
+    minimumCacheTTL: 31536000, // 1 year cache
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    
     remotePatterns: [
       // Essential logo and image sources
       {
@@ -155,8 +207,9 @@ const nextConfig: NextConfig = {
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
     if (!isServer) {
+      // Client-side optimizations
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -167,9 +220,159 @@ const nextConfig: NextConfig = {
         process: false,
         util: false,
       };
+      
+      // Aggressive chunk splitting for main-thread optimization
+      config.optimization.splitChunks = {
+        ...config.optimization.splitChunks,
+        chunks: 'all',
+        minSize: 20000, // Minimum chunk size
+        maxSize: 100000, // Maximum chunk size to prevent large bundles
+        cacheGroups: {
+          ...config.optimization.splitChunks.cacheGroups,
+          
+          // Core React libraries
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 50,
+            enforce: true,
+          },
+          
+          // Radix UI components (heavy but commonly used)
+          radix: {
+            test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
+            name: 'radix-ui',
+            chunks: 'all',
+            priority: 40,
+            enforce: true,
+          },
+          
+          // Lucide icons (can be large)
+          icons: {
+            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+            name: 'icons',
+            chunks: 'all',
+            priority: 35,
+            enforce: true,
+          },
+          
+          // PostHog analytics
+          analytics: {
+            test: /[\\/]node_modules[\\/](posthog-js|posthog-react)[\\/]/,
+            name: 'analytics',
+            chunks: 'all',
+            priority: 30,
+            enforce: true,
+          },
+          
+          // Date libraries if present
+          dates: {
+            test: /[\\/]node_modules[\\/](date-fns|moment|dayjs)[\\/]/,
+            name: 'dates',
+            chunks: 'all',
+            priority: 25,
+            enforce: true,
+          },
+          
+          // UI utility libraries
+          utils: {
+            test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge)[\\/]/,
+            name: 'ui-utils',
+            chunks: 'all',
+            priority: 20,
+            enforce: true,
+          },
+          
+          // Other vendor libraries
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+            minChunks: 2,
+          },
+          
+          // App-specific components
+          components: {
+            test: /[\\/]src[\\/]components[\\/]/,
+            name: 'components',
+            chunks: 'all',
+            priority: 15,
+            minChunks: 2,
+          },
+          
+          // Default for everything else
+          default: {
+            minChunks: 2,
+            priority: -10,
+            reuseExistingChunk: true,
+            minSize: 10000,
+          },
+        },
+      };
+      
+      // Enhanced tree shaking and dead code elimination
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+      config.optimization.providedExports = true;
+      
+      // Module concatenation for better minification
+      config.optimization.concatenateModules = true;
+      
+      // Better module resolution for tree shaking
+      config.resolve.mainFields = ['es2015', 'module', 'main'];
+      
+             // Terser optimization for main-thread performance
+       if (config.optimization.minimizer) {
+         config.optimization.minimizer.forEach((minimizer: any) => {
+           if (minimizer.constructor.name === 'TerserPlugin') {
+            minimizer.options.terserOptions = {
+              ...minimizer.options.terserOptions,
+              parse: {
+                ecma: 8,
+              },
+              compress: {
+                ecma: 5,
+                warnings: false,
+                comparisons: false,
+                inline: 2,
+                drop_console: !dev, // Remove console logs in production
+                drop_debugger: !dev,
+                pure_getters: true,
+                unsafe: true,
+                unsafe_comps: true,
+                unsafe_Function: true,
+                unsafe_math: true,
+                unsafe_symbols: true,
+                unsafe_methods: true,
+                unsafe_proto: true,
+                unsafe_regexp: true,
+                unsafe_undefined: true,
+                unused: true,
+              },
+              mangle: {
+                safari10: true,
+              },
+              output: {
+                ecma: 5,
+                comments: false,
+                ascii_only: true,
+              },
+            };
+          }
+        });
+      }
     }
+    
+    // Add SVG support if not already present
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+    
     return config;
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

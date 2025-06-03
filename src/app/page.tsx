@@ -4,7 +4,7 @@ import { DirectorySearch, type DirectorySearchCategory } from "@/components/list
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { GuideCard } from "@/components/guide/GuideCard";
-import { FAQ } from "@/components/sections/FAQ";
+import { IntersectionLoader } from "@/components/performance/intersection-loader";
 import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/sheets";
 import { getGuides, getRecentGuides } from "@/lib/markdown";
 import Link from "next/link";
@@ -12,6 +12,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+
+// Create a client component wrapper for FAQ
+const FAQSection = dynamic(
+  () => import('@/components/sections/FAQ').then(mod => ({ default: mod.FAQ })),
+  { 
+    loading: () => <div className="h-64 flex items-center justify-center">Loading FAQ...</div>
+  }
+);
 
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
@@ -203,11 +213,13 @@ export default async function Home({ searchParams }: HomeProps) {
               </Link>
             </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {topCategories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
+          <IntersectionLoader className="min-h-[200px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {topCategories.map((category) => (
+                <CategoryCard key={category.id} category={category} />
+              ))}
+            </div>
+          </IntersectionLoader>
         </div>
       </section>
 
@@ -228,16 +240,22 @@ export default async function Home({ searchParams }: HomeProps) {
               </Link>
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentGuides.map((guide) => (
-              <GuideCard key={guide.id} guide={guide} />
-            ))}
-          </div>
+          <IntersectionLoader className="min-h-[150px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentGuides.map((guide) => (
+                <GuideCard key={guide.id} guide={guide} />
+              ))}
+            </div>
+          </IntersectionLoader>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <FAQ />
+              {/* FAQ Section */}
+        <Suspense fallback={<div>Loading...</div>}>
+          <IntersectionLoader>
+            <FAQSection />
+          </IntersectionLoader>
+        </Suspense>
     </>
   );
 }

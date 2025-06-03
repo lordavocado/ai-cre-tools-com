@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { siteConfig, getAllSEOKeywords } from '@/config/site';
 import { PostHogProvider } from '@/providers/PostHogProvider';
 import { FavouritesProvider } from '@/providers/FavouritesProvider';
+import { StructuredData } from '@/components/seo/structured-data';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   creator: siteConfig.name,
   publisher: siteConfig.name,
   
-  // Enhanced Open Graph metadata
+  // Enhanced Open Graph metadata for better social sharing
   openGraph: {
     title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
     description: siteConfig.description,
@@ -38,24 +39,63 @@ export const metadata: Metadata = {
     ],
     locale: siteConfig.seo.openGraph.locale,
     type: siteConfig.seo.openGraph.type,
+    alternateLocale: ['en_GB', 'en_AU', 'en_CA'],
   },
   
-  // Enhanced Twitter card metadata
+  // Enhanced Twitter/X Cards
   twitter: {
-    card: siteConfig.seo.twitter.card,
-    title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
+    card: 'summary_large_image',
+    title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
     description: siteConfig.description,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
-    images: [
-      {
-        url: siteConfig.seo.twitter.images.default,
-        width: siteConfig.seo.twitter.images.width,
-        height: siteConfig.seo.twitter.images.height,
-        alt: siteConfig.seo.twitter.images.alt,
-      },
-    ],
+    images: [siteConfig.seo.openGraph.images.default],
   },
+  
+  // Additional social platforms
+  other: {
+    'og:image:width': siteConfig.seo.openGraph.images.width.toString(),
+    'og:image:height': siteConfig.seo.openGraph.images.height.toString(),
+    'og:image:type': 'image/png',
+    'article:author': `${siteConfig.name} Team`,
+    'article:section': 'Technology',
+    'og:updated_time': new Date().toISOString(),
+  },
+  
+  // Verification tags for social platforms
+  verification: {
+    google: 'your-google-verification-code', // Replace with actual code
+    // facebook: 'your-facebook-verification-code', // Add if needed
+    // twitter: 'your-twitter-verification-code', // Add if needed
+  },
+  
+  // Enhanced robots for better crawling
+  robots: {
+    index: true,
+    follow: true,
+    'max-image-preview': 'large',
+    'max-snippet': -1,
+    'max-video-preview': -1,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+    },
+  },
+  
+  // Canonical and alternates
+  alternates: {
+    canonical: siteConfig.url,
+    languages: {
+      'en-US': siteConfig.url,
+      'en-GB': siteConfig.url,
+    },
+  },
+  
+  // Additional SEO metadata
+  category: 'Technology',
+  classification: 'Software Directory',
+  referrer: 'origin-when-cross-origin',
   
   // Enhanced favicon and app icons
   icons: {
@@ -72,46 +112,6 @@ export const metadata: Metadata = {
   
   // Web app manifest
   manifest: '/site.webmanifest',
-  
-  // Additional SEO metadata
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  
-  // Verification tags (add your verification codes here)
-  verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-    // Add other verification codes as needed
-  },
-  
-  // Language alternatives
-  alternates: {
-    canonical: siteConfig.url,
-    languages: {
-      'en-US': siteConfig.url,
-    },
-  },
-  
-  // Additional metadata
-  category: 'Technology',
-  classification: 'Business Directory',
-  other: {
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-title': siteConfig.name,
-    'mobile-web-app-capable': 'yes',
-    'msapplication-TileColor': '#2563eb',
-    'theme-color': '#ffffff',
-  },
 };
 
 export default function RootLayout({
@@ -122,44 +122,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Structured Data - Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: siteConfig.seo.structuredData.organization.name,
-              url: siteConfig.seo.structuredData.organization.url,
-              logo: siteConfig.seo.structuredData.organization.logo,
-              description: siteConfig.seo.structuredData.organization.description,
-              sameAs: siteConfig.seo.structuredData.organization.sameAs,
-            }),
-          }}
-        />
-        
-        {/* Structured Data - Website */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: siteConfig.seo.structuredData.website.name,
-              url: siteConfig.seo.structuredData.website.url,
-              description: siteConfig.seo.structuredData.website.description,
-              inLanguage: siteConfig.seo.structuredData.website.inLanguage,
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate: `${siteConfig.url}/?search={search_term_string}`,
-                },
-                "query-input": "required name=search_term_string",
-              },
-            }),
-          }}
-        />
+        {/* Enhanced Structured Data for Better SEO */}
+        <StructuredData type="website" />
+        <StructuredData type="organization" />
       </head>
       <body
         className={cn(
