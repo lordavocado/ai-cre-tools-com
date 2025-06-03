@@ -49,6 +49,9 @@ const nextConfig: NextConfig = {
   },
   
 
+
+  
+
   
   // Transpile packages for modern browsers only
   transpilePackages: ['posthog-js'],
@@ -407,6 +410,11 @@ const nextConfig: NextConfig = {
           }
         });
       }
+    }
+    
+    // Ensure modern browser targeting (no polyfills needed)
+    if (!isServer) {
+      config.target = ['web', 'es2020'];
     }
     
     // Add SVG support if not already present

@@ -1,21 +1,8 @@
-# Modern browsers only - eliminates 75kB polyfills
 chrome >= 91
 firefox >= 90
 safari >= 14
 edge >= 91
-
-# Exclude legacy browsers
 not ie 11
 not ie_mob 11
 not op_mini all
-not dead
-
-# Mobile browsers
-iOS >= 14
-Android >= 91
-
-# Modern features baseline
-supports es6-module
-supports async-functions
-supports css-grid
-supports promises 
+not dead 
