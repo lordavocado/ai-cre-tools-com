@@ -10,33 +10,10 @@ import { siteConfig, getAllSEOKeywords } from '@/config/site';
 import { PostHogProvider } from '@/providers/PostHogProvider';
 import { FavouritesProvider } from '@/providers/FavouritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
-import { CSSOptimizer, InlineCriticalCSS, LoadNonCriticalCSS } from '@/components/performance/css-optimizer';
 import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/performance/posthog-optimizer';
 
 
 
-// Critical CSS that must be inlined
-const criticalCSS = `
-  /* Critical above-the-fold styles */
-  .critical-nav { min-height: 64px; }
-  .critical-hero { min-height: 400px; }
-  .critical-loading { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    min-height: 200px; 
-  }
-  /* Prevent layout shift */
-  .skeleton { 
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
-  }
-  @keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -127,9 +104,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Inline critical CSS to prevent render blocking */}
-        <InlineCriticalCSS />
-        
         {/* Preload critical resources */}
         <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         
@@ -151,8 +125,6 @@ export default function RootLayout({
       >
         <PostHogProvider>
           <FavouritesProvider>
-            <CSSOptimizer />
-            <LoadNonCriticalCSS />
             <PostHogOptimizer />
             <AnalyticsPerformanceMonitor />
             <div className="relative flex min-h-dvh flex-col bg-background">
