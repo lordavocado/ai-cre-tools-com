@@ -27,15 +27,6 @@ const nextConfig: NextConfig = {
       'clsx',
       'class-variance-authority',
     ],
-    // Turbo mode for faster development
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
     // More aggressive tree shaking
     optimizeServerReact: true,
   },
@@ -262,70 +253,103 @@ const nextConfig: NextConfig = {
         util: false,
       };
       
-              // Basic chunk splitting - simplified for bundle analysis
-        config.optimization.splitChunks = {
-          ...config.optimization.splitChunks,
-          chunks: 'all',
-          minSize: 20000,
-          maxSize: 100000,
-          cacheGroups: {
-            ...config.optimization.splitChunks.cacheGroups,
-            
-            // Core React libraries
-            react: {
-              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-              name: 'react',
-              chunks: 'all',
-              priority: 50,
-              enforce: true,
-            },
-            
-            // Radix UI components
-            radix: {
-              test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
-              name: 'radix-ui',
-              chunks: 'all',
-              priority: 40,
-              enforce: true,
-            },
-            
-            // Lucide icons
-            icons: {
-              test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
-              name: 'icons',
-              chunks: 'all',
-              priority: 35,
-              enforce: true,
-            },
-            
-            // PostHog analytics
-            posthog: {
-              test: /[\\/]node_modules[\\/]posthog-js[\\/]/,
-              name: 'posthog',
-              chunks: 'all',
-              priority: 45,
-              enforce: true,
-              reuseExistingChunk: true,
-            },
-            
-            // Other vendor libraries
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
-              priority: 10,
-              minChunks: 2,
-            },
-            
-            // Default
-            default: {
-              minChunks: 2,
-              priority: -10,
-              reuseExistingChunk: true,
-              minSize: 10000,
-            },
+      // STRATEGIC CHUNK SPLITTING - Focus on application code, not framework
+      // The 53.3kB nextjs-framework chunk is Next.js core code that should stay together
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        minSize: 15000,        // Reasonable minimum size
+        maxSize: 40000,        // Allow larger framework chunks but split large libraries
+        maxAsyncSize: 30000,   // Async chunk limit
+        cacheGroups: {
+          // High Priority - Core Libraries (split these effectively)
+          
+          // React ecosystem
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 50,
+            enforce: true,
           },
-        };
+          
+          // UI Component Library - Most likely to cause execution time issues
+          radixUI: {
+            test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
+            name: 'radix-ui',
+            chunks: 'all',
+            priority: 45,
+            enforce: true,
+            maxSize: 25000, // Split if Radix gets too large
+          },
+          
+          // Icons - Often large contributor to execution time
+          icons: {
+            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+            name: 'icons',
+            chunks: 'all',
+            priority: 40,
+            enforce: true,
+            maxSize: 20000,
+          },
+          
+          // PostHog Analytics - prevent duplication
+          posthog: {
+            test: /[\\/]node_modules[\\/]posthog-js[\\/]/,
+            name: 'posthog',
+            chunks: 'all',
+            priority: 35,
+            enforce: true,
+            reuseExistingChunk: true,
+          },
+          
+          // Utility libraries that might be heavy
+          utilities: {
+            test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge)[\\/]/,
+            name: 'utilities',
+            chunks: 'all',
+            priority: 30,
+            enforce: true,
+          },
+          
+          // Large vendor libraries - split these aggressively
+          largeVendors: {
+            test: /[\\/]node_modules[\\/](lodash|moment|date-fns|axios|zod)[\\/]/,
+            name: 'large-vendors',
+            chunks: 'all',
+            priority: 25,
+            enforce: true,
+            maxSize: 20000, // Force splitting of large libraries
+          },
+          
+          // Generic vendor splitting
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+            minChunks: 2,
+            maxSize: 30000,
+          },
+          
+          // Common application chunks
+          common: {
+            name: 'common',
+            chunks: 'all',
+            priority: 5,
+            minChunks: 2,
+            maxSize: 25000,
+            reuseExistingChunk: true,
+          },
+          
+          // Default fallback
+          default: {
+            minChunks: 2,
+            priority: -10,
+            reuseExistingChunk: true,
+            maxSize: 25000,
+          },
+        },
+      };
       
       // Enhanced tree shaking and dead code elimination
       config.optimization.usedExports = true;
@@ -338,10 +362,10 @@ const nextConfig: NextConfig = {
       // Better module resolution for tree shaking
       config.resolve.mainFields = ['es2015', 'module', 'main'];
       
-             // Terser optimization for main-thread performance
-       if (config.optimization.minimizer) {
-         config.optimization.minimizer.forEach((minimizer: any) => {
-           if (minimizer.constructor.name === 'TerserPlugin') {
+      // Terser optimization for main-thread performance
+      if (config.optimization.minimizer) {
+        config.optimization.minimizer.forEach((minimizer: any) => {
+          if (minimizer.constructor.name === 'TerserPlugin') {
             minimizer.options.terserOptions = {
               ...minimizer.options.terserOptions,
               parse: {

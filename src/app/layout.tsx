@@ -11,6 +11,7 @@ import { PostHogProvider } from '@/providers/PostHogProvider';
 import { FavouritesProvider } from '@/providers/FavouritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
 import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/performance/posthog-optimizer';
+import { JSExecutionOptimizer, ScriptExecutionMonitor } from '@/components/performance/js-execution-optimizer';
 
 
 
@@ -127,6 +128,8 @@ export default function RootLayout({
           <FavouritesProvider>
             <PostHogOptimizer />
             <AnalyticsPerformanceMonitor />
+            <JSExecutionOptimizer />
+            <ScriptExecutionMonitor />
             <div className="relative flex min-h-dvh flex-col bg-background">
               <Header />
               <main className="flex-1">{children}</main>
