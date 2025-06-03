@@ -48,11 +48,6 @@ const nextConfig: NextConfig = {
     styledComponents: false,
   },
   
-
-
-  
-
-  
   // Transpile packages for modern browsers only
   transpilePackages: ['posthog-js'],
   
@@ -267,12 +262,12 @@ const nextConfig: NextConfig = {
         util: false,
       };
       
-              // Aggressive chunk splitting for main-thread optimization
+              // Basic chunk splitting - simplified for bundle analysis
         config.optimization.splitChunks = {
           ...config.optimization.splitChunks,
           chunks: 'all',
-          minSize: 20000, // Minimum chunk size
-          maxSize: 100000, // Maximum chunk size to prevent large bundles
+          minSize: 20000,
+          maxSize: 100000,
           cacheGroups: {
             ...config.optimization.splitChunks.cacheGroups,
             
@@ -285,7 +280,7 @@ const nextConfig: NextConfig = {
               enforce: true,
             },
             
-            // Radix UI components (heavy but commonly used)
+            // Radix UI components
             radix: {
               test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
               name: 'radix-ui',
@@ -294,7 +289,7 @@ const nextConfig: NextConfig = {
               enforce: true,
             },
             
-            // Lucide icons (can be large)
+            // Lucide icons
             icons: {
               test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
               name: 'icons',
@@ -303,32 +298,14 @@ const nextConfig: NextConfig = {
               enforce: true,
             },
             
-            // PostHog analytics - prevent duplicates
+            // PostHog analytics
             posthog: {
               test: /[\\/]node_modules[\\/]posthog-js[\\/]/,
               name: 'posthog',
               chunks: 'all',
               priority: 45,
               enforce: true,
-              reuseExistingChunk: true, // Prevent duplicates
-            },
-            
-            // Date libraries if present
-            dates: {
-              test: /[\\/]node_modules[\\/](date-fns|moment|dayjs)[\\/]/,
-              name: 'dates',
-              chunks: 'all',
-              priority: 25,
-              enforce: true,
-            },
-            
-            // UI utility libraries
-            utils: {
-              test: /[\\/]node_modules[\\/](clsx|class-variance-authority|tailwind-merge)[\\/]/,
-              name: 'ui-utils',
-              chunks: 'all',
-              priority: 20,
-              enforce: true,
+              reuseExistingChunk: true,
             },
             
             // Other vendor libraries
@@ -340,16 +317,7 @@ const nextConfig: NextConfig = {
               minChunks: 2,
             },
             
-            // App-specific components
-            components: {
-              test: /[\\/]src[\\/]components[\\/]/,
-              name: 'components',
-              chunks: 'all',
-              priority: 15,
-              minChunks: 2,
-            },
-            
-            // Default for everything else
+            // Default
             default: {
               minChunks: 2,
               priority: -10,
