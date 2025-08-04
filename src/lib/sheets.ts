@@ -12,7 +12,7 @@ import type React from 'react';
 
 // 1. Sheet Names Configuration:
 const SHEET_NAMES = {
-  ITEMS: 'productanalyticstools',
+  ITEMS: 'aicretools',
   NEWSLETTER: 'Newsletter',
 };
 

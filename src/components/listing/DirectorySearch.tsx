@@ -107,6 +107,73 @@ export function DirectorySearch({
   };
 
   return (
-    <div>Test</div>
+    <div className="mx-auto max-w-[1200px] px-6 mb-12">
+      <div className="space-y-8">
+        {/* Search Section */}
+        <div className="max-w-2xl">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+            <Input
+              id="search-term"
+              type="text"
+              placeholder="Search by keywords..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="h-12 pl-12 pr-12 border-neutral-200 text-base bg-white placeholder:text-neutral-400 focus-visible:ring-neutral-900 transition-colors"
+              aria-label="Search directory items"
+            />
+            {searchTerm && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 hover:bg-neutral-50 text-neutral-400"
+                onClick={clearSearch}
+                aria-label="Clear search term"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Categories Section */}
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Badge
+              key={category.id}
+              variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
+              className={`
+                cursor-pointer px-4 py-2 text-sm font-medium
+                transition-colors duration-200
+                ${selectedCategories.includes(category.slug)
+                  ? 'bg-neutral-900 text-white hover:bg-neutral-800'
+                  : 'bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50'
+                }
+              `}
+              onClick={(e) => {
+                e.preventDefault();
+                toggleCategory(category.slug);
+              }}
+            >
+              {category.name}
+            </Badge>
+          ))}
+        </div>
+
+        {/* Results Count */}
+        {totalItems > 0 && (
+          <div className="text-sm text-neutral-500">
+            {totalItems} {siteConfig.categoryName.toLowerCase()} {totalItems === 1 ? 'found' : 'found'}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isPending && (
+          <div className="text-sm text-neutral-500">
+            Loading...
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
