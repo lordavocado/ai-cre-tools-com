@@ -1001,23 +1001,23 @@ export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryIte
   return items.find(item => item.slug === slug);
 }
 
-export async function getCategories(): Promise<Category[]> {
-  const allDirItems = await getDirectoryItems();
-  
-  // Update itemCount for each category based on actual items
-  return HARDCODED_CATEGORIES.map(category => ({
-    ...category,
-    itemCount: allDirItems.filter(item => {
-      // Split item's categories and check if this category is included
-      const itemCategories = item.category.split(',').map(cat => cat.trim());
-      return itemCategories.includes(category.slug);
-    }).length
-  }));
-}
-
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
-  const categories = await getCategories();
-  return categories.find(cat => cat.slug === slug);
+  const categories = HARDCODED_CATEGORIES; // Use hardcoded categories directly
+  const allDirItems = await getDirectoryItems(); // Still need this to calculate item counts
+  
+  const category = categories.find(cat => cat.slug === slug);
+
+  if (category) {
+    // Update itemCount for the specific category based on actual items
+    return {
+      ...category,
+      itemCount: allDirItems.filter(item => {
+        const itemCategories = item.category.split(',').map(cat => cat.trim());
+        return itemCategories.includes(category.slug);
+      }).length
+    };
+  }
+  return undefined;
 }
 
 // Newsletter subscription (Mailchimp integration placeholder)
