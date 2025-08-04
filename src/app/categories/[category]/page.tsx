@@ -62,7 +62,7 @@ export async function generateMetadata(
           url: category.imageUrl || siteConfig.seo.openGraph.images.default,
           width: siteConfig.seo.openGraph.images.width,
           height: siteConfig.seo.openGraph.images.height,
-          alt: `${category.name} Tools - Product Analytics Category`,
+          alt: `${category.name} Tools - Commercial Real Estate AI Category`,
         },
       ],
       locale: siteConfig.seo.openGraph.locale,
@@ -196,7 +196,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
           )}
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">{category.name} Tools</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {category.description || `Discover the best ${category.name} tools and software solutions for your product analytics needs.`}
+            {category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`}
           </p>
           
           {/* Category Stats */}

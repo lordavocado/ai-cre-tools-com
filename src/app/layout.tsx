@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
+import { Hero } from '@/components/ui/hero';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
@@ -97,6 +97,8 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
+const inter = Inter({ subsets: ['latin'] })
+
 export default function RootLayout({
   children,
 }: {
@@ -119,9 +121,8 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          GeistSans.variable,
-          GeistMono.variable
+          'min-h-screen bg-white font-sans antialiased',
+          inter.className
         )}
       >
         <PostHogProvider>

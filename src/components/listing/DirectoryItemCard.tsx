@@ -16,49 +16,57 @@ interface DirectoryItemCardProps {
 
 export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 relative group">
-      <CardHeader className="p-4">
-        <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+    <Card className="flex flex-col h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 transition-colors duration-200 relative group">
+      <CardHeader className="p-6">
+        <div className="absolute top-4 right-4 z-10">
           <FavouriteButton toolId={item.id} size="sm" />
         </div>
-        <div className="relative w-16 h-16 mx-auto mb-3 rounded-md overflow-hidden flex items-center justify-center bg-background">
+        <div className="relative w-16 h-16 mb-6 rounded-md overflow-hidden flex items-center justify-center bg-neutral-50">
           <SafeImage
             src={item.imageUrl}
             alt={item.name}
             website={item.website}
-            className="w-16 h-16 object-contain transition-transform duration-300 group-hover:scale-105"
+            className="w-16 h-16 object-contain"
             fallbackText={item.name.charAt(0)}
           />
         </div>
-        <CardTitle className="text-lg text-center">
-          <Link href={`/${item.slug}`} className="hover:text-primary transition-colors">
+        <CardTitle className="text-xl font-serif mb-2">
+          <Link href={`/${item.slug}`} className="hover:text-neutral-600 transition-colors">
             {item.name}
           </Link>
         </CardTitle>
-        <CardDescription className="text-base mt-1 text-center">{item.tagline}</CardDescription>
+        <CardDescription className="text-base text-neutral-600">{item.tagline}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow p-4 pt-0">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Tag className="h-3 w-3 text-muted-foreground" />
+      <CardContent className="flex-grow px-6 pb-6">
+        <div className="flex items-center gap-3 mb-4">
           <CategoryChips categories={item.category} variant="secondary" size="sm" />
         </div>
         {item.rating && (
-          <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-            <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+          <div className="flex items-center gap-2 text-sm text-neutral-600">
+            <Star className="h-4 w-4 text-neutral-900" />
             <span>{item.rating.toFixed(1)}</span>
-            {item.reviewCount && <span>({item.reviewCount})</span>}
+            {item.reviewCount && <span className="text-neutral-400">({item.reviewCount} reviews)</span>}
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-2 p-4 pt-3 border-t">
-        <Button variant="ghost" size="sm" asChild className="w-full sm:w-auto">
+      <CardFooter className="flex flex-col gap-3 px-6 pb-6">
+        <Button 
+          variant="outline" 
+          size="lg" 
+          asChild 
+          className="w-full bg-white border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
+        >
           <Link href={item.website} target="_blank" rel="noopener noreferrer">
-            Visit Website <ExternalLink className="ml-2 h-3 w-3" />
+            Visit Website <ExternalLink className="ml-2 h-4 w-4" />
           </Link>
         </Button>
-        <Button size="sm" asChild className="w-full sm:w-auto">
+        <Button 
+          size="lg" 
+          asChild 
+          className="w-full bg-neutral-900 hover:bg-neutral-800 transition-colors"
+        >
           <Link href={`/${item.slug}`}>
-            View Details <ArrowUpRight className="ml-2 h-3 w-3" />
+            View Details <ArrowUpRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>
       </CardFooter>

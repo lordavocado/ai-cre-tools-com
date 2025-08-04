@@ -64,7 +64,7 @@ export async function generateMetadata(
       ...siteConfig.seo.primaryKeywords,
       'tool review',
       'software comparison',
-      'product analytics software'
+      'CRE AI software'
     ],
     
     // Enhanced Open Graph for tool pages

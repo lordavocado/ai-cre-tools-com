@@ -1,9 +1,9 @@
-# Firebase Studio Directory Application
+# AI CRE Tools Directory Application
 
-This is a powerful, fully-featured **directory/marketplace application** built with Next.js, TypeScript, and Firebase. It's designed to showcase and compare any type of products, tools, or services through a modern, SEO-optimized interface.
+This is a powerful, fully-featured **directory/marketplace application** built with Next.js, TypeScript, and Firebase. It's designed to showcase and compare Commercial Real Estate AI tools and solutions through a modern, SEO-optimized interface.
 
-**Currently configured for:** Product Analytics Tools  
-**Can be adapted for:** SaaS tools, AI platforms, design resources, marketing tools, or any product category
+**Currently configured for:** AI CRE Tools  
+**Can be adapted for:** Any AI-powered tools or solutions within the Commercial Real Estate sector.
 
 ## 🚀 Quick Start
 
@@ -125,17 +125,17 @@ Replace the existing categories with your niche categories:
 ```typescript
 const HARDCODED_CATEGORIES: Category[] = [
   {
-    id: 'content-creation',
-    slug: 'content-creation',
-    name: 'Content Creation',
-    description: 'Tools for creating blog posts, articles, and marketing copy',
+    id: 'property-valuation',
+    slug: 'property-valuation',
+    name: 'Property Valuation',
+    description: 'AI tools for accurate property appraisal and market analysis',
     longDescription: `
       <div class="space-y-6">
-        <p>Comprehensive content creation tools that help...</p>
+        <p>Comprehensive property valuation tools that help...</p>
         <!-- Add rich HTML description -->
       </div>
     `,
-    imageUrl: '/content-creation.png',
+    imageUrl: '/property-valuation.png',
     icon: Activity, // Choose from Lucide icons
   },
   // Add 5-8 categories for your niche
@@ -143,10 +143,7 @@ const HARDCODED_CATEGORIES: Category[] = [
 ```
 
 **Category Planning Template:**
-- **SaaS Tools**: CRM, Project Management, Communication, Sales, Marketing
-- **Design Tools**: UI/UX, Graphics, Prototyping, Animation, Stock Assets
-- **AI Tools**: Writing, Image Generation, Code, Data Analysis, Automation
-- **Marketing Tools**: Email, Social Media, SEO, Analytics, Advertising
+- **CRE AI Tools**: Property Valuation, Investment Analysis, Market Research, Property Management, Leasing & Sales
 
 ### **4. 🎨 UI/UX Customization**
 
@@ -182,8 +179,6 @@ nav: {
   items: [
     { href: '/', label: 'Home' },
     { href: '/categories', label: 'Browse Tools' }, // Customize labels
-    { href: '/guides', label: 'Guides' },
-    { href: '/compare', label: 'Compare' },
   ]
 }
 ```
@@ -199,7 +194,6 @@ footer: {
 
 #### **C. Legal Pages**
 Update these files with your content:
-- `src/app/about/page.tsx` - About your directory
 - `src/app/privacy-policy/page.tsx` - Privacy policy
 - `src/app/terms-of-service/page.tsx` - Terms of service
 
@@ -352,11 +346,9 @@ This is a production-ready directory application that can be adapted to any nich
 
 **Common Adaptations:**
 - 🤖 AI Tools Directory
-- 🎨 Design Resources Hub  
 - 📈 Marketing Tools Marketplace
 - 💼 Business Software Directory
 - 🏠 Real Estate Platform
-- 🍕 Local Business Directory
 
 The application scales from hundreds to thousands of listings while maintaining fast performance and excellent SEO.
 

@@ -5,27 +5,28 @@ import { siteConfig, computedSiteConfig } from '@/config/site';
 export function Footer() {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="border-t border-border/40">
-      <div className="container py-12 max-w-screen-2xl pl-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <img src="/product-analytics-tools-logo.png" alt="Logo" className="h-7 w-7" />
-              <span className="font-bold text-lg">{siteConfig.categoryName}</span>
+    <footer className="border-t border-neutral-100">
+      <div className="mx-auto max-w-[1200px] px-6 py-12 md:py-16">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-3">
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="font-serif text-lg text-neutral-900">{siteConfig.name}</span>
             </Link>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm leading-relaxed text-neutral-600">
               {computedSiteConfig.footer.description}
             </p>
           </div>
           <div>
-            <h3 className="text-md font-semibold mb-3">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><Link href="/categories" className="text-sm text-muted-foreground hover:text-primary">Categories</Link></li>
-              <li><Link href="/guides" className="text-sm text-muted-foreground hover:text-primary">Guides</Link></li>
-              <li><Link href="/compare" className="text-sm text-muted-foreground hover:text-primary">Compare Tools</Link></li>
-              <li><Link href="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link></li>
-              <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link></li>
-            </ul>
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-neutral-900">Quick Links</h3>
+              <nav className="flex flex-col space-y-2">
+                <Link href="/categories" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Categories</Link>
+                <Link href="/guides" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Guides</Link>
+                <Link href="/compare" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Compare Tools</Link>
+                <Link href="/privacy-policy" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Privacy Policy</Link>
+                <Link href="/terms-of-service" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Terms of Service</Link>
+              </nav>
+            </div>
           </div>
           <div>
             <h3 className="text-md font-semibold mb-3">Connect</h3>
@@ -37,11 +38,7 @@ export function Footer() {
                 <Link href="https://www.linkedin.com/in/nichlaskvist/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary"><Linkedin size={20} /></Link>
                 <Link href="https://x.com/nkjorg" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-muted-foreground hover:text-primary"><Twitter size={20} /></Link>
               </div>
-              <div className="mt-4">
-                <Link href="https://www.productmanagercourses.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary">
-                  Looking for product manager courses? Check out Product Manager Courses
-                </Link>
-              </div>
+              
             </div>
           </div>
         </div>

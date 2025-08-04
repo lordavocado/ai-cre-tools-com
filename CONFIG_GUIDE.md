@@ -6,7 +6,7 @@ This project now includes a centralized configuration system that allows you to 
 
 ## Changing the Category Name
 
-To change your site's main category name (currently "Product Analytics Tools"), simply update the `categoryName` field in `src/config/site.ts`:
+To change your site's main category name (currently "AI CRE Tools"), simply update the `categoryName` field in `src/config/site.ts`:
 
 ```typescript
 export const siteConfig = {
@@ -30,24 +30,20 @@ When you change the `categoryName`, the following elements will be updated autom
 7. **Homepage Sections**: 
    - "Discover Top {categoryName}"
    - "Browse {categoryName} by Category"
-   - "Latest {categoryName} Guides & Insights"
-8. **Search Results**: Tool count displays (e.g., "15 product analytics tools found")
+8. **Search Results**: Tool count displays (e.g., "15 AI CRE tools found")
 9. **Categories Page**: Title and descriptions
-10. **Compare Page**: "Compare {categoryName} Side-by-Side"
 
 ### Example Changes
 
-If you change `categoryName` from "Product Analytics Tools" to "Marketing Automation Tools", these updates happen automatically:
+If you change `categoryName` from "Product Analytics Tools" to "AI CRE Tools", these updates happen automatically:
 
-- Header: "Product Analytics Tools" → "Marketing Automation Tools"
-- Hero: "Find and compare the best Product Analytics Tools" → "Find and compare the best Marketing Automation Tools"
-- Page Title: "Product Analytics Tools Directory" → "Marketing Automation Tools Directory"
-- Footer: "© 2024 Product Analytics Tools" → "© 2024 Marketing Automation Tools"
-- Homepage: "Discover Top Product Analytics Tools" → "Discover Top Marketing Automation Tools"
-- Categories: "Browse Product Analytics Tools by Category" → "Browse Marketing Automation Tools by Category"
-- Guides: "Latest Product Analytics Tools Guides & Insights" → "Latest Marketing Automation Tools Guides & Insights"
-- Search: "15 product analytics tools found" → "15 marketing automation tools found"
-- Compare: "Compare Product Analytics Tools Side-by-Side" → "Compare Marketing Automation Tools Side-by-Side"
+- Header: "Product Analytics Tools" → "AI CRE Tools"
+- Hero: "Find and compare the best Product Analytics Tools" → "Your Directory for the Best AI CRE Tools"
+- Page Title: "Product Analytics Tools Directory" → "AI CRE Tools Directory"
+- Footer: "© 2024 Product Analytics Tools" → "© 2024 AI CRE Tools"
+- Homepage: "Discover Top Product Analytics Tools" → "Discover Top AI CRE Tools"
+- Categories: "Browse Product Analytics Tools by Category" → "Browse AI CRE Tools by Category"
+- Search: "15 product analytics tools found" → "15 AI CRE tools found"
 
 ## Other Configurable Settings
 
@@ -71,8 +67,7 @@ hero: {
 nav: {
   items: [
     { href: '/', label: 'Home' },
-    { href: '/categories', label: 'Categories' },
-    // Add or modify navigation items here
+    { href: '/categories', label: 'Browse Tools' }, // Customize labels
   ]
 },
 ```

@@ -1,7 +1,7 @@
 {
-  "name": "Product Analytics Tools",
-  "short_name": "PA Tools",
-  "description": "Find and compare the best product analytics tools and solutions",
+  "name": "AI CRE Tools",
+  "short_name": "AI CRE Tools",
+  "description": "The leading directory for Commercial Real Estate AI tools. Find, compare, and choose the best AI solutions for your CRE needs.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

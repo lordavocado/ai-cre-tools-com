@@ -22,29 +22,36 @@ export function DirectoryGrid({ items }: DirectoryGridProps) {
 
   if (items.length === 0) {
     return (
-      <Alert className="mt-8">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>No Tools Found</AlertTitle>
-        <AlertDescription>
-          We couldn't find any tools matching your criteria. Try adjusting your search or filters.
-        </AlertDescription>
-      </Alert>
+      <div className="mx-auto max-w-[1200px] px-6 py-16">
+        <div className="flex flex-col items-center justify-center text-center space-y-4 border border-neutral-200 rounded-lg py-12">
+          <AlertCircle className="h-8 w-8 text-neutral-400" />
+          <div className="space-y-2">
+            <h3 className="text-lg font-medium text-neutral-900">No Tools Found</h3>
+            <p className="text-neutral-600">
+              We couldn't find any tools matching your criteria. Try adjusting your search or filters.
+            </p>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="mx-auto max-w-[1200px] px-6 space-y-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {currentItems.map((item) => (
           <DirectoryItemCard key={item.id} item={item} />
         ))}
       </div>
+      
       {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        <div className="flex justify-center py-8">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       )}
     </div>
   );

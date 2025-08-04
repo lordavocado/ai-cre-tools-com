@@ -55,7 +55,7 @@ export function Hero() {
             transition={{ delay: 1, duration: 0.8 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10"
           >
-            Discover the perfect Product Analytics tool for your needs with our comprehensive directory that helps you compare and evaluate top analytics solutions.
+            Discover the perfect CRE AI tool for your needs with our comprehensive directory that helps you compare and evaluate top AI solutions for Commercial Real Estate.
           </motion.p>
 
           <motion.div
@@ -92,7 +92,7 @@ export function Hero() {
             transition={{ delay: 1.4, duration: 0.8 }}
             className="flex flex-col items-center"
           >
-            <h3 className="text-md font-semibold mb-3">Stay Updated About New Product Analytics Tools</h3>
+            <h3 className="text-md font-semibold mb-3">Stay Updated About New CRE AI Tools</h3>
             <NewsletterForm />
           </motion.div>
         </motion.div>

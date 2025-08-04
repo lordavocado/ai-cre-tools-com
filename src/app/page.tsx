@@ -26,7 +26,7 @@ const FAQSection = dynamic(
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
-  description: `Discover and compare the best ${siteConfig.categoryName.toLowerCase()} for your business. Detailed information and comparisons to help you choose the perfect product analytics solution.`,
+  description: `Discover and compare the best ${siteConfig.categoryName.toLowerCase()} for your commercial real estate business. Detailed information and comparisons to help you choose the perfect AI solution.`,
   keywords: [
     ...siteConfig.seo.primaryKeywords,
     ...siteConfig.seo.secondaryKeywords,
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   
   openGraph: {
     title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
-    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect product analytics solution.`,
+    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect AI solution for commercial real estate.`,
     url: siteConfig.url,
     siteName: siteConfig.seo.openGraph.siteName,
     images: [
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   twitter: {
     card: siteConfig.seo.twitter.card,
     title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
-    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect product analytics solution.`,
+    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect AI solution for commercial real estate.`,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
     images: [
@@ -99,7 +99,6 @@ export default async function Home({ searchParams }: HomeProps) {
   const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
   const categoriesFromSheet: Category[] = await getCategories(); 
   const topCategories = categoriesFromSheet.slice(0, 4);
-  const recentGuides = await getRecentGuides(3);
 
   const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
     ({ id, slug, name }) => ({ id, slug, name })
@@ -165,12 +164,12 @@ export default async function Home({ searchParams }: HomeProps) {
               `https://github.com/${handle}`
             ),
             knowsAbout: [
-              "Product Analytics",
-              "Software Tools",
-              "Business Intelligence",
-              "Data Analytics",
-              "User Behavior Analysis",
-              "Product Management Tools"
+              "Commercial Real Estate",
+              "AI Tools",
+              "PropTech",
+              "Real Estate Analytics",
+              "Property Management Software",
+              "Investment Analysis"
             ],
           }),
         }}
@@ -217,33 +216,6 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {topCategories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          </IntersectionLoader>
-        </div>
-      </section>
-
-      <section className="py-16 md:py-24">
-        <div className="container pl-6">
-           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">
-                Latest {siteConfig.categoryName} Guides & Insights
-              </h2>
-              <p className="text-lg text-muted-foreground mb-4 md:mb-0">
-                Read our expert articles to get the most out of your {siteConfig.categoryName.toLowerCase()} and strategies.
-              </p>
-            </div>
-            <Button asChild variant="outline">
-              <Link href="/guides">
-                View All Guides <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <IntersectionLoader className="min-h-[150px]">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recentGuides.map((guide) => (
-                <GuideCard key={guide.id} guide={guide} />
               ))}
             </div>
           </IntersectionLoader>

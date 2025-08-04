@@ -7,26 +7,22 @@ import { siteConfig } from '@/config/site';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center pl-6">
-        <Link href="/" className="flex items-center gap-2 mr-8" aria-label="Product Analytics Tools Home">
-          <img src="/product-analytics-tools-logo.png" alt="Product Analytics Tools Logo" className="h-7 w-auto" />
-          <span className="font-bold text-lg">{siteConfig.categoryName}</span>
+    <header className="sticky top-0 z-50 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
+        <Link href="/" className="flex items-center space-x-2">
+          <span className="font-serif text-lg text-neutral-900">{siteConfig.name}</span>
         </Link>
-        
-        <div className="flex-1 flex justify-center">
-          <nav className="hidden md:flex gap-6 items-center">
-            {siteConfig.nav.items.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <nav className="hidden md:flex md:items-center md:space-x-6">
+          {siteConfig.nav.items.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-sm text-neutral-600 transition-colors hover:text-neutral-900"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex w-96">
@@ -46,7 +42,7 @@ export function Header() {
               <SheetContent side="right">
                 <nav className="grid gap-6 text-lg font-medium mt-8">
                   <Link href="/" className="flex items-center gap-2 mb-4">
-                    <img src="/product-analytics-tools-logo.png" alt="Product Analytics Tools Logo" className="h-6 w-auto" />
+                    <img src="/product-analytics-tools-logo.png" alt="AI CRE Tools Logo" className="h-6 w-auto" />
                     <span className="font-bold">{siteConfig.categoryName}</span>
                   </Link>
                   
