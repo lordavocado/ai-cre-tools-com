@@ -1,4 +1,4 @@
-import { getDirectoryItemBySlug, getDirectoryItems, getCategories } from "@/lib/sheets";
+import { getDirectoryItemBySlug, getDirectoryItems, getCategory } from "@/lib/sheets";
 import type { Metadata, ResolvingMetadata } from 'next';
 import Link from "next/link";
 import { notFound } from "next/navigation";

@@ -30,7 +30,7 @@ export default function DevelopmentConstructionPage() {
         <li>Real estate developers managing multiple projects</li>
         <li>Construction companies optimizing project delivery</li>
         <li>Architects and engineers streamlining design processes</li>
-        <li><li>Project managers coordinating complex builds</li>
+        <li>Project managers coordinating complex builds</li>
         <li>General contractors improving operational efficiency</li>
       </ul>
 

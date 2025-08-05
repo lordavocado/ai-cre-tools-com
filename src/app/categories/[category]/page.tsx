@@ -1,5 +1,5 @@
 import type { Category } from "@/types";
-import { getCategories, getCategoryBySlug, getDirectoryItems } from "@/lib/sheets";
+import { getCategories, getCategory, getDirectoryItems } from "@/lib/sheets";
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
@@ -28,7 +28,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { category: categorySlug } = await params;
-  const category = await getCategoryBySlug(categorySlug);
+  const category = await getCategory(categorySlug);
 
   if (!category) {
     return {
