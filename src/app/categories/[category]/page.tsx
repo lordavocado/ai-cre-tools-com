@@ -1,5 +1,5 @@
 import type { Category } from "@/types";
-import { getCategories, getCategory, getDirectoryItems } from "@/lib/sheets";
+import { getDirectoryItems, getCategoryBySlug } from '@/lib/sheets';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
