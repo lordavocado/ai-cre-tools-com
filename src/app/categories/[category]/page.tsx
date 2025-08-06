@@ -110,7 +110,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
   const searchTerm = search || "";
   // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
 
-  const category = await getCategoryBySlug(categorySlugFromPath);
+  const category = await getCategory(categorySlugFromPath);
   if (!category) {
     notFound();
   }
