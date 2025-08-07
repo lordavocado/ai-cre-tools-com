@@ -3,56 +3,32 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { NewsletterForm } from "./NewsletterForm";
-import { AnimatedBackground } from "./AnimatedBackground";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { computedSiteConfig } from "@/config/site";
 
 export function Hero() {
   const title = computedSiteConfig.hero.title;
-  const words = title.split(" ");
 
   return (
     <section className="relative py-20 md:py-32 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-blue-950 overflow-hidden">
-      {/* Animated Background */}
-      <AnimatedBackground />
-      
       <div className="container text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
           className="max-w-4xl mx-auto"
         >
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            {words.map((word, wordIndex) => (
-              <span key={wordIndex} className="inline-block mr-4 last:mr-0">
-                {word.split("").map((letter, letterIndex) => (
-                  <motion.span
-                    key={`${wordIndex}-${letterIndex}`}
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{
-                      delay: wordIndex * 0.1 + letterIndex * 0.03,
-                      type: "spring",
-                      stiffness: 150,
-                      damping: 25,
-                    }}
-                    className="inline-block text-transparent bg-clip-text 
-                                        bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 
-                                        dark:from-white dark:via-blue-200 dark:to-purple-200"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-              </span>
-            ))}
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-transparent bg-clip-text 
+                         bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 
+                         dark:from-white dark:via-blue-200 dark:to-purple-200">
+            {title}
           </h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.8 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10"
           >
             Discover the perfect CRE AI tool for your needs with our comprehensive directory that helps you compare and evaluate top AI solutions for Commercial Real Estate.
@@ -61,7 +37,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
           >
             <div className="inline-block group relative bg-gradient-to-b from-blue-500/10 to-purple-500/10 
@@ -89,7 +65,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.8 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
             className="flex flex-col items-center"
           >
             <h3 className="text-md font-semibold mb-3">Stay Updated About New CRE AI Tools</h3>
