@@ -51,21 +51,22 @@ export function JSExecutionOptimizer() {
     // 3. Initialize analytics lazily
     scheduleTask(() => {
       // Only initialize PostHog after critical rendering
-      if (window.posthog && typeof window.posthog.init === 'function') {
+      if ((window as any).posthog && typeof (window as any).posthog.init === 'function') {
         // PostHog is already loaded, optimize its execution
-        window.posthog.opt_out_capturing();
-        window.posthog.opt_in_capturing();
+        (window as any).posthog.opt_out_capturing();
+        (window as any).posthog.opt_in_capturing();
       }
     }, 'low');
 
     // 4. Optimize image loading
     scheduleTask(() => {
       const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-      lazyImages.forEach((img: HTMLImageElement) => {
-        if (img.complete && img.naturalHeight !== 0) {
-          img.classList.add('loaded');
+      lazyImages.forEach((img) => {
+        const imgElement = img as HTMLImageElement;
+        if (imgElement.complete && imgElement.naturalHeight !== 0) {
+          imgElement.classList.add('loaded');
         } else {
-          img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+          imgElement.addEventListener('load', () => imgElement.classList.add('loaded'), { once: true });
         }
       });
     }, 'normal');

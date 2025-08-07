@@ -26,7 +26,6 @@ import { CategoryChips } from "@/components/ui/category-chips";
 import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavouriteButton } from "@/components/ui/favourite-button";
-import { PageProps } from "@/types";
 
 export async function generateStaticParams() {
   const items = await getDirectoryItems();
@@ -36,10 +35,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  { params }: PageProps,
+  { params }: { params: Promise<{ slug: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const item = await getDirectoryItemBySlug(slug);
 
   if (!item) {
@@ -122,8 +121,8 @@ export async function generateMetadata(
   };
 }
 
-export default async function DirectoryItemPage({ params }: PageProps) {
-  const { slug } = params;
+export default async function DirectoryItemPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const item = await getDirectoryItemBySlug(slug);
 
   if (!item) {

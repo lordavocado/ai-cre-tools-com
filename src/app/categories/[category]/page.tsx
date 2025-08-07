@@ -18,10 +18,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  { params }: { params: { category: string } },
+  { params }: { params: Promise<{ category: string }> },
   parent: ResolvingMetadata
 ) {
-  const { category: categorySlug } = params;
+  const { category: categorySlug } = await params;
   const category = await getCategoryBySlug(categorySlug);
 
   if (!category) {
@@ -99,13 +99,15 @@ export async function generateMetadata(
 export const revalidate = 3600;
 
 export default async function CategoryPage({ 
-  params: { category: slug },
-  searchParams = {}
+  params,
+  searchParams
 }: {
-  params: { category: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ category: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const searchTerm = searchParams?.search as string || '';
+  const { category: slug } = await params;
+  const resolvedSearchParams = await (searchParams || Promise.resolve({} as { [key: string]: string | string[] | undefined }));
+  const searchTerm = resolvedSearchParams?.search as string || '';
   // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
 
   const category = await getCategoryBySlug(slug);
@@ -218,7 +220,7 @@ export default async function CategoryPage({
         <DirectorySearch 
           categories={searchCategories} 
           initialSearchTerm={searchTerm}
-          initialCategoryFilter={categorySlugFromPath}
+          initialCategoryFilter={slug}
           totalItems={itemsInCategory.length}
         />
         <DirectoryGrid items={itemsInCategory} />

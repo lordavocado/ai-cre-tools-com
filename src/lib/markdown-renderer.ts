@@ -43,11 +43,11 @@ marked.setOptions({
  * @param markdown - The markdown string to convert
  * @returns HTML string with proper styling classes
  */
-export function markdownToHtml(markdown: string): string {
+export async function markdownToHtml(markdown: string): Promise<string> {
   if (!markdown) return '';
   
   try {
-    let html = marked(markdown);
+    let html = await marked(markdown);
     
     // Post-process the HTML to add our custom classes
     html = html
@@ -107,12 +107,12 @@ export function markdownToHtml(markdown: string): string {
  * @param markdown - The markdown string to convert
  * @returns Plain text string
  */
-export function markdownToPlainText(markdown: string): string {
+export async function markdownToPlainText(markdown: string): Promise<string> {
   if (!markdown) return '';
   
   try {
     // First convert to HTML, then strip HTML tags
-    const html = marked(markdown);
+    const html = await marked(markdown);
     return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   } catch (error) {
     console.error('Error converting markdown to plain text:', error);

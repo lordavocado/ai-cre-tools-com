@@ -44,7 +44,7 @@ export function AdvancedNewsletterForm({
   title = "Join Our Newsletter",
   description = "Stay updated with our latest news and updates. Customize your preferences below."
 }: AdvancedNewsletterFormProps) {
-  const initialState = { message: null, success: false };
+  const initialState = { message: "", success: false };
   const [state, formAction] = useActionState(subscribeWithCustomOptions, initialState);
   const { toast } = useToast();
   

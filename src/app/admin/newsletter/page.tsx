@@ -147,7 +147,7 @@ export default async function NewsletterAdminPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
+              {tags.map((tag: any) => (
                 <Badge key={tag.id} variant="secondary" className="flex items-center gap-1">
                   {tag.name}
                   <span className="text-xs opacity-75">({tag.memberCount})</span>

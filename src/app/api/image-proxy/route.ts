@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
 
         const response = await fetch(imageUrl, {
           signal: controller.signal,
-          headers: strategy.headers,
+          headers: strategy.headers as HeadersInit,
         });
 
         clearTimeout(timeoutId);

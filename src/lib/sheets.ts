@@ -1418,8 +1418,8 @@ export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryIte
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
-  const categories = HARDCODED_CATEGORIES; // Use hardcoded categories directly
-  const allDirItems = await getDirectoryItems(); // Still need this to calculate item counts
+  const categories = await getCategories(); // Use categories from getCategories function
+  const allDirItems = await getDirectoryItems(); // Need this for item count calculation
   
   const category = categories.find(cat => cat.slug === slug);
 

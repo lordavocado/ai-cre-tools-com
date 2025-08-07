@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Get client IP
-  const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
   // Rate limiting for API routes
   if (pathname.startsWith('/api/')) {

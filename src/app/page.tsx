@@ -3,10 +3,8 @@ import { Hero } from "@/components/landing/Hero";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
-import { GuideCard } from "@/components/guide/GuideCard";
 import { IntersectionLoader } from "@/components/performance/intersection-loader";
 import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/sheets";
-import { getGuides, getRecentGuides } from "@/lib/markdown";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -85,14 +83,15 @@ export const metadata: Metadata = {
 export const revalidate = 3600; 
 
 interface HomeProps {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     category?: string;
-  };
+  }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const { search, category } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { search, category } = resolvedSearchParams;
   const searchTerm = search || "";
   const categoryFilter = category || "";
 
