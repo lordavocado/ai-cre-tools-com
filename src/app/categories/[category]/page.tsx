@@ -20,6 +20,7 @@ export async function generateStaticParams() {
 export async function generateMetadata(
   { params }: { params: { category: string } },
   parent: ResolvingMetadata
+) {
   const { category: categorySlug } = params;
   const category = await getCategoryBySlug(categorySlug);
 
@@ -97,20 +98,24 @@ export async function generateMetadata(
 // Revalidate every hour
 export const revalidate = 3600;
 
-export default async function CategoryDetailPage({ params, searchParams }: { params: { category: string }, searchParams: { search?: string } }) {
-  const { category: categorySlugFromPath } = params;
-  const { search } = searchParams;
-  const searchTerm = search || "";
+export default async function CategoryPage({ 
+  params: { category: slug },
+  searchParams = {}
+}: {
+  params: { category: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const searchTerm = searchParams?.search as string || '';
   // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
 
-  const category = await getCategory(categorySlugFromPath);
+  const category = await getCategoryBySlug(slug);
   if (!category) {
     notFound();
   }
 
   // Items are always fetched based on the category slug from the path for this page.
   // Search term applies within this path-defined category.
-  const itemsInCategory = await getDirectoryItems(searchTerm, categorySlugFromPath);
+  const itemsInCategory = await getDirectoryItems(searchTerm, slug);
   
   const allCategoriesForSearch: Category[] = await getCategories(); 
   const searchCategories: DirectorySearchCategory[] = allCategoriesForSearch.map(
@@ -128,7 +133,7 @@ export default async function CategoryDetailPage({ params, searchParams }: { par
             "@type": "CollectionPage",
             name: `${category.name} Tools`,
             description: category.description,
-            url: `${siteConfig.url}/categories/${categorySlugFromPath}`,
+            url: `${siteConfig.url}/categories/${slug}`,
             isPartOf: {
               "@type": "WebSite",
               name: siteConfig.name,
@@ -153,7 +158,7 @@ export default async function CategoryDetailPage({ params, searchParams }: { par
                   "@type": "ListItem",
                   position: 3,
                   name: category.name,
-                  item: `${siteConfig.url}/categories/${categorySlugFromPath}`,
+                  item: `${siteConfig.url}/categories/${slug}`,
                 },
               ],
             },
