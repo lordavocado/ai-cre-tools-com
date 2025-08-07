@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import Image from "next/image";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig, generateCategoryMeta } from "@/config/site";
 
@@ -42,7 +43,15 @@ export async function generateMetadata(
       ...siteConfig.seo.primaryKeywords,
       'category directory',
       'tool comparison',
-      'software reviews'
+      'software reviews',
+      `${category.name.toLowerCase()} software`,
+      `best ${category.name.toLowerCase()} tools`,
+      `${category.name.toLowerCase()} solutions`,
+      `compare ${category.name.toLowerCase()} tools`,
+      `${category.name.toLowerCase()} directory`,
+      'commercial real estate software',
+      'proptech tools',
+      'real estate ai solutions'
     ],
     
     // Enhanced Open Graph for category pages
@@ -181,6 +190,51 @@ export default async function CategoryPage({
         }}
       />
 
+      {/* FAQ Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: `What are ${category.name} tools?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: `${category.name} tools are specialized AI-powered software solutions designed to help commercial real estate professionals ${category.description.toLowerCase()}. These tools leverage artificial intelligence and machine learning to automate processes, provide insights, and improve decision-making in the commercial real estate industry.`
+                }
+              },
+              {
+                "@type": "Question",
+                name: `How do I choose the right ${category.name} tool?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Consider your specific business needs, budget, team size, and existing technology stack. Look for tools that offer free trials, have strong customer support, and integrate well with your current workflow."
+                }
+              },
+              {
+                "@type": "Question",
+                name: `Are these ${category.name} tools suitable for small businesses?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: `Many ${category.name} tools offer scalable pricing plans suitable for businesses of all sizes. We indicate pricing models and company size recommendations in our directory to help you find solutions that fit your budget and requirements.`
+                }
+              },
+              {
+                "@type": "Question",
+                name: "What should I expect in terms of implementation time?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Implementation time varies by tool complexity and business requirements. Simple tools may be ready in days, while comprehensive platforms might take weeks or months. Most vendors provide implementation support and training to ensure successful adoption."
+                }
+              }
+            ]
+          }),
+        }}
+      />
+
       <div className="container py-12 md:py-16 pl-6">
         <header className="mb-12 text-center">
           {category.imageUrl && (
@@ -224,6 +278,67 @@ export default async function CategoryPage({
           totalItems={itemsInCategory.length}
         />
         <DirectoryGrid items={itemsInCategory} />
+
+        {/* Additional SEO Content Section */}
+        {itemsInCategory.length > 0 && (
+          <div className="mt-16">
+            {/* FAQ Section for Category */}
+            <Card className="mb-8">
+              <CardContent className="pt-6">
+                <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions about {category.name} Tools</h2>
+                
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">What are {category.name} tools?</h3>
+                    <p className="text-muted-foreground">
+                      {category.name} tools are specialized AI-powered software solutions designed to help commercial real estate professionals {category.description.toLowerCase()}. These tools leverage artificial intelligence and machine learning to automate processes, provide insights, and improve decision-making in the commercial real estate industry.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">How do I choose the right {category.name} tool?</h3>
+                    <p className="text-muted-foreground">
+                      Consider your specific business needs, budget, team size, and existing technology stack. Look for tools that offer free trials, have strong customer support, and integrate well with your current workflow. Our directory provides detailed comparisons to help you make an informed decision.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Are these {category.name} tools suitable for small businesses?</h3>
+                    <p className="text-muted-foreground">
+                      Many {category.name} tools offer scalable pricing plans suitable for businesses of all sizes. We indicate pricing models and company size recommendations in our directory to help you find solutions that fit your budget and requirements.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">What should I expect in terms of implementation time?</h3>
+                    <p className="text-muted-foreground">
+                      Implementation time varies by tool complexity and business requirements. Simple tools may be ready in days, while comprehensive platforms might take weeks or months. Most vendors provide implementation support and training to ensure successful adoption.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Related Categories */}
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Explore Related Categories</h2>
+              <p className="text-muted-foreground mb-8">
+                Discover other AI tools that complement your {category.name.toLowerCase()} solutions
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                {searchCategories.slice(0, 4).filter(cat => cat.slug !== slug).map((relatedCategory) => (
+                  <Link 
+                    key={relatedCategory.slug} 
+                    href={`/categories/${relatedCategory.slug}`}
+                    className="inline-flex items-center px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    {relatedCategory.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

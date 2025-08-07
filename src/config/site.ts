@@ -127,6 +127,7 @@ export const siteConfig = {
       { href: '/', label: 'Home' },
       { href: '/categories', label: 'Categories' },
       { href: '/favourites', label: 'Favourites' },
+      { href: '/about', label: 'About' },
     ]
   },
 
