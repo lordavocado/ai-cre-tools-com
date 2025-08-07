@@ -244,7 +244,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
                   key={`${result.type}-${result.id}`}
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start p-3 h-auto text-left rounded-none border-b border-border/50 last:border-b-0",
+                    "w-full justify-start p-3 h-auto text-left rounded-none border-b border/50 last:border-b-0",
                     selectedIndex === index && "bg-accent"
                   )}
                   onClick={() => handleResultClick(result)}

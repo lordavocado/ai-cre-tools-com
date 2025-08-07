@@ -1,5 +1,5 @@
 import type { Category } from "@/types";
-import { getDirectoryItems, getCategoryBySlug } from '@/lib/sheets';
+import { getDirectoryItems, getCategoryBySlug, getCategories } from '@/lib/sheets';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
@@ -8,13 +8,7 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { siteConfig, generateCategoryMeta } from "@/config/site";
 
-type Props = {
-  params: { category: string }; // This is the category slug from the path
-  searchParams: {
-    search?: string;
-    // category?: string; // This would be from query params, potentially overriding path
-  };
-};
+
 
 export async function generateStaticParams() {
   const categories = await getCategories();
@@ -24,11 +18,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  { params }: Props,
+  { params }: { params: { category: string } },
   parent: ResolvingMetadata
-): Promise<Metadata> {
-  const { category: categorySlug } = await params;
-  const category = await getCategory(categorySlug);
+  const { category: categorySlug } = params;
+  const category = await getCategoryBySlug(categorySlug);
 
   if (!category) {
     return {
@@ -104,9 +97,9 @@ export async function generateMetadata(
 // Revalidate every hour
 export const revalidate = 3600;
 
-export default async function CategoryDetailPage({ params, searchParams }: Props) {
-  const { category: categorySlugFromPath } = await params;
-  const { search } = await searchParams;
+export default async function CategoryDetailPage({ params, searchParams }: { params: { category: string }, searchParams: { search?: string } }) {
+  const { category: categorySlugFromPath } = params;
+  const { search } = searchParams;
   const searchTerm = search || "";
   // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
 

@@ -52,3 +52,4 @@ export interface Guide {
 export interface NewsletterSubscription {
   email: string;
 }
+

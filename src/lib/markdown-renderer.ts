@@ -81,10 +81,10 @@ export function markdownToHtml(markdown: string): string {
       .replace(/<blockquote>/g, '<blockquote class="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">')
       
       // Tables
-      .replace(/<table>/g, '<div class="overflow-x-auto my-4"><table class="min-w-full border border-border">')
+      .replace(/<table>/g, '<div class="overflow-x-auto my-4"><table class="min-w-full border">')
       .replace(/<\/table>/g, '</table></div>')
       .replace(/<thead>/g, '<thead class="bg-muted">')
-      .replace(/<tr>/g, '<tr class="border-b border-border">')
+      .replace(/<tr>/g, '<tr class="border-b border">')
       .replace(/<th>/g, '<th class="px-4 py-2 text-left font-semibold">')
       .replace(/<td>/g, '<td class="px-4 py-2">')
       
@@ -92,7 +92,7 @@ export function markdownToHtml(markdown: string): string {
       .replace(/<img src="([^"]*)" alt="([^"]*)"([^>]*)>/g, '<div class="my-6"><img src="$1" alt="$2"$3 class="rounded-md shadow-md max-w-full h-auto mx-auto" /></div>')
       
       // Horizontal rules
-      .replace(/<hr>/g, '<hr class="my-8 border-border">');
+      .replace(/<hr>/g, '<hr class="my-8 border">');
     
     return html;
   } catch (error) {

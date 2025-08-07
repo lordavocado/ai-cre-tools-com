@@ -42,7 +42,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-10 pt-8 border-t border-border/40 text-center text-sm text-muted-foreground">
+        <div className="mt-10 pt-8 border-t border/40 text-center text-sm text-muted-foreground">
           <p>&copy; {currentYear} {computedSiteConfig.footer.copyright}</p>
         </div>
       </div>

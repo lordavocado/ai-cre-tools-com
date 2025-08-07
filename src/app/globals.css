@@ -19,7 +19,7 @@
   }
   
   * {
-    @apply border-border;
+    @apply border;
   }
   
   body {
@@ -79,7 +79,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border;
   }
   body {
     @apply bg-background text-foreground font-sans; /* Ensure Geist font from layout is applied */
