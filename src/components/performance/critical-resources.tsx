@@ -9,10 +9,14 @@ import { useEffect } from 'react';
 export function CriticalResources() {
   useEffect(() => {
     // Preload critical resources
-    const preloadResources = [
+    const preloadResources: Array<{
+      href: string;
+      as: string;
+      type?: string;
+      crossOrigin?: string;
+    }> = [
       { href: '/chunks/react.js', as: 'script' },
       { href: '/chunks/posthog.js', as: 'script' },
-      { href: '/fonts/inter-var.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
     ];
 
     preloadResources.forEach(resource => {
@@ -89,21 +93,8 @@ export function FontLoader() {
       });
     }
 
-    // Preload critical font files
-    const fontFiles = [
-      '/fonts/inter-var.woff2',
-      '/fonts/inter-latin.woff2',
-    ];
-
-    fontFiles.forEach(font => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'font';
-      link.type = 'font/woff2';
-      link.crossOrigin = 'anonymous';
-      link.href = font;
-      document.head.appendChild(link);
-    });
+    // Note: Fonts are loaded via Next.js font optimization
+    // No need to preload local font files as they're handled by next/font/google
   }, []);
 
   return null;

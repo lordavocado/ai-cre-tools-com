@@ -18,7 +18,33 @@ export function JSExecutionOptimizer() {
   const scheduleTask = useCallback((task: () => void, priority: 'high' | 'normal' | 'low' = 'normal') => {
     if ('scheduler' in window && 'postTask' in (window as any).scheduler) {
       // Use modern scheduler API if available
-      (window as any).scheduler.postTask(task, { priority });
+      // Convert priority to valid Scheduler API values
+      let schedulerPriority: 'user-blocking' | 'user-visible' | 'background';
+      switch (priority) {
+        case 'high':
+          schedulerPriority = 'user-blocking';
+          break;
+        case 'normal':
+          schedulerPriority = 'user-visible';
+          break;
+        case 'low':
+          schedulerPriority = 'background';
+          break;
+        default:
+          schedulerPriority = 'user-visible';
+      }
+      try {
+        (window as any).scheduler.postTask(task, { priority: schedulerPriority });
+      } catch (error) {
+        // Fallback if priority value is not supported
+        console.warn('Scheduler API priority not supported, falling back to requestIdleCallback');
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(task, { timeout: priority === 'high' ? 100 : 1000 });
+        } else {
+          const delay = priority === 'high' ? 0 : priority === 'normal' ? 10 : 50;
+          setTimeout(task, delay);
+        }
+      }
     } else if ('requestIdleCallback' in window) {
       // Fallback to requestIdleCallback
       window.requestIdleCallback(task, { timeout: priority === 'high' ? 100 : 1000 });

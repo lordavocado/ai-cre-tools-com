@@ -97,7 +97,11 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter'
+})
 
 export default function RootLayout({
   children,
@@ -107,9 +111,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Preload critical resources */}
-        <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -122,7 +123,7 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-white font-sans antialiased',
-          inter.className
+          inter.variable
         )}
       >
         <PostHogProvider>
