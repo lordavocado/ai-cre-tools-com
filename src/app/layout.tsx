@@ -12,6 +12,8 @@ import { FavouritesProvider } from '@/providers/FavouritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
 import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/performance/posthog-optimizer';
 import { JSExecutionOptimizer, ScriptExecutionMonitor } from '@/components/performance/js-execution-optimizer';
+import { CSSFallback, CSSLoadingMonitor } from '@/components/css-fallback';
+import { CriticalResources } from '@/components/performance/critical-resources';
 
 
 
@@ -111,6 +113,100 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Critical inline styles for immediate rendering */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            :root {
+              --background: 0 0% 100%;
+              --foreground: 0 0% 9%;
+              --primary: 0 0% 9%;
+              --primary-foreground: 0 0% 98%;
+              --secondary: 0 0% 96%;
+              --secondary-foreground: 0 0% 9%;
+              --muted: 0 0% 96%;
+              --muted-foreground: 0 0% 45%;
+              --border: 0 0% 90%;
+              --ring: 0 0% 9%;
+              --radius: 0.5rem;
+            }
+            * { box-sizing: border-box; }
+            html { height: 100%; scroll-behavior: smooth; }
+            body { 
+              margin: 0; 
+              padding: 0; 
+              font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+              line-height: 1.6; 
+              color: hsl(0 0% 9%); 
+              background-color: hsl(0 0% 100%);
+              min-height: 100vh;
+              font-feature-settings: "rlig" 1, "calt" 1;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+            }
+            .flex { display: flex; }
+            .flex-col { flex-direction: column; }
+            .min-h-screen { min-height: 100vh; }
+            .min-h-dvh { min-height: 100dvh; }
+            .flex-1 { flex: 1 1 0%; }
+            .relative { position: relative; }
+            .bg-background { background-color: hsl(var(--background)); }
+            .text-foreground { color: hsl(var(--foreground)); }
+            .container { 
+              width: 100%; 
+              max-width: 1200px; 
+              margin: 0 auto; 
+              padding: 0 1rem; 
+            }
+            .btn {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              white-space: nowrap;
+              border-radius: calc(var(--radius) - 2px);
+              font-size: 0.875rem;
+              font-weight: 500;
+              transition: all 0.2s ease;
+              border: 1px solid hsl(var(--border));
+              background-color: hsl(var(--background));
+              color: hsl(var(--foreground));
+              padding: 0.5rem 1rem;
+              cursor: pointer;
+            }
+            .btn:hover {
+              background-color: hsl(var(--secondary));
+            }
+            .btn-primary {
+              background-color: hsl(var(--primary));
+              color: hsl(var(--primary-foreground));
+              border-color: hsl(var(--primary));
+            }
+            .btn-primary:hover {
+              background-color: hsl(var(--primary) / 0.9);
+            }
+            .loading-skeleton {
+              background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+              background-size: 200% 100%;
+              animation: skeleton-loading 1.5s infinite;
+            }
+            @keyframes skeleton-loading {
+              0% { background-position: 200% 0; }
+              100% { background-position: -200% 0; }
+            }
+            .hide-no-css { display: none; }
+            .show-no-css { 
+              display: block; 
+              text-align: center; 
+              padding: 2rem; 
+              background: #f8f9fa; 
+              border: 2px solid #e9ecef; 
+              margin: 1rem;
+              border-radius: 8px;
+            }
+            .css-loaded .hide-no-css { display: block; }
+            .css-loaded .show-no-css { display: none; }
+          `
+        }} />
+        
         {/* DNS prefetch for external domains */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -119,6 +215,31 @@ export default function RootLayout({
         {/* Preconnect to critical origins */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* CSS loading detection */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              function checkCSSLoaded() {
+                var testEl = document.createElement('div');
+                testEl.className = 'flex';
+                document.body.appendChild(testEl);
+                var isLoaded = window.getComputedStyle(testEl).display === 'flex';
+                document.body.removeChild(testEl);
+                if (isLoaded) {
+                  document.documentElement.classList.add('css-loaded');
+                } else {
+                  setTimeout(checkCSSLoaded, 100);
+                }
+              }
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', checkCSSLoaded);
+              } else {
+                checkCSSLoaded();
+              }
+            })();
+          `
+        }} />
       </head>
       <body
         className={cn(
@@ -126,6 +247,9 @@ export default function RootLayout({
           inter.variable
         )}
       >
+        <CSSFallback />
+        <CSSLoadingMonitor />
+        <CriticalResources />
         <PostHogProvider>
           <FavouritesProvider>
             <PostHogOptimizer />

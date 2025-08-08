@@ -44,33 +44,100 @@ export function CriticalResources() {
       document.head.appendChild(link);
     });
 
-    // Load non-critical CSS asynchronously
+    // Enhanced CSS loading with error handling
     const loadCSS = (href: string, media = 'all') => {
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'style';
       link.href = href;
+      
+      let loaded = false;
+      
       link.onload = function() {
-        // @ts-ignore
-        this.onload = null;
-        // @ts-ignore
-        this.rel = 'stylesheet';
-        // @ts-ignore
-        this.media = media;
+        if (!loaded) {
+          loaded = true;
+          // @ts-ignore
+          this.onload = null;
+          // @ts-ignore
+          this.rel = 'stylesheet';
+          // @ts-ignore
+          this.media = media;
+          console.log(`CSS loaded successfully: ${href}`);
+        }
       };
+
+      link.onerror = function() {
+        console.warn(`Failed to load CSS: ${href}`);
+        // Try to load directly as stylesheet if preload fails
+        const fallbackLink = document.createElement('link');
+        fallbackLink.rel = 'stylesheet';
+        fallbackLink.href = href;
+        fallbackLink.media = media;
+        document.head.appendChild(fallbackLink);
+      };
+
       document.head.appendChild(link);
       
-      // Fallback for old browsers
+      // Multiple fallback strategies
       setTimeout(() => {
-        if (link.rel !== 'stylesheet') {
+        if (link.rel !== 'stylesheet' && !loaded) {
+          console.log(`Fallback: Converting preload to stylesheet for ${href}`);
           link.rel = 'stylesheet';
           link.media = media;
         }
-      }, 3000);
+      }, 2000);
+
+      // Final fallback - create direct stylesheet link
+      setTimeout(() => {
+        if (!loaded) {
+          console.log(`Final fallback: Creating direct stylesheet for ${href}`);
+          const directLink = document.createElement('link');
+          directLink.rel = 'stylesheet';
+          directLink.href = href;
+          directLink.media = media;
+          document.head.appendChild(directLink);
+        }
+      }, 5000);
     };
 
-    // Load non-critical styles
-    loadCSS('/css/non-critical.css');
+    // Monitor main CSS loading
+    const monitorMainCSS = () => {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1 && (node as Element).tagName === 'LINK') {
+                const link = node as HTMLLinkElement;
+                if (link.rel === 'stylesheet' && link.href.includes('/_next/static/css/')) {
+                  console.log('Main CSS detected:', link.href);
+                  
+                  // Add error handling to main CSS
+                  link.onerror = () => {
+                    console.error('Main CSS failed to load:', link.href);
+                    document.documentElement.classList.add('css-load-error');
+                  };
+                  
+                  link.onload = () => {
+                    console.log('Main CSS loaded successfully:', link.href);
+                    document.documentElement.classList.add('css-loaded');
+                  };
+                }
+              }
+            });
+          }
+        });
+      });
+
+      observer.observe(document.head, {
+        childList: true,
+        subtree: true
+      });
+
+      // Stop observing after 10 seconds
+      setTimeout(() => observer.disconnect(), 10000);
+    };
+
+    monitorMainCSS();
 
     return () => {
       // Cleanup if needed
