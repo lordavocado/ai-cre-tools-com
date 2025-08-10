@@ -28,24 +28,42 @@ export function CSSFallback() {
       if (isFlexLoaded && isAlignLoaded) {
         setCssLoaded(true);
         document.documentElement.classList.add('css-loaded');
-      } else {
-        setFallbackActive(true);
-        console.warn('CSS failed to load, activating fallback styles');
+        return true;
       }
+      return false;
     }
 
-    // Initial check
-    setTimeout(checkCSSLoaded, 100);
-
-    // Recheck after 1 second if still not loaded
-    const fallbackTimer = setTimeout(() => {
-      if (!cssLoaded) {
-        checkCSSLoaded();
-      }
-    }, 1000);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [cssLoaded]);
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        // Give CSS more time to load
+        setTimeout(() => {
+          if (!checkCSSLoaded()) {
+            // Try again after a longer delay
+            setTimeout(() => {
+              if (!checkCSSLoaded()) {
+                setFallbackActive(true);
+                console.warn('CSS failed to load after multiple attempts, activating fallback styles');
+              }
+            }, 2000);
+          }
+        }, 500);
+      });
+    } else {
+      // DOM already loaded, check CSS
+      setTimeout(() => {
+        if (!checkCSSLoaded()) {
+          // Try again after a longer delay
+          setTimeout(() => {
+            if (!checkCSSLoaded()) {
+              setFallbackActive(true);
+              console.warn('CSS failed to load after multiple attempts, activating fallback styles');
+            }
+          }, 2000);
+        }
+      }, 500);
+    }
+  }, []);
 
   // If CSS is loaded properly, don't render anything
   if (cssLoaded) return null;
@@ -254,16 +272,25 @@ export function CSSLoadingMonitor() {
       }
     };
 
-    checkLoaded();
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        // Give CSS more time to load
+        setTimeout(checkLoaded, 500);
+      });
+    } else {
+      // DOM already loaded, check CSS
+      setTimeout(checkLoaded, 500);
+    }
     
-    // Keep checking every 100ms until loaded
+    // Keep checking every 500ms until loaded
     const interval = setInterval(() => {
       if (!isLoaded) {
         checkLoaded();
       } else {
         clearInterval(interval);
       }
-    }, 100);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [isLoaded]);
