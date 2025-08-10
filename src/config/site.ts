@@ -69,7 +69,7 @@ export const siteConfig = {
       organization: {
         name: 'AI CRE Tools',
         url: 'https://aicretools.com',
-        logo: 'https://aicretools.com/product-analytics-tools-logo.png', // TODO: Update logo
+        logo: 'https://aicretools.com/ai-cre-tools-logo.png',
         description: 'The most comprehensive directory of Commercial Real Estate AI tools and solutions.',
         sameAs: [
           'https://twitter.com/aicretools',
@@ -183,11 +183,11 @@ export function generateToolMeta(toolName: string, toolTagline?: string, toolDes
   return {
     title: interpolateText(toolMetaTemplates.title, { 
       toolName, 
-      toolTagline: toolTagline || 'Product Analytics Tool' 
+      toolTagline: toolTagline || 'CRE AI Tool' 
     }),
     description: interpolateText(toolMetaTemplates.description, { 
       toolName, 
-      toolDescription: toolDescription || `${toolName} is a comprehensive product analytics solution.` 
+      toolDescription: toolDescription || `${toolName} is a comprehensive CRE AI solution.` 
     }),
     keywords: interpolateText(toolMetaTemplates.keywords, { toolName }),
   };

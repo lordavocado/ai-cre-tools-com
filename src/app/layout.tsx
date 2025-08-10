@@ -14,8 +14,7 @@ import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/perf
 import { JSExecutionOptimizer, ScriptExecutionMonitor } from '@/components/performance/js-execution-optimizer';
 import { CSSFallback, CSSLoadingMonitor } from '@/components/css-fallback';
 import { CriticalResources } from '@/components/performance/critical-resources';
-
-
+import { PerformanceMonitor } from '@/components/performance/performance-monitor';
 
 
 export const metadata: Metadata = {
@@ -87,10 +86,10 @@ export const metadata: Metadata = {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/product-analytics-tools-logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/ai-cre-tools-logo.png', sizes: '32x32', type: 'image/png' },
     ],
     apple: [
-      { url: '/product-analytics-tools-logo.png', sizes: '180x180', type: 'image/png' },
+      { url: '/ai-cre-tools-logo.png', sizes: '180x180', type: 'image/png' },
     ],
     shortcut: '/favicon.ico',
   },
@@ -256,6 +255,11 @@ export default function RootLayout({
             <AnalyticsPerformanceMonitor />
             <JSExecutionOptimizer />
             <ScriptExecutionMonitor />
+            <PerformanceMonitor 
+              enableConsoleLogging={process.env.NODE_ENV === 'development'}
+              enableRealUserMonitoring={true}
+              thresholdWarnings={true}
+            />
             <div className="relative flex min-h-dvh flex-col bg-background">
               <Header />
               <main className="flex-1">{children}</main>

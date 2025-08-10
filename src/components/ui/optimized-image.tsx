@@ -50,7 +50,7 @@ export function OptimizedImage({
     setHasError(true);
     setIsLoading(false);
     // Fallback to a default image
-    setImgSrc('/product-analytics-tools-logo.png');
+            setImgSrc('/ai-cre-tools-logo.png');
   };
 
   // Generate optimized sizes if not provided

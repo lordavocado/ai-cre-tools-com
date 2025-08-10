@@ -42,7 +42,7 @@ export function Header() {
               <SheetContent side="right">
                 <nav className="grid gap-6 text-lg font-medium mt-8">
                   <Link href="/" className="flex items-center gap-2 mb-4">
-                    <img src="/product-analytics-tools-logo.png" alt="AI CRE Tools Logo" className="h-6 w-auto" />
+                    <img src="/ai-cre-tools-logo.png" alt="AI CRE Tools Logo" className="h-6 w-auto" />
                     <span className="font-bold">{siteConfig.categoryName}</span>
                   </Link>
                   

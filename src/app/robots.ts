@@ -6,14 +6,28 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: [
+          '/',
+          '/about',
+          '/categories',
+          '/guides',
+          '/favourites',
+          '/privacy-policy',
+          '/terms-of-service'
+        ],
         disallow: [
           '/api/',
           '/admin/',
           '/_next/',
           '/private/',
           '*.json$',
+          '/search?*',
+          '/admin/*',
+          '/api/*',
+          '/_next/*',
+          '/private/*'
         ],
+        crawlDelay: 1,
       },
       {
         userAgent: 'GPTBot',
@@ -30,10 +44,27 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: 'FacebookBot',
         allow: '/',
+        crawlDelay: 2,
       },
       {
         userAgent: 'TwitterBot',
         allow: '/',
+        crawlDelay: 2,
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: '/',
+        crawlDelay: 1,
+      },
+      {
+        userAgent: 'Slurp',
+        allow: '/',
+        crawlDelay: 1,
+      },
+      {
+        userAgent: 'DuckDuckBot',
+        allow: '/',
+        crawlDelay: 1,
       },
     ],
     sitemap: `${siteConfig.url}/sitemap.xml`,

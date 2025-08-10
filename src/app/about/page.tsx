@@ -68,7 +68,7 @@ export default function AboutPage() {
               "@type": "Organization",
               name: siteConfig.name,
               url: siteConfig.url,
-              logo: `${siteConfig.url}/product-analytics-tools-logo.png`,
+              logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
               description: siteConfig.description,
               foundingDate: "2024",
               industry: "PropTech",
@@ -273,6 +273,58 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+
+      {/* Structured Data for About Page */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            name: `About ${siteConfig.name}`,
+            description: siteConfig.description,
+            url: `${siteConfig.url}/about`,
+            mainEntity: {
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
+              description: siteConfig.description,
+              foundingDate: "2024",
+              industry: "PropTech",
+              knowsAbout: [
+                "Commercial Real Estate AI",
+                "Property Technology",
+                "AI Tools Directory",
+                "Real Estate Analytics",
+                "PropTech Solutions"
+              ],
+              sameAs: Object.values(siteConfig.social || {}).map(handle => 
+                handle.includes('@') ? `https://twitter.com/${handle}` : 
+                handle.includes('company/') ? `https://linkedin.com/${handle}` :
+                `https://github.com/${handle}`
+              )
+            },
+            breadcrumb: {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: siteConfig.url
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "About",
+                  item: `${siteConfig.url}/about`
+                }
+              ]
+            }
+          })
+        }}
+      />
     </>
   );
 }

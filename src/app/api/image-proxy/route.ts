@@ -163,6 +163,6 @@ export async function GET(request: NextRequest) {
     console.error('Image proxy error:', error);
     
     // Return a fallback image or placeholder
-    return NextResponse.redirect(new URL('/product-analytics-tools-logo.png', request.url));
+    return NextResponse.redirect(new URL('/ai-cre-tools-logo.png', request.url));
   }
 } 

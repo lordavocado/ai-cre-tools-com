@@ -1,36 +1,37 @@
 ---
 id: getting-started
 slug: getting-started
-title: Getting Started with Product Analytics
-excerpt: Learn the basics of product analytics and how to get started with tracking and analyzing your product data.
+title: Getting Started with CRE AI Tools
+excerpt: Learn the basics of Commercial Real Estate AI tools and how to get started with implementing intelligent solutions for your property business.
 category: Guides
 publishedDate: "2025-08-04"
-author: Product Analytics Team
+author: AI CRE Tools Team
 readingTime: "5 min"
 imageUrl: "/images/guides/product-analytics-get-started-guide.jpg"
 ---
 
-# Getting Started with Product Analytics
+# Getting Started with CRE AI Tools
 
-Product analytics is essential for understanding how users interact with your product and making data-driven decisions. This guide will help you get started with the basics of product analytics.
+Commercial Real Estate AI tools are essential for modernizing your property operations and making data-driven decisions. This guide will help you get started with implementing AI solutions in your CRE business.
 
-## What is Product Analytics?
+## What are CRE AI Tools?
 
-Product analytics involves collecting and analyzing data about how users interact with your product. This data helps you:
+CRE AI tools involve using artificial intelligence to analyze, automate, and optimize various aspects of commercial real estate operations. These tools help you:
 
-- Understand user behavior
-- Identify areas for improvement
-- Make data-driven decisions
-- Track key metrics and KPIs
+- Analyze market trends and property values
+- Automate property management tasks
+- Make data-driven investment decisions
+- Optimize portfolio performance
+- Streamline leasing and tenant management
 
-## Key Metrics to Track
+## Key Areas to Focus On
 
-1. User engagement
-2. Feature adoption
-3. Retention rates
-4. Conversion rates
-5. User flow and navigation
+1. Market analysis and valuation
+2. Property management automation
+3. Investment portfolio optimization
+4. Leasing and tenant analytics
+5. Construction and development planning
 
 ## Next Steps
 
-Stay tuned for more guides on advanced product analytics topics and best practices.
+Stay tuned for more guides on advanced CRE AI implementation and best practices.

@@ -120,10 +120,58 @@ export function JSExecutionOptimizer() {
 
     observer.observe({ entryTypes: ['measure'] });
 
+    // Monitor Core Web Vitals
+    const webVitalsObserver = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      entries.forEach((entry) => {
+        if (entry.entryType === 'largest-contentful-paint') {
+          console.log(`LCP: ${entry.startTime}ms`);
+          if (entry.startTime > 2500) {
+            console.warn(`⚠️ LCP is slow: ${entry.startTime}ms (should be < 2.5s)`);
+          }
+        }
+        if (entry.entryType === 'first-input') {
+          console.log(`FID: ${entry.processingStart - entry.startTime}ms`);
+          if (entry.processingStart - entry.startTime > 100) {
+            console.warn(`⚠️ FID is slow: ${entry.processingStart - entry.startTime}ms (should be < 100ms)`);
+          }
+        }
+        if (entry.entryType === 'layout-shift') {
+          const layoutShift = entry as any;
+          if (layoutShift.value > 0.1) {
+            console.warn(`⚠️ CLS detected: ${layoutShift.value} (should be < 0.1)`);
+          }
+        }
+      });
+    });
+
+    webVitalsObserver.observe({ 
+      entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] 
+    });
+
+    // Monitor resource loading performance
+    const resourceObserver = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      entries.forEach((entry) => {
+        if (entry.entryType === 'resource') {
+          const resource = entry as PerformanceResourceTiming;
+          if (resource.duration > 1000) {
+            console.warn(`⚠️ Slow resource: ${resource.name} took ${resource.duration}ms`);
+          }
+        }
+      });
+    });
+
+    resourceObserver.observe({ entryTypes: ['resource'] });
+
     // Mark critical rendering complete
     performance.mark('critical-render-complete');
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      webVitalsObserver.disconnect();
+      resourceObserver.disconnect();
+    };
   }, []);
 
   // Chunk execution of heavy operations

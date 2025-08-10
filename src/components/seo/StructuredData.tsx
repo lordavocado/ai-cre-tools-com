@@ -37,7 +37,7 @@ export function ArticleStructuredData({ guide, url }: ArticleStructuredDataProps
     keywords: [
       guide.title.toLowerCase(),
       ...(guide.category ? [guide.category.replace('-', ' ')] : []),
-      'guide', 'tutorial', 'analytics', 'product analytics'
+      'guide', 'tutorial', 'analytics', 'cre ai tools'
     ].join(', '),
     wordCount: guide.content ? guide.content.split(/\s+/).length : undefined,
     timeRequired: guide.readingTime || '5 min read',

@@ -64,7 +64,7 @@ export function CSSOptimizer() {
     const preloadCriticalResources = () => {
       const criticalResources = [
         { href: '/favicon.ico', as: 'image' },
-        { href: '/product-analytics-tools-logo.png', as: 'image' },
+        { href: '/ai-cre-tools-logo.png', as: 'image' },
       ];
 
       criticalResources.forEach(resource => {

@@ -12,7 +12,7 @@ interface SafeImageProps {
 
 // Helper function to get favicon URL from website (same as comparison view)
 const getFaviconUrl = (website: string): string => {
-  if (!website) return "/product-analytics-tools-logo.png";
+  if (!website) return "/ai-cre-tools-logo.png";
   
   try {
     // Clean up the website URL
@@ -42,14 +42,14 @@ export function SafeImage({
     }
     // Otherwise, always use favicon approach like the comparison view
     if (website) return getFaviconUrl(website);
-    return '/product-analytics-tools-logo.png';
+    return '/ai-cre-tools-logo.png';
   });
   const [hasError, setHasError] = useState(false);
 
   const handleError = () => {
     // If favicon fails, fallback to default logo
-    if (currentSrc !== '/product-analytics-tools-logo.png') {
-      setCurrentSrc('/product-analytics-tools-logo.png');
+    if (currentSrc !== '/ai-cre-tools-logo.png') {
+      setCurrentSrc('/ai-cre-tools-logo.png');
     } else {
       // Show text fallback if even default logo fails
       setHasError(true);

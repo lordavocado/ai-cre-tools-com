@@ -235,7 +235,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                 <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 mb-4">
                   <div className="relative w-24 h-24 mx-auto md:mx-0 rounded-lg overflow-hidden shadow-md shrink-0 flex items-center justify-center bg-background">
                     <ImageWithFallback
-                      src={item.imageUrl || "/product-analytics-tools-logo.png"}
+                      src={item.imageUrl || "/ai-cre-tools-logo.png"}
                       alt={`${item.name} logo`}
                       width={96}
                       height={96}
@@ -430,6 +430,60 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
           </aside>
         </article>
+
+        {/* Structured Data for Tool Page */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: item.name,
+              description: item.description,
+              url: `${siteConfig.url}/${item.slug}`,
+              applicationCategory: item.category,
+              operatingSystem: "Web-based",
+              offers: {
+                "@type": "Offer",
+                price: item.pricing || "Contact for pricing",
+                priceCurrency: "USD",
+                availability: "https://schema.org/InStock"
+              },
+              ...(item.foundedYear && {
+                foundingDate: item.foundedYear.toString()
+              }),
+              ...(item.lastUpdated && {
+                dateModified: item.lastUpdated
+              }),
+              ...(item.website && {
+                url: item.website
+              }),
+              breadcrumb: {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: "Home",
+                    item: siteConfig.url
+                  },
+                  {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: "Categories",
+                    item: `${siteConfig.url}/categories`
+                  },
+                  ...categories.map((cat, index) => ({
+                    "@type": "ListItem",
+                    position: 3 + index,
+                    name: cat,
+                    item: `${siteConfig.url}/categories/${cat.toLowerCase().replace(/\s+/g, '-')}`
+                  }))
+                ]
+              }
+            })
+          }}
+        />
       </div>
     </>
   );
