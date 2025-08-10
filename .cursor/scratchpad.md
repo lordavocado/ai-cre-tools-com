@@ -8,6 +8,7 @@ The website needs comprehensive SEO optimization and a complete brand update fro
 2. **Brand Consistency Update**: Remove all legacy "product analytics" references and update to AI CRE Tools focus
 3. **Content Optimization**: Update guides, metadata, and structured data for CRE AI focus
 4. **Technical SEO**: Improve sitemap, robots.txt, and performance optimizations
+5. **Data Structure Alignment**: Ensure Google Sheets columns match the expected structure for tools, cards, and detail pages
 
 ## Key Challenges and Analysis
 
@@ -24,6 +25,11 @@ The website needs comprehensive SEO optimization and a complete brand update fro
 - Update logo references throughout the codebase
 - Update guide content to focus on CRE AI tools
 - Ensure consistent messaging across all components
+
+### Data Structure Issues
+- Google Sheets column mapping doesn't match expected structure
+- Need to align: slug, website, name, category, features, one_liner, description, country, city, icon_link
+- Ensure consistency between sheets data and frontend display
 
 ## High-level Task Breakdown
 
@@ -51,6 +57,12 @@ The website needs comprehensive SEO optimization and a complete brand update fro
 - [ ] Implement performance monitoring
 - [ ] Add missing structured data types
 
+### Phase 5: Data Structure Alignment
+- [x] Update Google Sheets column mappings to match expected structure
+- [x] Ensure consistency between sheets data and frontend components
+- [x] Test data flow from sheets to cards and detail pages
+- [x] Validate all data fields are properly mapped and displayed
+
 ## Project Status Board
 
 ### In Progress
@@ -61,6 +73,7 @@ The website needs comprehensive SEO optimization and a complete brand update fro
 - **Task 2**: ✅ Brand Update - Remove Product Analytics References - Updated all logo references and content to focus on CRE AI tools
 - **Task 3**: ✅ SEO Enhancements - Added comprehensive structured data and breadcrumbs to all pages
 - **Task 4**: ✅ Technical SEO Improvements - Implemented comprehensive performance monitoring, enhanced robots.txt, added missing metadata, and created SEO audit tools
+- **Task 5**: ✅ Data Structure Alignment - Updated Google Sheets column mappings to match expected structure and ensured consistency across frontend components
 
 ### Pending
 - None - All major tasks completed
@@ -77,6 +90,7 @@ The website needs comprehensive SEO optimization and a complete brand update fro
   - Created comprehensive SEO audit component
   - Enhanced JS execution optimizer with performance metrics
   - Integrated performance monitoring across the site
+- **NEW**: Identified Google Sheets column mapping mismatch - need to align with expected structure: slug, website, name, category, features, one_liner, description, country, city, icon_link
 - Project is now complete with all major SEO and technical improvements implemented
 
 ## Lessons
@@ -89,6 +103,7 @@ The website needs comprehensive SEO optimization and a complete brand update fro
 - Brand consistency requires updating multiple file types: code, content, images, and metadata
 - Technical SEO improvements should include performance monitoring, comprehensive metadata, and automated audit tools
 - Core Web Vitals monitoring provides valuable insights for user experience optimization
+- Data structure consistency is crucial for proper frontend display and user experience
 
 ## CSS Debugging Summary
 

@@ -97,7 +97,7 @@ export function FavouritesClient() {
       <div className="text-center mb-12">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Star className="h-8 w-8 text-yellow-500 fill-yellow-500" />
-          <h1 className="text-3xl md:text-4xl font-bold">My Favourite Tools</h1>
+          <h1 className="text-3xl md:text-4xl font-serif">My Favourite Tools</h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Your personal collection of saved analytics tools
@@ -114,7 +114,7 @@ export function FavouritesClient() {
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-12 text-center">
             <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-4">No Favourites Yet</h2>
+            <h2 className="text-2xl font-serif mb-4">No Favourites Yet</h2>
             <p className="text-muted-foreground mb-6">
               Start building your collection by exploring our directory and saving tools you like.
             </p>
@@ -174,7 +174,7 @@ export function FavouritesClient() {
             <Card className="max-w-2xl mx-auto">
               <CardContent className="p-12 text-center">
                 <Search className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
-                <h2 className="text-2xl font-bold mb-4">No Results Found</h2>
+                <h2 className="text-2xl font-serif mb-4">No Results Found</h2>
                 <p className="text-muted-foreground mb-6">
                   No tools match your search criteria. Try adjusting your search terms.
                 </p>

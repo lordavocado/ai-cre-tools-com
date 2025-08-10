@@ -17,6 +17,8 @@ export interface DirectoryItem {
   cons?: string[];
   foundedYear?: number;
   lastUpdated?: string;
+  country?: string;
+  city?: string;
   socials?: {
     twitter?: string;
     linkedin?: string;

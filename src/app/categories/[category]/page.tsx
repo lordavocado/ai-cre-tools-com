@@ -279,7 +279,7 @@ export default async function CategoryPage({
               </div>
             )}
             
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white bg-clip-text text-transparent">
               {category.name} Tools
             </h1>
             
@@ -326,7 +326,7 @@ export default async function CategoryPage({
       <div className="container py-12 pl-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 md:p-8">
-            <h2 className="text-2xl font-bold mb-6 text-center">Find Your Perfect {category.name} Tool</h2>
+            <h2 className="text-2xl font-serif mb-6 text-center">Find Your Perfect {category.name} Tool</h2>
             <DirectorySearch 
               categories={searchCategories} 
               initialSearchTerm={searchTerm}
@@ -435,7 +435,7 @@ export default async function CategoryPage({
       <div className="container py-12 pl-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">All {category.name} Tools</h2>
+            <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
             <p className="text-muted-foreground text-lg">
               Comprehensive directory of {itemsInCategory.length} {category.name.toLowerCase()} solutions
             </p>

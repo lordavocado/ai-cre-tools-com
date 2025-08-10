@@ -16,7 +16,7 @@ export default async function CategoriesPage() {
   return (
     <div className="container py-12 md:py-16 pl-6">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+        <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">
           Explore {siteConfig.categoryName} Categories
         </h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">

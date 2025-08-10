@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
 
       <div className="container py-12 md:py-16 max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Privacy Policy</h1>
+          <h1 className="text-3xl md:text-4xl font-serif mb-4">Privacy Policy</h1>
           <p className="text-lg text-muted-foreground">
             Learn how {siteConfig.name} protects your privacy and handles your data
           </p>

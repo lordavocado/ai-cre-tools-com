@@ -397,6 +397,17 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                     </div>
                   </div>
                 )}
+                {item.country && (
+                  <div className="flex items-start">
+                    <Users className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
+                    <div>
+                      <span className="font-semibold">Location: </span>
+                      <span className="text-muted-foreground">
+                        {item.city && `${item.city}, `}{item.country}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 {item.socials && (Object.keys(item.socials).length > 0) && (
                   <div className="pt-2">
                     <p className="font-semibold mb-1">Socials:</p>

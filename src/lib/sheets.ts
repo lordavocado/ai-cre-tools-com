@@ -19,19 +19,21 @@ const SHEET_NAMES = {
 // 2. Column Name Mappings Configuration:
 const COLUMN_MAPPINGS = {
   ITEMS: {
-    ID: 'id',
-    SLUG: 'id', // Using id as slug since there's no dedicated slug column
+    ID: 'slug', // Using slug as the unique identifier
+    SLUG: 'slug', // Dedicated slug column
     NAME: 'name',
     TAGLINE: 'one_liner',
     DESCRIPTION: 'description',
     CATEGORY_SLUG: 'category',
     WEBSITE: 'website',
     IMAGE_URL: 'icon_link',
-    FEATURES_JSON: 'key_features', // Expects: [{"name": "Feature 1", "description": "Optional desc"}, {"name": "Feature 2"}]
+    FEATURES_JSON: 'features', // Expects: [{"name": "Feature 1", "description": "Optional desc"}, {"name": "Feature 2"}]
     PRICING: 'pricing',
     BEST_FOR: 'best_for',
     TAGS: 'tags',
     RATING: 'rating',
+    COUNTRY: 'country',
+    CITY: 'city',
   },
   NEWSLETTER: {
     EMAIL: 'Email',
@@ -1385,10 +1387,10 @@ async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
     const CM = COLUMN_MAPPINGS.ITEMS; // Alias for brevity
     
     const items: DirectoryItem[] = rows.map((row): DirectoryItem => {
-      const baseId = getString(row, CM.ID);
+      const slug = getString(row, CM.SLUG);
       return {
-        id: `${baseId}-${row.rowNumber}`, // Make ID unique by combining with row number
-        slug: baseId, // Keep the original ID as the slug
+        id: slug, // Use slug as the unique identifier
+        slug: slug,
         name: getString(row, CM.NAME),
         tagline: getString(row, CM.TAGLINE),
         description: getString(row, CM.DESCRIPTION),
@@ -1400,6 +1402,8 @@ async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
         bestFor: getOptionalString(row, CM.BEST_FOR),
         tags: getArrayStrings(row, CM.TAGS),
         rating: getNumber(row, CM.RATING),
+        country: getOptionalString(row, CM.COUNTRY),
+        city: getOptionalString(row, CM.CITY),
       };
     });
 

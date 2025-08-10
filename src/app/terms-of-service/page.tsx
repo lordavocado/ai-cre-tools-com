@@ -70,7 +70,7 @@ export default function TermsOfServicePage() {
 
       <div className="container py-12 md:py-16 max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Terms of Service</h1>
+          <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">Terms of Service</h1>
           <p className="text-lg text-muted-foreground">
             Your rights and responsibilities when using {siteConfig.name}
           </p>
