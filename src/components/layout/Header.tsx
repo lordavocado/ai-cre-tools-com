@@ -7,17 +7,17 @@ import { siteConfig } from '@/config/site';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-[9998] w-full border-b border-neutral-100 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="font-serif text-lg text-neutral-900">{siteConfig.name}</span>
+          <span className="text-lg font-semibold text-neutral-900">{siteConfig.name}</span>
         </Link>
         <nav className="hidden md:flex md:items-center md:space-x-6">
           {siteConfig.nav.items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm text-neutral-600 transition-colors hover:text-neutral-900"
+              className="text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
             >
               {item.label}
             </Link>
@@ -43,7 +43,7 @@ export function Header() {
                 <nav className="grid gap-6 text-lg font-medium mt-8">
                   <Link href="/" className="flex items-center gap-2 mb-4">
                     <img src="/ai-cre-tools-logo.png" alt="AI CRE Tools Logo" className="h-6 w-auto" />
-                    <span className="font-bold">{siteConfig.categoryName}</span>
+                    <span className="font-semibold">{siteConfig.categoryName}</span>
                   </Link>
                   
                   <div className="mb-4">

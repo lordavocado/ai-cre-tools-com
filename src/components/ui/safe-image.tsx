@@ -24,7 +24,7 @@ const getFaviconUrl = (website: string): string => {
     const domain = new URL(cleanUrl).hostname;
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
   } catch {
-    return "/product-analytics-tools-logo.png";
+    return "/ai-cre-tools-logo.png";
   }
 };
 
@@ -36,19 +36,32 @@ export function SafeImage({
   fallbackText 
 }: SafeImageProps) {
   const [currentSrc, setCurrentSrc] = useState(() => {
-    // If we have a direct image URL and it's local, use it
+    // If we have a valid image URL and it's local, use it
     if (src && (src.startsWith('/') || src.startsWith('./'))) {
       return src;
     }
-    // Otherwise, always use favicon approach like the comparison view
-    if (website) return getFaviconUrl(website);
+    
+    // If we have a website but no valid imageUrl, prioritize favicon
+    if (website && (!src || src.trim() === '')) {
+      return getFaviconUrl(website);
+    }
+    
+    // If we have an external image URL, try to use it
+    if (src && src.startsWith('http')) {
+      return src;
+    }
+    
+    // Final fallback to default logo
     return '/ai-cre-tools-logo.png';
   });
   const [hasError, setHasError] = useState(false);
 
   const handleError = () => {
-    // If favicon fails, fallback to default logo
-    if (currentSrc !== '/ai-cre-tools-logo.png') {
+    // If current source is not the default logo, try favicon first
+    if (currentSrc !== '/ai-cre-tools-logo.png' && website) {
+      setCurrentSrc(getFaviconUrl(website));
+    } else if (currentSrc !== '/ai-cre-tools-logo.png') {
+      // If favicon also fails, fallback to default logo
       setCurrentSrc('/ai-cre-tools-logo.png');
     } else {
       // Show text fallback if even default logo fails

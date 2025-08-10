@@ -4,71 +4,105 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { NewsletterForm } from "./NewsletterForm";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Search, Zap } from "lucide-react";
 import { computedSiteConfig } from "@/config/site";
 
 export function Hero() {
   const title = computedSiteConfig.hero.title;
 
   return (
-    <section className="relative py-20 md:py-32 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-blue-950 overflow-hidden">
+    <section className="relative py-20 md:py-32 bg-white overflow-hidden">
       <div className="container text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-transparent bg-clip-text 
-                         bg-gradient-to-r from-slate-900 via-blue-800 to-purple-800 
-                         dark:from-white dark:via-blue-200 dark:to-purple-200">
-            {title}
-          </h1>
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-6"
+          >
+            <Zap className="h-4 w-4" />
+            The #1 Directory for CRE AI Tools
+          </motion.div>
 
-          <motion.p
+          {/* Main Title */}
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-gray-900 leading-tight"
           >
-            Discover the perfect CRE AI tool for your needs with our comprehensive directory that helps you compare and evaluate top AI solutions for Commercial Real Estate.
+            Find the Perfect
+            <span className="block text-blue-600">AI Tool</span>
+            <span className="block text-gray-700">for Your CRE Business</span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed"
+          >
+            Stop wasting time on endless research. Our curated directory of 100+ Commercial Real Estate AI tools helps you find, compare, and choose the right solution in minutes.
           </motion.p>
 
+          {/* Key Benefits */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+            className="flex flex-wrap justify-center gap-6 mb-10 text-sm text-gray-500"
           >
-            <div className="inline-block group relative bg-gradient-to-b from-blue-500/10 to-purple-500/10 
-                        dark:from-blue-400/10 dark:to-purple-400/10 p-px rounded-2xl backdrop-blur-lg 
-                        overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <Button asChild size="lg" className="rounded-[1.15rem] shadow-lg backdrop-blur-md 
-                            bg-white/95 hover:bg-white/100 dark:bg-slate-900/95 dark:hover:bg-slate-900/100 
-                            text-slate-900 dark:text-white transition-all duration-300 
-                            group-hover:-translate-y-0.5 border border-blue-200/50 dark:border-blue-800/50
-                            hover:shadow-md dark:hover:shadow-blue-900/50">
-                <Link href="#directory">
-                  Find Tools <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Expert-curated tools
             </div>
-            <Button asChild variant="outline" size="lg" className="shadow-lg backdrop-blur-md 
-                        bg-white/80 hover:bg-white/90 dark:bg-slate-900/80 dark:hover:bg-slate-900/90 
-                        border border-slate-200/50 dark:border-slate-800/50">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Detailed comparisons
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Real user reviews
+            </div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+          >
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/categories">
-                Understand Categories
+                <Search className="mr-2 h-5 w-5" />
+                Browse AI Tools
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold">
+              <Link href="/about">
+                How It Works
               </Link>
             </Button>
           </motion.div>
 
+          {/* Newsletter Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="flex flex-col items-center"
+            className="bg-gray-50 rounded-2xl p-8 max-w-2xl mx-auto"
           >
-            <h3 className="text-md font-semibold mb-3">Stay Updated About New CRE AI Tools</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Get New AI Tools First</h3>
+            <p className="text-gray-600 mb-6">Be the first to discover cutting-edge CRE AI solutions that can transform your business.</p>
             <NewsletterForm />
           </motion.div>
         </motion.div>
