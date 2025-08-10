@@ -18,6 +18,8 @@ interface DirectorySearchProps {
   categories: DirectorySearchCategory[];
   initialSearchTerm?: string;
   initialCategoryFilter?: string;
+  initialCountryFilter?: string;
+  initialCityFilter?: string;
   totalItems?: number;
 }
 
@@ -25,12 +27,16 @@ export function DirectorySearch({
   categories, 
   initialSearchTerm = "", 
   initialCategoryFilter = "",
+  initialCountryFilter = "",
+  initialCityFilter = "",
   totalItems = 0 
 }: DirectorySearchProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     initialCategoryFilter ? initialCategoryFilter.split(',').map(cat => cat.trim()) : []
   );
+  const [selectedCountry, setSelectedCountry] = useState(initialCountryFilter);
+  const [selectedCity, setSelectedCity] = useState(initialCityFilter);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const currentPathname = usePathname();
@@ -41,6 +47,12 @@ export function DirectorySearch({
         const queryParams = new URLSearchParams();
         if (searchTerm) {
           queryParams.set('search', searchTerm);
+        }
+        if (selectedCountry) {
+          queryParams.set('country', selectedCountry);
+        }
+        if (selectedCity) {
+          queryParams.set('city', selectedCity);
         }
 
         let targetPathname = currentPathname;
@@ -102,8 +114,19 @@ export function DirectorySearch({
     );
   };
 
+  const handleCountryChange = (country: string) => {
+    setSelectedCountry(country);
+  };
+
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+  };
+
   const clearSearch = () => {
     setSearchTerm("");
+    setSelectedCategories([]);
+    setSelectedCountry("");
+    setSelectedCity("");
   };
 
   return (
@@ -158,6 +181,57 @@ export function DirectorySearch({
               {category.name}
             </Badge>
           ))}
+        </div>
+
+        {/* Location Filters */}
+        <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="country-filter" className="text-sm font-medium text-neutral-700">
+              Country
+            </label>
+            <select
+              id="country-filter"
+              value={selectedCountry}
+              onChange={(e) => handleCountryChange(e.target.value)}
+              className="px-3 py-2 border border-neutral-200 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+            >
+              <option value="">All Countries</option>
+              <option value="United States">United States</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Canada">Canada</option>
+              <option value="Australia">Australia</option>
+              <option value="Germany">Germany</option>
+              <option value="France">France</option>
+              <option value="Netherlands">Netherlands</option>
+              <option value="Sweden">Sweden</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col gap-2">
+            <label htmlFor="city-filter" className="text-sm font-medium text-neutral-700">
+              City
+            </label>
+            <select
+              id="city-filter"
+              value={selectedCity}
+              onChange={(e) => handleCityChange(e.target.value)}
+              className="px-3 py-2 border border-neutral-200 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+            >
+              <option value="">All Cities</option>
+              <option value="New York">New York</option>
+              <option value="San Francisco">San Francisco</option>
+              <option value="London">London</option>
+              <option value="Toronto">Toronto</option>
+              <option value="Sydney">Sydney</option>
+              <option value="Berlin">Berlin</option>
+              <option value="Paris">Paris</option>
+              <option value="Amsterdam">Amsterdam</option>
+              <option value="Stockholm">Stockholm</option>
+              <option value="Singapore">Singapore</option>
+            </select>
+          </div>
         </div>
 
         {/* Results Count */}

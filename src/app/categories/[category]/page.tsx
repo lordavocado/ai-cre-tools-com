@@ -120,6 +120,8 @@ export default async function CategoryPage({
   const { category: slug } = await params;
   const resolvedSearchParams = await (searchParams || Promise.resolve({} as { [key: string]: string | string[] | undefined }));
   const searchTerm = resolvedSearchParams?.search as string || '';
+  const countryFilter = resolvedSearchParams?.country as string || '';
+  const cityFilter = resolvedSearchParams?.city as string || '';
   // const categoryFilterFromQuery = searchParams.category; // Not directly used for fetching items on this page, path slug is primary.
 
   const category = await getCategoryBySlug(slug);
@@ -127,7 +129,7 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const itemsInCategory = await getDirectoryItems(searchTerm, slug);
+  const itemsInCategory = await getDirectoryItems(searchTerm, slug, countryFilter, cityFilter);
   const allCategoriesForSearch: Category[] = await getCategories(); 
   const searchCategories: DirectorySearchCategory[] = allCategoriesForSearch.map(
     ({ id, slug, name }) => ({ id, slug, name })
@@ -331,6 +333,8 @@ export default async function CategoryPage({
               categories={searchCategories} 
               initialSearchTerm={searchTerm}
               initialCategoryFilter={slug}
+              initialCountryFilter={countryFilter}
+              initialCityFilter={cityFilter}
               totalItems={itemsInCategory.length}
             />
           </div>
@@ -430,6 +434,8 @@ export default async function CategoryPage({
           </div>
         </div>
       </div>
+
+
 
       {/* Main Tools Grid */}
       <div className="container py-12 pl-6">

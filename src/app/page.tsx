@@ -86,16 +86,20 @@ interface HomeProps {
   searchParams: Promise<{
     search?: string;
     category?: string;
+    country?: string;
+    city?: string;
   }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
   const resolvedSearchParams = await searchParams;
-  const { search, category } = resolvedSearchParams;
+  const { search, category, country, city } = resolvedSearchParams;
   const searchTerm = search || "";
   const categoryFilter = category || "";
+  const countryFilter = country || "";
+  const cityFilter = city || "";
 
-  const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
+  const initialItems = await getDirectoryItems(searchTerm, categoryFilter, countryFilter, cityFilter);
   const categoriesFromSheet: Category[] = await getCategories(); 
   const topCategories = categoriesFromSheet.slice(0, 4);
 
@@ -203,12 +207,14 @@ export default async function Home({ searchParams }: HomeProps) {
           <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
             Explore our curated directory of {siteConfig.categoryName.toLowerCase()}. Use the filters below to find exactly what you need.
           </p>
-          <DirectorySearch 
-            categories={searchCategories} 
-            initialSearchTerm={searchTerm}
-            initialCategoryFilter={categoryFilter}
-            totalItems={initialItems.length}
-          />
+                  <DirectorySearch 
+          categories={searchCategories}
+          initialSearchTerm={searchTerm}
+          initialCategoryFilter={categoryFilter}
+          initialCountryFilter={countryFilter}
+          initialCityFilter={cityFilter}
+          totalItems={initialItems.length}
+        />
           <DirectoryGrid items={initialItems} />
         </div>
       </section>

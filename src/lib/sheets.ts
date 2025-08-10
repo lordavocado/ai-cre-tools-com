@@ -1313,7 +1313,12 @@ const parseFeatures = (featuresString: string): { name: string; description?: st
 };
 
 // Update the getDirectoryItems function
-export async function getDirectoryItems(searchTerm?: string, categoryFilter?: string): Promise<DirectoryItem[]> {
+export async function getDirectoryItems(
+  searchTerm?: string, 
+  categoryFilter?: string, 
+  countryFilter?: string, 
+  cityFilter?: string
+): Promise<DirectoryItem[]> {
   // Check if we have valid cached data and no specific search/filter
   if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter) {
     return allItemsCache;
@@ -1369,6 +1374,14 @@ export async function getDirectoryItems(searchTerm?: string, categoryFilter?: st
       const itemCategories = item.category.split(',').map(cat => cat.trim());
       return itemCategories.some(itemCat => categoryFilters.includes(itemCat));
     });
+  }
+
+  if (countryFilter) {
+    items = items.filter(item => item.country === countryFilter);
+  }
+
+  if (cityFilter) {
+    items = items.filter(item => item.city === cityFilter);
   }
   
   return items;
