@@ -51,7 +51,8 @@ export function PerformanceMonitor({
         }
         
         if (entry.entryType === 'first-input') {
-          const fid = entry.processingStart - entry.startTime;
+          const firstInput = entry as PerformanceEventTiming;
+          const fid = firstInput.processingStart - firstInput.startTime;
           setMetrics(prev => ({ ...prev, fid }));
           
           if (enableConsoleLogging) {
@@ -138,8 +139,8 @@ export function PerformanceMonitor({
     if (!enableRealUserMonitoring) return;
 
     // Send to PostHog or other analytics
-    if (window.posthog) {
-      window.posthog.capture('performance_metrics', {
+    if (typeof window !== 'undefined' && (window as any).posthog) {
+      (window as any).posthog.capture('performance_metrics', {
         lcp: metrics.lcp,
         fid: metrics.fid,
         cls: metrics.cls,
@@ -151,8 +152,8 @@ export function PerformanceMonitor({
     }
 
     // Send to Google Analytics if available
-    if (window.gtag) {
-      window.gtag('event', 'performance_metrics', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'performance_metrics', {
         event_category: 'Performance',
         event_label: window.location.href,
         value: Math.round((metrics.lcp || 0) + (metrics.fid || 0) * 10 + (metrics.cls || 0) * 1000)

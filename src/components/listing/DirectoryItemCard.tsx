@@ -16,12 +16,12 @@ interface DirectoryItemCardProps {
 
 export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
   return (
-    <Card className="flex flex-col h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 transition-colors duration-200 relative group">
+    <Card className="flex flex-col h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 transition-colors duration-200 relative group rounded-xl shadow-sm hover:shadow-md">
       <CardHeader className="p-6">
         <div className="absolute top-4 right-4 z-10">
           <FavouriteButton toolId={item.id} size="sm" />
         </div>
-        <div className="relative w-16 h-16 mb-6 rounded-md overflow-hidden flex items-center justify-center bg-neutral-50">
+        <div className="relative w-16 h-16 mb-4 rounded-md overflow-hidden flex items-center justify-center bg-neutral-50 ring-1 ring-neutral-100">
           <SafeImage
             src={item.imageUrl}
             alt={item.name}
@@ -30,12 +30,16 @@ export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
             fallbackText={item.name.charAt(0)}
           />
         </div>
-        <CardTitle className="text-xl font-serif mb-2">
+        <CardTitle className="text-xl font-serif mb-1">
           <Link href={`/${item.slug}`} className="hover:text-neutral-600 transition-colors">
             {item.name}
           </Link>
         </CardTitle>
-        <CardDescription className="text-base text-neutral-600">{item.tagline}</CardDescription>
+        {item.tagline && (
+          <CardDescription className="text-[0.95rem] leading-relaxed text-neutral-600 line-clamp-2">
+            {item.tagline}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="flex-grow px-6 pb-6">
         <div className="flex items-center gap-3 mb-4">
@@ -50,19 +54,19 @@ export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
         )}
       </CardContent>
       <CardFooter className="flex flex-col gap-3 px-6 pb-6">
-        <Button 
-          variant="outline" 
-          size="lg" 
-          asChild 
+        <Button
+          variant="outline"
+          size="lg"
+          asChild
           className="w-full bg-white border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
         >
           <Link href={item.website} target="_blank" rel="noopener noreferrer">
             Visit Website <ExternalLink className="ml-2 h-4 w-4" />
           </Link>
         </Button>
-        <Button 
-          size="lg" 
-          asChild 
+        <Button
+          size="lg"
+          asChild
           className="w-full bg-neutral-900 hover:bg-neutral-800 transition-colors"
         >
           <Link href={`/${item.slug}`}>
