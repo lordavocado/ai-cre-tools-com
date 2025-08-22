@@ -1389,6 +1389,14 @@ export async function getDirectoryItems(
 
 async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
   return retryWithBackoff(async () => {
+    // Graceful fallback when env vars are missing during build/preview
+    if (!process.env.GOOGLE_SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
+      console.warn("Google Sheets env vars missing. Skipping fetch and returning empty directory items.");
+      allItemsCache = [];
+      allItemsCacheTimestamp = Date.now();
+      return [];
+    }
+
     const doc = await getInitializedDoc();
     const sheet = doc.sheetsByTitle[SHEET_NAMES.ITEMS];
     if (!sheet) {

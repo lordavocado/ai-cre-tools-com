@@ -27,6 +27,8 @@ import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavouriteButton } from "@/components/ui/favourite-button";
 
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   const items = await getDirectoryItems();
   return items.map((item) => ({

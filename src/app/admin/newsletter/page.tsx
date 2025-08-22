@@ -4,6 +4,26 @@ import { Badge } from "@/components/ui/badge";
 import { Users, UserPlus, UserMinus, UserX, Tags, Target } from "lucide-react";
 
 export default async function NewsletterAdminPage() {
+  // Gracefully handle missing Mailchimp env vars to avoid build failures
+  if (!process.env.MAILCHIMP_API_KEY || !process.env.MAILCHIMP_LIST_ID) {
+    return (
+      <div className="container py-12 md:py-16 max-w-4xl mx-auto">
+        <h1 className="text-3xl md:text-4xl font-bold mb-6">Newsletter Administration</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>Mailchimp Not Configured</CardTitle>
+            <CardDescription>
+              This environment does not have Mailchimp credentials set. Add <code>MAILCHIMP_API_KEY</code> and <code>MAILCHIMP_LIST_ID</code> to enable this page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">The rest of the site will continue to work normally.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   let stats = null;
   let tags = null;
   let interests = null;
