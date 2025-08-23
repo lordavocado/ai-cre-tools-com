@@ -131,9 +131,10 @@ export function JSExecutionOptimizer() {
           }
         }
         if (entry.entryType === 'first-input') {
-          console.log(`FID: ${entry.processingStart - entry.startTime}ms`);
-          if (entry.processingStart - entry.startTime > 100) {
-            console.warn(`⚠️ FID is slow: ${entry.processingStart - entry.startTime}ms (should be < 100ms)`);
+          const firstInput = entry as PerformanceEventTiming;
+          console.log(`FID: ${firstInput.processingStart - firstInput.startTime}ms`);
+          if (firstInput.processingStart - firstInput.startTime > 100) {
+            console.warn(`⚠️ FID is slow: ${firstInput.processingStart - firstInput.startTime}ms (should be < 100ms)`);
           }
         }
         if (entry.entryType === 'layout-shift') {

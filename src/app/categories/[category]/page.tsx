@@ -10,6 +10,8 @@ import { getCategories, getDirectoryItems } from '@/lib/sheets';
 import { siteConfig } from '@/config/site';
 import { CheckCircle, Zap, Users, Shield, ArrowRight, Star } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export async function generateStaticParams() {
   const categories = await getCategories();
   return categories.map((category) => ({

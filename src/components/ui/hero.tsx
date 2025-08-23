@@ -12,7 +12,7 @@ export function Hero() {
             <p className="text-lg leading-relaxed text-neutral-600">
               {siteConfig.hero.subtitle}
             </p>
-            <div className="flex flex-col gap-4 pt-4 sm:flex-row">
+            <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-center">
               <a
                 href={siteConfig.hero.cta.primary.href}
                 className="inline-flex h-12 items-center justify-center rounded-md bg-neutral-900 px-8 text-sm font-medium text-white transition-colors hover:bg-neutral-800"
