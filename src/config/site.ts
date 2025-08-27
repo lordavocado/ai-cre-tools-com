@@ -126,7 +126,9 @@ export const siteConfig = {
     items: [
       { href: '/', label: 'Home' },
       { href: '/categories', label: 'Categories' },
+      { href: '/blog', label: 'Blog' },
       { href: '/favourites', label: 'Favourites' },
+      { href: '/submit-tool', label: 'Submit Tool' },
       { href: '/about', label: 'About' },
     ]
   },

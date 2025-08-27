@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getGuides } from '@/lib/markdown';
 import { getDirectoryItems } from '@/lib/sheets';
+import { getAllBlogPosts } from '@/lib/blog';
 import { siteConfig } from '@/config/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -9,7 +10,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get dynamic content
   const guides = await getGuides();
   const directoryItems = await getDirectoryItems();
-  
+  const blogPosts = getAllBlogPosts();
+
   // Get unique categories from directory items
   const categories = [...new Set(directoryItems.map(item => item.category).filter(Boolean))];
 
@@ -40,6 +42,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/compare`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
@@ -67,6 +75,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  // Blog pages
+  const blogPages = blogPosts.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.publishedDate),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
   // Directory item pages
   const directoryPages = directoryItems.map(item => ({
     url: `${baseUrl}/${item.slug}`,
@@ -86,6 +102,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticPages,
     ...guidePages,
+    ...blogPages,
     ...directoryPages,
     ...categoryPages,
   ];

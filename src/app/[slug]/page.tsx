@@ -228,37 +228,37 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
         />
       )}
 
-      <div className="container py-12 md:py-16 pl-6">
+      <div className="container py-12 md:py-16 pl-6 bg-gradient-to-br from-blue-50/30 via-white to-slate-50/20">
         <article className="grid lg:grid-cols-3 gap-8 md:gap-12">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-8">
-            <Card className="overflow-hidden">
-              <CardHeader>
+            <Card className="overflow-hidden border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/20 to-slate-50/30">
+              <CardHeader className="bg-gradient-to-r from-blue-50/40 via-white to-slate-50/40 border-b border-slate-200/50">
                 <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 mb-4">
-                  <div className="relative w-24 h-24 mx-auto md:mx-0 rounded-lg overflow-hidden shadow-md shrink-0 flex items-center justify-center bg-background">
+                  <div className="relative w-28 h-28 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg shadow-blue-200/30 shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-slate-50 ring-2 ring-blue-100/50">
                     <ImageWithFallback
                       src={item.imageUrl || "/ai-cre-tools-logo.png"}
                       alt={`${item.name} logo`}
                       width={96}
                       height={96}
-                      className="object-contain"
+                      className="object-contain drop-shadow-md"
                       data-ai-hint="product logo company"
                     />
                   </div>
                   <div className="flex-grow">
-                    <CardTitle className="text-3xl md:text-4xl font-bold">{item.name}</CardTitle>
-                    <CardDescription className="text-lg text-muted-foreground mt-1">{item.tagline}</CardDescription>
+                    <CardTitle className="text-3xl md:text-4xl font-bold text-slate-800 mb-2">{item.name}</CardTitle>
+                    <CardDescription className="text-lg text-slate-600 mt-1 leading-relaxed">{item.tagline}</CardDescription>
                     
-                    <div className="flex items-center gap-4 mt-4 flex-wrap">
+                    <div className="flex items-center gap-4 mt-6 flex-wrap">
                       {item.rating && (
-                        <div className="flex items-center gap-1 text-sm">
-                          <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                          <span className="font-semibold">{item.rating.toFixed(1)}</span>
-                          {item.reviewCount && <span className="text-muted-foreground">({item.reviewCount} reviews)</span>}
+                        <div className="flex items-center gap-2 text-sm bg-amber-50/80 px-4 py-2 rounded-xl border border-amber-200/50 shadow-sm">
+                          <Star className="h-5 w-5 text-amber-500 fill-amber-400" />
+                          <span className="font-semibold text-slate-700">{item.rating.toFixed(1)}</span>
+                          {item.reviewCount && <span className="text-slate-500">({item.reviewCount} reviews)</span>}
                         </div>
                       )}
-                      <div className="flex items-center gap-2">
-                        <Button asChild variant="default" size="sm">
+                      <div className="flex items-center gap-3">
+                        <Button asChild variant="default" size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200">
                           <Link href={item.website} target="_blank" rel="noopener noreferrer">
                             Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                           </Link>
@@ -278,23 +278,31 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
               {item.description && (
                 <CardContent className="pt-6">
-                  <h2 className="text-2xl font-semibold mb-3">About {item.name}</h2>
-                  <div className="prose prose-sm sm:prose-base max-w-none text-foreground" dangerouslySetInnerHTML={{ __html: item.description }} />
+                  <h2 className="text-2xl font-semibold mb-4 text-slate-800 flex items-center">
+                    <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                    About {item.name}
+                  </h2>
+                  <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
                 </CardContent>
               )}
             </Card>
 
             {item.features && item.features.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center"><Zap className="mr-2 h-6 w-6 text-primary"/> Key Features</CardTitle>
+              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                <CardHeader className="bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30 border-b border-slate-200/50">
+                  <CardTitle className="text-2xl flex items-center text-slate-800">
+                    <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-3 shadow-sm">
+                      <Zap className="h-5 w-5 text-blue-600"/>
+                    </div>
+                    Key Features
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {item.features.map((feature, index) => (
-                      <li key={index} className="p-3 bg-secondary/50 rounded-md">
-                        <p className="font-semibold text-foreground">{feature.name}</p>
-                        {feature.description && <p className="text-xs text-muted-foreground">{feature.description}</p>}
+                      <li key={index} className="p-4 bg-gradient-to-br from-blue-50/50 via-white to-slate-50/30 rounded-xl border border-blue-100/30 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                        <p className="font-semibold text-slate-800 mb-1">{feature.name}</p>
+                        {feature.description && <p className="text-sm text-slate-600 leading-relaxed">{feature.description}</p>}
                       </li>
                     ))}
                   </ul>
@@ -303,31 +311,48 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
             )}
 
             {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Pros & Cons</CardTitle>
+              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                <CardHeader className="bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30 border-b border-slate-200/50">
+                  <CardTitle className="text-2xl text-slate-800 flex items-center">
+                    <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                    Pros & Cons
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 flex items-center text-green-600">
-                      <ThumbsUp className="mr-2 h-5 w-5"/> Pros
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                  <div className="p-4 bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-xl border border-emerald-100/50 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center text-emerald-700">
+                      <div className="p-1.5 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-lg mr-2">
+                        <ThumbsUp className="h-4 w-4 text-emerald-600"/>
+                      </div>
+                      Pros
                     </h3>
-                    <ul className="space-y-1 list-disc list-inside text-sm">
+                    <ul className="space-y-2 text-sm">
                       {item.pros && item.pros.map((pro: string, index: number) => (
-                        <li key={index}>{pro}</li>
+                        <li key={index} className="flex items-start gap-2 text-slate-700">
+                          <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full mt-2 shrink-0"></div>
+                          {pro}
+                        </li>
                       ))}
                       {(!item.pros || item.pros.length === 0) && (
-                        <li className="text-muted-foreground">No pros listed.</li>
+                        <li className="text-slate-500 italic">No pros listed.</li>
                       )}
                     </ul>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 flex items-center text-red-600">
-                      <ThumbsDown className="mr-2 h-5 w-5"/> Cons
+                  <div className="p-4 bg-gradient-to-br from-red-50/50 via-white to-rose-50/30 rounded-xl border border-red-100/50 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center text-red-700">
+                      <div className="p-1.5 bg-gradient-to-br from-red-100 to-red-200 rounded-lg mr-2">
+                        <ThumbsDown className="h-4 w-4 text-red-600"/>
+                      </div>
+                      Cons
                     </h3>
-                    <ul className="space-y-1 list-disc list-inside text-sm">
-                      {item.cons?.map((con, index) => <li key={index}>{con}</li>)}
-                      {(!item.cons || item.cons.length === 0) && <li className="text-muted-foreground">No cons listed.</li>}
+                    <ul className="space-y-2 text-sm">
+                      {item.cons?.map((con, index) => (
+                        <li key={index} className="flex items-start gap-2 text-slate-700">
+                          <div className="w-1.5 h-1.5 bg-red-400 rounded-full mt-2 shrink-0"></div>
+                          {con}
+                        </li>
+                      ))}
+                      {(!item.cons || item.cons.length === 0) && <li className="text-slate-500 italic">No cons listed.</li>}
                     </ul>
                   </div>
                 </CardContent>
@@ -336,14 +361,19 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
             {/* Tags Section */}
             {item.tags && item.tags.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center"><Tag className="mr-2 h-6 w-6 text-primary"/> Tags</CardTitle>
+              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                <CardHeader className="bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30 border-b border-slate-200/50">
+                  <CardTitle className="text-2xl flex items-center text-slate-800">
+                    <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl mr-3 shadow-sm">
+                      <Tag className="h-5 w-5 text-purple-600"/>
+                    </div>
+                    Tags
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="flex flex-wrap gap-2">
                     {item.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-sm px-3 py-1">
+                      <Badge key={index} variant="outline" className="text-sm px-4 py-2 bg-gradient-to-br from-purple-50/50 via-white to-blue-50/30 border border-purple-200/40 hover:border-purple-300/60 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 text-slate-700">
                         {typeof tag === 'string' ? tag.trim() : tag}
                       </Badge>
                     ))}
@@ -356,73 +386,88 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
           {/* Sidebar Column */}
           <aside className="lg:col-span-1 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl flex items-center"><Info className="mr-2 h-5 w-5 text-primary"/>Quick Info</CardTitle>
+            <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/20 to-slate-50/30">
+              <CardHeader className="bg-gradient-to-r from-blue-50/40 via-white to-slate-50/40 border-b border-slate-200/50">
+                <CardTitle className="text-xl flex items-center text-slate-800">
+                  <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-3 shadow-sm">
+                    <Info className="h-4 w-4 text-blue-600"/>
+                  </div>
+                  Quick Info
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm">
+              <CardContent className="space-y-4 text-sm pt-6">
                 {item.pricing && (
-                  <div className="flex items-start">
-                    <DollarSign className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-start p-3 bg-gradient-to-br from-green-50/40 via-white to-emerald-50/20 rounded-xl border border-green-100/30 shadow-sm">
+                    <div className="p-1.5 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3 shrink-0">
+                      <DollarSign className="h-3 w-3 text-green-600" />
+                    </div>
                     <div>
-                      <span className="font-semibold">Pricing: </span>
-                      <span className="text-muted-foreground">{item.pricing}</span>
+                      <span className="font-semibold text-slate-800">Pricing: </span>
+                      <span className="text-slate-600">{item.pricing}</span>
                     </div>
                   </div>
                 )}
                 {item.category && (
-                  <div className="flex items-start">
-                    <Tag className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
-                    <div>
-                      <span className="font-semibold">Categor{categories.length > 1 ? 'ies' : 'y'}: </span>
-                      <div className="inline-flex flex-wrap gap-1 mt-1">
-                        <CategoryChips categories={item.category} variant="outline" size="sm" />
+                  <div className="p-3 bg-gradient-to-br from-purple-50/40 via-white to-blue-50/20 rounded-xl border border-purple-100/30 shadow-sm">
+                    <div className="flex items-start mb-2">
+                      <div className="p-1.5 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg mr-3 shrink-0">
+                        <Tag className="h-3 w-3 text-purple-600" />
                       </div>
+                      <span className="font-semibold text-slate-800">Categor{categories.length > 1 ? 'ies' : 'y'}: </span>
+                    </div>
+                    <div className="inline-flex flex-wrap gap-1 ml-8">
+                      <CategoryChips categories={item.category} variant="outline" size="sm" />
                     </div>
                   </div>
                 )}
                 {item.foundedYear && (
-                  <div className="flex items-start">
-                    <CalendarDays className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-start p-3 bg-gradient-to-br from-indigo-50/40 via-white to-blue-50/20 rounded-xl border border-indigo-100/30 shadow-sm">
+                    <div className="p-1.5 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-lg mr-3 shrink-0">
+                      <CalendarDays className="h-3 w-3 text-indigo-600" />
+                    </div>
                      <div>
-                      <span className="font-semibold">Founded: </span>
-                      <span className="text-muted-foreground">{item.foundedYear}</span>
+                      <span className="font-semibold text-slate-800">Founded: </span>
+                      <span className="text-slate-600">{item.foundedYear}</span>
                     </div>
                   </div>
                 )}
                 {item.lastUpdated && (
-                   <div className="flex items-start">
-                    <CalendarDays className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
+                   <div className="flex items-start p-3 bg-gradient-to-br from-amber-50/40 via-white to-yellow-50/20 rounded-xl border border-amber-100/30 shadow-sm">
+                    <div className="p-1.5 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg mr-3 shrink-0">
+                      <CalendarDays className="h-3 w-3 text-amber-600" />
+                    </div>
                      <div>
-                      <span className="font-semibold">Last Updated: </span>
-                      <span className="text-muted-foreground">{new Date(item.lastUpdated).toLocaleDateString()}</span>
+                      <span className="font-semibold text-slate-800">Last Updated: </span>
+                      <span className="text-slate-600">{new Date(item.lastUpdated).toLocaleDateString()}</span>
                     </div>
                   </div>
                 )}
                 {item.country && (
-                  <div className="flex items-start">
-                    <Users className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground shrink-0" />
+                  <div className="flex items-start p-3 bg-gradient-to-br from-cyan-50/40 via-white to-blue-50/20 rounded-xl border border-cyan-100/30 shadow-sm">
+                    <div className="p-1.5 bg-gradient-to-br from-cyan-100 to-cyan-200 rounded-lg mr-3 shrink-0">
+                      <Users className="h-3 w-3 text-cyan-600" />
+                    </div>
                     <div>
-                      <span className="font-semibold">Location: </span>
-                      <span className="text-muted-foreground">
+                      <span className="font-semibold text-slate-800">Location: </span>
+                      <span className="text-slate-600">
                         {item.city && `${item.city}, `}{item.country}
                       </span>
                     </div>
                   </div>
                 )}
                 {item.socials && (Object.keys(item.socials).length > 0) && (
-                  <div className="pt-2">
-                    <p className="font-semibold mb-1">Socials:</p>
+                  <div className="p-3 bg-gradient-to-br from-rose-50/40 via-white to-pink-50/20 rounded-xl border border-rose-100/30 shadow-sm">
+                    <p className="font-semibold mb-3 text-slate-800">Socials:</p>
                     <div className="flex space-x-3">
-                      {item.socials.twitter && <Link href={`https://twitter.com/${item.socials.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Twitter size={18}/></Link>}
-                      {item.socials.linkedin && <Link href={`https://linkedin.com/${item.socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Linkedin size={18}/></Link>}
-                      {item.socials.facebook && <Link href={`https://facebook.com/${item.socials.facebook}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary"><Facebook size={18}/></Link>}
+                      {item.socials.twitter && <Link href={`https://twitter.com/${item.socials.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105 shadow-sm"><Twitter size={16} className="text-blue-600"/></Link>}
+                      {item.socials.linkedin && <Link href={`https://linkedin.com/${item.socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105 shadow-sm"><Linkedin size={16} className="text-blue-600"/></Link>}
+                      {item.socials.facebook && <Link href={`https://facebook.com/${item.socials.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105 shadow-sm"><Facebook size={16} className="text-blue-600"/></Link>}
                     </div>
                   </div>
                 )}
               </CardContent>
-               <CardFooter className="border-t pt-4">
-                   <Button asChild className="w-full">
+               <CardFooter className="border-t border-slate-200/50 pt-4 bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30">
+                   <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200 text-white">
                       <Link href={item.website} target="_blank" rel="noopener noreferrer">
                         Visit {item.name} <ExternalLink className="ml-2 h-4 w-4" />
                       </Link>
@@ -432,7 +477,10 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
             
             {relatedItems.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold mt-8">Related Tools</h3>
+                <h3 className="text-xl font-semibold mt-8 text-slate-800 flex items-center">
+                  <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                  Related Tools
+                </h3>
                 <div className="grid grid-cols-1 gap-4">
                   {relatedItems.map(relatedItem => (
                     <DirectoryItemCard key={relatedItem.id} item={relatedItem} />

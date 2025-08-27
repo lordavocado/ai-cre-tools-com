@@ -1,4 +1,92 @@
-# AI CRE Tools SEO Optimization & Brand Update Project
+# Tool Submission System Project
+
+## Background and Motivation
+
+This project aims to create a comprehensive tool submission system where users can submit new AI CRE tools for inclusion in the directory. The system will:
+
+1. **User Submission Flow**: Allow users to submit website links, email addresses, and relevance comments
+2. **Automated Research**: Use Perplexity API to research and extract tool information automatically
+3. **Review Dashboard**: Provide an admin dashboard for reviewing and accepting submissions
+4. **Data Integration**: Seamlessly integrate approved tools into the existing directory structure
+
+## Key Challenges and Analysis
+
+### Current Architecture Analysis ✅
+- **Framework**: Next.js 15 with TypeScript, React 19
+- **Forms**: Uses react-hook-form with zod validation
+- **UI**: Radix UI components with Tailwind CSS
+- **Data**: Google Sheets integration for directory data
+- **Navigation**: Centralized config-based navigation system
+- **Server Actions**: Established pattern for form submissions
+
+### Technical Requirements
+- Form validation for website URLs, email addresses, and comments
+- Perplexity API integration for automated research
+- Data storage for pending submissions (Google Sheets or database)
+- Admin dashboard for review and approval workflow
+- Email notifications for submission confirmations
+- Integration with existing directory structure
+
+### Categories Available
+- Development & Construction
+- Efficiency & General Tools
+- Investment & Portfolio Management
+- Legal & Compliance
+- Market Analysis & Valuation
+- Property Management & Operations
+- Transaction & Brokerage
+
+## High-level Task Breakdown
+
+### Phase 1: Core Infrastructure ✅ COMPLETED
+- [x] Analyze current codebase structure
+- [x] Add 'Submit New Tool' link to header navigation
+- [x] Create submit page with form validation (website, email, comment)
+- [x] Set up Perplexity API integration with Vercel environment
+- [x] Create API route to handle form submission and trigger Perplexity research
+
+### Phase 2: Data Management & Review ✅ COMPLETED
+- [x] Implement data storage system for pending tool submissions
+- [x] Create confirmation dashboard for reviewing and accepting submitted tools
+- [x] Create scraping prompt with platform categories and Perplexity integration
+- [x] Add comprehensive form validation and error handling
+
+### Phase 3: Notifications & Polish
+- [ ] Implement email notifications for submission confirmations
+- [ ] Add success/error feedback and user experience improvements
+- [ ] Test end-to-end submission and review workflow
+- [ ] Performance optimization and final integration
+
+## Completed Implementation Summary
+
+### ✅ Core Infrastructure (100% Complete)
+1. **Header Navigation**: Added "Submit Tool" link to main navigation
+2. **Submit Page**: Created comprehensive form with validation for website, email, and comments
+3. **Perplexity Integration**: Set up complete API integration with platform-specific categories
+4. **API Routes**: Created submission endpoint that triggers research and stores data
+
+### ✅ Data Management & Review (100% Complete)
+1. **Google Sheets Integration**: Extended existing sheets system for tool submissions
+2. **Admin Dashboard**: Created full-featured dashboard at `/admin/submissions`
+3. **Review Workflow**: Implemented approve/reject functionality with status tracking
+4. **Data Structure**: Complete schema for submissions with research results
+
+### 🔧 Technical Features Implemented
+- **Form Validation**: Zod schema validation for all inputs
+- **Error Handling**: Comprehensive error handling and user feedback
+- **Research Automation**: Perplexity API integration with custom prompts
+- **Data Persistence**: Google Sheets integration for submissions
+- **Admin Interface**: Full dashboard for managing submissions
+- **Status Tracking**: Complete workflow from submission to approval
+- **Responsive Design**: Mobile-friendly interface using existing UI components
+
+### 📋 Remaining Tasks (Phase 3)
+- Email notifications for submission confirmations
+- Enhanced user experience improvements
+- End-to-end testing
+- Performance optimization
+
+# Previous Project: AI CRE Tools SEO Optimization & Brand Update Project
 
 ## Background and Motivation
 

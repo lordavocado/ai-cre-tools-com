@@ -83,9 +83,9 @@ export default function PrivacyPolicyPage() {
           <div className="bg-blue-50 dark:bg-blue-950/30 p-6 rounded-lg border border-blue-200 dark:border-blue-800 mb-8">
             <p className="text-blue-900 dark:text-blue-100 font-semibold mb-2">Quick Summary</p>
             <p className="text-blue-800 dark:text-blue-200 text-sm">
-              We collect minimal data to provide our {siteConfig.categoryName.toLowerCase()} directory service. 
-              We use cookies for analytics, store newsletter emails securely, and never sell your personal information. 
-              You have full control over your data.
+              We collect minimal data to provide our {siteConfig.categoryName.toLowerCase()} directory service.
+              We use privacy-focused analytics, store newsletter emails securely, and never sell your personal information.
+              You have full control over your data and can request deletion at any time.
             </p>
           </div>
 
@@ -96,19 +96,33 @@ export default function PrivacyPolicyPage() {
           <h3>Personal Information You Provide</h3>
           <p>We collect personal information that you voluntarily provide when you:</p>
           <ul>
-            <li><strong>Subscribe to our newsletter:</strong> Email address and optional preferences</li>
-            <li><strong>Submit feedback or reviews:</strong> Any information you choose to share</li>
-            <li><strong>Contact us:</strong> Name, email, and message content</li>
-            <li><strong>Use interactive features:</strong> Favourites, comparisons, and saved searches</li>
+            <li><strong>Subscribe to our newsletter:</strong> Email address, optional name, and communication preferences</li>
+            <li><strong>Submit tool reviews or feedback:</strong> Any information you choose to share, including your role in CRE</li>
+            <li><strong>Contact us:</strong> Name, email, company (optional), and message content</li>
+            <li><strong>Use interactive features:</strong> Favourites, comparisons, saved searches, and tool ratings</li>
+            <li><strong>Submit a tool:</strong> Contact information and details about the AI tool you're submitting</li>
+            <li><strong>Create an account:</strong> Username, email, and profile information (if we add this feature)</li>
           </ul>
 
           <h3>Automatically Collected Information</h3>
           <p>When you visit our website, we automatically collect certain information:</p>
           <ul>
-            <li><strong>Usage data:</strong> Pages visited, time spent, click patterns</li>
-            <li><strong>Device information:</strong> Browser type, operating system, screen resolution</li>
-            <li><strong>Location data:</strong> General geographic location (country/region level)</li>
+            <li><strong>Usage data:</strong> Pages visited, time spent, click patterns, search queries</li>
+            <li><strong>Device information:</strong> Browser type, operating system, screen resolution, device type</li>
+            <li><strong>Location data:</strong> General geographic location (country/region level) based on IP address</li>
+            <li><strong>Referral data:</strong> How you found our website (search engines, social media, direct links)</li>
+            <li><strong>Performance data:</strong> Website load times, error logs, and user interactions</li>
           </ul>
+
+          <h3>AI and Machine Learning Data</h3>
+          <p>As an AI tools directory, we may use anonymized usage data to:</p>
+          <ul>
+            <li><strong>Improve search relevance:</strong> Analyze popular search terms and tool categories</li>
+            <li><strong>Personalize recommendations:</strong> Suggest relevant tools based on browsing patterns</li>
+            <li><strong>Optimize user experience:</strong> Improve website performance and navigation</li>
+            <li><strong>Content improvement:</strong> Understand which types of content are most valuable</li>
+          </ul>
+          <p className="text-sm text-gray-600 mt-2">All AI/ML processing uses anonymized, aggregated data only.</p>
 
           <h2>2. HOW WE USE YOUR INFORMATION</h2>
           
@@ -141,9 +155,11 @@ export default function PrivacyPolicyPage() {
           
           <h3>Service Providers</h3>
           <ul>
-            <li><strong>Mailchimp:</strong> Newsletter email delivery (GDPR compliant)</li>
-            <li><strong>PostHog:</strong> Privacy-focused analytics (data anonymized)</li>
-            <li><strong>Vercel:</strong> Website hosting and performance</li>
+            <li><strong>Mailchimp:</strong> Newsletter email delivery (GDPR and CCPA compliant)</li>
+            <li><strong>PostHog:</strong> Privacy-focused analytics (data anonymized, no personal tracking)</li>
+            <li><strong>Vercel:</strong> Website hosting and performance monitoring</li>
+            <li><strong>Google Sheets:</strong> Secure data storage for tool submissions (encrypted)</li>
+            <li><strong>Cloudflare:</strong> CDN and security services (privacy-compliant)</li>
           </ul>
 
           <h3>Legal Requirements</h3>
@@ -164,7 +180,33 @@ export default function PrivacyPolicyPage() {
 
           <p>You can control cookies through your browser settings, but this may limit some functionality.</p>
 
-          <h2>5. DATA RETENTION</h2>
+          <h2>5. DATA MINIMIZATION AND PRIVACY BY DESIGN</h2>
+
+          <p>We follow privacy by design principles and collect only the minimum data necessary:</p>
+
+          <h3>Our Privacy Principles</h3>
+          <div className="grid md:grid-cols-2 gap-4 my-4">
+            <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-green-900 dark:text-green-100">Data Minimization</h4>
+              <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
+                <li>• Collect only necessary information</li>
+                <li>• Delete data when no longer needed</li>
+                <li>• Use anonymized data where possible</li>
+                <li>• Regular data audits and cleanup</li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">Privacy by Design</h4>
+              <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                <li>• Privacy considerations in all features</li>
+                <li>• Default privacy settings protect users</li>
+                <li>• Regular privacy impact assessments</li>
+                <li>• User control over personal data</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2>6. DATA RETENTION</h2>
           
           <p>We retain information only as long as necessary:</p>
           <ul>
@@ -174,18 +216,19 @@ export default function PrivacyPolicyPage() {
             <li><strong>User preferences:</strong> While you actively use the service</li>
           </ul>
 
-          <h2>6. DATA SECURITY</h2>
-          
-          <p>We implement industry-standard security measures:</p>
+          <h2>8. DATA SECURITY</h2>
+
+          <p>We implement industry-standard security measures to protect your personal information:</p>
           <ul>
-            <li>HTTPS encryption for all data transmission</li>
-            <li>Secure API connections with third-party services</li>
-            <li>Regular security updates and monitoring</li>
-            <li>Limited access to personal information</li>
-            <li>Data backup and recovery procedures</li>
+            <li><strong>Encryption:</strong> HTTPS encryption for all data transmission</li>
+            <li><strong>Secure APIs:</strong> Encrypted connections with third-party services</li>
+            <li><strong>Regular updates:</strong> Security patches and software updates</li>
+            <li><strong>Access controls:</strong> Limited access to personal information on a need-to-know basis</li>
+            <li><strong>Data backups:</strong> Encrypted backup and recovery procedures</li>
+            <li><strong>Security monitoring:</strong> Continuous monitoring for unusual activity</li>
           </ul>
 
-          <h2>7. YOUR PRIVACY RIGHTS</h2>
+          <h2>9. YOUR PRIVACY RIGHTS</h2>
           
           <p>Depending on your location, you may have the following rights:</p>
           
@@ -214,40 +257,74 @@ export default function PrivacyPolicyPage() {
 
           <p>To exercise any of these rights, please contact us using the information below.</p>
 
-          <h2>8. INTERNATIONAL DATA TRANSFERS</h2>
-          
-          <p>Our services are hosted in the United States. If you're accessing our service from outside the US, 
-          your information may be transferred to, stored, and processed in the US. We ensure appropriate 
-          safeguards are in place for international transfers.</p>
+          <h2>10. INTERNATIONAL DATA TRANSFERS</h2>
 
-          <h2>9. CHILDREN'S PRIVACY</h2>
-          
-          <p>Our service is not intended for children under 16. We do not knowingly collect personal 
-          information from children. If you believe we have collected information from a child, 
-          please contact us immediately.</p>
-
-          <h2>10. UPDATES TO THIS POLICY</h2>
-          
-          <p>We may update this privacy policy periodically to reflect changes in our practices or legal requirements. 
-          Material changes will be communicated through:</p>
+          <p>Our services are hosted in the United States. If you're accessing our service from outside the US,
+          your information may be transferred to, stored, and processed in the US. We ensure appropriate
+          safeguards are in place for international transfers, including:</p>
           <ul>
-            <li>Email notification to newsletter subscribers</li>
-            <li>Notice on our website</li>
-            <li>Updated "Last modified" date</li>
+            <li><strong>Standard Contractual Clauses:</strong> EU-approved data transfer mechanisms</li>
+            <li><strong>Adequacy decisions:</strong> Where applicable for certain countries</li>
+            <li><strong>Encryption:</strong> All data transmitted using industry-standard encryption</li>
+            <li><strong>Privacy Shield:</strong> For transfers from EU to US (where applicable)</li>
           </ul>
 
-          <h2>11. CONTACT US</h2>
+          <h2>11. CHILDREN'S PRIVACY</h2>
+
+          <p>Our service is not intended for children under 16 (or the minimum age in your jurisdiction). We do not knowingly collect personal
+          information from children under 16. If you believe we have collected information from a child under 16,
+          please contact us immediately and we will delete such information.</p>
+
+          <h2>12. AI ETHICS AND TRANSPARENCY</h2>
+
+          <p>As an AI tools directory, we are committed to ethical AI practices and transparency:</p>
+
+          <h3>Our AI Commitments</h3>
+          <ul>
+            <li><strong>No discriminatory AI:</strong> We do not use AI systems that discriminate based on protected characteristics</li>
+            <li><strong>Transparency:</strong> We disclose when AI is used to process personal data</li>
+            <li><strong>Human oversight:</strong> AI recommendations are reviewed by humans before implementation</li>
+            <li><strong>Data protection:</strong> All AI processing complies with privacy regulations</li>
+            <li><strong>Opt-out rights:</strong> You can request exclusion from AI-based personalization</li>
+          </ul>
+
+          <h2>13. CHANGES TO THIS PRIVACY POLICY</h2>
+
+          <p>We may update this privacy policy periodically to reflect changes in our practices, technology, legal requirements, or other factors.
+          Material changes will be communicated through:</p>
+          <ul>
+            <li><strong>Email notification:</strong> To newsletter subscribers for significant changes</li>
+            <li><strong>Website notice:</strong> Updated "Last modified" date and change log</li>
+            <li><strong>Direct communication:</strong> For changes affecting your rights or our data practices</li>
+          </ul>
+          <p className="text-sm text-gray-600 mt-2">We encourage you to review this privacy policy periodically.</p>
+
+          <h2>14. CONTACT INFORMATION</h2>
           
           <div className="bg-blue-50 dark:bg-blue-950/30 p-6 rounded-lg border border-blue-200 dark:border-blue-800 my-6">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">Privacy Questions?</h4>
+            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">Contact Our Privacy Team</h4>
             <p className="text-blue-800 dark:text-blue-200 mb-3">
-              If you have questions about this privacy policy or our data practices, please contact us:
+              We are here to help with any privacy-related questions or requests:
             </p>
-            <ul className="text-blue-800 dark:text-blue-200 text-sm">
-              <li><strong>Email:</strong> privacy@{siteConfig.url.replace('https://', '').replace('http://', '')}</li>
-              <li><strong>Response time:</strong> Within 72 hours</li>
-              <li><strong>Data Protection Officer:</strong> Available upon request</li>
-            </ul>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2">General Privacy Inquiries</h5>
+                <ul className="text-blue-800 dark:text-blue-200 text-sm space-y-1">
+                  <li><strong>Email:</strong> privacy@{siteConfig.url.replace('https://', '').replace('http://', '')}</li>
+                  <li><strong>Response time:</strong> Within 72 hours</li>
+                  <li><strong>Data Protection Officer:</strong> Available upon request</li>
+                </ul>
+              </div>
+              <div>
+                <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Data Rights Requests</h5>
+                <ul className="text-blue-800 dark:text-blue-200 text-sm space-y-1">
+                  <li><strong>Access requests:</strong> data-access@{siteConfig.url.replace('https://', '').replace('http://', '')}</li>
+                  <li><strong>Deletion requests:</strong> data-delete@{siteConfig.url.replace('https://', '').replace('http://', '')}</li>
+                  <li><strong>Verification:</strong> We'll verify your identity before processing</li>
+                  <li><strong>Processing time:</strong> Up to 30 days (may be extended by 60 days)</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

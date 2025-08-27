@@ -123,15 +123,25 @@ src/
 
 - `src/config/site.ts` - Central site configuration and SEO settings
 - `src/lib/sheets.ts` - Google Sheets integration and data fetching logic
-- `src/types/index.ts` - Core TypeScript interfaces
-- `.cursor/rules/blueprint.md` - Design system and feature specifications
+- `src/types/index.ts` - Core TypeScript interfaces  
+- `tailwind.config.ts` - Tailwind CSS configuration with shadcn/ui theme
 - `next.config.js` - Next.js configuration (minimal, relies on defaults)
 
-## Custom Cursor Rules
+## Additional Documentation Files
 
-The project includes Cursor IDE rules for:
-- **Blueprint**: Core design system with color scheme (soft blue #64B5F6, light blue background #F0F8FF, purple accent #957DAD)
-- **PostHog Integration**: Analytics implementation patterns
-- **Favourites Feature**: User preference management patterns
+The project includes comprehensive documentation:
+- **CONFIG_GUIDE.md** - Complete configuration reference
+- **ENVIRONMENT_SETUP.md** - Detailed environment setup instructions
+- **SECURITY.md** - Security best practices and guidelines
+- **SEO-Improvement-Guide.md** - SEO optimization strategies
+- **PAGESPEED-OPTIMIZATION-COMPLETE.md** - Performance optimization results
+
+## Important Development Notes
+
+**No Cursor Rules Found**: The project doesn't have .cursor/ or .cursorrules configuration files. The CLAUDE.md reference to Cursor rules appears outdated.
+
+**Next.js Configuration**: Uses minimal configuration in `next.config.js` (empty file) - relies on Next.js 15 defaults with Turbopack enabled via package.json scripts.
+
+**Testing**: No dedicated test framework is configured. Manual testing is done via the development server.
 
 The application is production-ready and optimized for SEO, performance, and user experience in the commercial real estate AI tools directory space.
