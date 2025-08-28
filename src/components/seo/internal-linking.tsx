@@ -89,7 +89,8 @@ export function CostReductionLinks() {
           data-keyword={link.keyword}
         >
           {link.text}
-      </InternalLink>
+        </InternalLink>
+      ))}
     </div>
   );
 }
@@ -112,7 +113,8 @@ export function RiskAssessmentLinks() {
           data-keyword={link.keyword}
         >
           {link.text}
-      </InternalLink>
+        </InternalLink>
+      ))}
     </div>
   );
 }
