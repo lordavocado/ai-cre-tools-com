@@ -5,7 +5,7 @@ if (typeof window !== 'undefined') {
 import type { DirectoryItem, Category } from '@/types';
 import { GoogleSpreadsheet, type GoogleSpreadsheetRow, type GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, type LucideIcon } from 'lucide-react';
+import { Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building, type LucideIcon } from 'lucide-react';
 import type React from 'react';
 
 // --- Configuration ---
@@ -63,7 +63,7 @@ const COLUMN_MAPPINGS = {
 // --- End Configuration ---
 
 const lucideIconMap: { [key: string]: LucideIcon } = {
-  Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare,
+  Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building,
 };
 
 // Hardcoded categories
@@ -91,7 +91,7 @@ export const getCategories = async (): Promise<Category[]> => {
       `,
       imageUrl: '/categories/category-property-search-acquisition.jpg',
       itemCount: 0,
-      icon: TrendingUp,
+      icon: Search,
     },
     {
       id: 'property-analysis-valuation',
@@ -137,7 +137,7 @@ export const getCategories = async (): Promise<Category[]> => {
       `,
       imageUrl: '/categories/category-development-construction.jpg',
       itemCount: 0,
-      icon: Activity,
+      icon: Building,
     },
     {
       id: 'legal-compliance-due-diligence',
@@ -160,7 +160,7 @@ export const getCategories = async (): Promise<Category[]> => {
       `,
       imageUrl: '/categories/category-legal-compliance-due-diligence.jpg',
       itemCount: 0,
-      icon: MessageSquare,
+      icon: FileText,
     },
     {
       id: 'property-management-operations',
@@ -206,7 +206,7 @@ export const getCategories = async (): Promise<Category[]> => {
       `,
       imageUrl: '/categories/category-asset-portfolio-management.jpg',
       itemCount: 0,
-      icon: TrendingUp,
+      icon: PieChart,
     },
     {
       id: 'transactions-brokerage',

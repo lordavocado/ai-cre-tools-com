@@ -104,7 +104,7 @@ export default async function Home({ searchParams }: HomeProps) {
   const topCategories = categoriesFromSheet.slice(0, 4);
 
   const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
-    ({ id, slug, name }) => ({ id, slug, name })
+    ({ id, slug, name, icon }) => ({ id, slug, name, icon })
   );
 
   return (

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { getCategories } from "@/lib/sheets";
 
-interface CategoryChipsProps {
+interface CategoryChipsWithIconsProps {
   categories: string;
   variant?: "default" | "secondary" | "destructive" | "outline";
   size?: "default" | "sm" | "lg";
@@ -9,13 +10,13 @@ interface CategoryChipsProps {
   showLinks?: boolean;
 }
 
-export function CategoryChips({ 
+export async function CategoryChipsWithIcons({ 
   categories, 
   variant = "secondary", 
   size = "default",
   className = "",
   showLinks = true 
-}: CategoryChipsProps) {
+}: CategoryChipsWithIconsProps) {
   // Split categories by comma and clean up whitespace
   const categoryList = categories
     .split(',')
@@ -26,18 +27,27 @@ export function CategoryChips({
     return null;
   }
 
+  // Get all categories with icons
+  const allCategories = await getCategories();
+
   const badgeSize = size === "sm" ? "text-xs" : size === "lg" ? "text-sm" : "text-xs";
+  const iconSize = size === "sm" ? "h-3 w-3" : size === "lg" ? "h-4 w-4" : "h-3 w-3";
 
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
       {categoryList.map((category, index) => {
         const displayName = category.replace('-', ' ');
         
+        // Find the icon for this category
+        const categoryData = allCategories.find(cat => cat.slug === category);
+        const IconComponent = categoryData?.icon;
+        
         const badgeContent = (
           <Badge 
             variant={variant} 
-            className={`capitalize ${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 transition-all duration-200 shadow-sm`}
+            className={`capitalize ${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 transition-all duration-200 shadow-sm flex items-center gap-1.5`}
           >
+            {IconComponent && <IconComponent className={iconSize} />}
             {displayName}
           </Badge>
         );
@@ -58,4 +68,4 @@ export function CategoryChips({
       })}
     </div>
   );
-} 
+}

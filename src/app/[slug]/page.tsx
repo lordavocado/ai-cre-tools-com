@@ -22,7 +22,7 @@ import {
   Info
 } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
-import { CategoryChips } from "@/components/ui/category-chips";
+import { CategoryChipsWithIcons } from "@/components/ui/category-chips-with-icons";
 import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavouriteButton } from "@/components/ui/favourite-button";
@@ -490,7 +490,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                       <span className="font-semibold text-slate-800">Categor{categories.length > 1 ? 'ies' : 'y'}: </span>
                     </div>
                     <div className="inline-flex flex-wrap gap-1 ml-8">
-                      <CategoryChips categories={item.category} variant="outline" size="sm" />
+                      <CategoryChipsWithIcons categories={item.category} variant="outline" size="sm" />
                     </div>
                   </div>
                 )}

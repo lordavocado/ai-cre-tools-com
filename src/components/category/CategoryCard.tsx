@@ -22,7 +22,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
         </CardHeader>
         <CardContent className="px-6 pb-6">
           {category.imageUrl && (
-            <div className="relative aspect-video w-full rounded-md overflow-hidden bg-neutral-50">
+            <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden bg-neutral-50">
               <Image
                 src={category.imageUrl}
                 alt={category.name}

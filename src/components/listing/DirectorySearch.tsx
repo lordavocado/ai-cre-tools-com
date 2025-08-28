@@ -12,6 +12,7 @@ export interface DirectorySearchCategory {
   id: string;
   slug: string;
   name: string;
+  icon?: any; // Lucide icon component
 }
 
 interface DirectorySearchProps {
@@ -161,26 +162,30 @@ export function DirectorySearch({
 
         {/* Categories Section */}
         <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <Badge
-              key={category.id}
-              variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
-              className={`
-                cursor-pointer px-4 py-2 text-sm font-medium
-                transition-colors duration-200
-                ${selectedCategories.includes(category.slug)
-                  ? 'bg-neutral-900 text-white hover:bg-neutral-800'
-                  : 'bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50'
-                }
-              `}
-              onClick={(e) => {
-                e.preventDefault();
-                toggleCategory(category.slug);
-              }}
-            >
-              {category.name}
-            </Badge>
-          ))}
+          {categories.map((category) => {
+            const IconComponent = category.icon;
+            return (
+              <Badge
+                key={category.id}
+                variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
+                className={`
+                  cursor-pointer px-4 py-2 text-sm font-medium flex items-center gap-2
+                  transition-colors duration-200
+                  ${selectedCategories.includes(category.slug)
+                    ? 'bg-neutral-900 text-white hover:bg-neutral-800'
+                    : 'bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50'
+                  }
+                `}
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleCategory(category.slug);
+                }}
+              >
+                {IconComponent && <IconComponent className="h-4 w-4" />}
+                {category.name}
+              </Badge>
+            );
+          })}
         </div>
 
         {/* Location Filters */}
