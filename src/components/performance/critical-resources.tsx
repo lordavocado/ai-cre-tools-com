@@ -8,18 +8,22 @@ import { useEffect } from 'react';
  */
 export function CriticalResources() {
   useEffect(() => {
-    // Preload critical resources that actually exist
+    // Only preload resources that are actually needed and won't cause warnings
     const preloadResources: Array<{
       href: string;
       as: string;
       type?: string;
       crossOrigin?: string;
     }> = [
-      { href: '/ai-cre-tools-logo.png', as: 'image' },
-      { href: '/og-image.png', as: 'image' },
+      // Only preload resources that are used immediately on page load
+      // Removed logo and og-image as they're not immediately visible
     ];
 
     preloadResources.forEach(resource => {
+      // Check if resource is already preloaded to prevent duplicates
+      const existingLink = document.querySelector(`link[rel="preload"][href="${resource.href}"]`);
+      if (existingLink) return;
+
       const link = document.createElement('link');
       link.rel = 'preload';
       link.href = resource.href;

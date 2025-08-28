@@ -100,10 +100,19 @@ export default async function Home({ searchParams }: HomeProps) {
   const cityFilter = city || "";
 
   try {
+    // Get items first, then categories to avoid circular dependency
     const initialItems = await getDirectoryItems(searchTerm, categoryFilter, countryFilter, cityFilter);
-    const categoriesFromSheet: Category[] = await getCategories(); 
+    
+    // Get categories without item counts initially to avoid circular dependency
+    let categoriesFromSheet: Category[];
+    try {
+      categoriesFromSheet = await getCategories(true); // Include item counts
+    } catch (categoryError) {
+      console.warn('Failed to get categories with item counts, falling back to basic categories:', categoryError);
+      categoriesFromSheet = await getCategories(false); // Fallback without item counts
+    }
+    
     const topCategories = categoriesFromSheet.slice(0, 4);
-
     const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
       ({ id, slug, name, icon }) => ({ id, slug, name, icon })
     );
@@ -333,14 +342,19 @@ export default async function Home({ searchParams }: HomeProps) {
       </>
     );
   } catch (error) {
-    // Fallback when data fetching fails
+    // Fallback when data fetching fails - prevent infinite re-renders
     console.error('Error loading homepage data:', error);
     
-    // Provide empty data as fallbacks
+    // Provide minimal fallback data to prevent further errors
     const initialItems: any[] = [];
     const categoriesFromSheet: Category[] = [];
     const topCategories: Category[] = [];
     const searchCategories: DirectorySearchCategory[] = [];
+    
+    // Mark this as an error state to prevent retry loops
+    if (typeof window !== 'undefined') {
+      console.warn('Homepage entered error fallback state');
+    }
     
     return (
       <>

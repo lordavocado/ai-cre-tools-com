@@ -67,8 +67,7 @@ const lucideIconMap: { [key: string]: LucideIcon } = {
 };
 
 // Hardcoded categories
-export const getCategories = async (): Promise<Category[]> => {
-  const allDirItems = await getDirectoryItems();
+export const getCategories = async (includeItemCounts: boolean = true): Promise<Category[]> => {
   const categories: Category[] = [
     {
       id: 'property-search-acquisition',
@@ -302,14 +301,25 @@ export const getCategories = async (): Promise<Category[]> => {
     },
   ];
 
+  // Only calculate itemCount if requested (to avoid circular dependency)
+  if (!includeItemCounts) {
+    return categories;
+  }
+
   // Calculate itemCount for each category dynamically
-  return categories.map(category => ({
-    ...category,
-    itemCount: allDirItems.filter(item => {
-      const itemCategories = item.category.split(',').map(cat => cat.trim());
-      return itemCategories.includes(category.slug);
-    }).length
-  }));
+  try {
+    const allDirItems = await getDirectoryItems();
+    return categories.map(category => ({
+      ...category,
+      itemCount: allDirItems.filter(item => {
+        const itemCategories = item.category.split(',').map(cat => cat.trim());
+        return itemCategories.includes(category.slug);
+      }).length
+    }));
+  } catch (error) {
+    console.warn('Failed to calculate item counts for categories, returning without counts:', error);
+    return categories;
+  }
 };
 
 
@@ -573,13 +583,19 @@ export async function getDirectoryItems(
   cityFilter?: string
 ): Promise<DirectoryItem[]> {
   // Check if we have valid cached data and no specific search/filter
-  if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter) {
+  if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter && !countryFilter && !cityFilter) {
     return allItemsCache;
   }
 
   // If there's a pending request for items and no search/filter, wait for it
-  if (pendingItemsRequest && !searchTerm && !categoryFilter) {
-    return pendingItemsRequest;
+  if (pendingItemsRequest && !searchTerm && !categoryFilter && !countryFilter && !cityFilter) {
+    try {
+      return await pendingItemsRequest;
+    } catch (error) {
+      // Clear the pending request on error to allow retry
+      pendingItemsRequest = null;
+      throw error;
+    }
   }
 
   // For searches and filters, we still need the base data
@@ -589,9 +605,16 @@ export async function getDirectoryItems(
       pendingItemsRequest = fetchDirectoryItemsFromSheet();
     }
     
-    // Wait for the fresh data
+    // Wait for the fresh data with better error handling
     try {
-      await pendingItemsRequest;
+      const result = await pendingItemsRequest;
+      return result;
+    } catch (error) {
+      console.error('Failed to fetch directory items:', error);
+      // Clear cache and pending request to prevent stuck state
+      allItemsCache = [];
+      allItemsCacheTimestamp = Date.now();
+      return [];
     } finally {
       pendingItemsRequest = null;
     }

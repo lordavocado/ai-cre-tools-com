@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SheetsErrorFallback } from "@/components/sheets/SheetsErrorFallback";
 
 export default function Error({
@@ -10,9 +10,41 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [resetCount, setResetCount] = useState(0);
+  const [isInfiniteLoop, setIsInfiniteLoop] = useState(false);
+
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error('Application error:', error);
+    // Detect potential infinite re-render loops
+    if (resetCount > 3) {
+      setIsInfiniteLoop(true);
+      console.error('🚨 Potential infinite loop detected. Disabling auto-retry.');
+    }
+  }, [resetCount]);
+
+  const handleReset = () => {
+    if (isInfiniteLoop) {
+      // Force page reload instead of component reset
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
+      return;
+    }
+    setResetCount(prev => prev + 1);
+    reset();
+  };
+  useEffect(() => {
+    // Log the error with more context for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.group('🚨 Application Error Details');
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('Error digest:', error.digest);
+      console.error('Full error object:', error);
+      console.groupEnd();
+    } else {
+      // In production, log minimal error info
+      console.error('Application error:', error.message, { digest: error.digest });
+    }
   }, [error]);
 
   // Check if this is a Google Sheets related error
@@ -37,12 +69,24 @@ export default function Error({
       <p className="text-muted-foreground mb-6">
         An unexpected error occurred. Please try again.
       </p>
-      <button
-        onClick={reset}
-        className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
-      >
-        Try again
-      </button>
+      <div className="space-y-2">
+        <button
+          onClick={handleReset}
+          className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+        >
+          {isInfiniteLoop ? 'Reload Page' : 'Try again'}
+        </button>
+        {resetCount > 0 && !isInfiniteLoop && (
+          <p className="text-sm text-muted-foreground">
+            Retry attempt: {resetCount}/3
+          </p>
+        )}
+        {isInfiniteLoop && (
+          <p className="text-sm text-red-600">
+            Multiple errors detected. Click to reload the page.
+          </p>
+        )}
+      </div>
     </div>
   );
 } 
