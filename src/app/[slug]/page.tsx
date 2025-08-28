@@ -141,7 +141,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      {/* Enhanced Structured Data for Tool */}
+      {/* Enhanced SoftwareApplication Schema for Tool */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -151,17 +151,25 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
             name: item.name,
             description: item.description || item.tagline,
             url: item.website,
-            image: item.imageUrl,
-            applicationCategory: "BusinessApplication",
+            applicationCategory: item.category?.includes('management') ? 'BusinessApplication' :
+                                item.category?.includes('analysis') ? 'DeveloperApplication' :
+                                item.category?.includes('market') ? 'BusinessApplication' : 'BusinessApplication',
             operatingSystem: "Web-based",
-            offers: item.pricing ? {
+            applicationSubCategory: item.category || 'CRE AI Tool',
+            softwareVersion: item.lastUpdated ? new Date(item.lastUpdated).getFullYear().toString() : undefined,
+            fileSize: undefined,
+            downloadUrl: item.website,
+            screenshot: item.imageUrl,
+            offers: {
               "@type": "Offer",
-              description: item.pricing,
+              price: item.pricing ? item.pricing.replace(/[^\d.]/g, '') || "0" : "0",
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
               seller: {
                 "@type": "Organization",
                 name: item.name,
               },
-            } : undefined,
+            },
             aggregateRating: item.rating ? {
               "@type": "AggregateRating",
               ratingValue: item.rating,
@@ -174,7 +182,16 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
               name: siteConfig.name,
               url: siteConfig.url,
             },
-            datePublished: item.lastUpdated || new Date().toISOString(),
+            publisher: {
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              logo: {
+                "@type": "ImageObject",
+                url: `${siteConfig.url}/ai-cre-tools-logo.png`,
+              },
+            },
+            datePublished: item.foundedYear ? `${item.foundedYear}-01-01` : new Date().toISOString(),
             dateModified: item.lastUpdated || new Date().toISOString(),
             mainEntityOfPage: {
               "@type": "WebPage",
@@ -203,9 +220,66 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                 },
               ],
             },
+            about: [
+              {
+                "@type": "Thing",
+                name: "Commercial Real Estate",
+                sameAs: "https://en.wikipedia.org/wiki/Commercial_property",
+              },
+              {
+                "@type": "Thing",
+                name: "Artificial Intelligence",
+                sameAs: "https://en.wikipedia.org/wiki/Artificial_intelligence",
+              },
+              {
+                "@type": "Thing",
+                name: "PropTech",
+                sameAs: "https://en.wikipedia.org/wiki/PropTech",
+              },
+            ],
+            keywords: [
+              item.name,
+              item.category,
+              "AI",
+              "artificial intelligence",
+              "commercial real estate",
+              "CRE",
+              "PropTech",
+              "automation",
+              "efficiency",
+            ].filter(Boolean),
           }),
         }}
       />
+
+      {/* Review/Rating Schema if available */}
+      {item.rating && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Review",
+              author: {
+                "@type": "Person",
+                name: "CRE Professional",
+              },
+              reviewRating: {
+                "@type": "Rating",
+                ratingValue: item.rating,
+                bestRating: 5,
+                worstRating: 1,
+              },
+              reviewBody: `${item.name} is rated ${item.rating}/5 by CRE professionals for its AI-powered capabilities in commercial real estate.`,
+              itemReviewed: {
+                "@type": "SoftwareApplication",
+                name: item.name,
+                description: item.description || item.tagline,
+              },
+            }),
+          }}
+        />
+      )}
 
       {/* FAQ Structured Data if features exist */}
       {item.features && item.features.length > 0 && (

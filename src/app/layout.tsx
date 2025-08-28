@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     },
   },
   
-  // Enhanced favicon and app icons
+  // Enhanced favicon and app icons for mobile optimization
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -90,9 +90,26 @@ export const metadata: Metadata = {
     ],
     apple: [
       { url: '/ai-cre-tools-logo.png', sizes: '180x180', type: 'image/png' },
+      { url: '/ai-cre-tools-logo.png', sizes: '152x152', type: 'image/png' },
+      { url: '/ai-cre-tools-logo.png', sizes: '120x120', type: 'image/png' },
     ],
     shortcut: '/favicon.ico',
   },
+
+  // Mobile-specific viewport optimization
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: 'cover',
+  },
+
+  // Theme color for mobile browsers
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
+  ],
   
   // Web app manifest
   manifest: '/site.webmanifest',
@@ -206,14 +223,26 @@ export default function RootLayout({
           `
         }} />
         
-        {/* DNS prefetch for external domains */}
+        {/* DNS prefetch for external domains - Core Web Vitals optimization */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//eu.i.posthog.com" />
-        
-        {/* Preconnect to critical origins */}
+        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+
+        {/* Preconnect to critical origins for faster loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://eu.i.posthog.com" />
+
+        {/* Preload critical resources */}
+        <link rel="preload" href="/ai-cre-tools-logo.png" as="image" />
+        <link rel="preload" href="/og-image.png" as="image" />
+
+        {/* Resource hints for performance */}
+        <link rel="prefetch" href="/categories" />
+        <link rel="prefetch" href="/blog" />
+        <link rel="prefetch" href="/about" />
         
         {/* CSS loading detection */}
         <script dangerouslySetInnerHTML={{
@@ -270,6 +299,58 @@ export default function RootLayout({
         </PostHogProvider>
         
         {/* Enhanced Structured Data for Better SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              description: siteConfig.description,
+              inLanguage: "en-US",
+              publisher: {
+                "@type": "Organization",
+                name: siteConfig.name,
+                url: siteConfig.url,
+                logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
+              },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${siteConfig.url}/?search={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
+              description: siteConfig.description,
+              sameAs: siteConfig.social ? Object.values(siteConfig.social).map(handle =>
+                handle.includes('@') ? `https://twitter.com/${handle}` :
+                handle.includes('company/') ? `https://linkedin.com/${handle}` :
+                `https://github.com/${handle}`
+              ) : [],
+              knowsAbout: [
+                "Commercial Real Estate",
+                "AI Tools",
+                "PropTech",
+                "Real Estate Analytics",
+                "Property Management Software",
+                "Investment Analysis"
+              ],
+            }),
+          }}
+        />
+
         <StructuredData type="website" />
         <StructuredData type="organization" />
       </body>
