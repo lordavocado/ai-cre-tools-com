@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { BlogList } from '@/components/blog/BlogList';
+import { getAllBlogPosts, type BlogPost } from '@/lib/blog';
 import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
@@ -39,6 +40,15 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  // Get blog posts on the server side to avoid file system access issues
+  let posts: BlogPost[];
+  try {
+    posts = getAllBlogPosts();
+  } catch (error) {
+    console.error('Failed to load blog posts:', error);
+    posts = [];
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
@@ -50,7 +60,7 @@ export default function BlogPage() {
         </p>
       </div>
 
-      <BlogList />
+      <BlogList posts={posts} />
     </div>
   );
 }

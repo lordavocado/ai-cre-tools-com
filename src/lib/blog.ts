@@ -21,10 +21,17 @@ export interface BlogPost {
 }
 
 export function getAllBlogPosts(): BlogPost[] {
-  const fileNames = fs.readdirSync(blogDirectory);
-  const allPostsData = fileNames
-    .filter(fileName => fileName.endsWith('.md'))
-    .map(fileName => {
+  try {
+    // Check if blog directory exists
+    if (!fs.existsSync(blogDirectory)) {
+      console.warn(`Blog directory does not exist: ${blogDirectory}`);
+      return [];
+    }
+
+    const fileNames = fs.readdirSync(blogDirectory);
+    const allPostsData = fileNames
+      .filter(fileName => fileName.endsWith('.md'))
+      .map(fileName => {
       const id = fileName.replace(/\.md$/, '');
       const fullPath = path.join(blogDirectory, fileName);
       const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -47,24 +54,43 @@ export function getAllBlogPosts(): BlogPost[] {
         imageUrl: matterResult.data.imageUrl,
         content: matterResult.content,
         htmlContent,
-      } as BlogPost;
-    });
+        } as BlogPost;
+      });
 
-  return allPostsData.sort((a, b) => (a.publishedDate < b.publishedDate ? 1 : -1));
+    return allPostsData.sort((a, b) => (a.publishedDate < b.publishedDate ? 1 : -1));
+  } catch (error) {
+    console.error('Error loading blog posts:', error);
+    return [];
+  }
 }
 
 export function getBlogPost(slug: string): BlogPost | undefined {
-  const allPosts = getAllBlogPosts();
-  return allPosts.find(post => post.slug === slug);
+  try {
+    const allPosts = getAllBlogPosts();
+    return allPosts.find(post => post.slug === slug);
+  } catch (error) {
+    console.error('Error getting blog post:', error);
+    return undefined;
+  }
 }
 
 export function getBlogPostsByCategory(category: string): BlogPost[] {
-  const allPosts = getAllBlogPosts();
-  return allPosts.filter(post => post.category.toLowerCase() === category.toLowerCase());
+  try {
+    const allPosts = getAllBlogPosts();
+    return allPosts.filter(post => post.category.toLowerCase() === category.toLowerCase());
+  } catch (error) {
+    console.error('Error getting blog posts by category:', error);
+    return [];
+  }
 }
 
 export function getAllCategories(): string[] {
-  const allPosts = getAllBlogPosts();
-  const categories = allPosts.map(post => post.category);
-  return Array.from(new Set(categories));
+  try {
+    const allPosts = getAllBlogPosts();
+    const categories = allPosts.map(post => post.category);
+    return Array.from(new Set(categories));
+  } catch (error) {
+    console.error('Error getting blog categories:', error);
+    return [];
+  }
 }

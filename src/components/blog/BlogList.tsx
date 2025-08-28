@@ -4,10 +4,13 @@ import { Calendar, Clock, User } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getAllBlogPosts } from '@/lib/blog';
+import type { BlogPost } from '@/lib/blog';
 
-export function BlogList() {
-  const posts = getAllBlogPosts();
+interface BlogListProps {
+  posts: BlogPost[];
+}
+
+export function BlogList({ posts }: BlogListProps) {
 
   if (posts.length === 0) {
     return (
