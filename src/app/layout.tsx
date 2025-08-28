@@ -15,6 +15,7 @@ import { JSExecutionOptimizer, ScriptExecutionMonitor } from '@/components/perfo
 import { CSSFallback, CSSLoadingMonitor } from '@/components/css-fallback';
 import { CriticalResources } from '@/components/performance/critical-resources';
 import { PerformanceMonitor } from '@/components/performance/performance-monitor';
+import { HydrationTracker } from '@/components/performance/hydration-tracker';
 
 
 export const metadata: Metadata = {
@@ -284,11 +285,12 @@ export default function RootLayout({
             )}
             <JSExecutionOptimizer />
             <ScriptExecutionMonitor />
-            <PerformanceMonitor 
+            <PerformanceMonitor
               enableConsoleLogging={process.env.NODE_ENV === 'development'}
               enableRealUserMonitoring={true}
               thresholdWarnings={true}
             />
+            <HydrationTracker />
             <div className="relative flex min-h-dvh flex-col bg-background">
               <Header />
               <main className="flex-1">{children}</main>
