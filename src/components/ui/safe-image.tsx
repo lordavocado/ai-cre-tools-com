@@ -10,7 +10,7 @@ interface SafeImageProps {
   fallbackText?: string;
 }
 
-// Helper function to get favicon URL from website (same as comparison view)
+// Helper function to get favicon URL from website through our proxy
 const getFaviconUrl = (website: string): string => {
   if (!website) return "/ai-cre-tools-logo.png";
   
@@ -22,7 +22,8 @@ const getFaviconUrl = (website: string): string => {
     }
     
     const domain = new URL(cleanUrl).hostname;
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    // Use our image proxy API instead of calling Google's service directly
+    return `/api/image-proxy?url=https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
   } catch {
     return "/ai-cre-tools-logo.png";
   }

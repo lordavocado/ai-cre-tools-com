@@ -235,10 +235,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://eu.i.posthog.com" />
 
-        {/* Preload critical resources */}
-        <link rel="preload" href="/ai-cre-tools-logo.png" as="image" />
-        <link rel="preload" href="/og-image.png" as="image" />
-
         {/* Resource hints for performance */}
         <link rel="prefetch" href="/categories" />
         <link rel="prefetch" href="/blog" />
@@ -280,8 +276,12 @@ export default function RootLayout({
         <CriticalResources />
         <PostHogProvider>
           <FavouritesProvider>
-            <PostHogOptimizer />
-            <AnalyticsPerformanceMonitor />
+            {process.env.NEXT_PUBLIC_POSTHOG_KEY && (
+              <>
+                <PostHogOptimizer />
+                <AnalyticsPerformanceMonitor />
+              </>
+            )}
             <JSExecutionOptimizer />
             <ScriptExecutionMonitor />
             <PerformanceMonitor 

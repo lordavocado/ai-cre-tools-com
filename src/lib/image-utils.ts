@@ -55,7 +55,7 @@ export function getImageUrl(imageUrl: string | undefined, fallbackUrl: string = 
 
 /**
  * Get favicon URL from website domain
- * Uses Google's favicon service directly (reliable and fast)
+ * Uses our image proxy to handle Google's favicon service
  */
 export function getFaviconUrl(website: string): string {
   if (!website) return "/ai-cre-tools-logo.png";
@@ -68,8 +68,8 @@ export function getFaviconUrl(website: string): string {
     }
     
     const domain = new URL(cleanUrl).hostname;
-    // Use Google's favicon service directly - it's reliable and doesn't have CORS issues
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    // Use our image proxy to prevent direct calls to Google's service
+    return `/api/image-proxy?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`)}`;
   } catch {
     return "/ai-cre-tools-logo.png";
   }

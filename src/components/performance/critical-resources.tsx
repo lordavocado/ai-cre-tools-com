@@ -8,15 +8,15 @@ import { useEffect } from 'react';
  */
 export function CriticalResources() {
   useEffect(() => {
-    // Preload critical resources
+    // Preload critical resources that actually exist
     const preloadResources: Array<{
       href: string;
       as: string;
       type?: string;
       crossOrigin?: string;
     }> = [
-      { href: '/chunks/react.js', as: 'script' },
-      { href: '/chunks/posthog.js', as: 'script' },
+      { href: '/ai-cre-tools-logo.png', as: 'image' },
+      { href: '/og-image.png', as: 'image' },
     ];
 
     preloadResources.forEach(resource => {
