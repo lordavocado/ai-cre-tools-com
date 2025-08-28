@@ -34,7 +34,7 @@ export interface Category {
   longDescription?: string;
   imageUrl?: string;
   itemCount?: number;
-  icon?: React.ElementType; // Lucide icon component
+  icon?: string; // Icon key for CATEGORY_ICONS lookup
 }
 
 export interface Guide {

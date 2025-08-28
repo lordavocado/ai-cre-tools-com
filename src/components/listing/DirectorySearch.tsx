@@ -7,7 +7,7 @@ import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { siteConfig } from "@/config/site";
-import { CATEGORY_ICONS } from "@/lib/sheets";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export interface DirectorySearchCategory {

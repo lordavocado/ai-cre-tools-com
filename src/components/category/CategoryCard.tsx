@@ -4,13 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
 
 interface CategoryCardProps {
   category: Category;
 }
 
 export function CategoryCard({ category }: CategoryCardProps) {
-  const IconComponent = category.icon;
+  const IconComponent = category.icon ? CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS] : null;
   return (
     <Link href={`/categories/${category.slug}`} className="group block">
       <Card className="h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 transition-colors duration-200">

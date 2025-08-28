@@ -5,24 +5,6 @@ if (typeof window !== 'undefined') {
 import type { DirectoryItem, Category } from '@/types';
 import { GoogleSpreadsheet, type GoogleSpreadsheetRow, type GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building, type LucideIcon } from 'lucide-react';
-import type React from 'react';
-
-// Icon mapping for SSR-safe icon handling
-export const CATEGORY_ICONS = {
-  'property-search-acquisition': Search,
-  'property-analysis-valuation': DollarSign,
-  'development-construction': Building,
-  'transactions-brokerage': TrendingUp,
-  'property-management-operations': PieChart,
-  'legal-compliance-duediligence': FileText,
-  'asset-portfolio-management': PieChart,
-  'marketing-leasing-enablement': Users,
-  'data-workflow-infrastructure': TestTube,
-  'productivity-copilots': Brain,
-} as const;
-
-export type CategoryIconKey = keyof typeof CATEGORY_ICONS;
 
 // --- Configuration ---
 
@@ -78,9 +60,7 @@ const COLUMN_MAPPINGS = {
 
 // --- End Configuration ---
 
-const lucideIconMap: { [key: string]: LucideIcon } = {
-  Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building,
-};
+
 
 // Hardcoded categories
 export const getCategories = async (includeItemCounts: boolean = true): Promise<Category[]> => {

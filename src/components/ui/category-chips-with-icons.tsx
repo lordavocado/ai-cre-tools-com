@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { getCategories } from "@/lib/sheets";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
 
 interface CategoryChipsWithIconsProps {
   categories: string;
@@ -10,12 +10,12 @@ interface CategoryChipsWithIconsProps {
   showLinks?: boolean;
 }
 
-export async function CategoryChipsWithIcons({ 
-  categories, 
-  variant = "secondary", 
+export function CategoryChipsWithIcons({
+  categories,
+  variant = "secondary",
   size = "default",
   className = "",
-  showLinks = true 
+  showLinks = true
 }: CategoryChipsWithIconsProps) {
   // Split categories by comma and clean up whitespace
   const categoryList = categories
@@ -27,9 +27,6 @@ export async function CategoryChipsWithIcons({
     return null;
   }
 
-  // Get all categories with icons
-  const allCategories = await getCategories();
-
   const badgeSize = size === "sm" ? "text-xs" : size === "lg" ? "text-sm" : "text-xs";
   const iconSize = size === "sm" ? "h-3 w-3" : size === "lg" ? "h-4 w-4" : "h-3 w-3";
 
@@ -37,10 +34,9 @@ export async function CategoryChipsWithIcons({
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
       {categoryList.map((category, index) => {
         const displayName = category.replace('-', ' ');
-        
+
         // Find the icon for this category
-        const categoryData = allCategories.find(cat => cat.slug === category);
-        const IconComponent = categoryData?.icon;
+        const IconComponent = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS];
         
         const badgeContent = (
           <Badge 
