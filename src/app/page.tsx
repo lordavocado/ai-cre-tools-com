@@ -99,56 +99,57 @@ export default async function Home({ searchParams }: HomeProps) {
   const countryFilter = country || "";
   const cityFilter = city || "";
 
-  const initialItems = await getDirectoryItems(searchTerm, categoryFilter, countryFilter, cityFilter);
-  const categoriesFromSheet: Category[] = await getCategories(); 
-  const topCategories = categoriesFromSheet.slice(0, 4);
+  try {
+    const initialItems = await getDirectoryItems(searchTerm, categoryFilter, countryFilter, cityFilter);
+    const categoriesFromSheet: Category[] = await getCategories(); 
+    const topCategories = categoriesFromSheet.slice(0, 4);
 
-  const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
-    ({ id, slug, name, icon }) => ({ id, slug, name, icon })
-  );
+    const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
+      ({ id, slug, name, icon }) => ({ id, slug, name, icon })
+    );
 
-  return (
-    <>
-      {/* Enhanced Structured Data for Homepage */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: siteConfig.name,
-            url: siteConfig.url,
-            description: siteConfig.description,
-            inLanguage: "en-US",
-            potentialAction: {
-              "@type": "SearchAction",
-              target: {
-                "@type": "EntryPoint",
-                urlTemplate: `${siteConfig.url}/?search={search_term_string}`,
-              },
-              "query-input": "required name=search_term_string",
-            },
-            mainEntity: {
-              "@type": "ItemList",
-              name: `${siteConfig.categoryName} Directory`,
-              description: `Comprehensive directory of ${siteConfig.categoryName.toLowerCase()}`,
-              numberOfItems: initialItems.length,
-              itemListElement: initialItems.slice(0, 20).map((item, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                item: {
-                  "@type": "SoftwareApplication",
-                  name: item.name,
-                  description: item.tagline,
-                  url: `${siteConfig.url}/${item.slug}`,
-                  applicationCategory: "BusinessApplication",
-                  operatingSystem: "Web-based",
+    return (
+      <>
+        {/* Enhanced Structured Data for Homepage */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              description: siteConfig.description,
+              inLanguage: "en-US",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: `${siteConfig.url}/?search={search_term_string}`,
                 },
-              })),
-            },
-          }),
-        }}
-      />
+                "query-input": "required name=search_term_string",
+              },
+              mainEntity: {
+                "@type": "ItemList",
+                name: `${siteConfig.categoryName} Directory`,
+                description: `Comprehensive directory of ${siteConfig.categoryName.toLowerCase()}`,
+                numberOfItems: initialItems.length,
+                itemListElement: initialItems.slice(0, 20).map((item, index) => ({
+                  "@type": "ListItem",
+                  position: index + 1,
+                  item: {
+                    "@type": "SoftwareApplication",
+                    name: item.name,
+                    description: item.tagline,
+                    url: `${siteConfig.url}/${item.slug}`,
+                    applicationCategory: "BusinessApplication",
+                    operatingSystem: "Web-based",
+                  },
+                })),
+              },
+            }),
+          }}
+        />
 
       {/* Breadcrumb Structured Data */}
       <script
@@ -329,6 +330,80 @@ export default async function Home({ searchParams }: HomeProps) {
             })
           }}
         />
-    </>
-  );
+      </>
+    );
+  } catch (error) {
+    // Fallback when data fetching fails
+    console.error('Error loading homepage data:', error);
+    
+    // Provide empty data as fallbacks
+    const initialItems: any[] = [];
+    const categoriesFromSheet: Category[] = [];
+    const topCategories: Category[] = [];
+    const searchCategories: DirectorySearchCategory[] = [];
+    
+    return (
+      <>
+        {/* Basic Structured Data for error case */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: siteConfig.name,
+              url: siteConfig.url,
+              description: siteConfig.description,
+              inLanguage: "en-US",
+            }),
+          }}
+        />
+
+        <Hero />
+
+        <section id="directory" className="py-16 md:py-24">
+          <div className="container pl-6">
+            <div className="text-center py-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {siteConfig.categoryName} Directory
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
+              </p>
+              <Button asChild>
+                <Link href="/categories">
+                  Explore Categories <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 md:py-24 bg-secondary/30">
+          <div className="container pl-6">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Browse by Category
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                Our directory is organized by specific use cases in commercial real estate.
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/categories">
+                  View All Categories <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <Suspense fallback={<div>Loading...</div>}>
+          <IntersectionLoader>
+            <FAQSection />
+          </IntersectionLoader>
+        </Suspense>
+      </>
+    );
+  }
 }

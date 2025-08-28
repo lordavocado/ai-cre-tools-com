@@ -11,24 +11,25 @@ export const metadata: Metadata = {
 import { getCategories } from "@/lib/sheets";
 
 export default async function CategoriesPage() {
-  const categories = await getCategories();
+  try {
+    const categories = await getCategories();
 
-  return (
-    <div className="container py-12 md:py-16 pl-6">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">
-          Explore {siteConfig.categoryName} Categories
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Explore our comprehensive collection of AI tools organized by specific commercial real estate use cases and functionality.
-        </p>
+    return (
+      <div className="container py-12 md:py-16 pl-6">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">
+            Explore {siteConfig.categoryName} Categories
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            Explore our comprehensive collection of AI tools organized by specific commercial real estate use cases and functionality.
+          </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
-          {categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
         </div>
-      </div>
 
       {/* Structured Data for Categories Page */}
       <script
@@ -73,6 +74,45 @@ export default async function CategoriesPage() {
           })
         }}
       />
-    </div>
-  );
+      </div>
+    );
+  } catch (error) {
+    console.error('Error loading categories:', error);
+    
+    return (
+      <div className="container py-12 md:py-16 pl-6">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">
+            Explore {siteConfig.categoryName} Categories
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+            We're currently updating our categories. Please check back soon.
+          </p>
+          
+          <div className="bg-secondary/30 rounded-lg p-8">
+            <p className="text-muted-foreground mb-4">
+              Our {siteConfig.categoryName.toLowerCase()} directory is organized by specific use cases in commercial real estate.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Categories include Property Management, Investment Analysis, Market Research, and more.
+            </p>
+          </div>
+        </div>
+
+        {/* Basic Structured Data for error case */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              name: `All ${siteConfig.categoryName} Categories`,
+              description: `Explore all categories of ${siteConfig.categoryName.toLowerCase()} available in our directory.`,
+              url: `${siteConfig.url}/categories`,
+            })
+          }}
+        />
+      </div>
+    );
+  }
 }
