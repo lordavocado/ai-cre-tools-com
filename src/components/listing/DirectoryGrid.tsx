@@ -5,17 +5,18 @@ import { DirectoryItemCard } from "./DirectoryItemCard";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Pagination } from "@/components/ui/pagination";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useState } from "react";
 
 interface DirectoryGridProps {
   items: DirectoryItem[];
 }
 
-export function DirectoryGrid({ items }: DirectoryGridProps) {
+function DirectoryGridContent({ items }: DirectoryGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(items.length / itemsPerPage);
-  
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = items.slice(startIndex, endIndex);
@@ -43,7 +44,7 @@ export function DirectoryGrid({ items }: DirectoryGridProps) {
           <DirectoryItemCard key={item.id} item={item} />
         ))}
       </div>
-      
+
       {totalPages > 1 && (
         <div className="flex justify-center py-8">
           <Pagination
@@ -54,5 +55,23 @@ export function DirectoryGrid({ items }: DirectoryGridProps) {
         </div>
       )}
     </div>
+  );
+}
+
+export function DirectoryGrid({ items }: DirectoryGridProps) {
+  return (
+    <ErrorBoundary
+      componentName="DirectoryGrid"
+      onError={(error, errorInfo) => {
+        // Log specific DirectoryGrid errors for monitoring
+        console.error('DirectoryGrid Error:', {
+          error: error.message,
+          componentStack: errorInfo.componentStack,
+          itemsCount: items?.length
+        });
+      }}
+    >
+      <DirectoryGridContent items={items} />
+    </ErrorBoundary>
   );
 }

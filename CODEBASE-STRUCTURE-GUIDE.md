@@ -256,7 +256,7 @@ public/
 ├── 📄 favicon.ico             # Site favicon
 ├── 📄 favicon.svg             # SVG favicon
 ├── 📄 site.webmanifest        # Web app manifest
-├── 📄 ai-cre-tools-logo.png   # Main logo
+├── 📄 ai-cre-tools-logo.jpg   # Main logo
 ├── 📄 og-image.png            # Open Graph image
 ├── 📄 twitter-image.png       # Twitter card image
 ├── 📄 linkedin-image.png      # LinkedIn share image

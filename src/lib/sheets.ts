@@ -8,6 +8,22 @@ import { JWT } from 'google-auth-library';
 import { Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building, type LucideIcon } from 'lucide-react';
 import type React from 'react';
 
+// Icon mapping for SSR-safe icon handling
+export const CATEGORY_ICONS = {
+  'property-search-acquisition': Search,
+  'property-analysis-valuation': DollarSign,
+  'development-construction': Building,
+  'transactions-brokerage': TrendingUp,
+  'property-management-operations': PieChart,
+  'legal-compliance-duediligence': FileText,
+  'asset-portfolio-management': PieChart,
+  'marketing-leasing-enablement': Users,
+  'data-workflow-infrastructure': TestTube,
+  'productivity-copilots': Brain,
+} as const;
+
+export type CategoryIconKey = keyof typeof CATEGORY_ICONS;
+
 // --- Configuration ---
 
 // 1. Sheet Names Configuration:
@@ -90,7 +106,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-property-search-acquisition.jpg',
       itemCount: 0,
-      icon: Search,
+      icon: 'property-search-acquisition',
     },
     {
       id: 'property-analysis-valuation',
@@ -113,7 +129,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-property-analysis-valuation.jpg',
       itemCount: 0,
-      icon: DollarSign,
+      icon: 'property-analysis-valuation',
     },
     {
       id: 'development-construction',
@@ -136,7 +152,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-development-construction.jpg',
       itemCount: 0,
-      icon: Building,
+      icon: 'development-construction',
     },
     {
       id: 'legal-compliance-due-diligence',
@@ -159,7 +175,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-legal-compliance-due-diligence.jpg',
       itemCount: 0,
-      icon: FileText,
+      icon: 'legal-compliance-duediligence',
     },
     {
       id: 'property-management-operations',
@@ -182,7 +198,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-property-management-operations.jpg',
       itemCount: 0,
-      icon: Users,
+      icon: 'property-management-operations',
     },
     {
       id: 'asset-portfolio-management',
@@ -205,7 +221,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-asset-portfolio-management.jpg',
       itemCount: 0,
-      icon: PieChart,
+      icon: 'asset-portfolio-management',
     },
     {
       id: 'transactions-brokerage',
@@ -228,7 +244,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-transactions-brokerage.jpg',
       itemCount: 0,
-      icon: RotateCcw,
+      icon: 'transactions-brokerage',
     },
     {
       id: 'marketing-leasing-enablement',
@@ -251,7 +267,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-marketing-leasing-enablement.jpg',
       itemCount: 0,
-      icon: Play,
+      icon: 'marketing-leasing-enablement',
     },
     {
       id: 'data-workflow-infrastructure',
@@ -274,7 +290,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-data-workflow-infrastructure.jpg',
       itemCount: 0,
-      icon: TestTube,
+      icon: 'data-workflow-infrastructure',
     },
     {
       id: 'productivity-copilots',
@@ -297,7 +313,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       `,
       imageUrl: '/categories/category-productivity-copilots.jpg',
       itemCount: 0,
-      icon: Brain,
+      icon: 'productivity-copilots',
     },
   ];
 

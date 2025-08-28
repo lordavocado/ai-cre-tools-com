@@ -9,12 +9,13 @@ import { ArrowUpRight, ExternalLink, Star, Tag } from "lucide-react";
 import { CategoryChips } from "@/components/ui/category-chips";
 import { SafeImage } from "@/components/ui/safe-image";
 import { FavouriteButton } from "@/components/ui/favourite-button";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 interface DirectoryItemCardProps {
   item: DirectoryItem;
 }
 
-export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
+function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   return (
     <Card className="flex flex-col h-full overflow-hidden border border-slate-200/60 hover:border-blue-300/40 transition-all duration-300 relative group rounded-2xl shadow-sm hover:shadow-xl hover:shadow-blue-100/50 hover:-translate-y-1 bg-gradient-to-br from-white via-blue-50/30 to-slate-50/50">
       <CardHeader className="p-6 relative">
@@ -86,5 +87,24 @@ export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
         </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
+  return (
+    <ErrorBoundary
+      componentName="DirectoryItemCard"
+      onError={(error, errorInfo) => {
+        // Log specific DirectoryItemCard errors for monitoring
+        console.error('DirectoryItemCard Error:', {
+          error: error.message,
+          componentStack: errorInfo.componentStack,
+          itemId: item?.id,
+          itemName: item?.name
+        });
+      }}
+    >
+      <DirectoryItemCardContent item={item} />
+    </ErrorBoundary>
   );
 }

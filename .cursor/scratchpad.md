@@ -240,7 +240,128 @@ Created comprehensive social media assets for the AI CRE Tools website to improv
 - HTML templates available for manual customization
 - Clear documentation for content updates and brand refreshes
 
+# SSR Hydration Fixes Project
+
+## Background and Motivation
+
+This project addresses critical hydration mismatches and server-side rendering issues that are causing server component rendering errors in the Next.js application. The issues were identified through comprehensive analysis and need systematic fixes to ensure proper server/client synchronization.
+
+## Key Challenges and Analysis
+
+### Critical Issues Identified
+
+1. **Hydration Mismatch in FavouriteButton Component**
+   - Location: `src/components/ui/favourite-button.tsx` + `src/hooks/useFavourites.ts`
+   - Problem: Different states between server and client rendering due to localStorage usage
+   - Impact: Every DirectoryItemCard renders a FavouriteButton, causing widespread hydration mismatches
+
+2. **DirectorySearch Complex Navigation Logic**
+   - Location: `src/components/listing/DirectorySearch.tsx` lines 45-104
+   - Problem: Complex useEffect with router navigation causing potential infinite loops
+   - Impact: Can cause server-side rendering failures during static generation
+
+3. **CategoryChips Server/Client Icon Rendering**
+   - Location: `src/components/ui/category-chips.tsx`
+   - Problem: Lucide icon components passed from server to client components don't serialize properly
+   - Impact: Icon components causing server/client mismatch during SSR
+
+4. **SafeImage Component External Requests**
+   - Location: `src/components/ui/safe-image.tsx`
+   - Problem: Dynamic favicon URL generation and image error handling during SSR
+   - Impact: External requests and state changes breaking SSR consistency
+
+### Technical Context
+- Framework: Next.js 15 with React 19
+- Architecture: Server components with client component islands
+- State Management: localStorage-based favourites system
+- Navigation: Complex search and filtering with URL synchronization
+
+## High-level Task Breakdown
+
+### Phase 1: Fix Hydration Issues (Critical Priority)
+
+1.1 **FavouriteButton Hydration Fix**
+   - [ ] Add mounted state to prevent hydration mismatches
+   - [ ] Implement loading placeholder until client hydration completes
+   - [ ] Ensure consistent server/client rendering states
+   - [ ] Update useFavourites hook to handle SSR properly
+
+1.2 **DirectorySearch Navigation Simplification**
+   - [ ] Simplify complex navigation logic in useEffect
+   - [ ] Remove scroll position manipulation during SSR
+   - [ ] Add proper dependency optimization to prevent infinite loops
+   - [ ] Implement more conservative debouncing strategy
+
+1.3 **Icon Serialization Fix**
+   - [ ] Move icon rendering to client-side only
+   - [ ] Pass icon names as strings instead of components
+   - [ ] Implement dynamic icon rendering on client
+
+### Phase 2: Improve Error Boundaries (Important Priority)
+
+2.1 **Component-Level Error Boundaries**
+   - [ ] Wrap DirectoryGrid with error boundary
+   - [ ] Wrap DirectorySearch with error boundary
+   - [ ] Add fallbacks for each major component
+   - [ ] Implement error recovery mechanisms
+
+2.2 **SafeImage Error Handling**
+   - [ ] Add better server-side error handling
+   - [ ] Prevent image loading errors from breaking SSR
+   - [ ] Implement graceful fallbacks for external images
+
+### Phase 3: Add Development Debugging (Helpful Priority)
+
+3.1 **Enhanced Error Logging**
+   - [ ] Add specific error boundaries with detailed logging
+   - [ ] Add hydration error detection and reporting
+   - [ ] Add component render tracking in development mode
+
+## Project Status Board
+
+### In Progress
+- **Task 6**: Add development debugging features (Phase 3.1)
+
+### Completed
+- Analysis and planning phase - comprehensive issue identification complete
+- **Task 1**: ✅ Fix FavouriteButton hydration mismatch (Phase 1.1)
+  - Added mounted state to prevent hydration mismatches
+  - Implemented loading placeholder until client hydration completes
+  - Updated useFavourites hook to handle SSR properly with browser environment checks
+  - Ensured consistent server/client rendering states
+- **Task 2**: ✅ Simplify DirectorySearch navigation logic (Phase 1.2)
+  - Added mounted state to prevent SSR issues during navigation
+  - Simplified complex useEffect with better dependency management using useCallback
+  - Removed scroll position manipulation during SSR
+  - Implemented more conservative debouncing (300ms) to prevent infinite loops
+  - Ensured navigation logic only runs after component mounts
+- **Task 3**: ✅ Fix CategoryChips icon serialization (Phase 1.3)
+  - Created CATEGORY_ICONS mapping for SSR-safe icon handling
+  - Converted all category icon properties from React components to string keys
+  - Updated DirectorySearch component to dynamically render icons from string keys
+  - Eliminated server/client icon serialization mismatches during SSR
+- **Task 4**: ✅ Add component-level error boundaries (Phase 2.1)
+  - Created comprehensive ErrorBoundary component with retry functionality
+  - Wrapped DirectoryGrid with error boundary and custom error logging
+  - Wrapped DirectorySearch with error boundary and custom error logging
+  - Wrapped DirectoryItemCard with error boundary and custom error logging
+  - Added component-specific error context for better debugging
+- **Task 5**: ✅ Improve SafeImage error handling (Phase 2.2)
+  - Added mounted state to prevent SSR issues with dynamic URL generation
+  - Moved favicon URL generation to client-side only
+  - Implemented loading state during hydration to prevent flashes
+  - Added browser environment checks for URL parsing
+  - Ensured consistent server/client rendering with safe defaults
+
+## Executor's Feedback or Assistance Requests
+
+- Ready to begin implementation with Phase 1.1 FavouriteButton hydration fix
+- Need to ensure all changes maintain existing functionality while fixing SSR issues
+- May need to coordinate with existing favourites system and localStorage usage
+
 ## Lessons
+
+
 
 - Always check browser console errors for debugging
 - Scheduler API has specific enum values that must be used correctly

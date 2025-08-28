@@ -14,7 +14,7 @@ This document outlines the social media assets created for the AI CRE Tools webs
 | **Instagram Story** | `public/instagram-story.png` | 1080×1920 | Vertical format for Instagram stories |
 
 ### Additional Assets
-- **Logo**: `public/ai-cre-tools-logo.png` - Used for favicon, app icons, and general branding
+- **Logo**: `public/ai-cre-tools-logo.jpg` - Used for favicon, app icons, and general branding
 - **Templates**: `scripts/social-media-templates.html` - HTML templates for manual customization
 
 ## 🎨 Design Specifications

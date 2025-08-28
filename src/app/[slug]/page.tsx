@@ -188,7 +188,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
               url: siteConfig.url,
               logo: {
                 "@type": "ImageObject",
-                url: `${siteConfig.url}/ai-cre-tools-logo.png`,
+                url: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
               },
             },
             datePublished: item.foundedYear ? `${item.foundedYear}-01-01` : new Date().toISOString(),
@@ -311,7 +311,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                 <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 mb-4">
                   <div className="relative w-28 h-28 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg shadow-blue-200/30 shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-slate-50 ring-2 ring-blue-100/50">
                     <ImageWithFallback
-                      src={item.imageUrl || "/ai-cre-tools-logo.png"}
+                      src={item.imageUrl || "/ai-cre-tools-logo.jpg"}
                       alt={`${item.name} logo`}
                       width={96}
                       height={96}

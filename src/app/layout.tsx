@@ -86,12 +86,12 @@ export const metadata: Metadata = {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/ai-cre-tools-logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/ai-cre-tools-logo.jpg', sizes: '32x32', type: 'image/jpeg' },
     ],
     apple: [
-      { url: '/ai-cre-tools-logo.png', sizes: '180x180', type: 'image/png' },
-      { url: '/ai-cre-tools-logo.png', sizes: '152x152', type: 'image/png' },
-      { url: '/ai-cre-tools-logo.png', sizes: '120x120', type: 'image/png' },
+      { url: '/ai-cre-tools-logo.jpg', sizes: '180x180', type: 'image/jpeg' },
+      { url: '/ai-cre-tools-logo.jpg', sizes: '152x152', type: 'image/jpeg' },
+      { url: '/ai-cre-tools-logo.jpg', sizes: '120x120', type: 'image/jpeg' },
     ],
     shortcut: '/favicon.ico',
   },
@@ -313,7 +313,7 @@ export default function RootLayout({
                 "@type": "Organization",
                 name: siteConfig.name,
                 url: siteConfig.url,
-                logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
+                logo: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
               },
               potentialAction: {
                 "@type": "SearchAction",
@@ -332,7 +332,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: siteConfig.name,
               url: siteConfig.url,
-              logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
+              logo: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
               description: siteConfig.description,
               sameAs: siteConfig.social ? Object.values(siteConfig.social).map(handle =>
                 handle.includes('@') ? `https://twitter.com/${handle}` :

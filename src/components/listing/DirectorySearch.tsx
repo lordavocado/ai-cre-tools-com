@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { siteConfig } from "@/config/site";
+import { CATEGORY_ICONS } from "@/lib/sheets";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export interface DirectorySearchCategory {
   id: string;
@@ -24,13 +26,13 @@ interface DirectorySearchProps {
   totalItems?: number;
 }
 
-export function DirectorySearch({ 
-  categories, 
-  initialSearchTerm = "", 
+function DirectorySearchContent({
+  categories,
+  initialSearchTerm = "",
   initialCategoryFilter = "",
   initialCountryFilter = "",
   initialCityFilter = "",
-  totalItems = 0 
+  totalItems = 0
 }: DirectorySearchProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -39,69 +41,64 @@ export function DirectorySearch({
   const [selectedCountry, setSelectedCountry] = useState(initialCountryFilter);
   const [selectedCity, setSelectedCity] = useState(initialCityFilter);
   const [isPending, startTransition] = useTransition();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const currentPathname = usePathname();
 
+  // Prevent SSR issues by only running navigation logic after mount
   useEffect(() => {
-    const handler = setTimeout(() => {
-      startTransition(() => {
-        const queryParams = new URLSearchParams();
-        if (searchTerm) {
-          queryParams.set('search', searchTerm);
-        }
-        if (selectedCountry) {
-          queryParams.set('country', selectedCountry);
-        }
-        if (selectedCity) {
-          queryParams.set('city', selectedCity);
-        }
+    setMounted(true);
+  }, []);
 
-        let targetPathname = currentPathname;
+  // Simplified navigation logic with better dependency management
+  const updateUrl = useCallback(() => {
+    if (!mounted) return; // Don't run during SSR
 
-        if (currentPathname.startsWith('/categories/')) {
-          // If we're on a category page and no categories are selected, go to homepage
-          if (selectedCategories.length === 0) {
-            targetPathname = '/';
-          } 
-          // If we're on a category page and multiple categories are selected, go to homepage with category filter
-          else if (selectedCategories.length > 1) {
-            targetPathname = '/';
-            queryParams.set('category', selectedCategories.join(','));
-          }
-          // If we're on a category page and one category is selected (different from current), navigate to that category
-          else if (selectedCategories.length === 1 && selectedCategories[0] !== initialCategoryFilter) {
-            targetPathname = `/categories/${selectedCategories[0]}`;
-          }
-          // If we're on a category page and the same category is still selected, stay on the same page
-          else if (selectedCategories.length === 1 && selectedCategories[0] === initialCategoryFilter) {
-            // Stay on current category page, just apply search if any
-            targetPathname = currentPathname;
-          }
-        } else {
-          // We're on homepage or other page, use category filter in query params
-          if (selectedCategories.length > 0) {
-            queryParams.set('category', selectedCategories.join(','));
-          }
-        }
-        
-        const queryString = queryParams.toString();
-        const newUrl = queryString ? `${targetPathname}?${queryString}` : targetPathname;
-        
-        // Prevent scroll and update URL
-        const currentScrollY = window.scrollY;
-        router.replace(newUrl, { scroll: false });
-        
-        // Ensure scroll position is maintained
-        setTimeout(() => {
-          window.scrollTo(0, currentScrollY);
-        }, 0);
-      });
-    }, 100);
+    const queryParams = new URLSearchParams();
+    if (searchTerm) {
+      queryParams.set('search', searchTerm);
+    }
+    if (selectedCountry) {
+      queryParams.set('country', selectedCountry);
+    }
+    if (selectedCity) {
+      queryParams.set('city', selectedCity);
+    }
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm, selectedCategories, router, currentPathname, initialCategoryFilter]);
+    let targetPathname = currentPathname;
+
+    if (currentPathname.startsWith('/categories/')) {
+      if (selectedCategories.length === 0) {
+        targetPathname = '/';
+      } else if (selectedCategories.length > 1) {
+        targetPathname = '/';
+        queryParams.set('category', selectedCategories.join(','));
+      } else if (selectedCategories.length === 1 && selectedCategories[0] !== initialCategoryFilter) {
+        targetPathname = `/categories/${selectedCategories[0]}`;
+      } else {
+        targetPathname = currentPathname;
+      }
+    } else {
+      if (selectedCategories.length > 0) {
+        queryParams.set('category', selectedCategories.join(','));
+      }
+    }
+
+    const queryString = queryParams.toString();
+    const newUrl = queryString ? `${targetPathname}?${queryString}` : targetPathname;
+
+    startTransition(() => {
+      router.replace(newUrl, { scroll: false });
+    });
+  }, [searchTerm, selectedCategories, selectedCountry, selectedCity, currentPathname, initialCategoryFilter, mounted, router]);
+
+  // Debounced URL update to prevent excessive navigation
+  useEffect(() => {
+    if (!mounted) return;
+
+    const timeoutId = setTimeout(updateUrl, 300); // Increased debounce time
+    return () => clearTimeout(timeoutId);
+  }, [updateUrl, mounted]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -163,7 +160,7 @@ export function DirectorySearch({
         {/* Categories Section */}
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => {
-            const IconComponent = category.icon;
+            const IconComponent = CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS];
             return (
               <Badge
                 key={category.id}
@@ -254,5 +251,24 @@ export function DirectorySearch({
         )}
       </div>
     </div>
+  );
+}
+
+export function DirectorySearch(props: DirectorySearchProps) {
+  return (
+    <ErrorBoundary
+      componentName="DirectorySearch"
+      onError={(error, errorInfo) => {
+        // Log specific DirectorySearch errors for monitoring
+        console.error('DirectorySearch Error:', {
+          error: error.message,
+          componentStack: errorInfo.componentStack,
+          categoriesCount: props.categories?.length,
+          searchTerm: props.initialSearchTerm
+        });
+      }}
+    >
+      <DirectorySearchContent {...props} />
+    </ErrorBoundary>
   );
 }

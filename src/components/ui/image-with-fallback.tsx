@@ -20,7 +20,7 @@ export function ImageWithFallback({
   width,
   height,
   className,
-      fallbackSrc = "/ai-cre-tools-logo.png",
+      fallbackSrc = "/ai-cre-tools-logo.jpg",
   'data-ai-hint': dataAiHint,
 }: ImageWithFallbackProps) {
   const [imageSrc, setImageSrc] = useState(getImageUrl(src, fallbackSrc));

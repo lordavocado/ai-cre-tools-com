@@ -188,7 +188,7 @@ export default async function Home({ searchParams }: HomeProps) {
             "@type": "Organization",
             name: siteConfig.name,
             url: siteConfig.url,
-            logo: `${siteConfig.url}/ai-cre-tools-logo.png`,
+            logo: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
             description: siteConfig.description,
             sameAs: Object.values(siteConfig.social).map(handle => 
               handle.includes('@') ? `https://twitter.com/${handle}` : 

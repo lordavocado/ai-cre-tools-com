@@ -1,10 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFavouritesContext } from "@/providers/FavouritesProvider";
+import { useHydrationMismatchDetector, useRenderTracker, devLog } from "@/lib/dev-debug";
 
 interface FavouriteButtonProps {
   toolId: string;
@@ -34,9 +36,20 @@ export function FavouriteButton({
   iconClassName,
 }: FavouriteButtonProps) {
   const { isFavourite, toggleFavourite, isLoading } = useFavouritesContext();
-  
+  const [mounted, setMounted] = useState(false);
+
+  // Development debugging utilities
+  useHydrationMismatchDetector(`FavouriteButton-${toolId}`);
+  useRenderTracker(`FavouriteButton-${toolId}`, [toolId, isLoading]);
+
+  // Prevent hydration mismatch by ensuring consistent server/client rendering
+  useEffect(() => {
+    setMounted(true);
+    devLog.log(`⭐ FavouriteButton for ${toolId} mounted`);
+  }, [toolId]);
+
   const isFavourited = isFavourite(toolId);
-  
+
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -47,6 +60,65 @@ export function FavouriteButton({
 
   const tooltipText = isFavourited ? "Remove from favourites" : "Add to favourites";
   const buttonText = isFavourited ? "Remove from favourites" : "Add to favourites";
+
+  // Show loading placeholder during hydration to prevent mismatches
+  if (!mounted || isLoading) {
+    if (variant === "with-text") {
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled
+          className={cn(
+            "transition-all duration-200",
+            className
+          )}
+        >
+          <Star
+            className={cn(
+              "mr-2 transition-all duration-200",
+              iconSizeClasses.sm,
+              "text-muted-foreground",
+              iconClassName
+            )}
+          />
+          Add to favourites
+        </Button>
+      );
+    }
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled
+              className={cn(
+                sizeClasses[size],
+                "transition-all duration-200",
+                className
+              )}
+              aria-label="Loading favourites"
+            >
+              <Star
+                className={cn(
+                  "transition-all duration-200",
+                  iconSizeClasses[size],
+                  "text-muted-foreground",
+                  iconClassName
+                )}
+              />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Loading favourites...</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
   if (variant === "with-text") {
     return (

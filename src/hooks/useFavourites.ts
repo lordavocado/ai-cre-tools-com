@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+// Helper to check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
 interface FavouritesStorage {
   favourites: string[];
   lastUpdated: string;
@@ -15,14 +18,19 @@ export function useFavourites() {
   const [favourites, setFavourites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load favourites from localStorage on mount
+  // Load favourites from localStorage on mount (only in browser)
   useEffect(() => {
+    if (!isBrowser) {
+      setIsLoading(false);
+      return;
+    }
+
     const loadFavourites = () => {
       try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const data: FavouritesStorage = JSON.parse(stored);
-          
+
           // Check version compatibility
           if (data.version === STORAGE_VERSION && Array.isArray(data.favourites)) {
             setFavourites(data.favourites);
@@ -43,8 +51,10 @@ export function useFavourites() {
     loadFavourites();
   }, []);
 
-  // Save favourites to localStorage
+  // Save favourites to localStorage (only in browser)
   const saveFavourites = useCallback((newFavourites: string[]) => {
+    if (!isBrowser) return;
+
     try {
       const data: FavouritesStorage = {
         favourites: newFavourites,
@@ -98,8 +108,10 @@ export function useFavourites() {
     saveFavourites([]);
   }, [saveFavourites]);
 
-  // Listen for storage changes across tabs
+  // Listen for storage changes across tabs (only in browser)
   useEffect(() => {
+    if (!isBrowser) return;
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY && e.newValue) {
         try {

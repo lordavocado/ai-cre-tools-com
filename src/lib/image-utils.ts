@@ -2,7 +2,7 @@
  * Utility function to handle external image URLs
  * Routes external URLs through our proxy to avoid CORS issues
  */
-export function getImageUrl(imageUrl: string | undefined, fallbackUrl: string = "/ai-cre-tools-logo.png"): string {
+export function getImageUrl(imageUrl: string | undefined, fallbackUrl: string = "/ai-cre-tools-logo.jpg"): string {
   if (!imageUrl) {
     return fallbackUrl;
   }
@@ -58,7 +58,7 @@ export function getImageUrl(imageUrl: string | undefined, fallbackUrl: string = 
  * Uses our image proxy to handle Google's favicon service
  */
 export function getFaviconUrl(website: string): string {
-  if (!website) return "/ai-cre-tools-logo.png";
+  if (!website) return "/ai-cre-tools-logo.jpg";
   
   try {
     // Clean up the website URL
@@ -71,6 +71,6 @@ export function getFaviconUrl(website: string): string {
     // Use our image proxy to prevent direct calls to Google's service
     return `/api/image-proxy?url=${encodeURIComponent(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`)}`;
   } catch {
-    return "/ai-cre-tools-logo.png";
+    return "/ai-cre-tools-logo.jpg";
   }
 } 

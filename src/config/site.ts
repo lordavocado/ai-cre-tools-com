@@ -69,7 +69,7 @@ export const siteConfig = {
       organization: {
         name: 'AI CRE Tools',
         url: 'https://aicretools.com',
-        logo: 'https://aicretools.com/ai-cre-tools-logo.png',
+        logo: 'https://aicretools.com/ai-cre-tools-logo.jpg',
         description: 'The most comprehensive directory of Commercial Real Estate AI tools and solutions.',
         sameAs: [
           'https://twitter.com/aicretools',
