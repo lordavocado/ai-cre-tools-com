@@ -31,7 +31,7 @@ export function PerformanceLink({
   const [isHovered, setIsHovered] = useState(false);
 
   // Heavy routes that should be lazy-loaded
-  const heavyRoutes = ['/compare', '/admin', '/guides'];
+  const heavyRoutes = ['/admin', '/guides'];
   const isHeavyRoute = heavyRoutes.some(route => href.startsWith(route));
 
   const handleMouseEnter = () => {

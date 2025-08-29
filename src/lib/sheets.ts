@@ -759,23 +759,7 @@ export async function submitNewsletter(email: string): Promise<{ success: boolea
   return { success: true, message: 'This would subscribe to Mailchimp. (Integration not yet implemented.)' };
 }
 
-export async function getItemsForComparison(ids: string[]): Promise<DirectoryItem[]> {
-  const allItems = await getDirectoryItems();
-  return allItems.filter(item => ids.includes(item.id));
-}
 
-export async function getAISuggestedDifferences(itemsToCompare: DirectoryItem[]): Promise<string[]> {
-  if (itemsToCompare.length < 2) return ["Please select at least two items to compare."];
-
-  const suggestions = [
-    `${itemsToCompare[0].name} excels in ${itemsToCompare[0].features?.[0]?.name || 'key areas'}, while ${itemsToCompare[1].name} offers strong ${itemsToCompare[1].features?.[0]?.name || 'alternative features'}.`,
-    `Consider ${itemsToCompare[0].name}'s pricing (${itemsToCompare[0].pricing || 'N/A'}) versus ${itemsToCompare[1].name}'s (${itemsToCompare[1].pricing || 'N/A'}) for your budget.`,
-  ];
-  if (itemsToCompare.length > 2 && itemsToCompare[2]) {
-    suggestions.push(`${itemsToCompare[2].name} provides a unique approach with its ${itemsToCompare[2].tagline?.toLowerCase() || 'features'}.`);
-  }
-  return suggestions;
-}
 
 export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem[]> {
   const allItems = await getDirectoryItems();
