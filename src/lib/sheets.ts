@@ -31,6 +31,8 @@ const COLUMN_MAPPINGS = {
     BEST_FOR: 'best_for',
     TAGS: 'tags',
     RATING: 'rating',
+    COUNTRY: 'country',
+    CITY: 'city',
   },
   NEWSLETTER: {
     EMAIL: 'Email',
