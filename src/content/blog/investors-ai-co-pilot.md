@@ -7,7 +7,7 @@ category: Real Estate Investment
 publishedDate: "2024-12-20"
 author: AI CRE Tools Team
 readingTime: "10 min"
-imageUrl: "/public/images/investment-ai-tools.jpg"
+imageUrl: "/blog/blog3.jpg"
 ---
 
 # Real Estate Investors: Your AI Co-Pilot for Smarter Property Investments

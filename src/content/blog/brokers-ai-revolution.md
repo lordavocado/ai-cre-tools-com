@@ -7,7 +7,7 @@ category: Brokerage
 publishedDate: "2024-12-21"
 author: AI CRE Tools Team
 readingTime: "9 min"
-imageUrl: "/public/images/brokerage-ai-tools.jpg"
+imageUrl: "/blog/blog2.jpg"
 ---
 
 # Brokers Rejoice: How AI is Revolutionizing Commercial Real Estate Transactions

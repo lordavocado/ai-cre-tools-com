@@ -7,7 +7,7 @@ category: Property Management
 publishedDate: "2024-12-19"
 author: AI CRE Tools Team
 readingTime: "8 min"
-imageUrl: "/public/images/property-management-ai.jpg"
+imageUrl: "/blog/blog1.jpg"
 ---
 
 # The Property Manager's AI Survival Guide: How to Use AI Without Losing Your Humanity
