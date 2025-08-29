@@ -23,8 +23,8 @@ const getFaviconUrl = (website: string): string => {
     }
 
     const domain = new URL(cleanUrl).hostname;
-    // Use our image proxy API instead of calling Google's service directly
-    return `/api/image-proxy?url=https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    // Use Google's favicon service directly for better quality
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
   } catch {
     return "/ai-cre-tools-logo.jpg";
   }
@@ -111,9 +111,10 @@ export function SafeImage({
       onError={handleError}
       loading="lazy"
       style={{
-        imageRendering: '-webkit-optimize-contrast',
-        backfaceVisibility: 'hidden'
-      }}
+        imageRendering: 'crisp-edges',
+        backfaceVisibility: 'hidden',
+        transform: 'translateZ(0)'
+      } as React.CSSProperties}
     />
   );
 } 

@@ -22,7 +22,8 @@ export function Footer() {
               <nav className="flex flex-col space-y-2">
                 <Link href="/categories" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Categories</Link>
                 <Link href="/guides" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Guides</Link>
-
+                <Link href="/about" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">About</Link>
+                <Link href="/submit-tool" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Submit Tool</Link>
                 <Link href="/privacy-policy" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Privacy Policy</Link>
                 <Link href="/terms-of-service" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Terms of Service</Link>
               </nav>

@@ -86,22 +86,18 @@ interface HomeProps {
   searchParams: Promise<{
     search?: string;
     category?: string;
-    country?: string;
-    city?: string;
   }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
   const resolvedSearchParams = await searchParams;
-  const { search, category, country, city } = resolvedSearchParams;
+  const { search, category } = resolvedSearchParams;
   const searchTerm = search || "";
   const categoryFilter = category || "";
-  const countryFilter = country || "";
-  const cityFilter = city || "";
 
   try {
     // Get items first, then categories to avoid circular dependency
-    const initialItems = await getDirectoryItems(searchTerm, categoryFilter, countryFilter, cityFilter);
+    const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
     
     // Get categories without item counts initially to avoid circular dependency
     let categoriesFromSheet: Category[];
@@ -212,7 +208,7 @@ export default async function Home({ searchParams }: HomeProps) {
       <section id="directory" className="py-16 md:py-24">
         <div className="container pl-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Discover Top {siteConfig.categoryName}
+            Discover Top {siteConfig.categoryName} ({initialItems.length})
           </h2>
           <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
             Explore our curated directory of {siteConfig.categoryName.toLowerCase()}. Use the filters below to find exactly what you need.
@@ -221,8 +217,6 @@ export default async function Home({ searchParams }: HomeProps) {
           categories={searchCategories}
           initialSearchTerm={searchTerm}
           initialCategoryFilter={categoryFilter}
-          initialCountryFilter={countryFilter}
-          initialCityFilter={cityFilter}
           totalItems={initialItems.length}
         />
           <DirectoryGrid items={initialItems} />

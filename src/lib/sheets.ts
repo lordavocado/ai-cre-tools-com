@@ -31,8 +31,6 @@ const COLUMN_MAPPINGS = {
     BEST_FOR: 'best_for',
     TAGS: 'tags',
     RATING: 'rating',
-    COUNTRY: 'country',
-    CITY: 'city',
   },
   NEWSLETTER: {
     EMAIL: 'Email',
@@ -574,17 +572,15 @@ const parseFeatures = (featuresString: string): { name: string; description?: st
 // Update the getDirectoryItems function
 export async function getDirectoryItems(
   searchTerm?: string, 
-  categoryFilter?: string, 
-  countryFilter?: string, 
-  cityFilter?: string
+  categoryFilter?: string
 ): Promise<DirectoryItem[]> {
   // Check if we have valid cached data and no specific search/filter
-  if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter && !countryFilter && !cityFilter) {
+  if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter) {
     return allItemsCache;
   }
 
   // If there's a pending request for items and no search/filter, wait for it
-  if (pendingItemsRequest && !searchTerm && !categoryFilter && !countryFilter && !cityFilter) {
+  if (pendingItemsRequest && !searchTerm && !categoryFilter) {
     try {
       return await pendingItemsRequest;
     } catch (error) {
@@ -648,13 +644,6 @@ export async function getDirectoryItems(
     });
   }
 
-  if (countryFilter) {
-    items = items.filter(item => item.country === countryFilter);
-  }
-
-  if (cityFilter) {
-    items = items.filter(item => item.city === cityFilter);
-  }
   
   return items;
 }
