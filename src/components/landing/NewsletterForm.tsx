@@ -39,19 +39,16 @@ export function NewsletterForm({ source = "homepage", className }: NewsletterFor
   }, [state, toast]);
 
   return (
-    <form action={formAction} className={`w-full max-w-md space-y-4 ${className || ""}`}>
-      <div className="flex flex-col sm:flex-row gap-2">
-        <div className="relative flex-grow">
-           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-           <Input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-            className="pl-10"
-            aria-label="Email for newsletter"
-          />
-        </div>
+    <form action={formAction} className={`w-full max-w-sm space-y-3 ${className || ""}`}>
+      <div className="flex gap-2">
+        <Input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+          className="text-sm"
+          aria-label="Email for newsletter"
+        />
         <SubmitButton />
       </div>
       {/* Hidden field to track signup source */}

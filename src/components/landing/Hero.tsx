@@ -37,8 +37,7 @@ export function Hero() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-gray-900 leading-tight"
           >
-            Find the Perfect
-            <span className="block text-blue-600">AI Tool</span>
+            Find the Perfect <span className="text-blue-600">AI Tool</span>
             <span className="block text-gray-700">for Your CRE Business</span>
           </motion.h1>
 
@@ -78,7 +77,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+            className="flex flex-row gap-4 justify-center items-center mb-12"
           >
             <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/categories">
@@ -99,10 +98,10 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="bg-gray-50 rounded-2xl p-8 max-w-2xl mx-auto"
+            className="max-w-md mx-auto"
           >
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Get New AI Tools First</h3>
-            <p className="text-gray-600 mb-6">Be the first to discover cutting-edge CRE AI solutions that can transform your business.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Get New AI Tools First</h3>
+            <p className="text-gray-600 mb-4 text-sm">Be the first to discover cutting-edge CRE AI solutions that can transform your business.</p>
             <NewsletterForm />
           </motion.div>
         </motion.div>

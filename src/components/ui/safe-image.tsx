@@ -110,6 +110,10 @@ export function SafeImage({
       className={className}
       onError={handleError}
       loading="lazy"
+      style={{
+        imageRendering: '-webkit-optimize-contrast',
+        backfaceVisibility: 'hidden'
+      }}
     />
   );
 } 

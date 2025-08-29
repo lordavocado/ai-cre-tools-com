@@ -398,6 +398,26 @@ The application should now have significantly improved SSR stability, better err
 - **Documentation**: All changes documented in scratchpad with implementation details
 - May need to coordinate with existing favourites system and localStorage usage
 
+## Category Image Fix Project (Latest)
+
+### ✅ **COMPLETED** - Category Image Loading Issues Fixed
+
+**Problem Identified**: Two category images were not loading due to filename/path mismatches:
+
+1. **Legal Category**:
+   - File: `category-legal-compliance-duediligence.jpg` 
+   - Config was pointing to: `category-legal-compliance-due-diligence.jpg`
+   - ✅ **Fixed**: Updated config to match actual filename
+
+2. **Marketing Category**:
+   - File: `category-marketingleasing-enablement.jpg`
+   - Config was pointing to: `category-marketing-leasing-enablement.jpg` 
+   - ✅ **Fixed**: Updated config to match actual filename
+
+**Resolution**: Updated image paths in `/src/lib/sheets.ts` to match the actual file names in `/public/categories/`. Both images should now load properly in the application.
+
+**Quality Check**: Linter verification passed with zero errors.
+
 ## Lessons
 
 

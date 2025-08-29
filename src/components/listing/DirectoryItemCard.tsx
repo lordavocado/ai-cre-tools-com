@@ -48,8 +48,8 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
 
         {/* Enhanced tagline with better styling */}
         {item.tagline && (
-          <CardDescription className="text-sm leading-relaxed text-slate-600 line-clamp-2 group-hover:text-slate-700 transition-colors duration-200 mb-4 font-medium">
-            {item.tagline}
+          <CardDescription className="text-sm leading-relaxed text-slate-600 line-clamp-2 group-hover:text-slate-700 transition-colors duration-200 mb-4 font-medium italic">
+            "{item.tagline}"
           </CardDescription>
         )}
       </CardHeader>

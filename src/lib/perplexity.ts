@@ -165,3 +165,4 @@ export async function researchToolWithPerplexity(
 
 // Export categories for use in other parts of the app
 export { CRE_CATEGORIES };
+

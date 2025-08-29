@@ -153,7 +153,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
           </div>
         </div>
       `,
-      imageUrl: '/categories/category-legal-compliance-due-diligence.jpg',
+      imageUrl: '/categories/category-legal-compliance-duediligence.jpg',
       itemCount: 0,
       icon: 'legal-compliance-duediligence',
     },
@@ -245,7 +245,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
           </div>
         </div>
       `,
-      imageUrl: '/categories/category-marketing-leasing-enablement.jpg',
+      imageUrl: '/categories/category-marketingleasing-enablement.jpg',
       itemCount: 0,
       icon: 'marketing-leasing-enablement',
     },
