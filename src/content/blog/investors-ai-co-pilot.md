@@ -168,9 +168,9 @@ The future belongs to investors who embrace technology while staying true to the
 
 **Explore these AI tools to enhance your investment strategy:**
 
-- [Investment & Portfolio Management Tools](/categories/investment-portfolio-management) - Optimize your portfolio performance and risk management
-- [Market Analysis & Valuation Tools](/categories/market-analysis-valuation) - Get deeper insights into market trends and property values
-- [Transaction & Brokerage Tools](/categories/transaction-brokerage) - Find better deals and negotiate more effectively
+- [Asset & Portfolio Management Tools](/categories/asset-portfolio-management) - Optimize your portfolio performance and risk management
+- [Property Analysis & Valuation Tools](/categories/property-analysis-valuation) - Get deeper insights into market trends and property values
+- [Transaction & Brokerage Tools](/categories/transactions-brokerage) - Find better deals and negotiate more effectively
 
 Remember: AI is your co-pilot, not your replacement. Use it to enhance your skills, not hide them. Your portfolio (and your peace of mind) will thank you.
 

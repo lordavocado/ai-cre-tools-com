@@ -192,8 +192,8 @@ The commercial real estate market rewards those who adapt fastest. AI isn't just
 
 **Explore these AI tools to transform your brokerage business:**
 
-- [Transaction & Brokerage Tools](/categories/transaction-brokerage) - Streamline your deal process and close more transactions
-- [Market Analysis & Valuation Tools](/categories/market-analysis-valuation) - Get the insights you need to price and negotiate effectively
+- [Transaction & Brokerage Tools](/categories/transactions-brokerage) - Streamline your deal process and close more transactions
+- [Property Analysis & Valuation Tools](/categories/property-analysis-valuation) - Get the insights you need to price and negotiate effectively
 - [Property Management Operations Tools](/categories/property-management-operations) - Better understand property performance for your clients
 
 Remember: AI is your co-pilot, not your replacement. Use it to enhance your skills, not hide them. Your clients (and your bank account) will thank you.

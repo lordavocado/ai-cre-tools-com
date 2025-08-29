@@ -19,7 +19,7 @@ export function FavouritesClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 9;
 
   // Fetch favourite tools data
   useEffect(() => {

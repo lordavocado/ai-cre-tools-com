@@ -32,7 +32,7 @@ interface GlobalSearchProps {
   placeholder?: string;
 }
 
-export function GlobalSearch({ className, placeholder = "Search tools, categories, guides... (⌘K)" }: GlobalSearchProps) {
+export function GlobalSearch({ className, placeholder = "Search tools, categories, blog... (⌘K)" }: GlobalSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -124,16 +124,16 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
   const performSearch = async (searchTerm: string) => {
     setIsLoading(true);
     try {
-      const [toolsResponse, categoriesResponse, guidesResponse] = await Promise.all([
+      const [toolsResponse, categoriesResponse, blogResponse] = await Promise.all([
         fetch(`/api/sheets?type=items&search=${encodeURIComponent(searchTerm)}`),
         fetch(`/api/sheets?type=categories`),
-        fetch(`/api/sheets?type=guides&search=${encodeURIComponent(searchTerm)}`)
+        fetch(`/api/blog?search=${encodeURIComponent(searchTerm)}`)
       ]);
 
-      const [tools, categories, guides]: [DirectoryItem[], Category[], Guide[]] = await Promise.all([
+      const [tools, categories, blogPosts]: [DirectoryItem[], Category[], any[]] = await Promise.all([
         toolsResponse.json(),
         categoriesResponse.json(),
-        guidesResponse.json()
+        blogResponse.json()
       ]);
 
       const searchResults: SearchResult[] = [];
@@ -178,17 +178,17 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
         });
       });
 
-      // Enhanced guide search
-      guides.forEach(guide => {
-        const relevanceScore = calculateRelevanceScore(guide, searchTerm);
+      // Enhanced blog search
+      blogPosts.forEach(post => {
+        const relevanceScore = calculateRelevanceScore(post, searchTerm);
         if (relevanceScore > 0) {
           searchResults.push({
             type: 'guide',
-            id: guide.id,
-            title: guide.title,
-            description: guide.excerpt,
-            url: `/guides/${guide.slug}`,
-            category: guide.category,
+            id: post.id,
+            title: post.title,
+            description: post.excerpt,
+            url: `/blog/${post.slug}`,
+            category: post.category,
             relevanceScore
           });
         }
@@ -315,7 +315,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
       case 'category':
         return 'Category';
       case 'guide':
-        return 'Guide';
+        return 'Blog';
     }
   };
 

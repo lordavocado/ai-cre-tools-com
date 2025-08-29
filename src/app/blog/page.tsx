@@ -49,18 +49,57 @@ export default function BlogPage() {
     posts = [];
   }
 
-  return (
-    <div className="container mx-auto px-6 py-16 md:py-24">
-      <div className="text-center mb-20">
-        <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">AI CRE Tools Blog</h1>
-        <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-          Stay ahead of the curve with expert insights on AI in commercial real estate.
-          From property management hacks to investment strategies, we bring you practical
-          guides tailored for real estate professionals.
-        </p>
-      </div>
+  // Generate structured data for blog listing page
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "AI CRE Tools Blog",
+    "description": "Expert insights on AI in commercial real estate. From property management to investment strategies, practical guides for real estate professionals.",
+    "url": `${siteConfig.url}/blog`,
+    "publisher": {
+      "@type": "Organization", 
+      "name": "AI CRE Tools",
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${siteConfig.url}/ai-cre-tools-logo.jpg`
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `${siteConfig.url}/blog`
+    },
+    "blogPost": posts.slice(0, 5).map(post => ({
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": post.excerpt,
+      "url": `${siteConfig.url}/blog/${post.slug}`,
+      "datePublished": post.publishedDate,
+      "author": {
+        "@type": "Person",
+        "name": post.author
+      },
+      "image": post.imageUrl || siteConfig.seo.openGraph.images.default
+    }))
+  };
 
-      <BlogList posts={posts} />
-    </div>
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <div className="container mx-auto px-6 py-16 md:py-24">
+        <div className="text-center mb-20">
+          <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">AI CRE Tools Blog</h1>
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+            Stay ahead of the curve with expert insights on AI in commercial real estate.
+            From property management hacks to investment strategies, we bring you practical
+            guides tailored for real estate professionals.
+          </p>
+        </div>
+
+        <BlogList posts={posts} />
+      </div>
+    </>
   );
 }

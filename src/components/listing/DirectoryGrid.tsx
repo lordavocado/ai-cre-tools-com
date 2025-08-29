@@ -14,7 +14,7 @@ interface DirectoryGridProps {
 
 function DirectoryGridContent({ items }: DirectoryGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 9;
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;

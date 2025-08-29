@@ -21,7 +21,7 @@ export function Footer() {
               <h3 className="text-sm font-medium text-neutral-900">Quick Links</h3>
               <nav className="flex flex-col space-y-2">
                 <Link href="/categories" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Categories</Link>
-                <Link href="/guides" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Guides</Link>
+                <Link href="/blog" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Blog</Link>
                 <Link href="/about" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">About</Link>
                 <Link href="/submit-tool" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Submit Tool</Link>
                 <Link href="/privacy-policy" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Privacy Policy</Link>

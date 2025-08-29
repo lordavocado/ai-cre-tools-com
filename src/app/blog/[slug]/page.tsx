@@ -73,5 +73,50 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  return <BlogPost post={post} />;
+  // Generate structured data for blog post
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt,
+    "author": {
+      "@type": "Person",
+      "name": post.author
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI CRE Tools",
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${siteConfig.url}/ai-cre-tools-logo.jpg`
+      }
+    },
+    "datePublished": post.publishedDate,
+    "dateModified": post.publishedDate,
+    "image": post.imageUrl || siteConfig.seo.openGraph.images.default,
+    "url": `${siteConfig.url}/blog/${post.slug}`,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `${siteConfig.url}/blog/${post.slug}`
+    },
+    "articleSection": post.category,
+    "keywords": [
+      "commercial real estate AI",
+      "CRE technology", 
+      post.category.toLowerCase(),
+      "AI tools",
+      "property management",
+      "real estate investment"
+    ].join(", ")
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <BlogPost post={post} />
+    </>
+  );
 }
