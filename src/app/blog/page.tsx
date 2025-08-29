@@ -50,10 +50,10 @@ export default function BlogPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">AI CRE Tools Blog</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+    <div className="container mx-auto px-6 py-16 md:py-24">
+      <div className="text-center mb-20">
+        <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">AI CRE Tools Blog</h1>
+        <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
           Stay ahead of the curve with expert insights on AI in commercial real estate.
           From property management hacks to investment strategies, we bring you practical
           guides tailored for real estate professionals.

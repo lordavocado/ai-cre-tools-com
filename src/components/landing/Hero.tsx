@@ -51,32 +51,12 @@ export function Hero() {
             Stop wasting time on endless research. Our curated directory of 100+ Commercial Real Estate AI tools helps you find, compare, and choose the right solution in minutes.
           </motion.p>
 
-          {/* Key Benefits */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="flex flex-wrap justify-center gap-6 mb-10 text-sm text-gray-500"
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              Expert-curated tools
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              Detailed comparisons
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              Real user reviews
-            </div>
-          </motion.div>
 
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
             className="flex flex-row gap-4 justify-center items-center mb-12"
           >
             <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
@@ -97,7 +77,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
             className="max-w-md mx-auto"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Get New AI Tools First</h3>

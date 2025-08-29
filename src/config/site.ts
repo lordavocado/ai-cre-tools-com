@@ -124,7 +124,7 @@ export const siteConfig = {
   // Navigation
   nav: {
     items: [
-      { href: '/', label: 'Home' },
+      { href: '/#directory', label: 'Tools' },
       { href: '/categories', label: 'Categories' },
       { href: '/blog', label: 'Blog' },
       { href: '/favourites', label: 'Favourites' },

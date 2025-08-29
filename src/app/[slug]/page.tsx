@@ -4,8 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ExternalLink,
   Star,
@@ -18,8 +17,7 @@ import {
   Users,
   Twitter,
   Linkedin,
-  Facebook,
-  Info
+  Facebook
 } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
 import { CategoryChipsWithIcons } from "@/components/ui/category-chips-with-icons";
@@ -302,152 +300,210 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
         />
       )}
 
-      <div className="container py-12 md:py-16 pl-6 bg-gradient-to-br from-blue-50/30 via-white to-slate-50/20">
-        <article className="grid lg:grid-cols-3 gap-8 md:gap-12">
-          {/* Main Content Column */}
-          <div className="lg:col-span-2 space-y-8">
-            <Card className="overflow-hidden border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/20 to-slate-50/30">
-              <CardHeader className="bg-gradient-to-r from-blue-50/40 via-white to-slate-50/40 border-b border-slate-200/50">
-                <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 mb-4">
-                  <div className="relative w-28 h-28 mx-auto md:mx-0 rounded-2xl overflow-hidden shadow-lg shadow-blue-200/30 shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-slate-50 ring-2 ring-blue-100/50">
-                    <ImageWithFallback
-                      src={item.imageUrl || "/ai-cre-tools-logo.jpg"}
-                      alt={`${item.name} logo`}
-                      width={96}
-                      height={96}
-                      className="object-contain drop-shadow-md"
-                      data-ai-hint="product logo company"
-                    />
-                  </div>
-                  <div className="flex-grow">
-                    <CardTitle className="text-3xl md:text-4xl font-bold text-slate-800 mb-2">{item.name}</CardTitle>
-                    <CardDescription className="text-lg text-slate-600 mt-1 leading-relaxed">{item.tagline}</CardDescription>
-                    
-                    <div className="flex items-center gap-4 mt-6 flex-wrap">
-                      {item.rating && (
-                        <div className="flex items-center gap-2 text-sm bg-amber-50/80 px-4 py-2 rounded-xl border border-amber-200/50 shadow-sm">
-                          <Star className="h-5 w-5 text-amber-500 fill-amber-400" />
-                          <span className="font-semibold text-slate-700">{item.rating.toFixed(1)}</span>
-                          {item.reviewCount && <span className="text-slate-500">({item.reviewCount} reviews)</span>}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-3">
-                        <Button asChild variant="default" size="sm" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200">
-                          <Link href={item.website} target="_blank" rel="noopener noreferrer">
-                            Visit Website <ExternalLink className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <FavouriteButton 
-                          toolId={item.id} 
-                          variant="with-text" 
-                          size="sm"
-                        />
+      <div className="container py-8 md:py-12 px-4 md:px-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Hero Section with Tool Info */}
+          <div className="relative mb-8 p-8 bg-gradient-to-br from-white via-blue-50/30 to-slate-50/20 rounded-3xl border border-slate-200/60 shadow-xl shadow-blue-100/20">
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
+              {/* Logo and Basic Info */}
+              <div className="flex flex-col sm:flex-row gap-6 lg:flex-col lg:items-center">
+                <div className="relative w-32 h-32 mx-auto sm:mx-0 lg:mx-auto rounded-3xl overflow-hidden shadow-lg shadow-blue-200/30 shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-slate-50 ring-2 ring-blue-100/50">
+                  <ImageWithFallback
+                    src={item.imageUrl || "/ai-cre-tools-logo.jpg"}
+                    alt={`${item.name} logo`}
+                    width={112}
+                    height={112}
+                    className="object-contain drop-shadow-md"
+                    data-ai-hint="product logo company"
+                  />
+                </div>
+                
+                {/* Quick Actions */}
+                <div className="flex flex-col gap-3 sm:flex-1 lg:flex-initial lg:w-full">
+                  <Button asChild variant="default" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200">
+                    <Link href={item.website} target="_blank" rel="noopener noreferrer">
+                      Visit Website <ExternalLink className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <FavouriteButton 
+                    toolId={item.id} 
+                    variant="with-text" 
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Main Content */}
+              <div className="flex-1 min-w-0">
+                <div className="mb-6">
+                  <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-3">{item.name}</h1>
+                  <p className="text-xl text-slate-600 leading-relaxed mb-6">{item.tagline}</p>
+                  
+                  {/* Rating and Categories */}
+                  <div className="flex flex-wrap items-center gap-4 mb-6">
+                    {item.rating && (
+                      <div className="flex items-center gap-2 text-sm bg-amber-50/80 px-4 py-2 rounded-xl border border-amber-200/50 shadow-sm">
+                        <Star className="h-5 w-5 text-amber-500 fill-amber-400" />
+                        <span className="font-semibold text-slate-700">{item.rating.toFixed(1)}</span>
+                        {item.reviewCount && <span className="text-slate-500">({item.reviewCount} reviews)</span>}
                       </div>
-                    </div>
+                    )}
+                    {item.category && (
+                      <CategoryChipsWithIcons categories={item.category} variant="outline" />
+                    )}
                   </div>
                 </div>
-              </CardHeader>
-              
-              <Separator />
 
-              {item.description && (
-                <CardContent className="pt-6">
-                  <h2 className="text-2xl font-semibold mb-4 text-slate-800 flex items-center">
+                {/* Key Stats Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                  {item.pricing && (
+                    <div className="p-4 bg-gradient-to-br from-green-50/60 via-white to-emerald-50/40 rounded-xl border border-green-100/50 shadow-sm text-center">
+                      <DollarSign className="h-6 w-6 text-green-600 mx-auto mb-2" />
+                      <p className="text-xs text-slate-600 mb-1">Pricing</p>
+                      <p className="font-semibold text-slate-800 text-sm">{item.pricing}</p>
+                    </div>
+                  )}
+                  {item.foundedYear && (
+                    <div className="p-4 bg-gradient-to-br from-indigo-50/60 via-white to-blue-50/40 rounded-xl border border-indigo-100/50 shadow-sm text-center">
+                      <CalendarDays className="h-6 w-6 text-indigo-600 mx-auto mb-2" />
+                      <p className="text-xs text-slate-600 mb-1">Founded</p>
+                      <p className="font-semibold text-slate-800 text-sm">{item.foundedYear}</p>
+                    </div>
+                  )}
+                  {item.country && (
+                    <div className="p-4 bg-gradient-to-br from-cyan-50/60 via-white to-blue-50/40 rounded-xl border border-cyan-100/50 shadow-sm text-center">
+                      <Users className="h-6 w-6 text-cyan-600 mx-auto mb-2" />
+                      <p className="text-xs text-slate-600 mb-1">Location</p>
+                      <p className="font-semibold text-slate-800 text-sm">
+                        {item.city && `${item.city}, `}{item.country}
+                      </p>
+                    </div>
+                  )}
+                  {item.socials && Object.keys(item.socials).length > 0 && (
+                    <div className="p-4 bg-gradient-to-br from-rose-50/60 via-white to-pink-50/40 rounded-xl border border-rose-100/50 shadow-sm text-center">
+                      <div className="flex justify-center gap-2 mb-2">
+                        {item.socials.twitter && <Link href={`https://twitter.com/${item.socials.twitter}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105"><Twitter size={12} className="text-blue-600"/></Link>}
+                        {item.socials.linkedin && <Link href={`https://linkedin.com/${item.socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105"><Linkedin size={12} className="text-blue-600"/></Link>}
+                        {item.socials.facebook && <Link href={`https://facebook.com/${item.socials.facebook}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105"><Facebook size={12} className="text-blue-600"/></Link>}
+                      </div>
+                      <p className="text-xs text-slate-600 mb-1">Social</p>
+                      <p className="font-semibold text-slate-800 text-sm">Connected</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Content Sections */}
+          <div className="space-y-8">
+            {/* Description */}
+            {item.description && (
+              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center text-slate-800">
                     <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
                     About {item.name}
-                  </h2>
-                  <div className="prose prose-sm sm:prose-base max-w-none text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: item.description }} />
                 </CardContent>
-              )}
-            </Card>
+              </Card>
+            )}
 
-            {item.features && item.features.length > 0 && (
-              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
-                <CardHeader className="bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30 border-b border-slate-200/50">
-                  <CardTitle className="text-2xl flex items-center text-slate-800">
-                    <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-3 shadow-sm">
-                      <Zap className="h-5 w-5 text-blue-600"/>
+            {/* Features and Pros/Cons Row */}
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Key Features */}
+              {item.features && item.features.length > 0 && (
+                <Card className="lg:col-span-2 border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                  <CardHeader>
+                    <CardTitle className="text-2xl flex items-center text-slate-800">
+                      <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-3 shadow-sm">
+                        <Zap className="h-5 w-5 text-blue-600"/>
+                      </div>
+                      Key Features
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {item.features.map((feature, index) => (
+                        <div key={index} className="p-4 bg-gradient-to-br from-blue-50/50 via-white to-slate-50/30 rounded-xl border border-blue-100/30 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                          <p className="font-semibold text-slate-800 mb-1">{feature.name}</p>
+                          {feature.description && <p className="text-sm text-slate-600 leading-relaxed">{feature.description}</p>}
+                        </div>
+                      ))}
                     </div>
-                    Key Features
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {item.features.map((feature, index) => (
-                      <li key={index} className="p-4 bg-gradient-to-br from-blue-50/50 via-white to-slate-50/30 rounded-xl border border-blue-100/30 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-                        <p className="font-semibold text-slate-800 mb-1">{feature.name}</p>
-                        {feature.description && <p className="text-sm text-slate-600 leading-relaxed">{feature.description}</p>}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              )}
 
-            {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
-              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
-                <CardHeader className="bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30 border-b border-slate-200/50">
-                  <CardTitle className="text-2xl text-slate-800 flex items-center">
-                    <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
-                    Pros & Cons
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-                  <div className="p-4 bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-xl border border-emerald-100/50 shadow-sm">
-                    <h3 className="text-lg font-semibold mb-3 flex items-center text-emerald-700">
-                      <div className="p-1.5 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-lg mr-2">
-                        <ThumbsUp className="h-4 w-4 text-emerald-600"/>
-                      </div>
-                      Pros
-                    </h3>
-                    <ul className="space-y-2 text-sm">
-                      {item.pros && item.pros.map((pro: string, index: number) => (
-                        <li key={index} className="flex items-start gap-2 text-slate-700">
-                          <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full mt-2 shrink-0"></div>
-                          {pro}
-                        </li>
-                      ))}
-                      {(!item.pros || item.pros.length === 0) && (
-                        <li className="text-slate-500 italic">No pros listed.</li>
-                      )}
-                    </ul>
-                  </div>
-                  <div className="p-4 bg-gradient-to-br from-red-50/50 via-white to-rose-50/30 rounded-xl border border-red-100/50 shadow-sm">
-                    <h3 className="text-lg font-semibold mb-3 flex items-center text-red-700">
-                      <div className="p-1.5 bg-gradient-to-br from-red-100 to-red-200 rounded-lg mr-2">
-                        <ThumbsDown className="h-4 w-4 text-red-600"/>
-                      </div>
-                      Cons
-                    </h3>
-                    <ul className="space-y-2 text-sm">
-                      {item.cons?.map((con, index) => (
-                        <li key={index} className="flex items-start gap-2 text-slate-700">
-                          <div className="w-1.5 h-1.5 bg-red-400 rounded-full mt-2 shrink-0"></div>
-                          {con}
-                        </li>
-                      ))}
-                      {(!item.cons || item.cons.length === 0) && <li className="text-slate-500 italic">No cons listed.</li>}
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+              {/* Pros & Cons */}
+              {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
+                <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                  <CardHeader>
+                    <CardTitle className="text-xl text-slate-800 flex items-center">
+                      <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                      Pros & Cons
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="p-4 bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-xl border border-emerald-100/50 shadow-sm">
+                      <h3 className="text-sm font-semibold mb-3 flex items-center text-emerald-700">
+                        <div className="p-1 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-lg mr-2">
+                          <ThumbsUp className="h-3 w-3 text-emerald-600"/>
+                        </div>
+                        Pros
+                      </h3>
+                      <ul className="space-y-2 text-xs">
+                        {item.pros && item.pros.slice(0, 3).map((pro: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2 text-slate-700">
+                            <div className="w-1 h-1 bg-emerald-400 rounded-full mt-1.5 shrink-0"></div>
+                            {pro}
+                          </li>
+                        ))}
+                        {(!item.pros || item.pros.length === 0) && (
+                          <li className="text-slate-500 italic text-xs">No pros listed.</li>
+                        )}
+                      </ul>
+                    </div>
+                    <div className="p-4 bg-gradient-to-br from-red-50/50 via-white to-rose-50/30 rounded-xl border border-red-100/50 shadow-sm">
+                      <h3 className="text-sm font-semibold mb-3 flex items-center text-red-700">
+                        <div className="p-1 bg-gradient-to-br from-red-100 to-red-200 rounded-lg mr-2">
+                          <ThumbsDown className="h-3 w-3 text-red-600"/>
+                        </div>
+                        Cons
+                      </h3>
+                      <ul className="space-y-2 text-xs">
+                        {item.cons && item.cons.slice(0, 3).map((con, index) => (
+                          <li key={index} className="flex items-start gap-2 text-slate-700">
+                            <div className="w-1 h-1 bg-red-400 rounded-full mt-1.5 shrink-0"></div>
+                            {con}
+                          </li>
+                        ))}
+                        {(!item.cons || item.cons.length === 0) && <li className="text-slate-500 italic text-xs">No cons listed.</li>}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
-            {/* Tags Section */}
+            {/* Tags */}
             {item.tags && item.tags.length > 0 && (
               <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
-                <CardHeader className="bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30 border-b border-slate-200/50">
-                  <CardTitle className="text-2xl flex items-center text-slate-800">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center text-slate-800">
                     <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl mr-3 shadow-sm">
-                      <Tag className="h-5 w-5 text-purple-600"/>
+                      <Tag className="h-4 w-4 text-purple-600"/>
                     </div>
                     Tags
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-6">
+                <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {item.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-sm px-4 py-2 bg-gradient-to-br from-purple-50/50 via-white to-blue-50/30 border border-purple-200/40 hover:border-purple-300/60 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 text-slate-700">
+                      <Badge key={index} variant="outline" className="text-sm px-3 py-1 bg-gradient-to-br from-purple-50/50 via-white to-blue-50/30 border border-purple-200/40 hover:border-purple-300/60 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 text-slate-700">
                         {typeof tag === 'string' ? tag.trim() : tag}
                       </Badge>
                     ))}
@@ -456,115 +512,22 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
               </Card>
             )}
 
-          </div>
-
-          {/* Sidebar Column */}
-          <aside className="lg:col-span-1 space-y-6">
-            <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/20 to-slate-50/30">
-              <CardHeader className="bg-gradient-to-r from-blue-50/40 via-white to-slate-50/40 border-b border-slate-200/50">
-                <CardTitle className="text-xl flex items-center text-slate-800">
-                  <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-3 shadow-sm">
-                    <Info className="h-4 w-4 text-blue-600"/>
-                  </div>
-                  Quick Info
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 text-sm pt-6">
-                {item.pricing && (
-                  <div className="flex items-start p-3 bg-gradient-to-br from-green-50/40 via-white to-emerald-50/20 rounded-xl border border-green-100/30 shadow-sm">
-                    <div className="p-1.5 bg-gradient-to-br from-green-100 to-green-200 rounded-lg mr-3 shrink-0">
-                      <DollarSign className="h-3 w-3 text-green-600" />
-                    </div>
-                    <div>
-                      <span className="font-semibold text-slate-800">Pricing: </span>
-                      <span className="text-slate-600">{item.pricing}</span>
-                    </div>
-                  </div>
-                )}
-                {item.category && (
-                  <div className="p-3 bg-gradient-to-br from-purple-50/40 via-white to-blue-50/20 rounded-xl border border-purple-100/30 shadow-sm">
-                    <div className="flex items-start mb-2">
-                      <div className="p-1.5 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg mr-3 shrink-0">
-                        <Tag className="h-3 w-3 text-purple-600" />
-                      </div>
-                      <span className="font-semibold text-slate-800">Categor{categories.length > 1 ? 'ies' : 'y'}: </span>
-                    </div>
-                    <div className="inline-flex flex-wrap gap-1 ml-8">
-                      <CategoryChipsWithIcons categories={item.category} variant="outline" size="sm" />
-                    </div>
-                  </div>
-                )}
-                {item.foundedYear && (
-                  <div className="flex items-start p-3 bg-gradient-to-br from-indigo-50/40 via-white to-blue-50/20 rounded-xl border border-indigo-100/30 shadow-sm">
-                    <div className="p-1.5 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-lg mr-3 shrink-0">
-                      <CalendarDays className="h-3 w-3 text-indigo-600" />
-                    </div>
-                     <div>
-                      <span className="font-semibold text-slate-800">Founded: </span>
-                      <span className="text-slate-600">{item.foundedYear}</span>
-                    </div>
-                  </div>
-                )}
-                {item.lastUpdated && (
-                   <div className="flex items-start p-3 bg-gradient-to-br from-amber-50/40 via-white to-yellow-50/20 rounded-xl border border-amber-100/30 shadow-sm">
-                    <div className="p-1.5 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg mr-3 shrink-0">
-                      <CalendarDays className="h-3 w-3 text-amber-600" />
-                    </div>
-                     <div>
-                      <span className="font-semibold text-slate-800">Last Updated: </span>
-                      <span className="text-slate-600">{new Date(item.lastUpdated).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                )}
-                {item.country && (
-                  <div className="flex items-start p-3 bg-gradient-to-br from-cyan-50/40 via-white to-blue-50/20 rounded-xl border border-cyan-100/30 shadow-sm">
-                    <div className="p-1.5 bg-gradient-to-br from-cyan-100 to-cyan-200 rounded-lg mr-3 shrink-0">
-                      <Users className="h-3 w-3 text-cyan-600" />
-                    </div>
-                    <div>
-                      <span className="font-semibold text-slate-800">Location: </span>
-                      <span className="text-slate-600">
-                        {item.city && `${item.city}, `}{item.country}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                {item.socials && (Object.keys(item.socials).length > 0) && (
-                  <div className="p-3 bg-gradient-to-br from-rose-50/40 via-white to-pink-50/20 rounded-xl border border-rose-100/30 shadow-sm">
-                    <p className="font-semibold mb-3 text-slate-800">Socials:</p>
-                    <div className="flex space-x-3">
-                      {item.socials.twitter && <Link href={`https://twitter.com/${item.socials.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105 shadow-sm"><Twitter size={16} className="text-blue-600"/></Link>}
-                      {item.socials.linkedin && <Link href={`https://linkedin.com/${item.socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105 shadow-sm"><Linkedin size={16} className="text-blue-600"/></Link>}
-                      {item.socials.facebook && <Link href={`https://facebook.com/${item.socials.facebook}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105 shadow-sm"><Facebook size={16} className="text-blue-600"/></Link>}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-               <CardFooter className="border-t border-slate-200/50 pt-4 bg-gradient-to-r from-blue-50/30 via-white to-slate-50/30">
-                   <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200 text-white">
-                      <Link href={item.website} target="_blank" rel="noopener noreferrer">
-                        Visit {item.name} <ExternalLink className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-               </CardFooter>
-            </Card>
-            
+            {/* Related Tools */}
             {relatedItems.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold mt-8 text-slate-800 flex items-center">
-                  <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-slate-800 flex items-center">
+                  <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
                   Related Tools
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedItems.map(relatedItem => (
                     <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
                   ))}
                 </div>
               </div>
             )}
-
-          </aside>
-        </article>
+          </div>
+        </div>
 
         {/* Structured Data for Tool Page */}
         <script

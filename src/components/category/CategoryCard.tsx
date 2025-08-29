@@ -14,16 +14,16 @@ export function CategoryCard({ category }: CategoryCardProps) {
   const IconComponent = category.icon ? CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS] : null;
   return (
     <Link href={`/categories/${category.slug}`} className="group block">
-      <Card className="h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 transition-colors duration-200">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6">
+      <Card className="h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 hover:shadow-lg transition-all duration-300">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-8">
           <CardTitle className="text-xl font-serif text-neutral-900 group-hover:text-neutral-600 transition-colors">
             {category.name}
           </CardTitle>
-          {IconComponent && <IconComponent className="h-6 w-6 text-neutral-400 group-hover:text-neutral-600 transition-colors" />}
+          {IconComponent && <IconComponent className="h-7 w-7 text-neutral-400 group-hover:text-neutral-600 transition-colors" />}
         </CardHeader>
-        <CardContent className="px-6 pb-6">
+        <CardContent className="px-8 pb-8">
           {category.imageUrl && (
-            <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden bg-neutral-50">
+            <div className="relative aspect-[4/3] w-full rounded-lg overflow-hidden bg-neutral-50 mb-6">
               <Image
                 src={category.imageUrl}
                 alt={category.name}
@@ -34,11 +34,11 @@ export function CategoryCard({ category }: CategoryCardProps) {
               />
             </div>
           )}
-          <div className="space-y-4">
-            <CardDescription className="text-base text-neutral-600 line-clamp-2">
+          <div className="space-y-6">
+            <CardDescription className="text-base text-neutral-600 line-clamp-3 leading-relaxed">
               {category.description}
             </CardDescription>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-2">
               <div className="text-sm text-neutral-500">
                 {category.itemCount !== undefined ? `${category.itemCount} tool${category.itemCount !== 1 ? 's' : ''}` : 'View tools'}
               </div>

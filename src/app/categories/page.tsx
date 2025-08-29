@@ -15,20 +15,20 @@ export default async function CategoriesPage() {
     const categories = await getCategories();
 
     return (
-      <div className="container py-12 md:py-16 pl-6">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">
+      <div className="container py-16 md:py-24 px-6">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">
             Explore {siteConfig.categoryName} Categories
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Explore our comprehensive collection of AI tools organized by specific commercial real estate use cases and functionality.
           </p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
-            {categories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {categories.map((category) => (
+            <CategoryCard key={category.id} category={category} />
+          ))}
         </div>
 
       {/* Structured Data for Categories Page */}
@@ -80,20 +80,20 @@ export default async function CategoriesPage() {
     console.error('Error loading categories:', error);
     
     return (
-      <div className="container py-12 md:py-16 pl-6">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif tracking-tight mb-4">
+      <div className="container py-16 md:py-24 px-6">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">
             Explore {siteConfig.categoryName} Categories
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed">
             We're currently updating our categories. Please check back soon.
           </p>
           
-          <div className="bg-secondary/30 rounded-lg p-8">
-            <p className="text-muted-foreground mb-4">
+          <div className="bg-secondary/30 rounded-xl p-12 max-w-4xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-6">
               Our {siteConfig.categoryName.toLowerCase()} directory is organized by specific use cases in commercial real estate.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground">
               Categories include Property Management, Investment Analysis, Market Research, and more.
             </p>
           </div>
