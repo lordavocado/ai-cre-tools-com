@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, FileText, Folder, Wrench, Sparkles, TrendingUp } from "lucide-react";
+import { Search, Loader2, FileText, Folder, Wrench, Sparkles, TrendingUp, Hash, ExternalLink, Star, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { DirectoryItem, Category, Guide } from "@/types";
 import { CategoryChips } from "@/components/ui/category-chips";
@@ -19,6 +20,11 @@ interface SearchResult {
   url: string;
   category?: string;
   relevanceScore?: number;
+  tags?: string[];
+  website?: string;
+  pricing?: string;
+  isFeatured?: boolean;
+  isNew?: boolean;
 }
 
 interface GlobalSearchProps {
@@ -32,6 +38,8 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [showRecentSearches, setShowRecentSearches] = useState(false);
   
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null);
@@ -89,19 +97,29 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, results, selectedIndex]);
 
+  // Load recent searches on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('recent-searches');
+    if (saved) {
+      setRecentSearches(JSON.parse(saved).slice(0, 5));
+    }
+  }, []);
+
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (query.trim().length >= 2) {
         performSearch(query.trim());
+        setShowRecentSearches(false);
       } else {
         setResults([]);
-        setIsOpen(false);
+        setIsOpen(query.trim().length === 0 && recentSearches.length > 0);
+        setShowRecentSearches(query.trim().length === 0 && recentSearches.length > 0);
       }
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query]);
+  }, [query, recentSearches]);
 
   const performSearch = async (searchTerm: string) => {
     setIsLoading(true);
@@ -131,7 +149,12 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
             description: tool.tagline,
             url: `/${tool.slug}`,
             category: tool.category,
-            relevanceScore
+            relevanceScore,
+            tags: tool.tags,
+            website: tool.website,
+            pricing: tool.pricing,
+            isFeatured: false, // Not available in current data structure
+            isNew: false // Not available in current data structure
           });
         }
       });
@@ -179,6 +202,13 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
       setResults(sortedResults);
       setIsOpen(sortedResults.length > 0);
       setSelectedIndex(-1);
+      
+      // Save successful searches to recent searches
+      if (sortedResults.length > 0) {
+        const updatedRecent = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
+        setRecentSearches(updatedRecent);
+        localStorage.setItem('recent-searches', JSON.stringify(updatedRecent));
+      }
     } catch (error) {
       console.error("Search error:", error);
       setResults([]);
@@ -236,9 +266,35 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
   };
 
   const handleInputFocus = () => {
-    if (results.length > 0) {
+    if (results.length > 0 || (query.trim().length === 0 && recentSearches.length > 0)) {
       setIsOpen(true);
+      setShowRecentSearches(query.trim().length === 0 && recentSearches.length > 0);
     }
+  };
+
+  const handleRecentSearchClick = (search: string) => {
+    setQuery(search);
+    inputRef.current?.focus();
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem('recent-searches');
+  };
+
+  // Highlight matching text in search results
+  const highlightMatch = (text: string, query: string) => {
+    if (!query.trim() || !text) return text;
+    
+    const searchTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 0);
+    let highlightedText = text;
+    
+    searchTerms.forEach(term => {
+      const regex = new RegExp(`(${term})`, 'gi');
+      highlightedText = highlightedText.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 px-1 py-0.5 rounded-sm">$1</mark>');
+    });
+    
+    return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
   };
 
   const getResultIcon = (type: SearchResult['type']) => {
@@ -277,7 +333,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
   return (
     <div ref={searchRef} className={cn("relative", className)}>
       <div className="relative">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors" />
         <Input
           ref={inputRef}
           type="text"
@@ -285,69 +341,161 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          className="pl-10 pr-10 h-10 search-input-enhanced transition-all duration-200"
+          className="pl-12 pr-12 h-12 text-base bg-white/80 backdrop-blur-sm border-2 border-neutral-200 hover:border-neutral-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100/50 rounded-xl shadow-sm hover:shadow-md search-input-enhanced"
           aria-label="Global search"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           role="combobox"
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-2.5 h-4 w-4 animate-spin text-blue-500" />
+          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-blue-500" />
+        )}
+        {!isLoading && query && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-neutral-100"
+            onClick={() => {
+              setQuery("");
+              setResults([]);
+              setIsOpen(false);
+              inputRef.current?.focus();
+            }}
+          >
+            <Search className="h-4 w-4 rotate-45" />
+          </Button>
         )}
       </div>
 
-      {isOpen && results.length > 0 && (
-        <Card className="absolute top-full left-0 right-0 mt-2 z-search-dropdown max-h-[500px] overflow-y-auto search-dropdown-enhanced">
-          <CardContent className="p-0">
-            <div role="listbox" aria-label="Search results" className="py-2">
-              {results.map((result, index) => (
-                <Button
-                  key={`${result.type}-${result.id}`}
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start p-4 h-auto text-left rounded-none border-b border-gray-100 last:border-b-0 hover:bg-gray-50/80 transition-colors duration-150",
-                    selectedIndex === index && "bg-blue-50/80 border-blue-200"
-                  )}
-                  onClick={() => handleResultClick(result)}
-                  role="option"
-                  aria-selected={selectedIndex === index}
-                >
-                  <div className="flex items-start gap-4 w-full">
-                    <div className="flex-shrink-0 mt-0.5">
-                      {getResultIcon(result.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <span className="font-semibold text-sm text-gray-900 truncate">
-                          {result.title}
-                        </span>
-                        <Badge 
-                          variant="outline" 
-                          className={cn(
-                            "text-xs shrink-0 font-medium",
-                            getResultTypeColor(result.type)
-                          )}
-                        >
-                          {getResultTypeLabel(result.type)}
-                        </Badge>
-                        {result.category && (
-                          <CategoryChips 
-                            categories={result.category} 
-                            variant="secondary" 
-                            size="sm" 
-                            showLinks={false}
-                          />
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                        {result.description}
-                      </p>
-                    </div>
+      {isOpen && (
+        <Card className="absolute top-full left-0 right-0 mt-3 z-50 max-h-[600px] overflow-hidden shadow-2xl border-2 border-neutral-100 rounded-2xl bg-white/95 backdrop-blur-md">
+          {showRecentSearches && recentSearches.length > 0 ? (
+            <>
+              <CardHeader className="px-6 py-4 border-b border-neutral-100">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-gray-700">Recent Searches</span>
                   </div>
-                </Button>
-              ))}
-            </div>
-          </CardContent>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearRecentSearches}
+                    className="text-xs text-muted-foreground hover:text-gray-700 p-1 h-auto"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="py-2">
+                  {recentSearches.map((search, index) => (
+                    <Button
+                      key={search}
+                      variant="ghost"
+                      className="w-full justify-start px-6 py-3 rounded-none hover:bg-neutral-50 text-left"
+                      onClick={() => handleRecentSearchClick(search)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Search className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-gray-700">{search}</span>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </>
+          ) : results.length > 0 ? (
+            <CardContent className="p-0">
+              <div className="max-h-[550px] overflow-y-auto">
+                <div role="listbox" aria-label="Search results" className="py-2">
+                  {results.map((result, index) => (
+                    <Button
+                      key={`${result.type}-${result.id}`}
+                      variant="ghost"
+                      className={cn(
+                        "w-full justify-start p-6 h-auto text-left rounded-none border-b border-neutral-50 last:border-b-0 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/30 search-result-item group",
+                        selectedIndex === index && "bg-gradient-to-r from-blue-50/80 to-purple-50/50 border-blue-200/50"
+                      )}
+                      onClick={() => handleResultClick(result)}
+                      role="option"
+                      aria-selected={selectedIndex === index}
+                    >
+                      <div className="flex items-start gap-4 w-full">
+                        <div className="flex-shrink-0 mt-1">
+                          <div className={cn(
+                            "p-2 rounded-lg transition-colors group-hover:scale-105 duration-200",
+                            result.type === 'tool' && "bg-blue-100 text-blue-700 group-hover:bg-blue-200",
+                            result.type === 'category' && "bg-emerald-100 text-emerald-700 group-hover:bg-emerald-200",
+                            result.type === 'guide' && "bg-violet-100 text-violet-700 group-hover:bg-violet-200"
+                          )}>
+                            {getResultIcon(result.type)}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-3 flex-wrap min-w-0">
+                              <span className="font-semibold text-base text-gray-900 truncate group-hover:text-gray-700">
+                                {highlightMatch(result.title, query)}
+                              </span>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Badge 
+                                  variant="outline" 
+                                  className={cn(
+                                    "text-xs font-medium border transition-colors",
+                                    getResultTypeColor(result.type)
+                                  )}
+                                >
+                                  {getResultTypeLabel(result.type)}
+                                </Badge>
+                              </div>
+                            </div>
+                            {result.website && (
+                              <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed mb-3 group-hover:text-gray-700">
+                            {highlightMatch(result.description, query)}
+                          </p>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            {result.category && (
+                              <CategoryChips 
+                                categories={result.category} 
+                                variant="secondary" 
+                                size="sm" 
+                                showLinks={false}
+                              />
+                            )}
+                            {result.pricing && (
+                              <span className="text-xs text-muted-foreground bg-neutral-100 px-2 py-1 rounded-md">
+                                {result.pricing}
+                              </span>
+                            )}
+                            {result.tags && result.tags.length > 0 && (
+                              <div className="flex items-center gap-1">
+                                <Hash className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-xs text-muted-foreground">
+                                  {result.tags.slice(0, 2).join(', ')}
+                                  {result.tags.length > 2 && ` +${result.tags.length - 2}`}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              {results.length === 8 && (
+                <div className="px-6 py-4 border-t border-neutral-100 bg-neutral-50/50">
+                  <p className="text-xs text-muted-foreground text-center">
+                    Showing top 8 results. Refine your search for more specific results.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          ) : null}
         </Card>
       )}
     </div>
