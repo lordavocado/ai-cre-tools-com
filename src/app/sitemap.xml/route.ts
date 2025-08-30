@@ -9,13 +9,38 @@ export async function GET() {
   const baseUrl = siteConfig.url;
 
   try {
-    // Get dynamic content
+    // Get dynamic content with error handling
     const guides = await getGuides();
-    const directoryItems = await getDirectoryItems();
+    let directoryItems = [];
+    try {
+      directoryItems = await getDirectoryItems();
+      console.log(`Sitemap: Successfully loaded ${directoryItems.length} directory items`);
+    } catch (error) {
+      console.error('Sitemap: Failed to load directory items from Google Sheets:', error);
+      // Continue without directory items - they'll be handled in the fallback
+    }
     const blogPosts = getAllBlogPosts();
 
-    // Get unique categories from directory items
-    const categories = [...new Set(directoryItems.map(item => item.category).filter(Boolean))];
+    // Get unique categories from directory items, with fallback to hardcoded categories
+    let categories = [];
+    if (directoryItems.length > 0) {
+      categories = [...new Set(directoryItems.map(item => item.category).filter(Boolean))];
+    } else {
+      // Fallback to known category slugs when Google Sheets fails
+      categories = [
+        'property-search-acquisition',
+        'property-analysis-valuation', 
+        'development-construction',
+        'legal-compliance-duediligence',
+        'property-management-operations',
+        'asset-portfolio-management',
+        'transactions-brokerage',
+        'marketingleasing-enablement',
+        'data-workflow-infrastructure',
+        'productivity-copilots'
+      ];
+      console.log('Sitemap: Using fallback categories due to sheets failure');
+    }
 
     // Static pages
     const staticPages = [
@@ -101,7 +126,7 @@ export async function GET() {
 
     // Category pages
     const categoryPages = categories.map(category => ({
-      url: `${baseUrl}/categories/${category.toLowerCase().replace(/\s+/g, '-')}`,
+      url: `${baseUrl}/categories/${typeof category === 'string' ? category : category.toLowerCase().replace(/\s+/g, '-')}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.6,

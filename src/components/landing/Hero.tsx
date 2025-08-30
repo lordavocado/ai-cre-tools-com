@@ -41,12 +41,22 @@ export function Hero() {
             <span className="block text-gray-700">for Your CRE Business</span>
           </motion.h1>
 
+          {/* SEO-Optimized H2 */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800 max-w-4xl mx-auto mb-4 leading-tight"
+          >
+            Comprehensive Directory of Commercial Real Estate AI Software & CRE Analytics Tools
+          </motion.h2>
+
           {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed"
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed"
           >
             Stop wasting time on endless research. Our curated directory of 100+ Commercial Real Estate AI tools helps you find, compare, and choose the right solution in minutes.
           </motion.p>
@@ -56,7 +66,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
             className="flex flex-row gap-4 justify-center items-center mb-12"
           >
             <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
@@ -77,11 +87,10 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
             className="max-w-md mx-auto"
           >
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Get New AI Tools First</h3>
-            <p className="text-gray-600 mb-4 text-sm">Be the first to discover cutting-edge CRE AI solutions that can transform your business.</p>
+            <p className="text-gray-600 mb-4 text-sm font-medium">Get new AI tools first - Be the first to discover cutting-edge CRE AI solutions that can transform your business.</p>
             <NewsletterForm />
           </motion.div>
         </motion.div>
