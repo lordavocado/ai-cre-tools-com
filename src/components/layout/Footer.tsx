@@ -10,11 +10,17 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="font-serif text-lg text-neutral-900">{siteConfig.name}</span>
+              <span className="text-lg font-semibold text-neutral-900">{siteConfig.name}</span>
             </Link>
             <p className="text-sm leading-relaxed text-neutral-600">
               {computedSiteConfig.footer.description}
             </p>
+            <div className="pt-2 border-t border-neutral-200">
+              <div className="flex flex-col space-y-1 text-xs text-neutral-500">
+                <Link href="/privacy-policy" className="hover:text-neutral-700 transition-colors">Privacy Policy</Link>
+                <Link href="/terms-of-service" className="hover:text-neutral-700 transition-colors">Terms of Service</Link>
+              </div>
+            </div>
           </div>
           <div>
             <div className="space-y-3">
@@ -24,8 +30,6 @@ export function Footer() {
                 <Link href="/blog" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Blog</Link>
                 <Link href="/about" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">About</Link>
                 <Link href="/submit-tool" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Submit Tool</Link>
-                <Link href="/privacy-policy" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Privacy Policy</Link>
-                <Link href="/terms-of-service" className="text-sm text-neutral-600 transition-colors hover:text-neutral-900">Terms of Service</Link>
               </nav>
             </div>
           </div>

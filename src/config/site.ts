@@ -117,7 +117,7 @@ export const siteConfig = {
 
   // Footer content
   footer: {
-    description: "Discover and compare the best {categoryName} to make data-driven decisions and optimize your commercial real estate operations.",
+    description: "Find the best AI tools for commercial real estate",
     copyright: "{categoryName}. All rights reserved.",
   },
 

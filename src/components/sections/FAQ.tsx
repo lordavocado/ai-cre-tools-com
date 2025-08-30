@@ -73,14 +73,6 @@ export function FAQ() {
           </Accordion>
         </div>
         
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground mb-4">
-            Have a question not covered here?
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Our guides section provides detailed information about implementing and optimizing {siteConfig.categoryName.toLowerCase()}.
-          </p>
-        </div>
       </div>
     </section>
   );
