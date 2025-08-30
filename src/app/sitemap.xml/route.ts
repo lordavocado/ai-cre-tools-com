@@ -3,6 +3,7 @@ import { getGuides } from '@/lib/markdown';
 import { getDirectoryItems, getCategories } from '@/lib/sheets';
 import { getAllBlogPosts } from '@/lib/blog';
 import { siteConfig } from '@/config/site';
+import type { DirectoryItem } from '@/types';
 import type { MetadataRoute } from 'next';
 
 export async function GET() {
@@ -11,7 +12,7 @@ export async function GET() {
   try {
     // Get dynamic content with error handling
     const guides = await getGuides();
-    let directoryItems = [];
+    let directoryItems: DirectoryItem[] = [];
     try {
       directoryItems = await getDirectoryItems();
       console.log(`Sitemap: Successfully loaded ${directoryItems.length} directory items`);
@@ -22,7 +23,7 @@ export async function GET() {
     const blogPosts = getAllBlogPosts();
 
     // Get unique categories from directory items, with fallback to hardcoded categories
-    let categories = [];
+    let categories: string[] = [];
     if (directoryItems.length > 0) {
       categories = [...new Set(directoryItems.map(item => item.category).filter(Boolean))];
     } else {
