@@ -10,7 +10,8 @@ import { getCategories, getDirectoryItems } from '@/lib/sheets';
 import { siteConfig } from '@/config/site';
 import { CheckCircle, Zap, Users, Shield, ArrowRight, Star } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+// Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
+// If you need fresh data, consider using revalidate instead
 
 export async function generateStaticParams() {
   const categories = await getCategories();
@@ -75,29 +76,28 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const allItems = await getDirectoryItems();
-  const itemsInCategory = allItems.filter((item) => 
-    item.category === slug
-  );
+  // Try to load directory items with proper error handling
+  let allItems = [];
+  let itemsLoadError = false;
+  
+  try {
+    allItems = await getDirectoryItems();
+  } catch (error) {
+    console.warn(`Failed to load directory items for category ${slug}:`, error);
+    itemsLoadError = true;
+  }
+  
+  const itemsInCategory = allItems.filter((item) => {
+    // Support comma-separated categories to match the logic in getCategories
+    const itemCategories = item.category.split(',').map(cat => cat.trim());
+    return itemCategories.includes(slug);
+  });
 
+  // If no tools found, still show the category page with full content
+  // This ensures category pages work even when tools fail to load
   if (itemsInCategory.length === 0) {
-    return (
-      <div className="container py-12 pl-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-serif mb-6">No Tools Found</h1>
-          <p className="text-lg text-muted-foreground mb-8">
-            No tools found in the {category.name} category at the moment.
-          </p>
-          <Link 
-            href="/categories" 
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            <ArrowRight className="h-4 w-4" />
-            Browse All Categories
-          </Link>
-        </div>
-      </div>
-    );
+    // Don't return early - show the full category page with description and FAQ
+    // Just set empty tools array for the grid component
   }
 
   // Get top-rated tools for hero section
@@ -193,8 +193,8 @@ export default async function CategoryPage({
                   <Image 
                     src={category.imageUrl} 
                     alt={`${category.name} category icon`}
-                    layout="fill" 
-                    objectFit="contain"
+                    fill 
+                    style={{ objectFit: "contain" }}
                     className="p-2"
                   />
                 </div>
@@ -262,11 +262,45 @@ export default async function CategoryPage({
           <div className="text-center mb-12">
             <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
             <p className="text-muted-foreground text-lg">
-              Comprehensive directory of {itemsInCategory.length} {category.name.toLowerCase()} solutions
+              {itemsInCategory.length > 0 
+                ? `Comprehensive directory of ${itemsInCategory.length} ${category.name.toLowerCase()} solutions`
+                : `Discover ${category.name.toLowerCase()} solutions for your commercial real estate needs`
+              }
             </p>
           </div>
           
-          <DirectoryGrid items={itemsInCategory} />
+          {itemsInCategory.length > 0 ? (
+            <DirectoryGrid items={itemsInCategory} />
+          ) : (
+            <div className="text-center py-16">
+              <div className="max-w-2xl mx-auto">
+                {itemsLoadError ? (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Tools Loading Issue</h3>
+                    <p className="text-muted-foreground">
+                      We're temporarily unable to load the tools for this category. 
+                      Please try again later or explore other categories below.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">No Tools Available</h3>
+                    <p className="text-muted-foreground">
+                      We're constantly adding new {category.name.toLowerCase()} tools to our directory. 
+                      Check back soon or explore related categories below.
+                    </p>
+                  </div>
+                )}
+                <Link 
+                  href="/categories" 
+                  className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                  Browse All Categories
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
