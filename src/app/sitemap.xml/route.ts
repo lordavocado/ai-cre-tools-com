@@ -127,7 +127,7 @@ export async function GET() {
 
     // Category pages
     const categoryPages = categories.map(category => ({
-      url: `${baseUrl}/categories/${typeof category === 'string' ? category : category.toLowerCase().replace(/\s+/g, '-')}`,
+      url: `${baseUrl}/categories/${category}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
