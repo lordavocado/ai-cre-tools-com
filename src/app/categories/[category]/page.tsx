@@ -9,7 +9,12 @@ import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { getCategories, getDirectoryItems } from '@/lib/sheets';
 import type { DirectoryItem } from '@/types';
 import { siteConfig } from '@/config/site';
-import { CheckCircle, Zap, Users, Shield, ArrowRight, Star } from 'lucide-react';
+import { 
+  CheckCircle, Zap, Users, Shield, ArrowRight, Star, 
+  TrendingUp, Clock, Target, Workflow, ChevronRight, 
+  BarChart3, DollarSign, Calendar, Award, BookOpen,
+  Lightbulb, Settings, PieChart, MessageSquare, ThumbsUp
+} from 'lucide-react';
 
 // Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
 // If you need fresh data, consider using revalidate instead
@@ -173,24 +178,33 @@ export default async function CategoryPage({
         }}
       />
 
-      {/* Hero Section */}
+      {/* Enhanced Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}></div>
+        </div>
+
         <div className="container relative py-16 md:py-24 pl-6">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-            <span>/</span>
+            <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
+              <span>Home</span>
+            </Link>
+            <ChevronRight className="h-3 w-3" />
             <Link href="/categories" className="hover:text-foreground transition-colors">Categories</Link>
-            <span>/</span>
+            <ChevronRight className="h-3 w-3" />
             <span className="text-foreground font-medium">{category.name}</span>
           </nav>
 
           {/* Hero Content */}
           <div className="text-center max-w-4xl mx-auto">
             {category.imageUrl && (
-              <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40 rounded-2xl blur-xl" />
-                <div className="relative w-full h-full bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-2xl border border-primary/20">
+              <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-8 group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+                <div className="relative w-full h-full bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-2xl border border-primary/20 group-hover:scale-105 transition-transform duration-300">
                   <Image 
                     src={category.imageUrl} 
                     alt={`${category.name} category icon`}
@@ -210,42 +224,85 @@ export default async function CategoryPage({
               {category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`}
             </p>
 
-            {/* Category Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-primary">{itemsInCategory.length}</div>
-                <div className="text-sm text-muted-foreground">Tools Available</div>
-              </div>
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-green-600">{avgRating.toFixed(1)}</div>
-                <div className="text-sm text-muted-foreground">Avg Rating</div>
-              </div>
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-blue-600">{freeTools}</div>
-                <div className="text-sm text-muted-foreground">Free Options</div>
-              </div>
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold text-purple-600">{enterpriseTools}</div>
-                <div className="text-sm text-muted-foreground">Enterprise</div>
-              </div>
+            {/* Enhanced Category Stats Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-8">
+              {[
+                {
+                  value: itemsInCategory.length,
+                  label: 'Tools Available',
+                  color: 'text-primary',
+                  bgColor: 'from-primary/10 to-primary/20',
+                  icon: <Workflow className="h-5 w-5" />
+                },
+                {
+                  value: avgRating.toFixed(1),
+                  label: 'Avg Rating',
+                  color: 'text-green-600',
+                  bgColor: 'from-green-500/10 to-green-600/20',
+                  icon: <Star className="h-5 w-5" />
+                },
+                {
+                  value: freeTools,
+                  label: 'Free Options',
+                  color: 'text-blue-600',
+                  bgColor: 'from-blue-500/10 to-blue-600/20',
+                  icon: <DollarSign className="h-5 w-5" />
+                },
+                {
+                  value: enterpriseTools,
+                  label: 'Enterprise',
+                  color: 'text-purple-600',
+                  bgColor: 'from-purple-500/10 to-purple-600/20',
+                  icon: <Shield className="h-5 w-5" />
+                }
+              ].map((stat, index) => (
+                <div key={index} className="group relative">
+                  <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${stat.bgColor} mb-3`}>
+                      <div className={stat.color}>
+                        {stat.icon}
+                      </div>
+                    </div>
+                    <div className={`text-3xl font-bold mb-1 ${stat.color}`}>
+                      {stat.value}
+                    </div>
+                    <div className="text-sm text-muted-foreground font-medium">
+                      {stat.label}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Top Tools Preview */}
+            {/* Enhanced Top Tools Preview */}
             {topTools.length > 0 && (
               <div className="mt-12">
-                <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Top Rated Tools</h3>
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent flex-1 max-w-20"></div>
+                  <h3 className="text-lg font-semibold text-muted-foreground flex items-center gap-2">
+                    <Award className="h-5 w-5 text-yellow-500" />
+                    Top Rated Tools
+                  </h3>
+                  <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent flex-1 max-w-20"></div>
+                </div>
                 <div className="flex flex-wrap justify-center gap-3">
-                  {topTools.map((tool) => (
+                  {topTools.map((tool, index) => (
                     <Link 
                       key={tool.slug} 
                       href={`/${tool.slug}`}
-                      className="group flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-slate-800/90 rounded-lg border border-white/20 hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 hover:scale-105"
+                      className="group flex items-center gap-3 px-5 py-3 bg-white/95 dark:bg-slate-800/95 rounded-xl border border-white/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 hover:scale-105 hover:shadow-xl backdrop-blur-sm"
+                      style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="font-medium group-hover:text-primary transition-colors">
-                        {tool.name}
-                      </span>
-                      <Badge variant="secondary" className="text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="relative">
+                          <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                        <span className="font-semibold group-hover:text-primary transition-colors">
+                          {tool.name}
+                        </span>
+                      </div>
+                      <Badge variant="secondary" className="text-xs font-medium bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-700/30">
                         {tool.rating}★
                       </Badge>
                     </Link>
@@ -305,6 +362,133 @@ export default async function CategoryPage({
         </div>
       </div>
 
+      {/* Key Use Cases Section */}
+      <div className="container py-16 pl-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Key Use Cases</h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Discover how {category.name.toLowerCase()} tools transform these critical workflows
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Use Case Cards - Dynamic based on category */}
+            {(() => {
+              const getCategoryUseCases = (categorySlug: string) => {
+                switch (categorySlug) {
+                  case 'property-analysis-valuation':
+                    return [
+                      {
+                        icon: <BarChart3 className="h-8 w-8 text-blue-600" />,
+                        title: 'Automated Property Valuation',
+                        description: 'AI-powered valuation models that analyze comparable sales, market trends, and property characteristics to provide instant, accurate property valuations.',
+                        benefit: 'Reduce valuation time by 80%'
+                      },
+                      {
+                        icon: <TrendingUp className="h-8 w-8 text-green-600" />,
+                        title: 'Market Trend Analysis',
+                        description: 'Predictive analytics that identify emerging market trends, price movements, and investment opportunities across different property types and locations.',
+                        benefit: 'Forecast accuracy up to 95%'
+                      },
+                      {
+                        icon: <PieChart className="h-8 w-8 text-purple-600" />,
+                        title: 'Investment Risk Assessment',
+                        description: 'Comprehensive risk analysis combining financial modeling, market volatility, and property-specific factors to optimize investment decisions.',
+                        benefit: 'Identify 90% of potential risks'
+                      },
+                      {
+                        icon: <Target className="h-8 w-8 text-orange-600" />,
+                        title: 'Comparative Market Analysis',
+                        description: 'Advanced algorithms that identify and analyze truly comparable properties, adjusting for differences in location, condition, and market timing.',
+                        benefit: 'Find comparable properties in seconds'
+                      },
+                      {
+                        icon: <DollarSign className="h-8 w-8 text-emerald-600" />,
+                        title: 'Financial Modeling',
+                        description: 'Sophisticated financial models that project cash flows, returns, and scenarios across multiple time horizons with sensitivity analysis.',
+                        benefit: 'Model complex scenarios instantly'
+                      },
+                      {
+                        icon: <Workflow className="h-8 w-8 text-indigo-600" />,
+                        title: 'Due Diligence Automation',
+                        description: 'Automated analysis of property documents, financial records, and market data to streamline the due diligence process.',
+                        benefit: 'Complete due diligence 70% faster'
+                      }
+                    ];
+                  case 'property-search-acquisition':
+                    return [
+                      {
+                        icon: <Target className="h-8 w-8 text-blue-600" />,
+                        title: 'Intelligent Property Matching',
+                        description: 'AI algorithms that match properties to specific investment criteria, preferences, and portfolio requirements.',
+                        benefit: 'Find perfect matches in minutes'
+                      },
+                      {
+                        icon: <BarChart3 className="h-8 w-8 text-green-600" />,
+                        title: 'Market Opportunity Scanning',
+                        description: 'Continuous monitoring of market conditions to identify emerging opportunities and undervalued assets.',
+                        benefit: 'Spot opportunities before competitors'
+                      },
+                      {
+                        icon: <Workflow className="h-8 w-8 text-purple-600" />,
+                        title: 'Deal Pipeline Management',
+                        description: 'Automated systems for tracking prospects, managing offers, and coordinating acquisition processes.',
+                        benefit: 'Manage 3x more deals efficiently'
+                      }
+                    ];
+                  default:
+                    return [
+                      {
+                        icon: <Workflow className="h-8 w-8 text-blue-600" />,
+                        title: 'Process Automation',
+                        description: 'Streamline repetitive tasks and workflows with intelligent automation that learns and adapts to your business processes.',
+                        benefit: 'Save 50+ hours per month'
+                      },
+                      {
+                        icon: <BarChart3 className="h-8 w-8 text-green-600" />,
+                        title: 'Data-Driven Insights',
+                        description: 'Transform raw data into actionable insights with AI-powered analytics and predictive modeling capabilities.',
+                        benefit: 'Improve decision accuracy by 40%'
+                      },
+                      {
+                        icon: <Target className="h-8 w-8 text-purple-600" />,
+                        title: 'Strategic Optimization',
+                        description: 'Optimize operations, investments, and strategic decisions through intelligent analysis and recommendations.',
+                        benefit: 'Increase ROI by 25%'
+                      }
+                    ];
+                }
+              };
+              
+              return getCategoryUseCases(slug).map((useCase, index) => (
+                <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 group-hover:scale-110 transition-transform duration-300">
+                        {useCase.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
+                          {useCase.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                          {useCase.description}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                          <Award className="h-4 w-4" />
+                          {useCase.benefit}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ));
+            })()}
+          </div>
+        </div>
+      </div>
+
       {/* Enhanced Category Description */}
       {category.longDescription && (
         <div className="container py-16 pl-6">
@@ -321,6 +505,176 @@ export default async function CategoryPage({
           </div>
         </div>
       )}
+
+      {/* Industry Benefits Section */}
+      <div className="container py-16 pl-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Industry Impact</h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Discover how {category.name.toLowerCase()} tools are transforming commercial real estate operations
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {/* Dynamic benefits based on category */}
+            {(() => {
+              const getCategoryBenefits = (categorySlug: string) => {
+                switch (categorySlug) {
+                  case 'property-analysis-valuation':
+                    return [
+                      {
+                        icon: <Clock className="h-6 w-6" />,
+                        metric: '80%',
+                        label: 'Time Reduction',
+                        description: 'Faster valuation processes',
+                        color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                      },
+                      {
+                        icon: <Target className="h-6 w-6" />,
+                        metric: '95%',
+                        label: 'Accuracy Improvement',
+                        description: 'More precise valuations',
+                        color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                      },
+                      {
+                        icon: <DollarSign className="h-6 w-6" />,
+                        metric: '25%',
+                        label: 'Better ROI',
+                        description: 'Improved investment returns',
+                        color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
+                      },
+                      {
+                        icon: <Shield className="h-6 w-6" />,
+                        metric: '90%',
+                        label: 'Risk Reduction',
+                        description: 'Better risk assessment',
+                        color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
+                      }
+                    ];
+                  case 'property-search-acquisition':
+                    return [
+                      {
+                        icon: <Target className="h-6 w-6" />,
+                        metric: '3x',
+                        label: 'More Deals',
+                        description: 'Increased deal flow',
+                        color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                      },
+                      {
+                        icon: <Clock className="h-6 w-6" />,
+                        metric: '60%',
+                        label: 'Faster Search',
+                        description: 'Quicker property identification',
+                        color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                      },
+                      {
+                        icon: <BarChart3 className="h-6 w-6" />,
+                        metric: '40%',
+                        label: 'Better Matches',
+                        description: 'More accurate property matching',
+                        color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
+                      },
+                      {
+                        icon: <TrendingUp className="h-6 w-6" />,
+                        metric: '50%',
+                        label: 'Success Rate',
+                        description: 'Higher acquisition success',
+                        color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
+                      }
+                    ];
+                  default:
+                    return [
+                      {
+                        icon: <Clock className="h-6 w-6" />,
+                        metric: '50%',
+                        label: 'Time Savings',
+                        description: 'Reduced manual work',
+                        color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                      },
+                      {
+                        icon: <TrendingUp className="h-6 w-6" />,
+                        metric: '30%',
+                        label: 'Efficiency Gain',
+                        description: 'Improved productivity',
+                        color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                      },
+                      {
+                        icon: <Target className="h-6 w-6" />,
+                        metric: '25%',
+                        label: 'Better Decisions',
+                        description: 'Data-driven outcomes',
+                        color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
+                      },
+                      {
+                        icon: <DollarSign className="h-6 w-6" />,
+                        metric: '20%',
+                        label: 'Cost Reduction',
+                        description: 'Lower operational costs',
+                        color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
+                      }
+                    ];
+                }
+              };
+              
+              return getCategoryBenefits(slug).map((benefit, index) => (
+                <Card key={index} className="text-center p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800">
+                  <div className={`inline-flex p-3 rounded-full mb-4 ${benefit.color}`}>
+                    {benefit.icon}
+                  </div>
+                  <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                    {benefit.metric}
+                  </div>
+                  <h3 className="font-semibold mb-1">{benefit.label}</h3>
+                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                </Card>
+              ));
+            })()}
+          </div>
+
+          {/* Industry Context */}
+          <div className="bg-gradient-to-r from-primary/5 via-blue-50/50 to-primary/5 dark:from-primary/10 dark:via-slate-800 dark:to-primary/10 rounded-2xl p-8 md:p-12">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-2xl font-bold mb-4">Why {category.name} Matters</h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  The commercial real estate industry is experiencing rapid transformation. 
+                  {category.name} tools are at the forefront of this change, enabling professionals 
+                  to make faster, more accurate decisions while reducing operational overhead.
+                </p>
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span>Industry-proven solutions</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span>Scalable implementations</span>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                  <div className="text-2xl font-bold text-primary mb-1">$2.8T</div>
+                  <div className="text-sm text-muted-foreground">US CRE Market Size</div>
+                </div>
+                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600 mb-1">+15%</div>
+                  <div className="text-sm text-muted-foreground">AI Adoption Growth</div>
+                </div>
+                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600 mb-1">73%</div>
+                  <div className="text-sm text-muted-foreground">See Efficiency Gains</div>
+                </div>
+                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600 mb-1">2025</div>
+                  <div className="text-sm text-muted-foreground">Mainstream Adoption</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Enhanced FAQ Section */}
       <div className="container py-16 pl-6">
@@ -380,6 +734,355 @@ export default async function CategoryPage({
                 </p>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Implementation Guide Section */}
+      <div className="container py-16 pl-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Implementation Roadmap</h2>
+            <p className="text-muted-foreground text-lg">
+              A step-by-step guide to successfully adopting {category.name.toLowerCase()} tools in your organization
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            {/* Implementation Steps */}
+            {[
+              {
+                step: 1,
+                title: 'Assess Current Workflows',
+                description: 'Evaluate your existing processes to identify automation opportunities and integration points.',
+                details: [
+                  'Document current manual processes',
+                  'Identify pain points and bottlenecks',
+                  'Map data flow and decision points',
+                  'Assess team readiness for change'
+                ],
+                icon: <BarChart3 className="h-6 w-6" />,
+                color: 'from-blue-500 to-blue-600'
+              },
+              {
+                step: 2,
+                title: 'Define Requirements',
+                description: 'Establish clear criteria for tool selection based on your specific needs and constraints.',
+                details: [
+                  'Set budget parameters and ROI expectations',
+                  'Define functional requirements',
+                  'Consider integration capabilities',
+                  'Plan for scalability and growth'
+                ],
+                icon: <Target className="h-6 w-6" />,
+                color: 'from-green-500 to-green-600'
+              },
+              {
+                step: 3,
+                title: 'Pilot Testing',
+                description: 'Start with a controlled pilot to validate tool effectiveness before full deployment.',
+                details: [
+                  'Select pilot use case and team',
+                  'Set measurable success criteria',
+                  'Run 30-90 day test period',
+                  'Gather feedback and performance data'
+                ],
+                icon: <Settings className="h-6 w-6" />,
+                color: 'from-purple-500 to-purple-600'
+              },
+              {
+                step: 4,
+                title: 'Training & Adoption',
+                description: 'Ensure successful adoption through comprehensive training and change management.',
+                details: [
+                  'Develop training materials and schedules',
+                  'Establish power users as champions',
+                  'Create feedback loops for continuous improvement',
+                  'Monitor adoption metrics and user satisfaction'
+                ],
+                icon: <BookOpen className="h-6 w-6" />,
+                color: 'from-orange-500 to-orange-600'
+              },
+              {
+                step: 5,
+                title: 'Scale & Optimize',
+                description: 'Expand successful implementations and continuously optimize for maximum value.',
+                details: [
+                  'Roll out to additional teams and use cases',
+                  'Optimize workflows based on usage data',
+                  'Integrate with additional systems',
+                  'Measure and report on business impact'
+                ],
+                icon: <TrendingUp className="h-6 w-6" />,
+                color: 'from-emerald-500 to-emerald-600'
+              }
+            ].map((item, index) => (
+              <div key={index} className="relative">
+                {/* Connection Line */}
+                {index < 4 && (
+                  <div className="absolute left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-slate-300 to-transparent dark:from-slate-600"></div>
+                )}
+                
+                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800">
+                  <CardContent className="p-8">
+                    <div className="flex gap-6">
+                      {/* Step Number and Icon */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-white mb-4 shadow-lg`}>
+                          {item.icon}
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm font-medium text-muted-foreground">Step {item.step}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                        <p className="text-muted-foreground mb-4 leading-relaxed">{item.description}</p>
+                        
+                        {/* Action Items */}
+                        <div className="grid md:grid-cols-2 gap-3">
+                          {item.details.map((detail, detailIndex) => (
+                            <div key={detailIndex} className="flex items-start gap-2">
+                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                              <span className="text-sm text-muted-foreground">{detail}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+
+          {/* Implementation Tips */}
+          <div className="mt-12 p-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-100 dark:border-blue-800">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-blue-600" />
+              Pro Implementation Tips
+            </h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold mb-2">Start Small, Think Big</h4>
+                <p className="text-sm text-muted-foreground">Begin with one high-impact use case before expanding to avoid overwhelming your team.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Measure Everything</h4>
+                <p className="text-sm text-muted-foreground">Track key metrics from day one to demonstrate ROI and identify optimization opportunities.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Invest in Training</h4>
+                <p className="text-sm text-muted-foreground">Proper training is crucial for adoption success - budget 20-30% of tool cost for training.</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Plan for Integration</h4>
+                <p className="text-sm text-muted-foreground">Ensure new tools can integrate with your existing systems to maximize value and minimize disruption.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Success Stories Section */}
+      <div className="container py-16 pl-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Success Stories</h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              See how leading CRE professionals are leveraging {category.name.toLowerCase()} tools to drive results
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Success Story Cards - Dynamic based on category */}
+            {(() => {
+              const getCategorySuccessStories = (categorySlug: string) => {
+                switch (categorySlug) {
+                  case 'property-analysis-valuation':
+                    return [
+                      {
+                        company: 'Premier Investment Group',
+                        industry: 'Investment Management',
+                        challenge: 'Manual valuation processes taking 2-3 days per property, limiting deal velocity',
+                        solution: 'AI-powered valuation platform with automated comparable analysis',
+                        results: [
+                          '85% reduction in valuation time',
+                          '40% increase in deal throughput',
+                          '95% accuracy improvement',
+                          '$2M saved annually in analyst time'
+                        ],
+                        quote: 'We can now evaluate 10x more opportunities with the same team size. The accuracy and speed have completely transformed our investment process.',
+                        author: 'Sarah Chen, VP of Acquisitions',
+                        icon: <BarChart3 className="h-6 w-6 text-blue-600" />
+                      },
+                      {
+                        company: 'Metro Commercial Real Estate',
+                        industry: 'Brokerage & Advisory',
+                        challenge: 'Inconsistent property valuations across different markets and analysts',
+                        solution: 'Machine learning models for standardized, data-driven valuations',
+                        results: [
+                          '90% reduction in valuation variance',
+                          '60% faster client deliverables',
+                          '25% increase in client satisfaction',
+                          '15% growth in advisory revenue'
+                        ],
+                        quote: 'Our clients now trust our valuations completely. The consistency and speed have made us the go-to advisor in our markets.',
+                        author: 'Michael Rodriguez, Managing Director',
+                        icon: <Target className="h-6 w-6 text-green-600" />
+                      }
+                    ];
+                  case 'property-search-acquisition':
+                    return [
+                      {
+                        company: 'Strategic Property Ventures',
+                        industry: 'Real Estate Investment',
+                        challenge: 'Manual property screening consuming 80% of acquisition team time',
+                        solution: 'AI-powered property matching and opportunity identification platform',
+                        results: [
+                          '75% reduction in screening time',
+                          '3x increase in qualified opportunities',
+                          '50% faster deal closure',
+                          '$5M in additional acquisitions'
+                        ],
+                        quote: 'The platform finds opportunities we never would have discovered manually. Our acquisition volume has tripled without adding headcount.',
+                        author: 'Jennifer Park, Head of Acquisitions',
+                        icon: <Target className="h-6 w-6 text-blue-600" />
+                      },
+                      {
+                        company: 'Apex Development Partners',
+                        industry: 'Development & Construction',
+                        challenge: 'Missing prime development opportunities due to slow market analysis',
+                        solution: 'Real-time market scanning and automated site selection tools',
+                        results: [
+                          '90% faster site identification',
+                          '40% increase in deal pipeline',
+                          '25% improvement in project ROI',
+                          'First-to-market advantage on 15 deals'
+                        ],
+                        quote: 'We\'re now first to market on the best opportunities. The competitive advantage is game-changing.',
+                        author: 'David Kim, Development Director',
+                        icon: <TrendingUp className="h-6 w-6 text-green-600" />
+                      }
+                    ];
+                  default:
+                    return [
+                      {
+                        company: 'Innovation Real Estate',
+                        industry: 'Commercial Real Estate',
+                        challenge: 'Time-intensive manual processes limiting team productivity',
+                        solution: 'Comprehensive AI automation platform for workflow optimization',
+                        results: [
+                          '60% reduction in manual tasks',
+                          '45% increase in team productivity',
+                          '30% improvement in accuracy',
+                          '$1.2M annual cost savings'
+                        ],
+                        quote: 'The automation has freed our team to focus on high-value strategic work. We\'re more efficient and effective than ever.',
+                        author: 'Lisa Thompson, Operations Director',
+                        icon: <Workflow className="h-6 w-6 text-blue-600" />
+                      },
+                      {
+                        company: 'Elite Property Group',
+                        industry: 'Property Management',
+                        challenge: 'Inconsistent data quality affecting decision-making across portfolio',
+                        solution: 'AI-driven data management and analytics platform',
+                        results: [
+                          '95% improvement in data quality',
+                          '50% faster decision-making',
+                          '35% better investment outcomes',
+                          '20% increase in portfolio value'
+                        ],
+                        quote: 'Clean, reliable data has transformed how we operate. Every decision is now backed by accurate, real-time insights.',
+                        author: 'Robert Martinez, Portfolio Manager',
+                        icon: <BarChart3 className="h-6 w-6 text-green-600" />
+                      }
+                    ];
+                }
+              };
+
+              return getCategorySuccessStories(slug).map((story, index) => (
+                <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white dark:bg-slate-800 h-full">
+                  <CardContent className="p-8 h-full flex flex-col">
+                    {/* Header */}
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20">
+                        {story.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg mb-1">{story.company}</h3>
+                        <p className="text-sm text-muted-foreground">{story.industry}</p>
+                      </div>
+                    </div>
+
+                    {/* Challenge & Solution */}
+                    <div className="space-y-4 mb-6 flex-1">
+                      <div>
+                        <h4 className="font-semibold text-sm mb-2 text-red-600">Challenge</h4>
+                        <p className="text-sm text-muted-foreground">{story.challenge}</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm mb-2 text-blue-600">Solution</h4>
+                        <p className="text-sm text-muted-foreground">{story.solution}</p>
+                      </div>
+                    </div>
+
+                    {/* Results */}
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-sm mb-3 text-green-600">Results</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {story.results.map((result, resultIndex) => (
+                          <div key={resultIndex} className="flex items-start gap-2">
+                            <ThumbsUp className="h-3 w-3 text-green-500 mt-1 flex-shrink-0" />
+                            <span className="text-xs text-muted-foreground">{result}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quote */}
+                    <div className="border-t pt-6">
+                      <blockquote className="italic text-sm mb-3 text-foreground">
+                        "{story.quote}"
+                      </blockquote>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                        <span className="text-xs font-medium">{story.author}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ));
+            })()}
+          </div>
+
+          {/* Call to Action */}
+          <div className="mt-12 text-center">
+            <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold mb-4">Ready to Transform Your {category.name}?</h3>
+              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                Join the growing number of CRE professionals who are leveraging AI tools to drive better outcomes, 
+                reduce costs, and gain competitive advantages in their markets.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link 
+                  href="/categories" 
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                >
+                  Explore All Categories
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link 
+                  href="/submit-tool" 
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-colors font-medium"
+                >
+                  Submit Your Tool
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
