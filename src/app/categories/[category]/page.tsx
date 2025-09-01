@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { CategoryChips } from '@/components/ui/category-chips';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { getCategories, getDirectoryItems } from '@/lib/sheets';
+import type { DirectoryItem } from '@/types';
 import { siteConfig } from '@/config/site';
 import { CheckCircle, Zap, Users, Shield, ArrowRight, Star } from 'lucide-react';
 
@@ -77,7 +78,7 @@ export default async function CategoryPage({
   }
 
   // Try to load directory items with proper error handling
-  let allItems = [];
+  let allItems: DirectoryItem[] = [];
   let itemsLoadError = false;
   
   try {
