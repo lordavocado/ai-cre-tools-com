@@ -78,7 +78,7 @@ export function Hero() {
             </Button>
             <Button asChild variant="outline" size="lg" className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold">
               <Link href="/about">
-                How It Works
+                About Us
               </Link>
             </Button>
           </motion.div>
