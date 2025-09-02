@@ -23,7 +23,7 @@ import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // F
 import { CategoryChipsWithIcons } from "@/components/ui/category-chips-with-icons";
 import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { siteConfig, generateToolMeta } from "@/config/site";
-import { FavouriteButton } from "@/components/ui/favourite-button";
+import { FavoriteButton } from "@/components/ui/favorite-button";
 
 export const dynamic = 'force-dynamic';
 
@@ -325,7 +325,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                       Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
-                  <FavouriteButton 
+                  <FavoriteButton 
                     toolId={item.id} 
                     variant="with-text" 
                     className="w-full"

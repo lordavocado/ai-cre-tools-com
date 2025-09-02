@@ -82,7 +82,7 @@ export async function GET() {
         priority: 0.7,
       },
       {
-        url: `${baseUrl}/favourites`,
+        url: `${baseUrl}/favorites`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,

@@ -99,7 +99,7 @@ export default function PrivacyPolicyPage() {
             <li><strong>Subscribe to our newsletter:</strong> Email address, optional name, and communication preferences</li>
             <li><strong>Submit tool reviews or feedback:</strong> Any information you choose to share, including your role in CRE</li>
             <li><strong>Contact us:</strong> Name, email, company (optional), and message content</li>
-            <li><strong>Use interactive features:</strong> Favourites, comparisons, saved searches, and tool ratings</li>
+            <li><strong>Use interactive features:</strong> Favorites, comparisons, saved searches, and tool ratings</li>
             <li><strong>Submit a tool:</strong> Contact information and details about the AI tool you're submitting</li>
             <li><strong>Create an account:</strong> Username, email, and profile information (if we add this feature)</li>
           </ul>

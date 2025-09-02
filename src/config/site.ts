@@ -127,7 +127,7 @@ export const siteConfig = {
       { href: '/#directory', label: 'Tools' },
       { href: '/categories', label: 'Categories' },
       { href: '/blog', label: 'Blog' },
-      { href: '/favourites', label: 'Favourites' },
+      { href: '/favorites', label: 'Favorites' },
     ]
   },
 

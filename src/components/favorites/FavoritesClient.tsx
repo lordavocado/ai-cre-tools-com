@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Heart, Search, Star } from "lucide-react";
 import Link from "next/link";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
-import { useFavouritesContext } from "@/providers/FavouritesProvider";
+import { useFavoritesContext } from "@/providers/FavoritesProvider";
 import { useEffect, useState } from "react";
 import React from "react";
 import type { DirectoryItem } from "@/types";
@@ -13,39 +13,39 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 
-export function FavouritesClient() {
-  const { favourites, isLoading } = useFavouritesContext();
-  const [favouriteTools, setFavouriteTools] = useState<DirectoryItem[]>([]);
+export function FavoritesClient() {
+  const { favorites, isLoading } = useFavoritesContext();
+  const [favoriteTools, setFavoriteTools] = useState<DirectoryItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  // Fetch favourite tools data
+  // Fetch favorite tools data
   useEffect(() => {
-    if (!isLoading && favourites.length > 0) {
-      const fetchFavouriteTools = async () => {
+    if (!isLoading && favorites.length > 0) {
+      const fetchFavoriteTools = async () => {
         try {
           const response = await fetch('/api/sheets?type=items');
           if (response.ok) {
             const allTools: DirectoryItem[] = await response.json();
-            const favTools = allTools.filter(tool => favourites.includes(tool.id));
-            setFavouriteTools(favTools);
+            const favTools = allTools.filter(tool => favorites.includes(tool.id));
+            setFavoriteTools(favTools);
           }
         } catch (error) {
-          console.error('Failed to fetch favourite tools:', error);
+          console.error('Failed to fetch favorite tools:', error);
         } finally {
           setLoading(false);
         }
       };
-      fetchFavouriteTools();
+      fetchFavoriteTools();
     } else {
       setLoading(false);
     }
-  }, [favourites, isLoading]);
+  }, [favorites, isLoading]);
 
   // Filter tools based on search
-  const filteredTools = favouriteTools.filter(tool => 
+  const filteredTools = favoriteTools.filter(tool => 
     tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     tool.tagline.toLowerCase().includes(searchTerm.toLowerCase()) ||
     tool.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -75,7 +75,7 @@ export function FavouritesClient() {
         </div>
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your favourites...</p>
+          <p className="text-muted-foreground">Loading your favorites...</p>
         </div>
       </div>
     );
@@ -97,24 +97,24 @@ export function FavouritesClient() {
       <div className="text-center mb-12">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Star className="h-8 w-8 text-yellow-500 fill-yellow-500" />
-          <h1 className="text-3xl md:text-4xl font-serif">My Favourite Tools</h1>
+          <h1 className="text-3xl md:text-4xl font-serif">My Favorite Tools</h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Your personal collection of saved analytics tools
         </p>
-        {favourites.length > 0 && (
+        {favorites.length > 0 && (
           <Badge variant="secondary" className="mt-4">
-            {favourites.length} tool{favourites.length !== 1 ? 's' : ''} saved
+            {favorites.length} tool{favorites.length !== 1 ? 's' : ''} saved
           </Badge>
         )}
       </div>
 
       {/* Empty State */}
-      {favourites.length === 0 ? (
+      {favorites.length === 0 ? (
         <Card className="max-w-2xl mx-auto">
           <CardContent className="p-12 text-center">
             <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
-            <h2 className="text-2xl font-serif mb-4">No Favourites Yet</h2>
+            <h2 className="text-2xl font-serif mb-4">No Favorites Yet</h2>
             <p className="text-muted-foreground mb-6">
               Start building your collection by exploring our directory and saving tools you like.
             </p>
@@ -133,7 +133,7 @@ export function FavouritesClient() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 type="text"
-                placeholder="Search your favourites..."
+                placeholder="Search your favorites..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"

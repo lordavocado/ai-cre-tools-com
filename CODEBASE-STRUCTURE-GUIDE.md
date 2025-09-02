@@ -61,7 +61,7 @@ src/app/
 │   ├── 📄 layout.tsx          # Submission layout
 │   └── 📄 page.tsx            # Submission form
 │
-├── 📁 favourites/             # User favorites
+├── 📁 favorites/             # User favorites
 │   └── 📄 page.tsx            # Favorites page
 │
 ├── 📄 about/page.tsx          # About page
@@ -115,8 +115,8 @@ src/components/
 ├── 📁 forms/                  # Form components
 │   └── 📄 AdvancedNewsletterForm.tsx # Enhanced newsletter form
 │
-├── 📁 favourites/             # Favorites functionality
-│   └── 📄 FavouritesClient.tsx # Client-side favorites management
+├── 📁 favorites/             # Favorites functionality
+│   └── 📄 FavoritesClient.tsx # Client-side favorites management
 │
 ├── 📁 sheets/                 # Google Sheets integration components
 │   ├── 📄 SheetsDataWrapper.tsx # Data fetching wrapper
@@ -219,7 +219,7 @@ interface NewsletterSubscription { ... }
 **React Hooks:**
 ```
 src/hooks/
-├── 📄 useFavourites.ts        # Favorites management
+├── 📄 useFavorites.ts        # Favorites management
 ├── 📄 use-toast.ts            # Toast notifications
 ├── 📄 use-mobile.tsx          # Mobile detection
 └── 📄 use-web-worker.ts       # Web worker integration
@@ -230,7 +230,7 @@ src/hooks/
 **Context Providers:**
 ```
 src/providers/
-├── 📄 FavouritesProvider.tsx  # Favorites state management
+├── 📄 FavoritesProvider.tsx  # Favorites state management
 └── 📄 PostHogProvider.tsx     # Analytics provider
 ```
 
@@ -330,7 +330,7 @@ App Layout (layout.tsx)
 ├── Page Components
 │   ├── DirectoryGrid.tsx
 │   │   └── DirectoryItemCard.tsx
-│   │       ├── FavouriteButton (useFavourites hook)
+│   │       ├── FavoriteButton (useFavorites hook)
 │   │       ├── CategoryChips (category data)
 │   │       └── ImageWithFallback.tsx
 │   │

@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useFavouritesContext } from "@/providers/FavouritesProvider";
+import { useFavoritesContext } from "@/providers/FavoritesProvider";
 import { useHydrationMismatchDetector, useRenderTracker, devLog } from "@/lib/dev-debug";
 
-interface FavouriteButtonProps {
+interface FavoriteButtonProps {
   toolId: string;
   size?: "sm" | "md" | "lg";
   variant?: "icon" | "with-text";
@@ -28,38 +28,38 @@ const iconSizeClasses = {
   lg: "h-6 w-6",
 };
 
-export function FavouriteButton({
+export function FavoriteButton({
   toolId,
   size = "md",
   variant = "icon",
   className,
   iconClassName,
-}: FavouriteButtonProps) {
-  const { isFavourite, toggleFavourite, isLoading } = useFavouritesContext();
+}: FavoriteButtonProps) {
+  const { isFavorite, toggleFavorite, isLoading } = useFavoritesContext();
   const [mounted, setMounted] = useState(false);
 
   // Development debugging utilities
-  useHydrationMismatchDetector(`FavouriteButton-${toolId}`);
-  useRenderTracker(`FavouriteButton-${toolId}`, [toolId, isLoading]);
+  useHydrationMismatchDetector(`FavoriteButton-${toolId}`);
+  useRenderTracker(`FavoriteButton-${toolId}`, [toolId, isLoading]);
 
   // Prevent hydration mismatch by ensuring consistent server/client rendering
   useEffect(() => {
     setMounted(true);
-    devLog.log(`⭐ FavouriteButton for ${toolId} mounted`);
+    devLog.log(`⭐ FavoriteButton for ${toolId} mounted`);
   }, [toolId]);
 
-  const isFavourited = isFavourite(toolId);
+  const isFavorited = isFavorite(toolId);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isLoading) {
-      toggleFavourite(toolId);
+      toggleFavorite(toolId);
     }
   };
 
-  const tooltipText = isFavourited ? "Remove from favourites" : "Add to favourites";
-  const buttonText = isFavourited ? "Remove from favourites" : "Add to favourites";
+  const tooltipText = isFavorited ? "Remove from favorites" : "Add to favorites";
+  const buttonText = isFavorited ? "Remove from favorites" : "Add to favorites";
 
   // Show loading placeholder during hydration to prevent mismatches
   if (!mounted || isLoading) {
@@ -82,7 +82,7 @@ export function FavouriteButton({
               iconClassName
             )}
           />
-          Add to favourites
+          Add to favorites
         </Button>
       );
     }
@@ -100,7 +100,7 @@ export function FavouriteButton({
                 "transition-all duration-200",
                 className
               )}
-              aria-label="Loading favourites"
+              aria-label="Loading favorites"
             >
               <Star
                 className={cn(
@@ -113,7 +113,7 @@ export function FavouriteButton({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Loading favourites...</p>
+            <p>Loading favorites...</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -123,7 +123,7 @@ export function FavouriteButton({
   if (variant === "with-text") {
     return (
       <Button
-        variant={isFavourited ? "default" : "outline"}
+        variant={isFavorited ? "default" : "outline"}
         size="sm"
         onClick={handleClick}
         disabled={isLoading}
@@ -136,7 +136,7 @@ export function FavouriteButton({
           className={cn(
             "mr-2 transition-all duration-200",
             iconSizeClasses.sm,
-            isFavourited ? "fill-current text-yellow-500" : "text-current",
+            isFavorited ? "fill-current text-yellow-500" : "text-current",
             iconClassName
           )}
         />
@@ -165,7 +165,7 @@ export function FavouriteButton({
               className={cn(
                 "transition-all duration-200",
                 iconSizeClasses[size],
-                isFavourited 
+                isFavorited 
                   ? "fill-yellow-500 text-yellow-500 animate-in zoom-in-50 duration-200" 
                   : "text-muted-foreground hover:text-yellow-500",
                 iconClassName

@@ -1,22 +1,22 @@
 import { Metadata } from 'next';
 import { siteConfig } from "@/config/site";
-import { FavouritesClient } from "@/components/favourites/FavouritesClient";
+import { FavoritesClient } from "@/components/favorites/FavoritesClient";
 
-// SEO metadata for favourites page
+// SEO metadata for favorites page
 export const metadata: Metadata = {
-  title: `My Favourite Tools - ${siteConfig.name}`,
-  description: `Access your saved and favourite ${siteConfig.categoryName.toLowerCase()} tools. Manage your personalized collection of AI solutions for commercial real estate.`,
+  title: `My Favorite Tools - ${siteConfig.name}`,
+  description: `Access your saved and favorite ${siteConfig.categoryName.toLowerCase()} tools. Manage your personalized collection of AI solutions for commercial real estate.`,
   keywords: [
     ...siteConfig.seo.primaryKeywords,
-    'favourites',
+    'favorites',
     'saved tools',
     'bookmarks',
     'personal collection'
   ],
   openGraph: {
-    title: `My Favourite Tools - ${siteConfig.name}`,
-    description: `Access your saved and favourite ${siteConfig.categoryName.toLowerCase()} tools. Manage your personalized collection of AI solutions for commercial real estate.`,
-    url: `${siteConfig.url}/favourites`,
+    title: `My Favorite Tools - ${siteConfig.name}`,
+    description: `Access your saved and favorite ${siteConfig.categoryName.toLowerCase()} tools. Manage your personalized collection of AI solutions for commercial real estate.`,
+    url: `${siteConfig.url}/favorites`,
     siteName: siteConfig.seo.openGraph.siteName,
     images: [
       {
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: siteConfig.seo.twitter.card,
-    title: `My Favourite Tools - ${siteConfig.name}`,
-    description: `Access your saved and favourite ${siteConfig.categoryName.toLowerCase()} tools. Manage your personalized collection of AI solutions for commercial real estate.`,
+    title: `My Favorite Tools - ${siteConfig.name}`,
+    description: `Access your saved and favorite ${siteConfig.categoryName.toLowerCase()} tools. Manage your personalized collection of AI solutions for commercial real estate.`,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
     images: [
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: `${siteConfig.url}/favourites`,
+    canonical: `${siteConfig.url}/favorites`,
   },
   robots: {
     index: true,
@@ -55,6 +55,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function FavouritesPage() {
-  return <FavouritesClient />;
+export default function FavoritesPage() {
+  return <FavoritesClient />;
 } 

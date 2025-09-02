@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { siteConfig, getAllSEOKeywords } from '@/config/site';
 import { PostHogProvider } from '@/providers/PostHogProvider';
-import { FavouritesProvider } from '@/providers/FavouritesProvider';
+import { FavoritesProvider } from '@/providers/FavoritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
 import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/performance/posthog-optimizer';
 import { JSExecutionOptimizer, ScriptExecutionMonitor } from '@/components/performance/js-execution-optimizer';
@@ -275,7 +275,7 @@ export default function RootLayout({
         <CSSLoadingMonitor />
         <CriticalResources />
         <PostHogProvider>
-          <FavouritesProvider>
+          <FavoritesProvider>
             {process.env.NEXT_PUBLIC_POSTHOG_KEY && (
               <>
                 <PostHogOptimizer />
@@ -296,7 +296,7 @@ export default function RootLayout({
               <Footer />
             </div>
             <Toaster />
-          </FavouritesProvider>
+          </FavoritesProvider>
         </PostHogProvider>
         
         {/* Enhanced Structured Data for Better SEO */}

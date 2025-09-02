@@ -180,7 +180,7 @@ The website needs comprehensive SEO optimization and a complete brand update fro
 - Technical SEO improvements completed:
   - Enhanced performance monitoring with Core Web Vitals tracking
   - Improved robots.txt with specific crawler rules and crawl delays
-  - Added missing metadata to favourites page
+  - Added missing metadata to favorites page
   - Created comprehensive SEO audit component
   - Enhanced JS execution optimizer with performance metrics
   - Integrated performance monitoring across the site
@@ -250,10 +250,10 @@ This project addresses critical hydration mismatches and server-side rendering i
 
 ### Critical Issues Identified
 
-1. **Hydration Mismatch in FavouriteButton Component**
-   - Location: `src/components/ui/favourite-button.tsx` + `src/hooks/useFavourites.ts`
+1. **Hydration Mismatch in FavoriteButton Component**
+   - Location: `src/components/ui/favorite-button.tsx` + `src/hooks/useFavorites.ts`
    - Problem: Different states between server and client rendering due to localStorage usage
-   - Impact: Every DirectoryItemCard renders a FavouriteButton, causing widespread hydration mismatches
+   - Impact: Every DirectoryItemCard renders a FavoriteButton, causing widespread hydration mismatches
 
 2. **DirectorySearch Complex Navigation Logic**
    - Location: `src/components/listing/DirectorySearch.tsx` lines 45-104
@@ -273,18 +273,18 @@ This project addresses critical hydration mismatches and server-side rendering i
 ### Technical Context
 - Framework: Next.js 15 with React 19
 - Architecture: Server components with client component islands
-- State Management: localStorage-based favourites system
+- State Management: localStorage-based favorites system
 - Navigation: Complex search and filtering with URL synchronization
 
 ## High-level Task Breakdown
 
 ### Phase 1: Fix Hydration Issues (Critical Priority)
 
-1.1 **FavouriteButton Hydration Fix**
+1.1 **FavoriteButton Hydration Fix**
    - [ ] Add mounted state to prevent hydration mismatches
    - [ ] Implement loading placeholder until client hydration completes
    - [ ] Ensure consistent server/client rendering states
-   - [ ] Update useFavourites hook to handle SSR properly
+   - [ ] Update useFavorites hook to handle SSR properly
 
 1.2 **DirectorySearch Navigation Simplification**
    - [ ] Simplify complex navigation logic in useEffect
@@ -321,10 +321,10 @@ This project addresses critical hydration mismatches and server-side rendering i
 
 ### Completed
 - Analysis and planning phase - comprehensive issue identification complete
-- **Task 1**: ✅ Fix FavouriteButton hydration mismatch (Phase 1.1)
+- **Task 1**: ✅ Fix FavoriteButton hydration mismatch (Phase 1.1)
   - Added mounted state to prevent hydration mismatches
   - Implemented loading placeholder until client hydration completes
-  - Updated useFavourites hook to handle SSR properly with browser environment checks
+  - Updated useFavorites hook to handle SSR properly with browser environment checks
   - Ensured consistent server/client rendering states
 - **Task 2**: ✅ Simplify DirectorySearch navigation logic (Phase 1.2)
   - Added mounted state to prevent SSR issues during navigation
@@ -354,7 +354,7 @@ This project addresses critical hydration mismatches and server-side rendering i
   - Added hydration mismatch detection and component render tracking
   - Implemented hydration timing and performance monitoring
   - Added global hydration tracker for application-wide performance monitoring
-  - Integrated debugging utilities into key components (FavouriteButton, SafeImage)
+  - Integrated debugging utilities into key components (FavoriteButton, SafeImage)
   - Created HydrationTracker component for global performance monitoring
   - Added hydration warning reporting and performance report generation
   - Ensured all debugging features are development-only to avoid production overhead
@@ -366,7 +366,7 @@ This project addresses critical hydration mismatches and server-side rendering i
 All critical hydration mismatches and server-side rendering issues have been systematically addressed:
 
 ### ✅ **Phase 1: Critical Hydration Fixes (100% Complete)**
-- **FavouriteButton**: Fixed hydration mismatches with mounted state and loading placeholders
+- **FavoriteButton**: Fixed hydration mismatches with mounted state and loading placeholders
 - **DirectorySearch**: Simplified navigation logic, removed SSR-incompatible scroll manipulation
 - **CategoryChips**: Resolved icon serialization by converting components to string keys
 
@@ -396,7 +396,7 @@ The application should now have significantly improved SSR stability, better err
 - **Performance Impact**: Development debugging features are production-safe (dev-only)
 - **Maintenance**: Comprehensive error boundaries and logging for future issue detection
 - **Documentation**: All changes documented in scratchpad with implementation details
-- May need to coordinate with existing favourites system and localStorage usage
+- May need to coordinate with existing favorites system and localStorage usage
 
 ## Category Image Fix Project (Latest)
 

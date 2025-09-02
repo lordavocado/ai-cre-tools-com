@@ -14,7 +14,7 @@ Allow: /about
 Allow: /categories
 Allow: /guides
 Allow: /blog
-Allow: /favourites
+Allow: /favorites
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /submit-tool

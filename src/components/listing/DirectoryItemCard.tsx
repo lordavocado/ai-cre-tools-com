@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ExternalLink, Star, Tag } from "lucide-react";
 import { CategoryChips } from "@/components/ui/category-chips";
 import { SafeImage } from "@/components/ui/safe-image";
-import { FavouriteButton } from "@/components/ui/favourite-button";
+import { FavoriteButton } from "@/components/ui/favorite-button";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 interface DirectoryItemCardProps {
@@ -20,7 +20,7 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
     <Card className="flex flex-col h-full overflow-hidden border border-slate-200/60 hover:border-blue-300/40 transition-all duration-300 relative group rounded-2xl shadow-sm hover:shadow-xl hover:shadow-blue-100/50 hover:-translate-y-1 bg-gradient-to-br from-white via-blue-50/30 to-slate-50/50">
       <CardHeader className="p-6 relative">
         <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <FavouriteButton toolId={item.id} size="sm" />
+          <FavoriteButton toolId={item.id} size="sm" />
         </div>
         
         {/* Enhanced logo container */}

@@ -60,7 +60,7 @@ export function Hero() {
             className="mb-12"
           >
             {/* Primary CTA and Newsletter */}
-            <div className="flex flex-col lg:flex-row gap-4 justify-center items-center mb-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
               <Button asChild size="lg" className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                 <Link href="/categories">
                   <Search className="mr-2 h-5 w-5" />
@@ -70,9 +70,7 @@ export function Hero() {
               </Button>
               
               {/* Newsletter Form Inline */}
-              <div className="flex items-center gap-3">
-                <NewsletterForm source="hero-cta" />
-              </div>
+              <NewsletterForm source="hero-cta" className="flex-shrink-0" />
             </div>
             
             {/* Newsletter Description */}
