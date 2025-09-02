@@ -62,12 +62,12 @@ export function Hero() {
           </motion.p>
 
 
-          {/* CTA Buttons */}
+          {/* CTA Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex flex-row gap-4 justify-center items-center mb-12"
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12"
           >
             <Button asChild size="lg" className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/categories">
@@ -76,22 +76,12 @@ export function Hero() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg font-semibold">
-              <Link href="/about">
-                About Us
-              </Link>
-            </Button>
-          </motion.div>
-
-          {/* Newsletter Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="max-w-md mx-auto"
-          >
-            <p className="text-gray-600 mb-4 text-sm font-medium">Get new AI tools first - Be the first to discover cutting-edge CRE AI solutions that can transform your business.</p>
-            <NewsletterForm />
+            
+            {/* Newsletter Form */}
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-gray-600 text-sm font-medium">Get new AI tools first</p>
+              <NewsletterForm source="hero-cta" className="w-full max-w-xs" />
+            </div>
           </motion.div>
         </motion.div>
       </div>
