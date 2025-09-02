@@ -39,14 +39,14 @@ export function NewsletterForm({ source = "homepage", className }: NewsletterFor
   }, [state, toast]);
 
   return (
-    <form action={formAction} className={`w-full max-w-sm space-y-3 ${className || ""}`}>
+    <form action={formAction} className={`max-w-sm space-y-3 ${className || ""}`}>
       <div className="flex gap-2">
         <Input
           type="email"
           name="email"
           placeholder="Enter your email"
           required
-          className="text-sm"
+          className="text-sm min-w-0 flex-1"
           aria-label="Email for newsletter"
         />
         <SubmitButton />

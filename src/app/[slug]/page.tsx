@@ -303,7 +303,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
       <div className="container py-8 md:py-12 px-4 md:px-6">
         <div className="max-w-5xl mx-auto">
           {/* Hero Section with Tool Info */}
-          <div className="relative mb-8 p-8 bg-gradient-to-br from-white via-green-50/30 to-slate-50/20 rounded-3xl border border-slate-200/60 shadow-xl shadow-green-100/20">
+          <div className="relative mb-4 p-8 bg-gradient-to-br from-white via-green-50/30 to-slate-50/20 rounded-3xl border border-slate-200/60 shadow-xl shadow-green-100/20">
             <div className="flex flex-col lg:flex-row gap-8 items-start">
               {/* Logo and Basic Info */}
               <div className="flex flex-col sm:flex-row gap-6 lg:flex-col lg:items-center">
@@ -395,7 +395,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
           </div>
 
           {/* Content Sections */}
-          <div className="space-y-8">
+          <div className="space-y-4">
             {/* Description */}
             {item.description && (
               <Card className="border border-slate-200/60 shadow-lg shadow-green-100/20 rounded-2xl bg-gradient-to-br from-white via-green-50/10 to-slate-50/20">
