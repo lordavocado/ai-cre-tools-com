@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CategoryChips } from '@/components/ui/category-chips';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { getCategories, getDirectoryItems } from '@/lib/sheets';
 import type { DirectoryItem } from '@/types';
@@ -12,8 +11,7 @@ import { siteConfig } from '@/config/site';
 import { 
   CheckCircle, Zap, Users, Shield, ArrowRight, Star, 
   TrendingUp, Clock, Target, Workflow, ChevronRight, 
-  BarChart3, DollarSign, Calendar, Award, BookOpen,
-  Lightbulb, Settings, PieChart, MessageSquare, ThumbsUp
+  BarChart3, DollarSign, Award, PieChart
 } from 'lucide-react';
 
 // Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
@@ -112,14 +110,7 @@ export default async function CategoryPage({
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 3);
 
-  // Calculate category statistics
-  const avgRating = itemsInCategory.reduce((sum, item) => sum + (item.rating || 0), 0) / itemsInCategory.length;
-  const freeTools = itemsInCategory.filter(item => 
-    item.pricing?.includes('Free') || item.pricing?.includes('free')
-  ).length;
-  const enterpriseTools = itemsInCategory.filter(item => 
-    item.pricing?.includes('Enterprise') || item.pricing?.includes('enterprise')
-  ).length;
+  // Get top-rated tools for hero section (removed stats calculation since stats bar was removed)
 
   return (
     <>
@@ -202,15 +193,15 @@ export default async function CategoryPage({
           {/* Hero Content */}
           <div className="text-center max-w-4xl mx-auto">
             {category.imageUrl && (
-              <div className="relative w-24 h-24 md:w-32 md:h-32 mx-auto mb-8 group">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
-                <div className="relative w-full h-full bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-2xl border border-primary/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="relative w-32 h-32 md:w-48 md:h-48 mx-auto mb-8 group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/40 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+                <div className="relative w-full h-full bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl border border-primary/20 group-hover:scale-105 transition-transform duration-300">
                   <Image 
                     src={category.imageUrl} 
                     alt={`${category.name} category icon`}
                     fill 
                     style={{ objectFit: "contain" }}
-                    className="p-2"
+                    className="p-4"
                   />
                 </div>
               </div>
@@ -220,59 +211,19 @@ export default async function CategoryPage({
               {category.name} Tools
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-6 leading-relaxed">
               {category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`}
             </p>
-
-            {/* Enhanced Category Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-8">
-              {[
-                {
-                  value: itemsInCategory.length,
-                  label: 'Tools Available',
-                  color: 'text-primary',
-                  bgColor: 'from-primary/10 to-primary/20',
-                  icon: <Workflow className="h-5 w-5" />
-                },
-                {
-                  value: avgRating.toFixed(1),
-                  label: 'Avg Rating',
-                  color: 'text-green-600',
-                  bgColor: 'from-green-500/10 to-green-600/20',
-                  icon: <Star className="h-5 w-5" />
-                },
-                {
-                  value: freeTools,
-                  label: 'Free Options',
-                  color: 'text-blue-600',
-                  bgColor: 'from-blue-500/10 to-blue-600/20',
-                  icon: <DollarSign className="h-5 w-5" />
-                },
-                {
-                  value: enterpriseTools,
-                  label: 'Enterprise',
-                  color: 'text-purple-600',
-                  bgColor: 'from-purple-500/10 to-purple-600/20',
-                  icon: <Shield className="h-5 w-5" />
-                }
-              ].map((stat, index) => (
-                <div key={index} className="group relative">
-                  <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${stat.bgColor} mb-3`}>
-                      <div className={stat.color}>
-                        {stat.icon}
-                      </div>
-                    </div>
-                    <div className={`text-3xl font-bold mb-1 ${stat.color}`}>
-                      {stat.value}
-                    </div>
-                    <div className="text-sm text-muted-foreground font-medium">
-                      {stat.label}
-                    </div>
-                  </div>
-                </div>
-              ))}
+            
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+                <Workflow className="h-5 w-5 text-primary" />
+                <span className="text-lg font-semibold text-primary">
+                  {itemsInCategory.length} {itemsInCategory.length === 1 ? 'Tool' : 'Tools'} Available
+                </span>
+              </div>
             </div>
+
 
             {/* Enhanced Top Tools Preview */}
             {topTools.length > 0 && (
@@ -314,53 +265,6 @@ export default async function CategoryPage({
         </div>
       </div>
 
-      {/* Main Tools Grid */}
-      <div className="container py-12 pl-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
-            <p className="text-muted-foreground text-lg">
-              {itemsInCategory.length > 0 
-                ? `Comprehensive directory of ${itemsInCategory.length} ${category.name.toLowerCase()} solutions`
-                : `Discover ${category.name.toLowerCase()} solutions for your commercial real estate needs`
-              }
-            </p>
-          </div>
-          
-          {itemsInCategory.length > 0 ? (
-            <DirectoryGrid items={itemsInCategory} />
-          ) : (
-            <div className="text-center py-16">
-              <div className="max-w-2xl mx-auto">
-                {itemsLoadError ? (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">Tools Loading Issue</h3>
-                    <p className="text-muted-foreground">
-                      We're temporarily unable to load the tools for this category. 
-                      Please try again later or explore other categories below.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">No Tools Available</h3>
-                    <p className="text-muted-foreground">
-                      We're constantly adding new {category.name.toLowerCase()} tools to our directory. 
-                      Check back soon or explore related categories below.
-                    </p>
-                  </div>
-                )}
-                <Link 
-                  href="/categories" 
-                  className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                  Browse All Categories
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Key Use Cases Section */}
       <div className="container py-16 pl-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -738,354 +642,7 @@ export default async function CategoryPage({
         </div>
       </div>
 
-      {/* Implementation Guide Section */}
-      <div className="container py-16 pl-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Implementation Roadmap</h2>
-            <p className="text-muted-foreground text-lg">
-              A step-by-step guide to successfully adopting {category.name.toLowerCase()} tools in your organization
-            </p>
-          </div>
 
-          <div className="space-y-8">
-            {/* Implementation Steps */}
-            {[
-              {
-                step: 1,
-                title: 'Assess Current Workflows',
-                description: 'Evaluate your existing processes to identify automation opportunities and integration points.',
-                details: [
-                  'Document current manual processes',
-                  'Identify pain points and bottlenecks',
-                  'Map data flow and decision points',
-                  'Assess team readiness for change'
-                ],
-                icon: <BarChart3 className="h-6 w-6" />,
-                color: 'from-blue-500 to-blue-600'
-              },
-              {
-                step: 2,
-                title: 'Define Requirements',
-                description: 'Establish clear criteria for tool selection based on your specific needs and constraints.',
-                details: [
-                  'Set budget parameters and ROI expectations',
-                  'Define functional requirements',
-                  'Consider integration capabilities',
-                  'Plan for scalability and growth'
-                ],
-                icon: <Target className="h-6 w-6" />,
-                color: 'from-green-500 to-green-600'
-              },
-              {
-                step: 3,
-                title: 'Pilot Testing',
-                description: 'Start with a controlled pilot to validate tool effectiveness before full deployment.',
-                details: [
-                  'Select pilot use case and team',
-                  'Set measurable success criteria',
-                  'Run 30-90 day test period',
-                  'Gather feedback and performance data'
-                ],
-                icon: <Settings className="h-6 w-6" />,
-                color: 'from-purple-500 to-purple-600'
-              },
-              {
-                step: 4,
-                title: 'Training & Adoption',
-                description: 'Ensure successful adoption through comprehensive training and change management.',
-                details: [
-                  'Develop training materials and schedules',
-                  'Establish power users as champions',
-                  'Create feedback loops for continuous improvement',
-                  'Monitor adoption metrics and user satisfaction'
-                ],
-                icon: <BookOpen className="h-6 w-6" />,
-                color: 'from-orange-500 to-orange-600'
-              },
-              {
-                step: 5,
-                title: 'Scale & Optimize',
-                description: 'Expand successful implementations and continuously optimize for maximum value.',
-                details: [
-                  'Roll out to additional teams and use cases',
-                  'Optimize workflows based on usage data',
-                  'Integrate with additional systems',
-                  'Measure and report on business impact'
-                ],
-                icon: <TrendingUp className="h-6 w-6" />,
-                color: 'from-emerald-500 to-emerald-600'
-              }
-            ].map((item, index) => (
-              <div key={index} className="relative">
-                {/* Connection Line */}
-                {index < 4 && (
-                  <div className="absolute left-8 top-20 w-0.5 h-16 bg-gradient-to-b from-slate-300 to-transparent dark:from-slate-600"></div>
-                )}
-                
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800">
-                  <CardContent className="p-8">
-                    <div className="flex gap-6">
-                      {/* Step Number and Icon */}
-                      <div className="flex-shrink-0">
-                        <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-white mb-4 shadow-lg`}>
-                          {item.icon}
-                        </div>
-                        <div className="text-center">
-                          <div className="text-sm font-medium text-muted-foreground">Step {item.step}</div>
-                        </div>
-                      </div>
-                      
-                      {/* Content */}
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                        <p className="text-muted-foreground mb-4 leading-relaxed">{item.description}</p>
-                        
-                        {/* Action Items */}
-                        <div className="grid md:grid-cols-2 gap-3">
-                          {item.details.map((detail, detailIndex) => (
-                            <div key={detailIndex} className="flex items-start gap-2">
-                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                              <span className="text-sm text-muted-foreground">{detail}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
-          </div>
-
-          {/* Implementation Tips */}
-          <div className="mt-12 p-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-100 dark:border-blue-800">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-blue-600" />
-              Pro Implementation Tips
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold mb-2">Start Small, Think Big</h4>
-                <p className="text-sm text-muted-foreground">Begin with one high-impact use case before expanding to avoid overwhelming your team.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">Measure Everything</h4>
-                <p className="text-sm text-muted-foreground">Track key metrics from day one to demonstrate ROI and identify optimization opportunities.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">Invest in Training</h4>
-                <p className="text-sm text-muted-foreground">Proper training is crucial for adoption success - budget 20-30% of tool cost for training.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">Plan for Integration</h4>
-                <p className="text-sm text-muted-foreground">Ensure new tools can integrate with your existing systems to maximize value and minimize disruption.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Success Stories Section */}
-      <div className="container py-16 pl-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Success Stories</h2>
-            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-              See how leading CRE professionals are leveraging {category.name.toLowerCase()} tools to drive results
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Success Story Cards - Dynamic based on category */}
-            {(() => {
-              const getCategorySuccessStories = (categorySlug: string) => {
-                switch (categorySlug) {
-                  case 'property-analysis-valuation':
-                    return [
-                      {
-                        company: 'Premier Investment Group',
-                        industry: 'Investment Management',
-                        challenge: 'Manual valuation processes taking 2-3 days per property, limiting deal velocity',
-                        solution: 'AI-powered valuation platform with automated comparable analysis',
-                        results: [
-                          '85% reduction in valuation time',
-                          '40% increase in deal throughput',
-                          '95% accuracy improvement',
-                          '$2M saved annually in analyst time'
-                        ],
-                        quote: 'We can now evaluate 10x more opportunities with the same team size. The accuracy and speed have completely transformed our investment process.',
-                        author: 'Sarah Chen, VP of Acquisitions',
-                        icon: <BarChart3 className="h-6 w-6 text-blue-600" />
-                      },
-                      {
-                        company: 'Metro Commercial Real Estate',
-                        industry: 'Brokerage & Advisory',
-                        challenge: 'Inconsistent property valuations across different markets and analysts',
-                        solution: 'Machine learning models for standardized, data-driven valuations',
-                        results: [
-                          '90% reduction in valuation variance',
-                          '60% faster client deliverables',
-                          '25% increase in client satisfaction',
-                          '15% growth in advisory revenue'
-                        ],
-                        quote: 'Our clients now trust our valuations completely. The consistency and speed have made us the go-to advisor in our markets.',
-                        author: 'Michael Rodriguez, Managing Director',
-                        icon: <Target className="h-6 w-6 text-green-600" />
-                      }
-                    ];
-                  case 'property-search-acquisition':
-                    return [
-                      {
-                        company: 'Strategic Property Ventures',
-                        industry: 'Real Estate Investment',
-                        challenge: 'Manual property screening consuming 80% of acquisition team time',
-                        solution: 'AI-powered property matching and opportunity identification platform',
-                        results: [
-                          '75% reduction in screening time',
-                          '3x increase in qualified opportunities',
-                          '50% faster deal closure',
-                          '$5M in additional acquisitions'
-                        ],
-                        quote: 'The platform finds opportunities we never would have discovered manually. Our acquisition volume has tripled without adding headcount.',
-                        author: 'Jennifer Park, Head of Acquisitions',
-                        icon: <Target className="h-6 w-6 text-blue-600" />
-                      },
-                      {
-                        company: 'Apex Development Partners',
-                        industry: 'Development & Construction',
-                        challenge: 'Missing prime development opportunities due to slow market analysis',
-                        solution: 'Real-time market scanning and automated site selection tools',
-                        results: [
-                          '90% faster site identification',
-                          '40% increase in deal pipeline',
-                          '25% improvement in project ROI',
-                          'First-to-market advantage on 15 deals'
-                        ],
-                        quote: 'We\'re now first to market on the best opportunities. The competitive advantage is game-changing.',
-                        author: 'David Kim, Development Director',
-                        icon: <TrendingUp className="h-6 w-6 text-green-600" />
-                      }
-                    ];
-                  default:
-                    return [
-                      {
-                        company: 'Innovation Real Estate',
-                        industry: 'Commercial Real Estate',
-                        challenge: 'Time-intensive manual processes limiting team productivity',
-                        solution: 'Comprehensive AI automation platform for workflow optimization',
-                        results: [
-                          '60% reduction in manual tasks',
-                          '45% increase in team productivity',
-                          '30% improvement in accuracy',
-                          '$1.2M annual cost savings'
-                        ],
-                        quote: 'The automation has freed our team to focus on high-value strategic work. We\'re more efficient and effective than ever.',
-                        author: 'Lisa Thompson, Operations Director',
-                        icon: <Workflow className="h-6 w-6 text-blue-600" />
-                      },
-                      {
-                        company: 'Elite Property Group',
-                        industry: 'Property Management',
-                        challenge: 'Inconsistent data quality affecting decision-making across portfolio',
-                        solution: 'AI-driven data management and analytics platform',
-                        results: [
-                          '95% improvement in data quality',
-                          '50% faster decision-making',
-                          '35% better investment outcomes',
-                          '20% increase in portfolio value'
-                        ],
-                        quote: 'Clean, reliable data has transformed how we operate. Every decision is now backed by accurate, real-time insights.',
-                        author: 'Robert Martinez, Portfolio Manager',
-                        icon: <BarChart3 className="h-6 w-6 text-green-600" />
-                      }
-                    ];
-                }
-              };
-
-              return getCategorySuccessStories(slug).map((story, index) => (
-                <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white dark:bg-slate-800 h-full">
-                  <CardContent className="p-8 h-full flex flex-col">
-                    {/* Header */}
-                    <div className="flex items-start gap-4 mb-6">
-                      <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20">
-                        {story.icon}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg mb-1">{story.company}</h3>
-                        <p className="text-sm text-muted-foreground">{story.industry}</p>
-                      </div>
-                    </div>
-
-                    {/* Challenge & Solution */}
-                    <div className="space-y-4 mb-6 flex-1">
-                      <div>
-                        <h4 className="font-semibold text-sm mb-2 text-red-600">Challenge</h4>
-                        <p className="text-sm text-muted-foreground">{story.challenge}</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-sm mb-2 text-blue-600">Solution</h4>
-                        <p className="text-sm text-muted-foreground">{story.solution}</p>
-                      </div>
-                    </div>
-
-                    {/* Results */}
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-sm mb-3 text-green-600">Results</h4>
-                      <div className="grid grid-cols-2 gap-2">
-                        {story.results.map((result, resultIndex) => (
-                          <div key={resultIndex} className="flex items-start gap-2">
-                            <ThumbsUp className="h-3 w-3 text-green-500 mt-1 flex-shrink-0" />
-                            <span className="text-xs text-muted-foreground">{result}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Quote */}
-                    <div className="border-t pt-6">
-                      <blockquote className="italic text-sm mb-3 text-foreground">
-                        "{story.quote}"
-                      </blockquote>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-primary" />
-                        <span className="text-xs font-medium">{story.author}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ));
-            })()}
-          </div>
-
-          {/* Call to Action */}
-          <div className="mt-12 text-center">
-            <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold mb-4">Ready to Transform Your {category.name}?</h3>
-              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Join the growing number of CRE professionals who are leveraging AI tools to drive better outcomes, 
-                reduce costs, and gain competitive advantages in their markets.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link 
-                  href="/categories" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                  Explore All Categories
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link 
-                  href="/submit-tool" 
-                  className="inline-flex items-center gap-2 px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-colors font-medium"
-                >
-                  Submit Your Tool
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Related Categories Section */}
       <div className="container py-16 pl-6">
@@ -1117,6 +674,54 @@ export default async function CategoryPage({
               </Link>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Main Tools Grid */}
+      <div className="container py-12 pl-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
+            <p className="text-muted-foreground text-lg">
+              {itemsInCategory.length > 0 
+                ? `Comprehensive directory of ${itemsInCategory.length} ${category.name.toLowerCase()} solutions`
+                : `Discover ${category.name.toLowerCase()} solutions for your commercial real estate needs`
+              }
+            </p>
+          </div>
+          
+          {itemsInCategory.length > 0 ? (
+            <DirectoryGrid items={itemsInCategory} />
+          ) : (
+            <div className="text-center py-16">
+              <div className="max-w-2xl mx-auto">
+                {itemsLoadError ? (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Tools Loading Issue</h3>
+                    <p className="text-muted-foreground">
+                      We're temporarily unable to load the tools for this category. 
+                      Please try again later or explore other categories below.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">No Tools Available</h3>
+                    <p className="text-muted-foreground">
+                      We're constantly adding new {category.name.toLowerCase()} tools to our directory. 
+                      Check back soon or explore related categories below.
+                    </p>
+                  </div>
+                )}
+                <Link 
+                  href="/categories" 
+                  className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                  Browse All Categories
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
