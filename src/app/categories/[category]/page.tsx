@@ -410,175 +410,6 @@ export default async function CategoryPage({
         </div>
       )}
 
-      {/* Industry Benefits Section */}
-      <div className="container py-16 pl-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Industry Impact</h2>
-            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-              Discover how {category.name.toLowerCase()} tools are transforming commercial real estate operations
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {/* Dynamic benefits based on category */}
-            {(() => {
-              const getCategoryBenefits = (categorySlug: string) => {
-                switch (categorySlug) {
-                  case 'property-analysis-valuation':
-                    return [
-                      {
-                        icon: <Clock className="h-6 w-6" />,
-                        metric: '80%',
-                        label: 'Time Reduction',
-                        description: 'Faster valuation processes',
-                        color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                      },
-                      {
-                        icon: <Target className="h-6 w-6" />,
-                        metric: '95%',
-                        label: 'Accuracy Improvement',
-                        description: 'More precise valuations',
-                        color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
-                      },
-                      {
-                        icon: <DollarSign className="h-6 w-6" />,
-                        metric: '25%',
-                        label: 'Better ROI',
-                        description: 'Improved investment returns',
-                        color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
-                      },
-                      {
-                        icon: <Shield className="h-6 w-6" />,
-                        metric: '90%',
-                        label: 'Risk Reduction',
-                        description: 'Better risk assessment',
-                        color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
-                      }
-                    ];
-                  case 'property-search-acquisition':
-                    return [
-                      {
-                        icon: <Target className="h-6 w-6" />,
-                        metric: '3x',
-                        label: 'More Deals',
-                        description: 'Increased deal flow',
-                        color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                      },
-                      {
-                        icon: <Clock className="h-6 w-6" />,
-                        metric: '60%',
-                        label: 'Faster Search',
-                        description: 'Quicker property identification',
-                        color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
-                      },
-                      {
-                        icon: <BarChart3 className="h-6 w-6" />,
-                        metric: '40%',
-                        label: 'Better Matches',
-                        description: 'More accurate property matching',
-                        color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
-                      },
-                      {
-                        icon: <TrendingUp className="h-6 w-6" />,
-                        metric: '50%',
-                        label: 'Success Rate',
-                        description: 'Higher acquisition success',
-                        color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
-                      }
-                    ];
-                  default:
-                    return [
-                      {
-                        icon: <Clock className="h-6 w-6" />,
-                        metric: '50%',
-                        label: 'Time Savings',
-                        description: 'Reduced manual work',
-                        color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                      },
-                      {
-                        icon: <TrendingUp className="h-6 w-6" />,
-                        metric: '30%',
-                        label: 'Efficiency Gain',
-                        description: 'Improved productivity',
-                        color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
-                      },
-                      {
-                        icon: <Target className="h-6 w-6" />,
-                        metric: '25%',
-                        label: 'Better Decisions',
-                        description: 'Data-driven outcomes',
-                        color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
-                      },
-                      {
-                        icon: <DollarSign className="h-6 w-6" />,
-                        metric: '20%',
-                        label: 'Cost Reduction',
-                        description: 'Lower operational costs',
-                        color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
-                      }
-                    ];
-                }
-              };
-              
-              return getCategoryBenefits(slug).map((benefit, index) => (
-                <Card key={index} className="text-center p-6 border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-800">
-                  <div className={`inline-flex p-3 rounded-full mb-4 ${benefit.color}`}>
-                    {benefit.icon}
-                  </div>
-                  <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
-                    {benefit.metric}
-                  </div>
-                  <h3 className="font-semibold mb-1">{benefit.label}</h3>
-                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                </Card>
-              ));
-            })()}
-          </div>
-
-          {/* Industry Context */}
-          <div className="bg-gradient-to-r from-primary/5 via-blue-50/50 to-primary/5 dark:from-primary/10 dark:via-slate-800 dark:to-primary/10 rounded-2xl p-8 md:p-12">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-2xl font-bold mb-4">Why {category.name} Matters</h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  The commercial real estate industry is experiencing rapid transformation. 
-                  {category.name} tools are at the forefront of this change, enabling professionals 
-                  to make faster, more accurate decisions while reducing operational overhead.
-                </p>
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span>Industry-proven solutions</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span>Scalable implementations</span>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
-                  <div className="text-2xl font-bold text-primary mb-1">$2.8T</div>
-                  <div className="text-sm text-muted-foreground">US CRE Market Size</div>
-                </div>
-                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600 mb-1">+15%</div>
-                  <div className="text-sm text-muted-foreground">AI Adoption Growth</div>
-                </div>
-                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 mb-1">73%</div>
-                  <div className="text-sm text-muted-foreground">See Efficiency Gains</div>
-                </div>
-                <div className="text-center p-4 bg-white/60 dark:bg-slate-800/60 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600 mb-1">2025</div>
-                  <div className="text-sm text-muted-foreground">Mainstream Adoption</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Enhanced FAQ Section */}
       <div className="container py-16 pl-6">
@@ -645,34 +476,45 @@ export default async function CategoryPage({
 
 
       {/* Related Categories Section */}
-      <div className="container py-16 pl-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Explore Related Categories</h2>
-            <p className="text-muted-foreground text-lg">
+      <div className="container py-20 pl-6 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 dark:from-slate-900/50 dark:via-slate-800 dark:to-slate-900/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Explore Related Categories</h2>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
               Discover other AI tools that complement your {category.name.toLowerCase()} solutions
             </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {categories.slice(0, 4).filter(cat => cat.slug !== slug).map((relatedCategory) => (
               <Link 
                 key={relatedCategory.slug} 
                 href={`/categories/${relatedCategory.slug}`}
                 className="group block"
               >
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                      <ArrowRight className="h-6 w-6 text-primary" />
+                <Card className="border-0 shadow-md hover:shadow-2xl transition-all duration-500 group-hover:scale-105 bg-white/80 backdrop-blur-sm dark:bg-slate-800/80 h-full">
+                  <CardContent className="p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
+                    <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-blue-500/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:from-primary/20 group-hover:to-blue-500/30 transition-all duration-300">
+                      <ArrowRight className="h-8 w-8 text-primary group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    <h3 className="font-semibold group-hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-lg group-hover:text-primary transition-colors duration-300 leading-snug">
                       {relatedCategory.name}
                     </h3>
                   </CardContent>
                 </Card>
               </Link>
             ))}
+          </div>
+          
+          {/* View All Categories Link */}
+          <div className="text-center mt-12">
+            <Link 
+              href="/categories"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl border border-primary/20 hover:border-primary/30 transition-all duration-300 font-medium text-lg"
+            >
+              View All Categories
+              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+            </Link>
           </div>
         </div>
       </div>

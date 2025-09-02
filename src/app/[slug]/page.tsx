@@ -339,13 +339,21 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                   <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-3">{item.name}</h1>
                   <p className="text-xl text-slate-600 leading-relaxed mb-6">{item.tagline}</p>
                   
-                  {/* Rating and Categories */}
+                  {/* Rating, Categories, and Location */}
                   <div className="flex flex-wrap items-center gap-4 mb-6">
                     {item.rating && (
                       <div className="flex items-center gap-2 text-sm bg-amber-50/80 px-4 py-2 rounded-xl border border-amber-200/50 shadow-sm">
                         <Star className="h-5 w-5 text-amber-500 fill-amber-400" />
                         <span className="font-semibold text-slate-700">{item.rating.toFixed(1)}</span>
                         {item.reviewCount && <span className="text-slate-500">({item.reviewCount} reviews)</span>}
+                      </div>
+                    )}
+                    {item.country && (
+                      <div className="flex items-center gap-2 text-sm bg-slate-50/80 px-3 py-2 rounded-xl border border-slate-200/50 shadow-sm">
+                        <Users className="h-4 w-4 text-slate-500" />
+                        <span className="text-slate-600 text-sm">
+                          {item.city && `${item.city}, `}{item.country}
+                        </span>
                       </div>
                     )}
                     {item.category && (
@@ -355,7 +363,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                 </div>
 
                 {/* Key Stats Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                   {item.pricing && (
                     <div className="p-4 bg-gradient-to-br from-green-50/60 via-white to-emerald-50/40 rounded-xl border border-green-100/50 shadow-sm text-center">
                       <DollarSign className="h-6 w-6 text-green-600 mx-auto mb-2" />
@@ -368,15 +376,6 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                       <CalendarDays className="h-6 w-6 text-indigo-600 mx-auto mb-2" />
                       <p className="text-xs text-slate-600 mb-1">Founded</p>
                       <p className="font-semibold text-slate-800 text-sm">{item.foundedYear}</p>
-                    </div>
-                  )}
-                  {item.country && (
-                    <div className="p-4 bg-gradient-to-br from-cyan-50/60 via-white to-blue-50/40 rounded-xl border border-cyan-100/50 shadow-sm text-center">
-                      <Users className="h-6 w-6 text-cyan-600 mx-auto mb-2" />
-                      <p className="text-xs text-slate-600 mb-1">Location</p>
-                      <p className="font-semibold text-slate-800 text-sm">
-                        {item.city && `${item.city}, `}{item.country}
-                      </p>
                     </div>
                   )}
                   {item.socials && Object.keys(item.socials).length > 0 && (

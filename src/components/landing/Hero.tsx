@@ -24,7 +24,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium mb-6"
           >
             <Zap className="h-4 w-4" />
             The #1 Directory for CRE AI Tools
@@ -37,7 +37,7 @@ export function Hero() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-gray-900 leading-tight"
           >
-            Find the Perfect <span className="text-blue-600">AI Tool</span>
+            Find the Perfect <span className="text-green-500">AI Tool</span>
             <span className="block text-gray-700">for Your CRE Business</span>
           </motion.h1>
 
@@ -69,7 +69,7 @@ export function Hero() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="flex flex-row gap-4 justify-center items-center mb-12"
           >
-            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button asChild size="lg" className="bg-green-500 hover:bg-green-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/categories">
                 <Search className="mr-2 h-5 w-5" />
                 Browse AI Tools
