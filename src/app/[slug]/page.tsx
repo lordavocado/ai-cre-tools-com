@@ -303,11 +303,11 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
       <div className="container py-8 md:py-12 px-4 md:px-6">
         <div className="max-w-5xl mx-auto">
           {/* Hero Section with Tool Info */}
-          <div className="relative mb-8 p-8 bg-gradient-to-br from-white via-blue-50/30 to-slate-50/20 rounded-3xl border border-slate-200/60 shadow-xl shadow-blue-100/20">
+          <div className="relative mb-8 p-8 bg-gradient-to-br from-white via-green-50/30 to-slate-50/20 rounded-3xl border border-slate-200/60 shadow-xl shadow-green-100/20">
             <div className="flex flex-col lg:flex-row gap-8 items-start">
               {/* Logo and Basic Info */}
               <div className="flex flex-col sm:flex-row gap-6 lg:flex-col lg:items-center">
-                <div className="relative w-32 h-32 mx-auto sm:mx-0 lg:mx-auto rounded-3xl overflow-hidden shadow-lg shadow-blue-200/30 shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-slate-50 ring-2 ring-blue-100/50">
+                <div className="relative w-32 h-32 mx-auto sm:mx-0 lg:mx-auto rounded-3xl overflow-hidden shadow-lg shadow-green-200/30 shrink-0 flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-slate-50 ring-2 ring-green-100/50">
                   <ImageWithFallback
                     src={item.imageUrl || "/ai-cre-tools-logo.jpg"}
                     alt={`${item.name} logo`}
@@ -320,7 +320,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                 
                 {/* Quick Actions */}
                 <div className="flex flex-col gap-3 sm:flex-1 lg:flex-initial lg:w-full">
-                  <Button asChild variant="default" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all duration-200">
+                  <Button asChild variant="default" className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-lg transition-all duration-200">
                     <Link href={item.website} target="_blank" rel="noopener noreferrer">
                       Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
@@ -372,7 +372,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                     </div>
                   )}
                   {item.foundedYear && (
-                    <div className="p-4 bg-gradient-to-br from-indigo-50/60 via-white to-blue-50/40 rounded-xl border border-indigo-100/50 shadow-sm text-center">
+                    <div className="p-4 bg-gradient-to-br from-indigo-50/60 via-white to-green-50/40 rounded-xl border border-indigo-100/50 shadow-sm text-center">
                       <CalendarDays className="h-6 w-6 text-indigo-600 mx-auto mb-2" />
                       <p className="text-xs text-slate-600 mb-1">Founded</p>
                       <p className="font-semibold text-slate-800 text-sm">{item.foundedYear}</p>
@@ -381,9 +381,9 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                   {item.socials && Object.keys(item.socials).length > 0 && (
                     <div className="p-4 bg-gradient-to-br from-rose-50/60 via-white to-pink-50/40 rounded-xl border border-rose-100/50 shadow-sm text-center">
                       <div className="flex justify-center gap-2 mb-2">
-                        {item.socials.twitter && <Link href={`https://twitter.com/${item.socials.twitter}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105"><Twitter size={12} className="text-blue-600"/></Link>}
-                        {item.socials.linkedin && <Link href={`https://linkedin.com/${item.socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105"><Linkedin size={12} className="text-blue-600"/></Link>}
-                        {item.socials.facebook && <Link href={`https://facebook.com/${item.socials.facebook}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg hover:from-blue-200 hover:to-blue-300 transition-all duration-200 hover:scale-105"><Facebook size={12} className="text-blue-600"/></Link>}
+                        {item.socials.twitter && <Link href={`https://twitter.com/${item.socials.twitter}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-green-100 to-green-200 rounded-lg hover:from-green-200 hover:to-green-300 transition-all duration-200 hover:scale-105"><Twitter size={12} className="text-green-600"/></Link>}
+                        {item.socials.linkedin && <Link href={`https://linkedin.com/${item.socials.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-green-100 to-green-200 rounded-lg hover:from-green-200 hover:to-green-300 transition-all duration-200 hover:scale-105"><Linkedin size={12} className="text-green-600"/></Link>}
+                        {item.socials.facebook && <Link href={`https://facebook.com/${item.socials.facebook}`} target="_blank" rel="noopener noreferrer" className="p-1 bg-gradient-to-br from-green-100 to-green-200 rounded-lg hover:from-green-200 hover:to-green-300 transition-all duration-200 hover:scale-105"><Facebook size={12} className="text-green-600"/></Link>}
                       </div>
                       <p className="text-xs text-slate-600 mb-1">Social</p>
                       <p className="font-semibold text-slate-800 text-sm">Connected</p>
@@ -398,10 +398,10 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
           <div className="space-y-8">
             {/* Description */}
             {item.description && (
-              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+              <Card className="border border-slate-200/60 shadow-lg shadow-green-100/20 rounded-2xl bg-gradient-to-br from-white via-green-50/10 to-slate-50/20">
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center text-slate-800">
-                    <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                    <div className="w-1 h-8 bg-gradient-to-b from-green-500 to-green-600 rounded-full mr-3"></div>
                     About {item.name}
                   </CardTitle>
                 </CardHeader>
@@ -415,11 +415,11 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Key Features */}
               {item.features && item.features.length > 0 && (
-                <Card className="lg:col-span-2 border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                <Card className="lg:col-span-2 border border-slate-200/60 shadow-lg shadow-green-100/20 rounded-2xl bg-gradient-to-br from-white via-green-50/10 to-slate-50/20">
                   <CardHeader>
                     <CardTitle className="text-2xl flex items-center text-slate-800">
-                      <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl mr-3 shadow-sm">
-                        <Zap className="h-5 w-5 text-blue-600"/>
+                      <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-xl mr-3 shadow-sm">
+                        <Zap className="h-5 w-5 text-green-600"/>
                       </div>
                       Key Features
                     </CardTitle>
@@ -427,7 +427,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                   <CardContent>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {item.features.map((feature, index) => (
-                        <div key={index} className="p-4 bg-gradient-to-br from-blue-50/50 via-white to-slate-50/30 rounded-xl border border-blue-100/30 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+                        <div key={index} className="p-4 bg-gradient-to-br from-green-50/50 via-white to-slate-50/30 rounded-xl border border-green-100/30 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
                           <p className="font-semibold text-slate-800 mb-1">{feature.name}</p>
                           {feature.description && <p className="text-sm text-slate-600 leading-relaxed">{feature.description}</p>}
                         </div>
@@ -439,10 +439,10 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
               {/* Pros & Cons */}
               {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
-                <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+                <Card className="border border-slate-200/60 shadow-lg shadow-green-100/20 rounded-2xl bg-gradient-to-br from-white via-green-50/10 to-slate-50/20">
                   <CardHeader>
                     <CardTitle className="text-xl text-slate-800 flex items-center">
-                      <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                      <div className="w-1 h-6 bg-gradient-to-b from-green-500 to-green-600 rounded-full mr-3"></div>
                       Pros & Cons
                     </CardTitle>
                   </CardHeader>
@@ -490,7 +490,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
             {/* Tags */}
             {item.tags && item.tags.length > 0 && (
-              <Card className="border border-slate-200/60 shadow-lg shadow-blue-100/20 rounded-2xl bg-gradient-to-br from-white via-blue-50/10 to-slate-50/20">
+              <Card className="border border-slate-200/60 shadow-lg shadow-green-100/20 rounded-2xl bg-gradient-to-br from-white via-green-50/10 to-slate-50/20">
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center text-slate-800">
                     <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl mr-3 shadow-sm">
@@ -502,7 +502,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {item.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-sm px-3 py-1 bg-gradient-to-br from-purple-50/50 via-white to-blue-50/30 border border-purple-200/40 hover:border-purple-300/60 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 text-slate-700">
+                      <Badge key={index} variant="outline" className="text-sm px-3 py-1 bg-gradient-to-br from-purple-50/50 via-white to-green-50/30 border border-purple-200/40 hover:border-purple-300/60 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 text-slate-700">
                         {typeof tag === 'string' ? tag.trim() : tag}
                       </Badge>
                     ))}
@@ -515,7 +515,7 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
             {relatedItems.length > 0 && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-semibold text-slate-800 flex items-center">
-                  <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></div>
+                  <div className="w-1 h-8 bg-gradient-to-b from-green-500 to-green-600 rounded-full mr-3"></div>
                   Related Tools
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
