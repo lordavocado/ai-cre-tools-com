@@ -39,7 +39,7 @@ export function NewsletterForm({ source = "homepage", className }: NewsletterFor
   }, [state, toast]);
 
   return (
-    <form action={formAction} className={`max-w-sm space-y-3 ${className || ""}`}>
+    <form action={formAction} className={`space-y-3 ${className || ""}`}>
       <div className="flex gap-2">
         <Input
           type="email"
