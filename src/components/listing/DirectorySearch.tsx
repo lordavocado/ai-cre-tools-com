@@ -119,7 +119,7 @@ function DirectorySearchContent({
               placeholder="Search by keywords..."
               value={searchTerm}
               onChange={handleSearchChange}
-              className="h-12 pl-12 pr-12 border-neutral-200 text-base bg-white placeholder:text-neutral-400 focus-visible:ring-neutral-900 transition-colors"
+              className="h-12 pl-12 pr-12 border-neutral-200 text-base bg-white placeholder:text-neutral-400 focus-visible:ring-neutral-900 focus-visible:ring-offset-0 focus-visible:ring-1 transition-colors"
               aria-label="Search directory items"
             />
             {searchTerm && (
@@ -145,11 +145,11 @@ function DirectorySearchContent({
                 key={category.id}
                 variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
                 className={`
-                  cursor-pointer px-4 py-2 text-sm font-medium flex items-center gap-2
-                  transition-colors duration-200
+                  cursor-pointer px-3 py-1.5 text-sm font-normal flex items-center gap-2
+                  transition-colors duration-200 rounded-md
                   ${selectedCategories.includes(category.slug)
                     ? 'bg-neutral-900 text-white hover:bg-neutral-800'
-                    : 'bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50'
+                    : 'bg-neutral-50 text-neutral-600 hover:bg-neutral-100 border-none'
                   }
                 `}
                 onClick={(e) => {
