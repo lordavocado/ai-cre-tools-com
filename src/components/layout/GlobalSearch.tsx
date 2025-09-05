@@ -300,11 +300,11 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
   const getResultIcon = (type: SearchResult['type']) => {
     switch (type) {
       case 'tool':
-        return <Wrench className="h-4 w-4 text-blue-600" />;
+        return <Wrench className="h-4 w-4" />;
       case 'category':
-        return <Folder className="h-4 w-4 text-emerald-600" />;
+        return <Folder className="h-4 w-4" />;
       case 'guide':
-        return <FileText className="h-4 w-4 text-violet-600" />;
+        return <FileText className="h-4 w-4" />;
     }
   };
 
@@ -320,14 +320,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
   };
 
   const getResultTypeColor = (type: SearchResult['type']) => {
-    switch (type) {
-      case 'tool':
-        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800';
-      case 'category':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800';
-      case 'guide':
-        return 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-300 dark:border-violet-800';
-    }
+    return 'bg-neutral-100 text-neutral-600 border-neutral-200';
   };
 
   return (
@@ -341,20 +334,20 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          className="pl-12 pr-12 h-12 text-base bg-white/80 backdrop-blur-sm border-2 border-neutral-200 hover:border-neutral-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100/50 rounded-xl shadow-sm hover:shadow-md search-input-enhanced"
+          className="pl-12 pr-12 h-10 text-sm bg-white border border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-200 rounded-lg"
           aria-label="Global search"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           role="combobox"
         />
         {isLoading && (
-          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-blue-500" />
+          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-neutral-400" />
         )}
         {!isLoading && query && (
           <Button
             variant="ghost"
             size="sm"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-neutral-100"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-neutral-100"
             onClick={() => {
               setQuery("");
               setResults([]);
@@ -362,13 +355,13 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
               inputRef.current?.focus();
             }}
           >
-            <Search className="h-4 w-4 rotate-45" />
+            <Search className="h-3 w-3 rotate-45" />
           </Button>
         )}
       </div>
 
       {isOpen && (
-        <Card className="absolute top-full left-0 right-0 mt-3 z-50 max-h-[600px] overflow-hidden shadow-2xl border-2 border-neutral-100 rounded-2xl bg-white/95 backdrop-blur-md">
+        <Card className="absolute top-full left-0 right-0 mt-2 z-50 max-h-[500px] overflow-hidden shadow-lg border border-neutral-200 rounded-lg bg-white">
           {showRecentSearches && recentSearches.length > 0 ? (
             <>
               <CardHeader className="px-6 py-4 border-b border-neutral-100">
@@ -414,8 +407,8 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
                       key={`${result.type}-${result.id}`}
                       variant="ghost"
                       className={cn(
-                        "w-full justify-start p-6 h-auto text-left rounded-none border-b border-neutral-50 last:border-b-0 hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/30 search-result-item group",
-                        selectedIndex === index && "bg-gradient-to-r from-blue-50/80 to-purple-50/50 border-blue-200/50"
+                        "w-full justify-start p-4 h-auto text-left rounded-none border-b border-neutral-100 last:border-b-0 hover:bg-neutral-50 search-result-item group",
+                        selectedIndex === index && "bg-neutral-50"
                       )}
                       onClick={() => handleResultClick(result)}
                       role="option"
@@ -423,12 +416,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
                     >
                       <div className="flex items-start gap-4 w-full">
                         <div className="flex-shrink-0 mt-1">
-                          <div className={cn(
-                            "p-2 rounded-lg transition-colors group-hover:scale-105 duration-200",
-                            result.type === 'tool' && "bg-blue-100 text-blue-700 group-hover:bg-blue-200",
-                            result.type === 'category' && "bg-emerald-100 text-emerald-700 group-hover:bg-emerald-200",
-                            result.type === 'guide' && "bg-violet-100 text-violet-700 group-hover:bg-violet-200"
-                          )}>
+                          <div className="p-2 bg-neutral-100 text-neutral-600 rounded-lg transition-colors group-hover:bg-neutral-200">
                             {getResultIcon(result.type)}
                           </div>
                         </div>

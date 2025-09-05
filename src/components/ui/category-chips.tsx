@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { getCategoryDisplayName } from "@/lib/utils";
 
 interface CategoryChipsProps {
   categories: string;
@@ -30,13 +31,13 @@ export function CategoryChips({
 
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
-      {categoryList.map((category, index) => {
-        const displayName = category.replace('-', ' ');
+      {categoryList.map((categorySlug, index) => {
+        const displayName = getCategoryDisplayName(categorySlug);
         
         const badgeContent = (
           <Badge 
             variant={variant} 
-            className={`capitalize ${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 transition-all duration-200 shadow-sm`}
+            className={`${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 transition-all duration-200 shadow-sm`}
           >
             {displayName}
           </Badge>
@@ -45,7 +46,7 @@ export function CategoryChips({
         return showLinks ? (
           <Link 
             key={index} 
-            href={`/categories/${category}`}
+            href={`/categories/${categorySlug}`}
             className="hover:opacity-90 transition-all duration-200 hover:scale-105"
           >
             {badgeContent}

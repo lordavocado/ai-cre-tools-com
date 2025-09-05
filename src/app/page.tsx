@@ -108,7 +108,7 @@ export default async function Home({ searchParams }: HomeProps) {
       categoriesFromSheet = await getCategories(false); // Fallback without item counts
     }
     
-    const topCategories = categoriesFromSheet.slice(0, 4);
+    const topCategories = categoriesFromSheet; // Show all categories instead of just 4
     const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
       ({ id, slug, name, icon }) => ({ id, slug, name, icon })
     );
@@ -241,7 +241,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </Button>
           </div>
           <IntersectionLoader className="min-h-[200px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {topCategories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}

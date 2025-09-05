@@ -3,7 +3,6 @@
 import type { DirectoryItem } from "@/types";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { CategoryChips } from "@/components/ui/category-chips";
@@ -34,12 +33,15 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           />
         </div>
 
-        {/* Category chip */}
+        {/* Category chips */}
         {item.category && (
           <div className="mb-3">
-            <Badge variant="secondary" className="text-xs font-medium px-2 py-1 bg-neutral-100 text-neutral-600 hover:bg-neutral-200 rounded-md">
-              {item.category.split(',')[0].trim().replace('-', ' ')}
-            </Badge>
+            <CategoryChips 
+              categories={item.category}
+              size="sm"
+              showLinks={true}
+              className=""
+            />
           </div>
         )}
 

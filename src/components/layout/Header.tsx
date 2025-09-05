@@ -7,12 +7,12 @@ import { siteConfig } from '@/config/site';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-[9998] w-full border-b border-neutral-100 bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
+    <header className="sticky top-0 z-[9998] w-full border-b border-neutral-200 bg-white">
+      <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-6">
         <Link href="/" className="flex items-center space-x-2">
           <span className="text-lg font-semibold text-neutral-900">{siteConfig.name}</span>
         </Link>
-        <nav className="hidden md:flex md:items-center md:space-x-6">
+        <nav className="hidden md:flex md:items-center md:space-x-8">
           {siteConfig.nav.items.map((item) => (
             <Link
               key={item.href}
@@ -25,7 +25,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex w-96">
+          <div className="hidden md:flex w-80">
             <GlobalSearch 
               className="w-full"
             />
