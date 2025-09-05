@@ -40,13 +40,13 @@ export function NewsletterForm({ source = "homepage", className }: NewsletterFor
 
   return (
     <form action={formAction} className={className || ""}>
-      <div className="flex gap-2">
+      <div className="flex gap-2 w-full">
         <Input
           type="email"
           name="email"
           placeholder="Enter your email"
           required
-          className="text-sm min-w-0 flex-1"
+          className="text-sm min-w-0 flex-1 md:w-64"
           aria-label="Email for newsletter"
         />
         <SubmitButton />

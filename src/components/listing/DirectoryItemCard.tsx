@@ -34,10 +34,14 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           />
         </div>
 
-        {/* Category chips moved to top for better hierarchy */}
-        <div className="flex items-center gap-2 mb-3">
-          <CategoryChips categories={item.category} variant="secondary" size="sm" />
-        </div>
+        {/* Category chip */}
+        {item.category && (
+          <div className="mb-3">
+            <Badge variant="secondary" className="text-xs font-medium px-2 py-1 bg-neutral-100 text-neutral-600 hover:bg-neutral-200 rounded-md">
+              {item.category.split(',')[0].trim().replace('-', ' ')}
+            </Badge>
+          </div>
+        )}
 
         {/* Tool name */}
         <CardTitle className="text-lg font-medium mb-2 leading-tight">
