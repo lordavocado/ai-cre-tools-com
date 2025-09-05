@@ -12,6 +12,7 @@ import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
+import { FeaturedOn } from '@/components/sections/FeaturedOn';
 
 // Create a client component wrapper for FAQ
 const FAQSection = dynamic(
@@ -250,6 +251,9 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
+      {/* Featured On Section */}
+      <FeaturedOn />
+
               {/* FAQ Section */}
         <Suspense fallback={<div>Loading...</div>}>
           <IntersectionLoader>
@@ -404,6 +408,9 @@ export default async function Home({ searchParams }: HomeProps) {
             </div>
           </div>
         </section>
+
+        {/* Featured On Section */}
+        <FeaturedOn />
 
         {/* FAQ Section */}
         <Suspense fallback={<div>Loading...</div>}>

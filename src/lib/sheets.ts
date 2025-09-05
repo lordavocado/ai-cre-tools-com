@@ -25,7 +25,7 @@ const COLUMN_MAPPINGS = {
     DESCRIPTION: 'description',
     CATEGORY_SLUG: 'category',
     WEBSITE: 'website',
-    IMAGE_URL: 'icon_link',
+    IMAGE_URL: 'icon link',
     FEATURES_JSON: 'features', // Expects: [{"name": "Feature 1", "description": "Optional desc"}, {"name": "Feature 2"}]
     PRICING: 'pricing',
     BEST_FOR: 'best_for',
