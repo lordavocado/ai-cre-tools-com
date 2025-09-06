@@ -35,7 +35,10 @@ marked.setOptions({
   gfm: true, // GitHub Flavored Markdown
   breaks: false, // Don't add <br> for single line breaks
   pedantic: false,
-  silent: false
+  silent: false,
+  headerIds: true,
+  headerPrefix: '',
+  mangle: false,
 });
 
 /**
@@ -43,11 +46,28 @@ marked.setOptions({
  * @param markdown - The markdown string to convert
  * @returns HTML string with proper styling classes
  */
-export async function markdownToHtml(markdown: string): Promise<string> {
+export function markdownToHtml(markdown: string): string {
   if (!markdown) return '';
   
   try {
-    let html = await marked(markdown);
+    let html = marked.parse(markdown) as string;
+    
+    // Ensure headings have deterministic IDs that match our TOC slugging
+    const slugify = (text: string) =>
+      text
+        .toLowerCase()
+        .replace(/<[^>]*>/g, '')
+        .replace(/["'`]/g, '')
+        .replace(/[^\w\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
+    html = html.replace(/<h([1-6])(\s[^>]*)?>([\s\S]*?)<\/h\1>/g, (_m, level, attrs = '', inner) => {
+      const hasId = attrs && /\sid=\"[^\"]+\"/.test(attrs);
+      const id = slugify(inner);
+      const newAttrs = hasId ? attrs : `${attrs || ''} id="${id}"`;
+      return `<h${level}${newAttrs}>${inner}</h${level}>`;
+    });
     
     // Post-process the HTML to add our custom classes
     html = html
@@ -66,6 +86,7 @@ export async function markdownToHtml(markdown: string): Promise<string> {
       .replace(/<ul>/g, '<ul class="list-disc list-inside mb-4 pl-6 space-y-1">')
       .replace(/<ol>/g, '<ol class="list-decimal list-inside mb-4 pl-6 space-y-1">')
       .replace(/<li>/g, '<li class="leading-7">')
+      .replace(/<input type="checkbox"/g, '<input type="checkbox" class="mr-2 align-middle"')
       
       // Links
       .replace(/<a href="([^"]*)"([^>]*)>/g, '<a href="$1"$2 class="text-primary hover:underline font-medium" target="_blank" rel="noopener noreferrer">')
@@ -107,12 +128,12 @@ export async function markdownToHtml(markdown: string): Promise<string> {
  * @param markdown - The markdown string to convert
  * @returns Plain text string
  */
-export async function markdownToPlainText(markdown: string): Promise<string> {
+export function markdownToPlainText(markdown: string): string {
   if (!markdown) return '';
   
   try {
     // First convert to HTML, then strip HTML tags
-    const html = await marked(markdown);
+    const html = marked.parse(markdown) as string;
     return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
   } catch (error) {
     console.error('Error converting markdown to plain text:', error);

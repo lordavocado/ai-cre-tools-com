@@ -4,7 +4,7 @@ export const siteConfig = {
 
   // Site metadata
   name: "AI CRE Tools",
-  description: "The leading directory for Commercial Real Estate AI tools. Find, compare, and choose the best AI solutions for your CRE needs.",
+  description: "The leading directory for Commercial Real Estate AI tools. Find and choose the best AI solutions for your CRE needs.",
   url: "https://aicretools.com",
 
   // SEO Configuration
@@ -102,7 +102,7 @@ export const siteConfig = {
   // Hero section content
   hero: {
     title: "Commercial Real Estate AI Tools",
-    subtitle: "Discover and compare intelligent solutions that transform how you work with commercial real estate.",
+    subtitle: "Discover intelligent solutions that transform how you work with commercial real estate.",
     cta: {
       primary: {
         text: "Explore Tools",

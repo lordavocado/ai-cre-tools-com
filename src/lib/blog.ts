@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import remarkHtml from 'remark-html';
-import remarkEmoji from 'remark-emoji';
+import { markdownToHtml, generateTableOfContents } from '@/lib/markdown-renderer';
 
 const blogDirectory = path.join(process.cwd(), 'src/content/blog');
 
@@ -19,6 +17,7 @@ export interface BlogPost {
   imageUrl: string;
   content: string;
   htmlContent: string;
+  toc?: Array<{ text: string; id: string; level: number }>;
 }
 
 export function getAllBlogPosts(): BlogPost[] {
@@ -38,11 +37,8 @@ export function getAllBlogPosts(): BlogPost[] {
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const matterResult = matter(fileContents);
 
-      const processedContent = remark()
-        .use(remarkEmoji)
-        .use(remarkHtml)
-        .processSync(matterResult.content);
-      const htmlContent = processedContent.toString();
+      const htmlContent = await markdownToHtml(matterResult.content);
+      const toc = generateTableOfContents(matterResult.content);
 
       return {
         id,
@@ -56,6 +52,7 @@ export function getAllBlogPosts(): BlogPost[] {
         imageUrl: matterResult.data.imageUrl,
         content: matterResult.content,
         htmlContent,
+        toc,
         } as BlogPost;
       });
 
