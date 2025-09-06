@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { DirectoryItem, Category, Guide } from "@/types";
 import { CategoryChips } from "@/components/ui/category-chips";
+import { WebsiteFavicon } from "@/components/ui/website-favicon";
 
 interface SearchResult {
   type: 'tool' | 'category' | 'guide';
@@ -32,7 +33,7 @@ interface GlobalSearchProps {
   placeholder?: string;
 }
 
-export function GlobalSearch({ className, placeholder = "Search tools, categories, blog... (⌘K)" }: GlobalSearchProps) {
+export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)" }: GlobalSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -334,7 +335,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          className="pl-12 pr-12 h-10 text-sm bg-white border border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-200 rounded-lg"
+          className="pl-12 pr-12 h-10 text-sm bg-white border border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-200 rounded-lg truncate"
           aria-label="Global search"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
@@ -361,7 +362,7 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
       </div>
 
       {isOpen && (
-        <Card className="absolute top-full left-0 right-0 mt-2 z-50 max-h-[500px] overflow-hidden shadow-lg border border-neutral-200 rounded-lg bg-white">
+        <Card className="absolute top-full left-0 right-0 mt-2 z-50 max-h-[500px] min-w-[400px] overflow-hidden shadow-lg border border-neutral-200 rounded-lg bg-white">
           {showRecentSearches && recentSearches.length > 0 ? (
             <>
               <CardHeader className="px-6 py-4 border-b border-neutral-100">
@@ -416,9 +417,19 @@ export function GlobalSearch({ className, placeholder = "Search tools, categorie
                     >
                       <div className="flex items-start gap-4 w-full">
                         <div className="flex-shrink-0 mt-1">
-                          <div className="p-2 bg-neutral-100 text-neutral-600 rounded-lg transition-colors group-hover:bg-neutral-200">
-                            {getResultIcon(result.type)}
-                          </div>
+                          {result.type === 'tool' && result.website ? (
+                            <div className="p-2 bg-neutral-100 text-neutral-600 rounded-lg transition-colors group-hover:bg-neutral-200 flex items-center justify-center">
+                              <WebsiteFavicon 
+                                website={result.website} 
+                                size="sm"
+                                fallback={getResultIcon(result.type)}
+                              />
+                            </div>
+                          ) : (
+                            <div className="p-2 bg-neutral-100 text-neutral-600 rounded-lg transition-colors group-hover:bg-neutral-200">
+                              {getResultIcon(result.type)}
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3 mb-3">

@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import remarkHtml from 'remark-html';
+import remarkEmoji from 'remark-emoji';
 
 const blogDirectory = path.join(process.cwd(), 'src/content/blog');
 
@@ -38,6 +39,7 @@ export function getAllBlogPosts(): BlogPost[] {
       const matterResult = matter(fileContents);
 
       const processedContent = remark()
+        .use(remarkEmoji)
         .use(remarkHtml)
         .processSync(matterResult.content);
       const htmlContent = processedContent.toString();

@@ -312,6 +312,117 @@
   z-index: 9998 !important;
 }
 
+/* Blog Typography Enhancements */
+@layer components {
+  .prose-blog {
+    @apply prose prose-lg prose-neutral max-w-none;
+  }
+
+  .prose-blog h1 {
+    @apply text-4xl font-bold mb-6 mt-8 text-gray-900 border-b border-gray-200 pb-3;
+  }
+
+  .prose-blog h2 {
+    @apply text-3xl font-semibold mb-5 mt-8 text-gray-900 border-b border-gray-200 pb-2;
+  }
+
+  .prose-blog h3 {
+    @apply text-2xl font-semibold mb-4 mt-6 text-gray-800;
+  }
+
+  .prose-blog h4 {
+    @apply text-xl font-semibold mb-3 mt-5 text-gray-800;
+  }
+
+  .prose-blog p {
+    @apply text-gray-700 leading-relaxed mb-4 text-base;
+  }
+
+  .prose-blog ul {
+    @apply my-4 space-y-2;
+  }
+
+  .prose-blog ol {
+    @apply my-4 space-y-2;
+  }
+
+  .prose-blog li {
+    @apply text-gray-700 leading-relaxed;
+  }
+
+  .prose-blog li::marker {
+    @apply text-blue-600 font-semibold;
+  }
+
+  .prose-blog strong {
+    @apply text-gray-900 font-semibold;
+  }
+
+  .prose-blog em {
+    @apply text-gray-700 italic;
+  }
+
+  .prose-blog blockquote {
+    @apply border-l-4 border-blue-500 pl-6 py-3 italic text-gray-600 bg-blue-50 rounded-r-md my-6;
+  }
+
+  .prose-blog code {
+    @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800;
+  }
+
+  .prose-blog pre {
+    @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto;
+  }
+
+  .prose-blog a {
+    @apply text-blue-600 font-medium no-underline hover:underline hover:text-blue-700 transition-colors;
+  }
+
+  .prose-blog hr {
+    @apply border-gray-200 my-8;
+  }
+
+  /* Dark mode blog styles */
+  .dark .prose-blog h1,
+  .dark .prose-blog h2 {
+    @apply text-white border-gray-700;
+  }
+
+  .dark .prose-blog h3,
+  .dark .prose-blog h4 {
+    @apply text-gray-100;
+  }
+
+  .dark .prose-blog p,
+  .dark .prose-blog li {
+    @apply text-gray-300;
+  }
+
+  .dark .prose-blog strong {
+    @apply text-white;
+  }
+
+  .dark .prose-blog em {
+    @apply text-gray-300;
+  }
+
+  .dark .prose-blog blockquote {
+    @apply border-blue-400 text-gray-400 bg-blue-950;
+  }
+
+  .dark .prose-blog code {
+    @apply bg-gray-800 text-gray-200;
+  }
+
+  .dark .prose-blog a {
+    @apply text-blue-400 hover:text-blue-300;
+  }
+
+  .dark .prose-blog hr {
+    @apply border-gray-700;
+  }
+}
+
 /* Enhanced search input styles */
 .search-input-enhanced {
   background: rgba(255, 255, 255, 0.9) !important;

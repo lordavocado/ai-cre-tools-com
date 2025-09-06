@@ -25,9 +25,10 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex w-80">
+          <div className="hidden md:flex flex-1 max-w-[320px] min-w-[200px]">
             <GlobalSearch 
               className="w-full"
+              placeholder="Search tools, categories... (⌘K)"
             />
           </div>
 
