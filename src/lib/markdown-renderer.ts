@@ -36,9 +36,6 @@ marked.setOptions({
   breaks: false, // Don't add <br> for single line breaks
   pedantic: false,
   silent: false,
-  headerIds: true,
-  headerPrefix: '',
-  mangle: false,
 });
 
 /**
@@ -46,7 +43,7 @@ marked.setOptions({
  * @param markdown - The markdown string to convert
  * @returns HTML string with proper styling classes
  */
-export function markdownToHtml(markdown: string): string {
+export async function markdownToHtml(markdown: string): Promise<string> {
   if (!markdown) return '';
   
   try {

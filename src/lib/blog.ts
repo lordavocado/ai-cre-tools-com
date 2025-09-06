@@ -20,7 +20,7 @@ export interface BlogPost {
   toc?: Array<{ text: string; id: string; level: number }>;
 }
 
-export function getAllBlogPosts(): BlogPost[] {
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
   try {
     // Check if blog directory exists
     if (!fs.existsSync(blogDirectory)) {
@@ -29,32 +29,34 @@ export function getAllBlogPosts(): BlogPost[] {
     }
 
     const fileNames = fs.readdirSync(blogDirectory);
-    const allPostsData = fileNames
-      .filter(fileName => fileName.endsWith('.md'))
-      .map(fileName => {
-      const id = fileName.replace(/\.md$/, '');
-      const fullPath = path.join(blogDirectory, fileName);
-      const fileContents = fs.readFileSync(fullPath, 'utf8');
-      const matterResult = matter(fileContents);
+    const allPostsData = await Promise.all(
+      fileNames
+        .filter(fileName => fileName.endsWith('.md'))
+        .map(async fileName => {
+        const id = fileName.replace(/\.md$/, '');
+        const fullPath = path.join(blogDirectory, fileName);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const matterResult = matter(fileContents);
 
-      const htmlContent = await markdownToHtml(matterResult.content);
-      const toc = generateTableOfContents(matterResult.content);
+        const htmlContent = await markdownToHtml(matterResult.content);
+        const toc = generateTableOfContents(matterResult.content);
 
-      return {
-        id,
-        slug: matterResult.data.slug || id,
-        title: matterResult.data.title,
-        excerpt: matterResult.data.excerpt,
-        category: matterResult.data.category,
-        publishedDate: matterResult.data.publishedDate,
-        author: matterResult.data.author,
-        readingTime: matterResult.data.readingTime,
-        imageUrl: matterResult.data.imageUrl,
-        content: matterResult.content,
-        htmlContent,
-        toc,
-        } as BlogPost;
-      });
+        return {
+          id,
+          slug: matterResult.data.slug || id,
+          title: matterResult.data.title,
+          excerpt: matterResult.data.excerpt,
+          category: matterResult.data.category,
+          publishedDate: matterResult.data.publishedDate,
+          author: matterResult.data.author,
+          readingTime: matterResult.data.readingTime,
+          imageUrl: matterResult.data.imageUrl,
+          content: matterResult.content,
+          htmlContent,
+          toc,
+          } as BlogPost;
+        })
+    );
 
     return allPostsData.sort((a, b) => (a.publishedDate < b.publishedDate ? 1 : -1));
   } catch (error) {
@@ -63,9 +65,9 @@ export function getAllBlogPosts(): BlogPost[] {
   }
 }
 
-export function getBlogPost(slug: string): BlogPost | undefined {
+export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
   try {
-    const allPosts = getAllBlogPosts();
+    const allPosts = await getAllBlogPosts();
     return allPosts.find(post => post.slug === slug);
   } catch (error) {
     console.error('Error getting blog post:', error);
@@ -73,9 +75,9 @@ export function getBlogPost(slug: string): BlogPost | undefined {
   }
 }
 
-export function getBlogPostsByCategory(category: string): BlogPost[] {
+export async function getBlogPostsByCategory(category: string): Promise<BlogPost[]> {
   try {
-    const allPosts = getAllBlogPosts();
+    const allPosts = await getAllBlogPosts();
     return allPosts.filter(post => post.category.toLowerCase() === category.toLowerCase());
   } catch (error) {
     console.error('Error getting blog posts by category:', error);
@@ -83,9 +85,9 @@ export function getBlogPostsByCategory(category: string): BlogPost[] {
   }
 }
 
-export function getAllCategories(): string[] {
+export async function getAllCategories(): Promise<string[]> {
   try {
-    const allPosts = getAllBlogPosts();
+    const allPosts = await getAllBlogPosts();
     const categories = allPosts.map(post => post.category);
     return Array.from(new Set(categories));
   } catch (error) {

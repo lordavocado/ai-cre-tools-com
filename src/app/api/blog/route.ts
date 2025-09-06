@@ -7,11 +7,11 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category');
 
   try {
-    let posts = getAllBlogPosts();
+    let posts = await getAllBlogPosts();
 
     // Filter by category if provided
     if (category) {
-      posts = getBlogPostsByCategory(category);
+      posts = await getBlogPostsByCategory(category);
     }
 
     // Filter by search term if provided

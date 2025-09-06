@@ -20,7 +20,7 @@ export async function GET() {
       console.error('Sitemap: Failed to load directory items from Google Sheets:', error);
       // Continue without directory items - they'll be handled in the fallback
     }
-    const blogPosts = getAllBlogPosts();
+    const blogPosts = await getAllBlogPosts();
 
     // Get unique categories from directory items, with fallback to hardcoded categories
     let categories: string[] = [];

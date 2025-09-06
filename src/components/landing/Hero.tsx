@@ -25,7 +25,7 @@ export function Hero() {
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8 text-gray-900 leading-tight"
           >
-            Find the Perfect AI Tool for Your CRE Business
+            Find the Best AI Tool for Your CRE Business
           </motion.h1>
 
           {/* SEO-Optimized H2 */}
@@ -35,7 +35,7 @@ export function Hero() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg md:text-xl lg:text-2xl font-medium text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed"
           >
-            Discover and compare Commercial Real Estate AI tools. Find the right solution for your business needs.
+            Discover Commercial Real Estate AI tools that fits your business needs or get inspired by AI features developed by real estate innovators.
           </motion.h2>
 
 
@@ -47,7 +47,7 @@ export function Hero() {
             className="mb-12"
           >
             {/* Primary CTA and Newsletter */}
-            <div className="flex flex-col md:flex-row gap-4 justify-center items-center max-w-2xl mx-auto">
+            <div className="flex flex-row flex-nowrap gap-4 justify-center items-center w-full overflow-x-auto">
               <Button asChild size="lg" className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 text-lg font-medium whitespace-nowrap flex-shrink-0">
                 <Link href="/categories">
                   Browse AI Tools
@@ -55,8 +55,8 @@ export function Hero() {
               </Button>
               
               {/* Newsletter Form Inline */}
-              <div className="w-full md:w-auto">
-                <NewsletterForm source="hero-cta" className="w-full md:w-auto" />
+              <div className="w-auto">
+                <NewsletterForm source="hero-cta" className="w-auto" />
               </div>
             </div>
           </motion.div>

@@ -39,11 +39,11 @@ export const metadata: Metadata = {
   }
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
   // Get blog posts on the server side to avoid file system access issues
   let posts: BlogPost[];
   try {
-    posts = getAllBlogPosts();
+    posts = await getAllBlogPosts();
   } catch (error) {
     console.error('Failed to load blog posts:', error);
     posts = [];
