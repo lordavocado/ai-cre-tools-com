@@ -87,32 +87,13 @@ export function BlogPost({ post }: BlogPostProps) {
 
       {/* Content */}
       <div
-        className="prose prose-lg prose-neutral max-w-none mb-12 
-                   prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-gray-900
-                   prose-h1:text-4xl prose-h1:mb-8 prose-h1:mt-12 prose-h1:border-b prose-h1:border-gray-200 prose-h1:pb-4
-                   prose-h2:text-3xl prose-h2:mb-6 prose-h2:mt-10 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2
-                   prose-h3:text-2xl prose-h3:mb-4 prose-h3:mt-8 prose-h3:text-gray-800
-                   prose-h4:text-xl prose-h4:mb-3 prose-h4:mt-6 prose-h4:text-gray-800
-                   prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
-                   prose-ul:my-4 prose-ul:space-y-1 prose-ol:my-4 prose-ol:space-y-1
-                   prose-li:text-gray-700 prose-li:leading-relaxed prose-li:my-1
-                   prose-li:marker:text-blue-600
-                   prose-strong:text-gray-900 prose-strong:font-semibold
-                   prose-em:text-gray-700 prose-em:italic
-                   prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-6 prose-blockquote:py-2
-                   prose-blockquote:italic prose-blockquote:text-gray-600 prose-blockquote:bg-blue-50 prose-blockquote:rounded-r
-                   prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-gray-800
-                   prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-lg prose-pre:p-4
-                   prose-a:text-blue-600 prose-a:font-medium prose-a:no-underline hover:prose-a:underline hover:prose-a:text-blue-700
-                   prose-hr:border-gray-200 prose-hr:my-8
-                   dark:prose-invert dark:prose-neutral 
-                   dark:prose-headings:text-white dark:prose-p:text-gray-300 dark:prose-li:text-gray-300
-                   dark:prose-strong:text-white dark:prose-em:text-gray-300
-                   dark:prose-blockquote:border-blue-400 dark:prose-blockquote:text-gray-400 dark:prose-blockquote:bg-blue-950
-                   dark:prose-code:bg-gray-800 dark:prose-code:text-gray-200
-                   dark:prose-a:text-blue-400 hover:dark:prose-a:text-blue-300
-                   dark:prose-hr:border-gray-700
-                   dark:prose-h1:border-gray-700 dark:prose-h2:border-gray-700"
+        className="prose prose-lg prose-slate max-w-none mb-12
+                   prose-headings:font-semibold prose-headings:tracking-tight
+                   prose-h1:text-4xl prose-h1:border-b prose-h1:pb-4
+                   prose-h2:text-3xl prose-h2:border-b prose-h2:pb-2
+                   prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                   prose-strong:font-semibold prose-code:rounded prose-code:px-1
+                   dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: post.htmlContent }}
       />
 

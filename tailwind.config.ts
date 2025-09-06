@@ -107,6 +107,8 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    require("@tailwindcss/typography"),
+    require("@tailwindcss/typography")({
+      target: 'modern'
+    }),
   ],
 } satisfies Config;
