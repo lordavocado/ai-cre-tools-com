@@ -17,13 +17,13 @@ interface DirectoryItemCardProps {
 function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   return (
     <Card className="flex flex-col h-full overflow-hidden border border-neutral-200 hover:border-neutral-300 transition-colors duration-200 relative group rounded-lg bg-white">
-      <CardHeader className="p-6 relative">
-        <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <CardHeader className="p-4 relative">
+        <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <FavoriteButton toolId={item.id} size="sm" />
         </div>
         
         {/* Logo container */}
-        <div className="relative w-16 h-16 mb-4 rounded-lg overflow-hidden flex items-center justify-center bg-neutral-50 border border-neutral-100">
+        <div className="relative w-16 h-16 mb-3 rounded-lg overflow-hidden flex items-center justify-center bg-neutral-50 border border-neutral-100">
           <SafeImage
             src={item.imageUrl}
             alt={item.name}
@@ -33,20 +33,8 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           />
         </div>
 
-        {/* Category chips */}
-        {item.category && (
-          <div className="mb-3">
-            <CategoryChips 
-              categories={item.category}
-              size="sm"
-              showLinks={true}
-              className=""
-            />
-          </div>
-        )}
-
         {/* Tool name */}
-        <CardTitle className="text-lg font-medium mb-2 leading-tight">
+        <CardTitle className="text-lg font-medium mb-1 leading-tight">
           <Link href={`/${item.slug}`} className="hover:text-neutral-600 transition-colors duration-200">
             {item.name}
           </Link>
@@ -54,13 +42,13 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
 
         {/* Tagline */}
         {item.tagline && (
-          <CardDescription className="text-sm leading-relaxed text-neutral-600 line-clamp-2 mb-4">
+          <CardDescription className="text-sm leading-relaxed text-neutral-600 line-clamp-2 mb-2">
             {item.tagline}
           </CardDescription>
         )}
       </CardHeader>
 
-      <CardContent className="flex-grow px-6 pb-4">
+      <CardContent className="flex-grow px-4 pb-2">
         {/* Rating section */}
         {item.rating && (
           <div className="flex items-center gap-2 text-sm text-neutral-600">
@@ -71,7 +59,19 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
         )}
       </CardContent>
 
-      <CardFooter className="px-6 pb-6 pt-0">
+      <CardFooter className="px-4 pb-4 pt-0 flex flex-col gap-3">
+        {/* Category chips */}
+        {item.category && (
+          <div className="w-full">
+            <CategoryChips 
+              categories={item.category}
+              size="sm"
+              showLinks={true}
+              className=""
+            />
+          </div>
+        )}
+        
         <Button
           size="sm"
           asChild

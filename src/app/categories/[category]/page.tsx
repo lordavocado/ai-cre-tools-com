@@ -1,9 +1,12 @@
+"use client";
+
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { getCategories, getDirectoryItems } from '@/lib/sheets';
 import type { DirectoryItem } from '@/types';
@@ -13,6 +16,7 @@ import {
   TrendingUp, Clock, Target, Workflow, ChevronRight, 
   BarChart3, DollarSign, Award, PieChart
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 // Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
 // If you need fresh data, consider using revalidate instead
@@ -65,44 +69,62 @@ export async function generateMetadata(
   };
 }
 
-export default async function CategoryPage({ 
+export default function CategoryPage({ 
   params,
   searchParams
 }: {
   params: Promise<{ category: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { category: slug } = await params;
-  const categories = await getCategories();
-  const category = categories.find((cat) => cat.slug === slug);
+  const [slug, setSlug] = useState<string>('');
+  const [categories, setCategories] = useState<any[]>([]);
+  const [category, setCategory] = useState<any>(null);
+  const [allItems, setAllItems] = useState<DirectoryItem[]>([]);
+  const [itemsLoadError, setItemsLoadError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  if (!category) {
-    notFound();
-  }
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const resolvedParams = await params;
+        const categorySlug = resolvedParams.category;
+        setSlug(categorySlug);
 
-  // Try to load directory items with proper error handling
-  let allItems: DirectoryItem[] = [];
-  let itemsLoadError = false;
-  
-  try {
-    allItems = await getDirectoryItems();
-  } catch (error) {
-    console.warn(`Failed to load directory items for category ${slug}:`, error);
-    itemsLoadError = true;
-  }
-  
+        // Load categories
+        const categoriesData = await getCategories();
+        setCategories(categoriesData);
+        
+        const foundCategory = categoriesData.find((cat) => cat.slug === categorySlug);
+        setCategory(foundCategory);
+
+        if (!foundCategory) {
+          notFound();
+          return;
+        }
+
+        // Load directory items
+        try {
+          const items = await getDirectoryItems();
+          setAllItems(items);
+        } catch (error) {
+          console.warn(`Failed to load directory items for category ${categorySlug}:`, error);
+          setItemsLoadError(true);
+        }
+      } catch (error) {
+        console.error('Error loading category data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [params]);
+
   const itemsInCategory = allItems.filter((item) => {
     // Support comma-separated categories to match the logic in getCategories
     const itemCategories = item.category.split(',').map(cat => cat.trim());
     return itemCategories.includes(slug);
   });
-
-  // If no tools found, still show the category page with full content
-  // This ensures category pages work even when tools fail to load
-  if (itemsInCategory.length === 0) {
-    // Don't return early - show the full category page with description and FAQ
-    // Just set empty tools array for the grid component
-  }
 
   // Get top-rated tools for hero section
   const topTools = itemsInCategory
@@ -110,7 +132,27 @@ export default async function CategoryPage({
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 3);
 
-  // Get top-rated tools for hero section (removed stats calculation since stats bar was removed)
+  const scrollToTools = () => {
+    const toolsSection = document.getElementById('tools-section');
+    if (toolsSection) {
+      toolsSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!category) {
+    notFound();
+  }
 
   return (
     <>
@@ -170,7 +212,7 @@ export default async function CategoryPage({
       />
 
       {/* Enhanced Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-slate-900 dark:via-green-900/20 dark:to-slate-900">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -178,7 +220,7 @@ export default async function CategoryPage({
           }}></div>
         </div>
 
-        <div className="container relative py-16 md:py-24 pl-6">
+        <div className="container relative py-20 md:py-32 pl-6">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
             <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
@@ -216,12 +258,18 @@ export default async function CategoryPage({
             </p>
             
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-                <Workflow className="h-5 w-5 text-primary" />
-                <span className="text-lg font-semibold text-primary">
+              <Button
+                onClick={scrollToTools}
+                variant="outline"
+                size="lg"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border-primary/20 hover:border-primary/30 rounded-full transition-all duration-300 hover:scale-105"
+              >
+                <Workflow className="h-5 w-5" />
+                <span className="text-lg font-semibold">
                   {itemsInCategory.length} {itemsInCategory.length === 1 ? 'Tool' : 'Tools'} Available
                 </span>
-              </div>
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+              </Button>
             </div>
 
 
@@ -267,9 +315,9 @@ export default async function CategoryPage({
 
 
       {/* Key Use Cases Section */}
-      <div className="container py-16 pl-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container py-20 md:py-28 pl-6 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Key Use Cases</h2>
             <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
               Discover how {category.name.toLowerCase()} tools transform these critical workflows
@@ -395,7 +443,7 @@ export default async function CategoryPage({
 
       {/* Enhanced Category Description */}
       {category.longDescription && (
-        <div className="container py-16 pl-6">
+        <div className="container py-20 md:py-28 pl-6">
           <div className="max-w-4xl mx-auto">
             <Card className="border-0 shadow-xl bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900">
               <CardContent className="p-8 md:p-12">
@@ -412,9 +460,9 @@ export default async function CategoryPage({
 
 
       {/* Enhanced FAQ Section */}
-      <div className="container py-16 pl-6">
+      <div className="container py-20 md:py-28 pl-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
             <p className="text-muted-foreground text-lg">
               Everything you need to know about {category.name.toLowerCase()} tools
@@ -520,9 +568,9 @@ export default async function CategoryPage({
       </div>
 
       {/* Main Tools Grid */}
-      <div className="container py-12 pl-6">
+      <div id="tools-section" className="container py-20 md:py-28 pl-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
             <p className="text-muted-foreground text-lg">
               {itemsInCategory.length > 0 
