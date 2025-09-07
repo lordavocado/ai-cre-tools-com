@@ -78,7 +78,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' *.posthog.com *.google.com",
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
               "font-src 'self' fonts.gstatic.com",
-              "img-src 'self' data: blob: https: *.posthog.com",
+              "img-src 'self' data: blob: https: *.posthog.com sgaejkzumgooaxqmildg.supabase.co *.supabase.co",
               "connect-src 'self' *.posthog.com *.google.com *.googleapis.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
@@ -130,7 +130,7 @@ const nextConfig = {
     // Optimize images more aggressively
     minimumCacheTTL: 31536000, // 1 year cache
     dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
+    contentDispositionType: 'inline',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     
     remotePatterns: [

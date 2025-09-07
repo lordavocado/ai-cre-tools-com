@@ -48,7 +48,7 @@ export function Hero() {
             transition={{ delay: 0.1, duration: 0.6 }}
             className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8 text-gray-900 leading-tight"
           >
-            Find the Best AI Tool for Your CRE Business
+            Find the Best CRE AI Tools
           </motion.h1>
 
           {/* SEO-Optimized H2 */}
