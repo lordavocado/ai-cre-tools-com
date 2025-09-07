@@ -29,6 +29,7 @@ export function Hero() {
             fill
             priority
             sizes="100vw"
+            unoptimized
             className="object-cover object-bottom"
           />
         </div>
