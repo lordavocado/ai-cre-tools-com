@@ -22,12 +22,17 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/0" />
         {/* Image only occupies the lower portion to emphasize bottom visuals */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-2/3 bg-no-repeat bg-cover bg-bottom"
+          className="absolute left-0 right-0 h-2/3 bg-no-repeat bg-bottom"
           style={{
-            backgroundImage:
-              "url('/hero-background-ai-cre-tools.jpg')",
+            bottom: "-32px", // push image further down
+            backgroundImage: "url('/hero-background-ai-cre-tools.jpg')",
+            backgroundSize: "90%", // zoom out a bit
+            backgroundPosition: "center bottom",
           }}
-        />
+        >
+          {/* slight green tint over the image area only */}
+          <div className="absolute inset-0 bg-emerald-200/10" />
+        </div>
       </div>
       <div className="container text-center relative z-10">
         <motion.div
@@ -52,7 +57,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-lg md:text-xl lg:text-2xl font-medium text-gray-600 max-w-3xl mx-auto mb-12 leading-relaxed"
+            className="text-base md:text-lg lg:text-xl font-medium text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed"
           >
             Discover Commercial Real Estate AI tools that fits your business needs or get inspired by AI features developed by real estate innovators.
           </motion.h2>
@@ -63,7 +68,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="mb-12"
+            className="mb-6"
           >
             {/* Primary CTA and Newsletter */}
             <div className="flex flex-row flex-nowrap gap-4 justify-center items-center w-full overflow-x-auto">

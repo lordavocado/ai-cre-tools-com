@@ -239,6 +239,8 @@ export default function RootLayout({
         <link rel="prefetch" href="/categories" />
         <link rel="prefetch" href="/blog" />
         <link rel="prefetch" href="/about" />
+        {/* Preload hero background to speed up above-the-fold paint */}
+        <link rel="preload" as="image" href="/hero-background-ai-cre-tools.jpg" fetchpriority="high" />
         
         {/* CSS loading detection */}
         <script dangerouslySetInnerHTML={{
