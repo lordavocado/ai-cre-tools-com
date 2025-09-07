@@ -114,13 +114,16 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         setShowRecentSearches(false);
       } else {
         setResults([]);
-        setIsOpen(query.trim().length === 0 && recentSearches.length > 0);
-        setShowRecentSearches(query.trim().length === 0 && recentSearches.length > 0);
+        // Only close the modal if there's no query, but don't auto-open based on recent searches
+        if (query.trim().length === 0) {
+          setIsOpen(false);
+          setShowRecentSearches(false);
+        }
       }
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query, recentSearches]);
+  }, [query]);
 
   const performSearch = async (searchTerm: string) => {
     setIsLoading(true);

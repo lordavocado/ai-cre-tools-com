@@ -47,13 +47,16 @@ export default function Error({
     }
   }, [error]);
 
-  // Check if this is a Google Sheets related error
-  const isSheetsError = error.message.includes('Google Sheet') ||
-                       error.message.includes('Quota exceeded') ||
-                       error.message.includes('sheets.googleapis.com') ||
-                       error.message.includes('429');
+  // Check if this is a database related error (Supabase or legacy Google Sheets)
+  const isDatabaseError = error.message.includes('Google Sheet') ||
+                         error.message.includes('Quota exceeded') ||
+                         error.message.includes('sheets.googleapis.com') ||
+                         error.message.includes('429') ||
+                         error.message.includes('Supabase') ||
+                         error.message.includes('not properly configured') ||
+                         error.message.includes('NEXT_PUBLIC_SUPABASE_URL');
 
-  if (isSheetsError) {
+  if (isDatabaseError) {
     return (
       <SheetsErrorFallback 
         error={error} 
