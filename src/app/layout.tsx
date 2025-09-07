@@ -12,7 +12,7 @@ import { FavoritesProvider } from '@/providers/FavoritesProvider';
 import { StructuredData } from '@/components/seo/structured-data';
 import { PostHogOptimizer, AnalyticsPerformanceMonitor } from '@/components/performance/posthog-optimizer';
 import { JSExecutionOptimizer, ScriptExecutionMonitor } from '@/components/performance/js-execution-optimizer';
-import { CSSFallback, CSSLoadingMonitor } from '@/components/css-fallback';
+import { CSSFallback } from '@/components/css-fallback';
 import { CriticalResources } from '@/components/performance/critical-resources';
 import { PerformanceMonitor } from '@/components/performance/performance-monitor';
 import { HydrationTracker } from '@/components/performance/hydration-tracker';
@@ -272,7 +272,6 @@ export default function RootLayout({
         )}
       >
         <CSSFallback />
-        <CSSLoadingMonitor />
         <CriticalResources />
         <PostHogProvider>
           <FavoritesProvider>
