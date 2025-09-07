@@ -37,7 +37,7 @@ export function CategoryChips({
         const badgeContent = (
           <Badge 
             variant={variant} 
-            className={`${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 transition-all duration-200 shadow-sm`}
+            className={`${badgeSize} font-normal px-3 py-1.5 rounded-md bg-emerald-50 text-emerald-700 border-none hover:bg-emerald-100 transition-colors duration-200`}
           >
             {displayName}
           </Badge>
@@ -47,7 +47,7 @@ export function CategoryChips({
           <Link 
             key={index} 
             href={`/categories/${categorySlug}`}
-            className="hover:opacity-90 transition-all duration-200 hover:scale-105"
+            className="hover:opacity-90 transition-colors duration-200"
           >
             {badgeContent}
           </Link>

@@ -1,11 +1,24 @@
 /**
  * Development debugging utilities for SSR and hydration issues
- * These utilities are only active in development mode
+ * These utilities are only active in development mode and provide
+ * performance monitoring, error tracking, and hydration diagnostics.
+ * 
+ * @fileoverview Development-only utilities for Next.js SSR debugging
  */
 
 import { useEffect, useRef } from 'react';
 
-// Development-only hydration mismatch detector
+/**
+ * Detects hydration mismatches in development mode
+ * @param componentName - Name of the component to track
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   useHydrationMismatchDetector('MyComponent');
+ *   return <div>Content</div>;
+ * }
+ * ```
+ */
 export function useHydrationMismatchDetector(componentName: string) {
   const isHydrated = useRef(false);
 
@@ -19,7 +32,18 @@ export function useHydrationMismatchDetector(componentName: string) {
   }, [componentName]);
 }
 
-// Component render tracker for development
+/**
+ * Tracks component render count and warns about excessive re-renders
+ * @param componentName - Name of the component to track
+ * @param deps - Dependencies to log with render information
+ * @example
+ * ```tsx
+ * function MyComponent({ data }) {
+ *   useRenderTracker('MyComponent', [data]);
+ *   return <div>{data}</div>;
+ * }
+ * ```
+ */
 export function useRenderTracker(componentName: string, deps: any[] = []) {
   const renderCount = useRef(0);
 
@@ -36,7 +60,16 @@ export function useRenderTracker(componentName: string, deps: any[] = []) {
   });
 }
 
-// SSR-safe console wrapper
+/**
+ * SSR-safe console wrapper that only logs in development mode on the client
+ * Prevents console logs during server-side rendering
+ * @example
+ * ```tsx
+ * devLog.log('This only logs in development on client');
+ * devLog.warn('Warning message');
+ * devLog.error('Error message');
+ * ```
+ */
 export const devLog = {
   log: (...args: any[]) => {
     if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
@@ -55,7 +88,18 @@ export const devLog = {
   }
 };
 
-// Hydration timing tracker
+/**
+ * Tracks hydration timing performance for components
+ * @param componentName - Name of the component to track
+ * @returns Object with getHydrationTime method
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const { getHydrationTime } = useHydrationTimer('MyComponent');
+ *   return <div>Content</div>;
+ * }
+ * ```
+ */
 export function useHydrationTimer(componentName: string) {
   const startTime = useRef<number | null>(null);
   const hydratedTime = useRef<number | null>(null);
@@ -86,11 +130,20 @@ export function useHydrationTimer(componentName: string) {
   };
 }
 
-// Memory usage tracker for development
+/**
+ * Tracks memory usage for components (Chrome/Edge only)
+ * @param componentName - Name of the component to track
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   useMemoryTracker('MyComponent');
+ *   return <div>Content</div>;
+ * }
+ * ```
+ */
 export function useMemoryTracker(componentName: string) {
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-      // Check memory usage if available
       if ('memory' in performance) {
         const memInfo = (performance as any).memory;
         devLog.log(`🧠 ${componentName} memory usage:`, {
@@ -103,7 +156,18 @@ export function useMemoryTracker(componentName: string) {
   });
 }
 
-// Development error boundary hook
+/**
+ * Creates an error tracker for development debugging
+ * @param componentName - Name of the component to track errors for
+ * @returns Error handler function for use in error boundaries
+ * @example
+ * ```tsx
+ * function MyErrorBoundary() {
+ *   const handleError = useErrorTracker('MyErrorBoundary');
+ *   // Use in componentDidCatch or error boundary
+ * }
+ * ```
+ */
 export function useErrorTracker(componentName: string) {
   return (error: Error, errorInfo: any) => {
     if (process.env.NODE_ENV === 'development') {
@@ -112,19 +176,30 @@ export function useErrorTracker(componentName: string) {
       console.error('Error Info:', errorInfo);
       console.error('Stack:', error.stack);
       console.groupEnd();
-
-      // Report to error tracking service in production
-      // reportError(error, { component: componentName, ...errorInfo });
     }
   };
 }
 
-// SSR detection utility
+/**
+ * SSR-safe utilities for browser/server detection and storage access
+ * @example
+ * ```tsx
+ * if (ssrUtils.isBrowser) {
+ *   // Browser-only code
+ * }
+ * const data = ssrUtils.getLocalStorage('key', defaultValue);
+ * ```
+ */
 export const ssrUtils = {
   isBrowser: typeof window !== 'undefined',
   isServer: typeof window === 'undefined',
 
-  // Safe localStorage access
+  /**
+   * Safe localStorage access that works during SSR
+   * @param key - Storage key
+   * @param defaultValue - Default value if key doesn't exist
+   * @returns Parsed value or default
+   */
   getLocalStorage: (key: string, defaultValue: any = null) => {
     if (ssrUtils.isBrowser) {
       try {
@@ -137,7 +212,12 @@ export const ssrUtils = {
     return defaultValue;
   },
 
-  // Safe sessionStorage access
+  /**
+   * Safe sessionStorage access that works during SSR
+   * @param key - Storage key
+   * @param defaultValue - Default value if key doesn't exist
+   * @returns Parsed value or default
+   */
   getSessionStorage: (key: string, defaultValue: any = null) => {
     if (ssrUtils.isBrowser) {
       try {
@@ -151,11 +231,20 @@ export const ssrUtils = {
   }
 };
 
-// Performance monitoring for hydration
+/**
+ * Monitors hydration and navigation performance metrics
+ * Only active in development mode
+ * @example
+ * ```tsx
+ * function App() {
+ *   useHydrationPerformance();
+ *   return <div>App content</div>;
+ * }
+ * ```
+ */
 export function useHydrationPerformance() {
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
-      // Measure hydration performance
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           if (entry.entryType === 'navigation') {
@@ -170,16 +259,24 @@ export function useHydrationPerformance() {
       });
 
       observer.observe({ entryTypes: ['navigation'] });
-
       return () => observer.disconnect();
     }
   }, []);
 }
 
-// Global hydration tracker
 let hydrationStartTime: number | null = null;
 let hydrationCompleteTime: number | null = null;
 
+/**
+ * Global hydration tracking utility for measuring app-wide hydration performance
+ * @example
+ * ```tsx
+ * // In _app.tsx or root component
+ * globalHydrationTracker.start();
+ * // Later, when hydration is complete
+ * globalHydrationTracker.complete();
+ * ```
+ */
 export const globalHydrationTracker = {
   start: () => {
     if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
@@ -210,7 +307,15 @@ export const globalHydrationTracker = {
   })
 };
 
-// Hydration warning utility
+/**
+ * Reports hydration warnings with detailed information
+ * @param componentName - Name of the component with hydration issues
+ * @param details - Additional details about the hydration warning
+ * @example
+ * ```tsx
+ * reportHydrationWarning('MyComponent', { reason: 'State mismatch' });
+ * ```
+ */
 export function reportHydrationWarning(componentName: string, details: any) {
   if (process.env.NODE_ENV === 'development') {
     console.group(`⚠️ Hydration Warning in ${componentName}`);
@@ -220,7 +325,17 @@ export function reportHydrationWarning(componentName: string, details: any) {
   }
 }
 
-// Development performance reporter
+/**
+ * Creates a comprehensive performance report for development debugging
+ * @returns Performance report object or null in production
+ * @example
+ * ```tsx
+ * const report = createPerformanceReport();
+ * if (report) {
+ *   // Use report data for debugging
+ * }
+ * ```
+ */
 export function createPerformanceReport() {
   if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
     const report = {
@@ -238,5 +353,3 @@ export function createPerformanceReport() {
   }
   return null;
 }
-
-

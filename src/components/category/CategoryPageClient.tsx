@@ -111,7 +111,7 @@ export function CategoryPageClient({
           }}></div>
         </div>
 
-        <div className="container relative py-20 md:py-32 pl-6">
+        <div className="container relative py-16 md:py-24 px-6">
           {/* Breadcrumb Navigation */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
             <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
@@ -204,9 +204,9 @@ export function CategoryPageClient({
       </div>
 
       {/* Key Use Cases Section */}
-      <div className="container py-20 md:py-28 pl-6 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container py-16 md:py-24 px-6 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Key Use Cases</h2>
             <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
               Discover how {category.name.toLowerCase()} tools transform these critical workflows
@@ -332,10 +332,10 @@ export function CategoryPageClient({
 
       {/* Enhanced Category Description */}
       {category.longDescription && (
-        <div className="container py-20 md:py-28 pl-6">
+        <div className="container py-16 md:py-24 px-6">
           <div className="max-w-4xl mx-auto">
             <Card className="border-0 shadow-xl bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900">
-              <CardContent className="p-8 md:p-12">
+              <CardContent className="p-8 md:p-10">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold mb-4">About {category.name} Tools</h2>
                   <div className="w-24 h-1 bg-gradient-to-r from-primary to-blue-500 mx-auto rounded-full" />
@@ -348,9 +348,9 @@ export function CategoryPageClient({
       )}
 
       {/* Enhanced FAQ Section */}
-      <div className="container py-20 md:py-28 pl-6">
+      <div className="container py-16 md:py-24 px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
             <p className="text-muted-foreground text-lg">
               Everything you need to know about {category.name.toLowerCase()} tools
@@ -410,9 +410,9 @@ export function CategoryPageClient({
       </div>
 
       {/* Related Categories Section */}
-      <div className="container py-20 pl-6 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 dark:from-slate-900/50 dark:via-slate-800 dark:to-slate-900/50">
+      <div className="container py-16 md:py-24 px-6 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 dark:from-slate-900/50 dark:via-slate-800 dark:to-slate-900/50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Explore Related Categories</h2>
             <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
               Discover other AI tools that complement your {category.name.toLowerCase()} solutions
@@ -441,7 +441,7 @@ export function CategoryPageClient({
           </div>
           
           {/* View All Categories Link */}
-          <div className="text-center mt-12">
+          <div className="text-center mt-10">
             <Link 
               href="/categories"
               className="inline-flex items-center gap-2 px-8 py-4 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl border border-primary/20 hover:border-primary/30 transition-all duration-300 font-medium text-lg"
@@ -454,9 +454,9 @@ export function CategoryPageClient({
       </div>
 
       {/* Main Tools Grid */}
-      <div id="tools-section" className="container py-20 md:py-28 pl-6">
+      <div id="tools-section" className="container py-16 md:py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
             <p className="text-muted-foreground text-lg">
               {itemsInCategory.length > 0 

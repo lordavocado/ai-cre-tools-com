@@ -2,22 +2,36 @@
 
 import { useEffect, useCallback, useState } from 'react';
 
+/**
+ * Performance metrics interface for Core Web Vitals
+ */
 interface PerformanceMetrics {
-  lcp: number | null;
-  fid: number | null;
-  cls: number | null;
-  ttfb: number | null;
-  fcp: number | null;
+  lcp: number | null; // Largest Contentful Paint
+  fid: number | null; // First Input Delay
+  cls: number | null; // Cumulative Layout Shift
+  ttfb: number | null; // Time to First Byte
+  fcp: number | null; // First Contentful Paint
 }
 
+/**
+ * Configuration options for performance monitoring
+ */
 interface PerformanceMonitorProps {
   enableConsoleLogging?: boolean;
   enableRealUserMonitoring?: boolean;
   thresholdWarnings?: boolean;
 }
 
+/**
+ * Performance Monitor Component
+ * Tracks Core Web Vitals and performance metrics
+ * 
+ * @param enableConsoleLogging - Whether to log metrics to console (development only)
+ * @param enableRealUserMonitoring - Whether to send metrics to analytics
+ * @param thresholdWarnings - Whether to warn about poor performance thresholds
+ */
 export function PerformanceMonitor({
-  enableConsoleLogging = true,
+  enableConsoleLogging = false,
   enableRealUserMonitoring = true,
   thresholdWarnings = true
 }: PerformanceMonitorProps) {
@@ -41,11 +55,11 @@ export function PerformanceMonitor({
           const lcp = entry.startTime;
           setMetrics(prev => ({ ...prev, lcp }));
           
-          if (enableConsoleLogging) {
+          if (enableConsoleLogging && process.env.NODE_ENV === 'development') {
             console.log(`📊 LCP: ${lcp.toFixed(0)}ms`);
           }
           
-          if (thresholdWarnings && lcp > 2500) {
+          if (thresholdWarnings && lcp > 2500 && process.env.NODE_ENV === 'development') {
             console.warn(`⚠️ LCP is slow: ${lcp.toFixed(0)}ms (should be < 2.5s)`);
           }
         }
@@ -55,11 +69,11 @@ export function PerformanceMonitor({
           const fid = firstInput.processingStart - firstInput.startTime;
           setMetrics(prev => ({ ...prev, fid }));
           
-          if (enableConsoleLogging) {
+          if (enableConsoleLogging && process.env.NODE_ENV === 'development') {
             console.log(`📊 FID: ${fid.toFixed(0)}ms`);
           }
           
-          if (thresholdWarnings && fid > 100) {
+          if (thresholdWarnings && fid > 100 && process.env.NODE_ENV === 'development') {
             console.warn(`⚠️ FID is slow: ${fid.toFixed(0)}ms (should be < 100ms)`);
           }
         }
@@ -69,11 +83,11 @@ export function PerformanceMonitor({
           const cls = layoutShift.value;
           setMetrics(prev => ({ ...prev, cls }));
           
-          if (enableConsoleLogging) {
+          if (enableConsoleLogging && process.env.NODE_ENV === 'development') {
             console.log(`📊 CLS: ${cls.toFixed(3)}`);
           }
           
-          if (thresholdWarnings && cls > 0.1) {
+          if (thresholdWarnings && cls > 0.1 && process.env.NODE_ENV === 'development') {
             console.warn(`⚠️ CLS detected: ${cls.toFixed(3)} (should be < 0.1)`);
           }
         }
@@ -87,7 +101,10 @@ export function PerformanceMonitor({
     return () => observer.disconnect();
   }, [enableConsoleLogging, thresholdWarnings]);
 
-  // Monitor resource loading and navigation timing
+  /**
+   * Monitor resource loading performance and navigation timing
+   * Tracks slow resources and calculates TTFB and FCP metrics
+   */
   const monitorResourcePerformance = useCallback(() => {
     if (!window.performance) return;
 
@@ -99,7 +116,7 @@ export function PerformanceMonitor({
         if (entry.entryType === 'resource') {
           const resource = entry as PerformanceResourceTiming;
           
-          if (enableConsoleLogging && resource.duration > 1000) {
+          if (enableConsoleLogging && resource.duration > 1000 && process.env.NODE_ENV === 'development') {
             console.warn(`🐌 Slow resource: ${resource.name} took ${resource.duration.toFixed(0)}ms`);
           }
         }
@@ -116,12 +133,12 @@ export function PerformanceMonitor({
       
       setMetrics(prev => ({ ...prev, ttfb, fcp }));
       
-      if (enableConsoleLogging) {
+      if (enableConsoleLogging && process.env.NODE_ENV === 'development') {
         console.log(`📊 TTFB: ${ttfb.toFixed(0)}ms`);
         console.log(`📊 FCP: ${fcp.toFixed(0)}ms`);
       }
       
-      if (thresholdWarnings) {
+      if (thresholdWarnings && process.env.NODE_ENV === 'development') {
         if (ttfb > 600) {
           console.warn(`⚠️ TTFB is slow: ${ttfb.toFixed(0)}ms (should be < 600ms)`);
         }
@@ -134,7 +151,10 @@ export function PerformanceMonitor({
     return () => resourceObserver.disconnect();
   }, [enableConsoleLogging, thresholdWarnings]);
 
-  // Real User Monitoring - send metrics to analytics
+  /**
+   * Send performance metrics to analytics services
+   * Supports PostHog and Google Analytics integration
+   */
   const sendMetricsToAnalytics = useCallback((metrics: PerformanceMetrics) => {
     if (!enableRealUserMonitoring) return;
 
@@ -161,7 +181,10 @@ export function PerformanceMonitor({
     }
   }, [enableRealUserMonitoring]);
 
-  // Monitor long tasks that block the main thread
+  /**
+   * Monitor long tasks that block the main thread
+   * Long tasks over 50ms can cause poor user experience
+   */
   const monitorLongTasks = useCallback(() => {
     if (!window.PerformanceObserver) return;
 
@@ -172,11 +195,11 @@ export function PerformanceMonitor({
         if (entry.entryType === 'longtask') {
           const longTask = entry as any;
           
-          if (enableConsoleLogging) {
+          if (enableConsoleLogging && process.env.NODE_ENV === 'development') {
             console.warn(`🚨 Long task detected: ${longTask.duration.toFixed(0)}ms`);
           }
           
-          if (thresholdWarnings && longTask.duration > 50) {
+          if (thresholdWarnings && longTask.duration > 50 && process.env.NODE_ENV === 'development') {
             console.error(`❌ Main thread blocked for ${longTask.duration.toFixed(0)}ms`);
           }
         }
@@ -223,10 +246,14 @@ export function PerformanceMonitor({
     }
   }, [metrics, enableConsoleLogging]);
 
-  return null; // This component doesn't render anything
+  return null;
 }
 
-// Hook for accessing performance metrics in components
+/**
+ * Hook for accessing performance metrics in components
+ * Provides current Core Web Vitals and navigation timing metrics
+ * @returns PerformanceMetrics object with current values
+ */
 export function usePerformanceMetrics() {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
     lcp: null,

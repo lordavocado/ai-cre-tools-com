@@ -1,4 +1,5 @@
 import { getDirectoryItemBySlug, getDirectoryItems } from "@/lib/sheets";
+import { isValidSlug, isValidSlugFormat } from "@/lib/routing-utils-client";
 import type { Metadata, ResolvingMetadata } from 'next';
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -123,6 +124,17 @@ export async function generateMetadata(
 
 export default async function DirectoryItemPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  
+  // Validate slug format for SEO compliance
+  if (!isValidSlugFormat(slug)) {
+    notFound();
+  }
+  
+  // Check if slug conflicts with reserved routes
+  if (!isValidSlug(slug)) {
+    notFound();
+  }
+  
   const item = await getDirectoryItemBySlug(slug);
 
   if (!item) {

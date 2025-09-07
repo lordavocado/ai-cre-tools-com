@@ -1,11 +1,23 @@
+/**
+ * Sitemap XML generation API route
+ * Generates a comprehensive sitemap including static pages, blog posts, guides,
+ * directory items, and category pages for optimal SEO crawling
+ * @fileoverview Dynamic sitemap generation with error handling and fallbacks
+ */
+
 import { NextResponse } from 'next/server';
 import { getGuides } from '@/lib/markdown';
 import { getDirectoryItems, getCategories } from '@/lib/sheets';
 import { getAllBlogPosts } from '@/lib/blog';
+import { isValidSlug, isValidSlugFormat } from '@/lib/routing-utils-client';
 import { siteConfig } from '@/config/site';
 import type { DirectoryItem } from '@/types';
 import type { MetadataRoute } from 'next';
 
+/**
+ * Generates and returns XML sitemap
+ * @returns NextResponse containing XML sitemap with proper headers
+ */
 export async function GET() {
   const baseUrl = siteConfig.url;
 
@@ -15,10 +27,8 @@ export async function GET() {
     let directoryItems: DirectoryItem[] = [];
     try {
       directoryItems = await getDirectoryItems();
-      console.log(`Sitemap: Successfully loaded ${directoryItems.length} directory items`);
     } catch (error) {
-      console.error('Sitemap: Failed to load directory items from Google Sheets:', error);
-      // Continue without directory items - they'll be handled in the fallback
+      // Continue without directory items - fallback handling below
     }
     const blogPosts = await getAllBlogPosts();
 
@@ -40,7 +50,7 @@ export async function GET() {
         'data-workflow-infrastructure',
         'productivity-copilots'
       ];
-      console.log('Sitemap: Using fallback categories due to sheets failure');
+      // Using fallback categories when sheets are unavailable
     }
 
     // Static pages
@@ -117,21 +127,25 @@ export async function GET() {
       priority: 0.8,
     }));
 
-    // Directory item pages
-    const directoryPages = directoryItems.map(item => ({
-      url: `${baseUrl}/${item.slug}`,
-      lastModified: new Date(item.lastUpdated || Date.now()),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }));
+    // Directory item pages - filter out invalid slugs to prevent SEO issues
+    const directoryPages = directoryItems
+      .filter(item => isValidSlugFormat(item.slug) && isValidSlug(item.slug))
+      .map(item => ({
+        url: `${baseUrl}/${item.slug}`,
+        lastModified: new Date(item.lastUpdated || Date.now()),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8, // Increased priority for tool pages as they're key content
+      }));
 
-    // Category pages
-    const categoryPages = categories.map(category => ({
-      url: `${baseUrl}/categories/${category}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }));
+    // Category pages - validate category slugs
+    const categoryPages = categories
+      .filter(category => isValidSlugFormat(category))
+      .map(categorySlug => ({
+        url: `${baseUrl}/categories/${categorySlug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7, // Increased priority for category pages
+      }));
 
     // Combine all pages
     const allPages = [
@@ -142,21 +156,29 @@ export async function GET() {
       ...categoryPages,
     ];
 
-    // Generate XML sitemap
+    // Sort pages by priority and last modified for better SEO
+    const sortedPages = allPages.sort((a, b) => {
+      if (b.priority !== a.priority) {
+        return b.priority - a.priority; // Higher priority first
+      }
+      return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime(); // Newer content first
+    });
+
+    // Generate XML sitemap with proper formatting
     const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-
-${allPages.map(page => `  <url>
+${sortedPages.map(page => `  <url>
     <loc>${page.url}</loc>
     <lastmod>${page.lastModified.toISOString()}</lastmod>
     <changefreq>${page.changeFrequency}</changefreq>
-    <priority>${page.priority}</priority>
+    <priority>${page.priority.toFixed(1)}</priority>
   </url>`).join('\n')}
-
 </urlset>`;
+
+    // Sitemap successfully generated
 
     return new NextResponse(sitemapXml, {
       headers: {
@@ -166,7 +188,10 @@ ${allPages.map(page => `  <url>
     });
 
   } catch (error) {
-    console.error('Error generating sitemap:', error);
+    // Log error only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error generating sitemap:', error);
+    }
 
     // Return a basic sitemap with just the homepage if there's an error
     const basicSitemap = `<?xml version="1.0" encoding="UTF-8"?>

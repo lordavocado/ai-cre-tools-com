@@ -66,12 +66,10 @@ export function CriticalResources() {
           this.rel = 'stylesheet';
           // @ts-ignore
           this.media = media;
-          console.log(`CSS loaded successfully: ${href}`);
         }
       };
 
       link.onerror = function() {
-        console.warn(`Failed to load CSS: ${href}`);
         // Try to load directly as stylesheet if preload fails
         const fallbackLink = document.createElement('link');
         fallbackLink.rel = 'stylesheet';
@@ -85,7 +83,6 @@ export function CriticalResources() {
       // Multiple fallback strategies
       setTimeout(() => {
         if (link.rel !== 'stylesheet' && !loaded) {
-          console.log(`Fallback: Converting preload to stylesheet for ${href}`);
           link.rel = 'stylesheet';
           link.media = media;
         }
@@ -94,7 +91,6 @@ export function CriticalResources() {
       // Final fallback - create direct stylesheet link
       setTimeout(() => {
         if (!loaded) {
-          console.log(`Final fallback: Creating direct stylesheet for ${href}`);
           const directLink = document.createElement('link');
           directLink.rel = 'stylesheet';
           directLink.href = href;
@@ -113,16 +109,12 @@ export function CriticalResources() {
               if (node.nodeType === 1 && (node as Element).tagName === 'LINK') {
                 const link = node as HTMLLinkElement;
                 if (link.rel === 'stylesheet' && link.href.includes('/_next/static/css/')) {
-                  console.log('Main CSS detected:', link.href);
-                  
                   // Add error handling to main CSS
                   link.onerror = () => {
-                    console.error('Main CSS failed to load:', link.href);
                     document.documentElement.classList.add('css-load-error');
                   };
                   
                   link.onload = () => {
-                    console.log('Main CSS loaded successfully:', link.href);
                     document.documentElement.classList.add('css-loaded');
                   };
                 }

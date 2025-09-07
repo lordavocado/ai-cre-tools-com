@@ -1,3 +1,9 @@
+/**
+ * Google Sheets integration for AI CRE Tools directory
+ * Server-side only module for fetching and managing directory data
+ * @fileoverview Handles all Google Sheets operations including caching, rate limiting, and error handling
+ */
+
 if (typeof window !== 'undefined') {
   throw new Error('This module can only be used on the server side');
 }
@@ -62,7 +68,11 @@ const COLUMN_MAPPINGS = {
 
 
 
-// Hardcoded categories
+/**
+ * Retrieves all hardcoded categories with optional item count calculation
+ * @param includeItemCounts - Whether to calculate and include item counts for each category
+ * @returns Promise resolving to array of categories
+ */
 export const getCategories = async (includeItemCounts: boolean = true): Promise<Category[]> => {
   const categories: Category[] = [
     {
@@ -313,7 +323,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       }).length
     }));
   } catch (error) {
-    console.warn('Failed to calculate item counts for categories, returning without counts:', error);
+    // Gracefully handle errors when calculating item counts
     return categories;
   }
 };
@@ -355,7 +365,6 @@ function isCircuitBreakerOpen(): boolean {
 
 function openCircuitBreaker(): void {
   circuitBreakerOpenUntil = Date.now() + CIRCUIT_BREAKER_TIMEOUT_MS;
-  console.warn(`Circuit breaker opened due to ${consecutiveFailures} consecutive failures. Will retry after ${CIRCUIT_BREAKER_TIMEOUT_MS / 1000} seconds.`);
 }
 
 function closeCircuitBreaker(): void {
@@ -393,7 +402,6 @@ async function retryWithBackoff<T>(
     try {
       if (attempt > 0) {
         const delay = baseDelay * Math.pow(2, attempt - 1) + Math.random() * 1000;
-        console.log(`Retrying Google Sheets API call in ${Math.round(delay)}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
       
@@ -421,7 +429,6 @@ async function retryWithBackoff<T>(
         if (attempt === maxRetries) {
           throw new Error(`Google Sheets API rate limit exceeded. Please try again in a few minutes. Original error: ${error.message}`);
         }
-        console.warn(`Rate limit hit on attempt ${attempt + 1}, retrying...`);
         continue;
       }
       
@@ -439,6 +446,11 @@ function isCacheValid(timestamp: number): boolean {
   return Date.now() - timestamp < CACHE_DURATION_MS;
 }
 
+/**
+ * Gets an initialized Google Spreadsheet instance with proper authentication and caching
+ * @returns Promise resolving to authenticated GoogleSpreadsheet instance
+ * @throws Error if authentication fails or required environment variables are missing
+ */
 async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
   // Try to use cached credentials if available and docInstance is not set or info not loaded
   if (docInstance && docInfoLoaded && 
@@ -464,6 +476,11 @@ async function getInitializedDoc(): Promise<GoogleSpreadsheet> {
   }
 }
 
+/**
+ * Initializes Google Spreadsheet with retry logic and proper error handling
+ * @returns Promise resolving to authenticated GoogleSpreadsheet instance
+ * @throws Error if initialization fails after retries
+ */
 async function initializeDocWithRetry(): Promise<GoogleSpreadsheet> {
   const sheetId = process.env.GOOGLE_SHEET_ID;
   const serviceAccountEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -478,8 +495,6 @@ async function initializeDocWithRetry(): Promise<GoogleSpreadsheet> {
   if (!rawPrivateKey) {
     throw new Error('GOOGLE_PRIVATE_KEY is not defined in .env.local. Please ensure it is set and properly formatted (e.g., newlines escaped as \\n in the .env.local file).');
   }
-  
-  console.log("Attempting to initialize Google Sheets connection with environment variables...");
 
   const privateKeyProcessed = rawPrivateKey.replace(/\\n/g, '\n');
 
@@ -502,10 +517,8 @@ async function initializeDocWithRetry(): Promise<GoogleSpreadsheet> {
       cachedServiceAccountEmail = serviceAccountEmail;
       cachedPrivateKey = rawPrivateKey; // Cache the raw key as it was read from env
 
-      console.log(`Successfully loaded Google Sheet document: "${docInstance.title}"`);
       return docInstance;
     } catch (error) {
-      console.error("Failed to load Google Sheet document info:", error);
       // Clear potentially stale cache on error
       docInstance = null;
       docInfoLoaded = false;
@@ -517,17 +530,41 @@ async function initializeDocWithRetry(): Promise<GoogleSpreadsheet> {
   });
 }
 
+/**
+ * Helper function to safely extract string values from Google Sheets rows
+ * @param row - GoogleSpreadsheetRow instance
+ * @param header - Column header name
+ * @returns Trimmed string value or empty string if not found
+ */
 const getString = (row: GoogleSpreadsheetRow<any>, header: string): string => row.get(header)?.toString().trim() || '';
+/**
+ * Helper function to safely extract optional string values from Google Sheets rows
+ * @param row - GoogleSpreadsheetRow instance
+ * @param header - Column header name
+ * @returns Trimmed string value or undefined if empty/not found
+ */
 const getOptionalString = (row: GoogleSpreadsheetRow<any>, header: string): string | undefined => {
   const val = row.get(header)?.toString().trim();
   return val ? val : undefined;
 }
+/**
+ * Helper function to safely extract numeric values from Google Sheets rows
+ * @param row - GoogleSpreadsheetRow instance
+ * @param header - Column header name
+ * @returns Parsed number or undefined if invalid/empty
+ */
 const getNumber = (row: GoogleSpreadsheetRow<any>, header: string): number | undefined => {
   const valStr = row.get(header)?.toString().trim();
   if (valStr === undefined || valStr === null || valStr === '') return undefined;
   const val = parseFloat(valStr);
   return isNaN(val) ? undefined : val;
 }
+/**
+ * Helper function to safely extract comma-separated string arrays from Google Sheets rows
+ * @param row - GoogleSpreadsheetRow instance
+ * @param header - Column header name
+ * @returns Array of trimmed strings or undefined if empty
+ */
 const getArrayStrings = (row: GoogleSpreadsheetRow<any>, header: string): string[] | undefined => {
   const val = row.get(header)?.toString().trim();
   if (!val) return undefined;
@@ -535,21 +572,31 @@ const getArrayStrings = (row: GoogleSpreadsheetRow<any>, header: string): string
   return val
     .split(',')
     .map((s: string) => s.trim())
-    .map((s: string) => s.replace(/^#/, '').trim()) // Remove leading # if present
-    .filter((s: string) => s); // Remove empty strings
+    .map((s: string) => s.replace(/^#/, '').trim())
+    .filter((s: string) => s);
 }
+/**
+ * Helper function to safely parse JSON values from Google Sheets rows
+ * @param row - GoogleSpreadsheetRow instance
+ * @param header - Column header name
+ * @returns Parsed JSON object or undefined if invalid/empty
+ */
 const getJSON = <T>(row: GoogleSpreadsheetRow<any>, header: string): T | undefined => {
   const val = row.get(header)?.toString().trim();
   if (!val) return undefined;
   try {
     return JSON.parse(val) as T;
   } catch (e) {
-    console.warn(`Failed to parse JSON for header "${header}" in row ${row.rowNumber}:`, e, `Value: "${val}"`);
     return undefined;
   }
 }
 
-// Add this helper function after the other helper functions
+/**
+ * Parses feature strings into structured feature objects
+ * @param featuresString - Comma-separated string of features, optionally with descriptions in parentheses
+ * @returns Array of feature objects with name and optional description
+ * @example parseFeatures('AI Search, Data Analysis (Advanced), Reporting')
+ */
 const parseFeatures = (featuresString: string): { name: string; description?: string }[] => {
   if (!featuresString) return [];
   
@@ -571,7 +618,13 @@ const parseFeatures = (featuresString: string): { name: string; description?: st
   });
 };
 
-// Update the getDirectoryItems function
+/**
+ * Retrieves directory items with optional search and category filtering
+ * Uses intelligent caching and rate limiting for optimal performance
+ * @param searchTerm - Optional search term to filter items by name, description, tagline, or tags
+ * @param categoryFilter - Optional comma-separated list of category slugs to filter by
+ * @returns Promise resolving to array of filtered directory items
+ */
 export async function getDirectoryItems(
   searchTerm?: string, 
   categoryFilter?: string
@@ -604,7 +657,6 @@ export async function getDirectoryItems(
       const result = await pendingItemsRequest;
       return result;
     } catch (error) {
-      console.error('Failed to fetch directory items:', error);
       // Clear cache and pending request to prevent stuck state
       allItemsCache = [];
       allItemsCacheTimestamp = Date.now();
@@ -650,11 +702,15 @@ export async function getDirectoryItems(
   return items;
 }
 
+/**
+ * Fetches directory items directly from Google Sheets
+ * @returns Promise resolving to array of directory items
+ * @throws Error if sheet access fails
+ */
 async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
   return retryWithBackoff(async () => {
     // Graceful fallback when env vars are missing during build/preview
     if (!process.env.GOOGLE_SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-      console.warn("Google Sheets env vars missing. Skipping fetch and returning empty directory items.");
       allItemsCache = [];
       allItemsCacheTimestamp = Date.now();
       return [];
@@ -663,8 +719,7 @@ async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
     const doc = await getInitializedDoc();
     const sheet = doc.sheetsByTitle[SHEET_NAMES.ITEMS];
     if (!sheet) {
-      console.error(`Sheet '${SHEET_NAMES.ITEMS}' not found. Check SHEET_NAMES configuration in src/lib/sheets.ts.`);
-      return [];
+      throw new Error(`Sheet '${SHEET_NAMES.ITEMS}' not found. Check SHEET_NAMES configuration.`);
     }
     
     const rows = await sheet.getRows();
@@ -695,19 +750,28 @@ async function fetchDirectoryItemsFromSheet(): Promise<DirectoryItem[]> {
     allItemsCache = items;
     allItemsCacheTimestamp = Date.now();
     
-    console.log(`Successfully fetched ${items.length} directory items from Google Sheets`);
     return items;
   });
 }
 
+/**
+ * Retrieves a specific directory item by its slug
+ * @param slug - Unique identifier for the directory item
+ * @returns Promise resolving to directory item or undefined if not found
+ */
 export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryItem | undefined> {
   const items = await getDirectoryItems();
   return items.find(item => item.slug === slug);
 }
 
+/**
+ * Retrieves a specific category by its slug with accurate item count
+ * @param slug - Unique identifier for the category
+ * @returns Promise resolving to category with updated item count or undefined if not found
+ */
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {
-  const categories = await getCategories(); // Use categories from getCategories function
-  const allDirItems = await getDirectoryItems(); // Need this for item count calculation
+  const categories = await getCategories();
+  const allDirItems = await getDirectoryItems();
   
   const category = categories.find(cat => cat.slug === slug);
 
@@ -724,34 +788,26 @@ export async function getCategoryBySlug(slug: string): Promise<Category | undefi
   return undefined;
 }
 
-// Newsletter subscription (Mailchimp integration placeholder)
-// To enable Mailchimp integration:
-// 1. Set MAILCHIMP_API_KEY and MAILCHIMP_LIST_ID in your environment variables.
-// 2. Implement the API call in the function below.
-
+/**
+ * Submits newsletter subscription (placeholder for Mailchimp integration)
+ * To enable Mailchimp integration, set MAILCHIMP_API_KEY and MAILCHIMP_LIST_ID environment variables
+ * @param email - Email address to subscribe
+ * @returns Promise resolving to success status and message
+ */
 export async function submitNewsletter(email: string): Promise<{ success: boolean; message: string }> {
   if (!email || !email.includes('@')) {
     return { success: false, message: 'Please enter a valid email address.' };
   }
 
-  // TODO: Integrate with Mailchimp API
-  // Example:
-  // const response = await fetch('https://<dc>.api.mailchimp.com/3.0/lists/' + process.env.MAILCHIMP_LIST_ID + '/members', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Authorization': 'apikey ' + process.env.MAILCHIMP_API_KEY,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({ email_address: email, status: 'subscribed' }),
-  // });
-  // if (response.ok) return { success: true, message: 'Successfully subscribed to the newsletter!' };
-  // else return { success: false, message: 'Subscription failed. Please try again later.' };
-
-  return { success: true, message: 'This would subscribe to Mailchimp. (Integration not yet implemented.)' };
+  // Placeholder implementation - replace with actual Mailchimp integration
+  return { success: true, message: 'Newsletter subscription placeholder - Mailchimp integration pending.' };
 }
 
-
-
+/**
+ * Retrieves featured directory items based on highest ratings
+ * @param limit - Maximum number of items to return (default: 3)
+ * @returns Promise resolving to array of top-rated directory items
+ */
 export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem[]> {
   const allItems = await getDirectoryItems();
   return allItems
@@ -760,6 +816,10 @@ export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem
     .slice(0, limit);
 }
 
+/**
+ * Clears all cached data and resets connections
+ * Use this function when you need to force a fresh data fetch
+ */
 export function clearSheetCache() {
   allItemsCache = null;
   allItemsCacheTimestamp = 0;
@@ -770,12 +830,13 @@ export function clearSheetCache() {
   cachedPrivateKey = null;
   pendingDocInitialization = null;
   pendingItemsRequest = null;
-  // Reset circuit breaker
   closeCircuitBreaker();
-  console.log("Sheet cache and Google Doc instance cleared. Data will be re-fetched on next request.");
 }
 
-// Debug function to check circuit breaker status
+/**
+ * Returns current circuit breaker status for debugging
+ * @returns Object containing circuit breaker state information
+ */
 export function getCircuitBreakerStatus() {
   return {
     isOpen: isCircuitBreakerOpen(),
@@ -785,8 +846,9 @@ export function getCircuitBreakerStatus() {
   };
 }
 
-// --- Tool Submission Functions ---
-
+/**
+ * Tool submission interface for managing user-submitted tools
+ */
 export interface ToolSubmission {
   submissionId: string;
   website: string;
@@ -806,13 +868,17 @@ export interface ToolSubmission {
   status: 'pending' | 'approved' | 'rejected';
 }
 
+/**
+ * Stores a new tool submission in Google Sheets
+ * @param submissionData - Tool submission data without submissionId
+ * @returns Promise resolving to generated submission ID
+ */
 export async function storeToolSubmission(submissionData: Omit<ToolSubmission, 'submissionId'>): Promise<string> {
   const submissionId = `submission_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   return retryWithBackoff(async () => {
     // Graceful fallback when env vars are missing during build/preview
     if (!process.env.GOOGLE_SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-      console.warn("Google Sheets env vars missing. Skipping submission storage.");
       return submissionId;
     }
 
@@ -820,17 +886,14 @@ export async function storeToolSubmission(submissionData: Omit<ToolSubmission, '
     const sheet = doc.sheetsByTitle[SHEET_NAMES.SUBMISSIONS];
 
     if (!sheet) {
-      console.error(`Sheet '${SHEET_NAMES.SUBMISSIONS}' not found. Creating it...`);
       // Try to create the sheet if it doesn't exist
       try {
-        const newSheet = await doc.addSheet({
+        await doc.addSheet({
           title: SHEET_NAMES.SUBMISSIONS,
           headerValues: Object.values(COLUMN_MAPPINGS.SUBMISSIONS)
         });
-        console.log(`Created new sheet: ${SHEET_NAMES.SUBMISSIONS}`);
-        return submissionId; // Return early for now, will be stored on next call
+        return submissionId;
       } catch (error) {
-        console.error(`Failed to create sheet '${SHEET_NAMES.SUBMISSIONS}':`, error);
         throw new Error(`Could not create submissions sheet. Please create it manually in Google Sheets.`);
       }
     }
@@ -856,16 +919,19 @@ export async function storeToolSubmission(submissionData: Omit<ToolSubmission, '
       [CM.STATUS]: submissionData.status,
     });
 
-    console.log(`Successfully stored tool submission: ${submissionId}`);
     return submissionId;
   });
 }
 
+/**
+ * Retrieves tool submissions from Google Sheets with optional status filtering
+ * @param status - Optional status filter ('pending' | 'approved' | 'rejected')
+ * @returns Promise resolving to array of tool submissions
+ */
 export async function getToolSubmissions(status?: 'pending' | 'approved' | 'rejected'): Promise<ToolSubmission[]> {
   return retryWithBackoff(async () => {
     // Graceful fallback when env vars are missing during build/preview
     if (!process.env.GOOGLE_SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-      console.warn("Google Sheets env vars missing. Returning empty submissions.");
       return [];
     }
 
@@ -873,7 +939,6 @@ export async function getToolSubmissions(status?: 'pending' | 'approved' | 'reje
     const sheet = doc.sheetsByTitle[SHEET_NAMES.SUBMISSIONS];
 
     if (!sheet) {
-      console.warn(`Sheet '${SHEET_NAMES.SUBMISSIONS}' not found. Returning empty submissions.`);
       return [];
     }
 
@@ -908,6 +973,12 @@ export async function getToolSubmissions(status?: 'pending' | 'approved' | 'reje
   });
 }
 
+/**
+ * Updates the status of a tool submission
+ * @param submissionId - Unique identifier for the submission
+ * @param status - New status to set ('pending' | 'approved' | 'rejected')
+ * @returns Promise resolving to boolean indicating success
+ */
 export async function updateSubmissionStatus(
   submissionId: string,
   status: 'pending' | 'approved' | 'rejected'
@@ -915,7 +986,6 @@ export async function updateSubmissionStatus(
   return retryWithBackoff(async () => {
     // Graceful fallback when env vars are missing during build/preview
     if (!process.env.GOOGLE_SHEET_ID || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-      console.warn("Google Sheets env vars missing. Cannot update submission status.");
       return false;
     }
 
@@ -923,7 +993,6 @@ export async function updateSubmissionStatus(
     const sheet = doc.sheetsByTitle[SHEET_NAMES.SUBMISSIONS];
 
     if (!sheet) {
-      console.error(`Sheet '${SHEET_NAMES.SUBMISSIONS}' not found.`);
       return false;
     }
 
@@ -934,12 +1003,10 @@ export async function updateSubmissionStatus(
       if (getString(row, CM.SUBMISSION_ID) === submissionId) {
         row.set(CM.STATUS, status);
         await row.save();
-        console.log(`Updated submission ${submissionId} status to ${status}`);
         return true;
       }
     }
 
-    console.warn(`Submission ${submissionId} not found`);
     return false;
   });
 }

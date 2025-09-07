@@ -7,6 +7,12 @@ import Link from "next/link";
 import { computedSiteConfig } from "@/config/site";
 export function Hero() {
   const title = computedSiteConfig.hero.title;
+  const scrollToDirectory = () => {
+    const target = document.getElementById("directory");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
     <section className="relative py-20 md:py-32 bg-white overflow-hidden">
@@ -48,10 +54,8 @@ export function Hero() {
           >
             {/* Primary CTA and Newsletter */}
             <div className="flex flex-row flex-nowrap gap-4 justify-center items-center w-full overflow-x-auto">
-              <Button asChild size="lg" className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 text-lg font-medium whitespace-nowrap flex-shrink-0">
-                <Link href="/categories">
-                  Browse AI Tools
-                </Link>
+              <Button size="lg" onClick={scrollToDirectory} className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 text-lg font-medium whitespace-nowrap flex-shrink-0">
+                Browse AI Tools
               </Button>
               
               {/* Newsletter Form Inline */}

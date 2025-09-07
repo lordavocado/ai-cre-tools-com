@@ -4,12 +4,15 @@ import { useEffect, useState, useCallback } from 'react';
 
 /**
  * JavaScript Execution Optimizer
+ * Optimizes JavaScript execution to prevent main thread blocking
  * 
- * Addresses the 4.1s JavaScript execution time by:
- * 1. Deferring non-critical JavaScript execution
- * 2. Breaking up large synchronous operations
- * 3. Using progressive enhancement
- * 4. Monitoring and optimizing execution time
+ * Features:
+ * - Defers non-critical JavaScript execution using modern scheduling APIs
+ * - Breaks up large synchronous operations into chunks
+ * - Implements progressive enhancement for better perceived performance
+ * - Monitors and optimizes execution time in development mode
+ * 
+ * @fileoverview Performance optimization for JavaScript execution and main thread management
  */
 export function JSExecutionOptimizer() {
   const [optimizationComplete, setOptimizationComplete] = useState(false);
@@ -37,7 +40,6 @@ export function JSExecutionOptimizer() {
         (window as any).scheduler.postTask(task, { priority: schedulerPriority });
       } catch (error) {
         // Fallback if priority value is not supported
-        console.warn('Scheduler API priority not supported, falling back to requestIdleCallback');
         if ('requestIdleCallback' in window) {
           window.requestIdleCallback(task, { timeout: priority === 'high' ? 100 : 1000 });
         } else {
@@ -108,11 +110,14 @@ export function JSExecutionOptimizer() {
       const entries = list.getEntries();
       entries.forEach((entry) => {
         if (entry.entryType === 'measure' && entry.name.includes('script')) {
-          console.log(`Script execution: ${entry.name} took ${entry.duration}ms`);
-          
-          // If script takes too long, log for optimization
-          if (entry.duration > 100) {
-            console.warn(`⚠️ Slow script detected: ${entry.name} (${entry.duration}ms)`);
+          // Only log in development mode
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`Script execution: ${entry.name} took ${entry.duration}ms`);
+            
+            // If script takes too long, log for optimization
+            if (entry.duration > 100) {
+              console.warn(`⚠️ Slow script detected: ${entry.name} (${entry.duration}ms)`);
+            }
           }
         }
       });
@@ -124,23 +129,26 @@ export function JSExecutionOptimizer() {
     const webVitalsObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        if (entry.entryType === 'largest-contentful-paint') {
-          console.log(`LCP: ${entry.startTime}ms`);
-          if (entry.startTime > 2500) {
-            console.warn(`⚠️ LCP is slow: ${entry.startTime}ms (should be < 2.5s)`);
+        // Only log in development mode
+        if (process.env.NODE_ENV === 'development') {
+          if (entry.entryType === 'largest-contentful-paint') {
+            console.log(`LCP: ${entry.startTime}ms`);
+            if (entry.startTime > 2500) {
+              console.warn(`⚠️ LCP is slow: ${entry.startTime}ms (should be < 2.5s)`);
+            }
           }
-        }
-        if (entry.entryType === 'first-input') {
-          const firstInput = entry as PerformanceEventTiming;
-          console.log(`FID: ${firstInput.processingStart - firstInput.startTime}ms`);
-          if (firstInput.processingStart - firstInput.startTime > 100) {
-            console.warn(`⚠️ FID is slow: ${firstInput.processingStart - firstInput.startTime}ms (should be < 100ms)`);
+          if (entry.entryType === 'first-input') {
+            const firstInput = entry as PerformanceEventTiming;
+            console.log(`FID: ${firstInput.processingStart - firstInput.startTime}ms`);
+            if (firstInput.processingStart - firstInput.startTime > 100) {
+              console.warn(`⚠️ FID is slow: ${firstInput.processingStart - firstInput.startTime}ms (should be < 100ms)`);
+            }
           }
-        }
-        if (entry.entryType === 'layout-shift') {
-          const layoutShift = entry as any;
-          if (layoutShift.value > 0.1) {
-            console.warn(`⚠️ CLS detected: ${layoutShift.value} (should be < 0.1)`);
+          if (entry.entryType === 'layout-shift') {
+            const layoutShift = entry as any;
+            if (layoutShift.value > 0.1) {
+              console.warn(`⚠️ CLS detected: ${layoutShift.value} (should be < 0.1)`);
+            }
           }
         }
       });
@@ -156,7 +164,8 @@ export function JSExecutionOptimizer() {
       entries.forEach((entry) => {
         if (entry.entryType === 'resource') {
           const resource = entry as PerformanceResourceTiming;
-          if (resource.duration > 1000) {
+          // Only log in development mode
+          if (process.env.NODE_ENV === 'development' && resource.duration > 1000) {
             console.warn(`⚠️ Slow resource: ${resource.name} took ${resource.duration}ms`);
           }
         }
@@ -189,7 +198,10 @@ export function JSExecutionOptimizer() {
         try {
           operation();
         } catch (error) {
-          console.error('Error in chunked execution:', error);
+          // Handle errors silently in production
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error in chunked execution:', error);
+          }
         }
       });
 
@@ -308,12 +320,13 @@ export function JSExecutionOptimizer() {
     }, 'low');
   }, [scheduleTask]);
 
-  return null; // This component doesn't render anything
+  return null;
 }
 
 /**
  * Script Execution Monitor
- * Provides real-time monitoring of JavaScript execution times
+ * Provides real-time monitoring of JavaScript execution times in development mode
+ * Displays execution metrics in a fixed overlay for debugging purposes
  */
 export function ScriptExecutionMonitor() {
   const [executionTimes, setExecutionTimes] = useState<{[key: string]: number}>({});
@@ -356,7 +369,12 @@ export function ScriptExecutionMonitor() {
 
 /**
  * Progressive Component Enhancer
- * Enhances components progressively to avoid blocking the main thread
+ * Wraps components with progressive enhancement to prevent main thread blocking
+ * Delays enhancement based on priority and provides smooth transitions
+ * 
+ * @param children - React components to enhance progressively
+ * @param enhancementDelay - Delay in milliseconds before enhancement (default: 100ms)
+ * @param priority - Enhancement priority level affecting timing
  */
 export function ProgressiveComponentEnhancer({ 
   children,

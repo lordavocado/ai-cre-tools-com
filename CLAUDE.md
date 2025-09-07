@@ -145,3 +145,73 @@ The project includes comprehensive documentation:
 **Testing**: No dedicated test framework is configured. Manual testing is done via the development server.
 
 The application is production-ready and optimized for SEO, performance, and user experience in the commercial real estate AI tools directory space.
+
+## Code Quality and Cleanup Standards
+
+**Post-Development Cleanup Requirements**:
+After completing any development work, Claude MUST perform the following cleanup tasks:
+
+1. **Remove Dead Code and Bloat**:
+   - Remove any unused imports, variables, and functions
+   - Delete commented-out code blocks unless they serve as important documentation
+   - Remove console.log statements and debug code
+   - Clean up empty or placeholder files created during development
+
+2. **Code Documentation Standards**:
+   - Add clear JSDoc comments to all public functions and complex logic
+   - Document component props with TypeScript interfaces and descriptions
+   - Add inline comments for complex business logic or non-obvious code
+   - Document any external API integrations or third-party dependencies
+
+3. **Code Organization**:
+   - Ensure consistent file naming and organization
+   - Group related functions and maintain logical file structure
+   - Remove redundant or duplicate code
+   - Ensure proper separation of concerns
+
+4. **Type Safety Verification**:
+   - Run `npm run typecheck` to ensure no TypeScript errors
+   - Verify all function parameters and return types are properly typed
+   - Remove any `any` types that were added during development
+
+5. **Linting and Formatting**:
+   - Run `npm run lint` and fix all linting issues
+   - Ensure consistent code formatting throughout modified files
+   - Verify ESLint rules are followed
+
+**Documentation Template for New Functions**:
+```typescript
+/**
+ * Brief description of what the function does
+ * @param paramName - Description of parameter
+ * @returns Description of return value
+ * @example
+ * ```typescript
+ * const result = functionName(param);
+ * ```
+ */
+```
+
+**Component Documentation Template**:
+```typescript
+/**
+ * Component description and purpose
+ * @component
+ * @example
+ * ```tsx
+ * <ComponentName prop="value" />
+ * ```
+ */
+interface ComponentProps {
+  /** Description of prop and its purpose */
+  propName: string;
+}
+```
+
+**Cleanup Verification Checklist**:
+- [ ] All TypeScript errors resolved (`npm run typecheck`)
+- [ ] All ESLint warnings resolved (`npm run lint`)
+- [ ] No unused imports or dead code
+- [ ] All functions and components documented
+- [ ] No debug code or console.logs in production code
+- [ ] File structure is clean and organized

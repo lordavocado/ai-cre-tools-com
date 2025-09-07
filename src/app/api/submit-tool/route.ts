@@ -1,9 +1,18 @@
+/**
+ * API route for handling tool submissions
+ * Validates submissions, researches tools via Perplexity API, and stores in Google Sheets
+ * @fileoverview Tool submission API with validation, research, and storage
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { researchToolWithPerplexity } from '@/lib/perplexity';
 import { storeToolSubmission } from '@/lib/sheets';
 
-// Validation schema matching the frontend form
+/**
+ * Validation schema for tool submission form data
+ * Ensures website URL validity and email format compliance
+ */
 const submitToolSchema = z.object({
   website: z.string()
     .url({ message: "Please enter a valid website URL" })
@@ -24,10 +33,11 @@ const submitToolSchema = z.object({
 
 type SubmitToolData = z.infer<typeof submitToolSchema>;
 
-// This function is now imported from @/lib/perplexity
-
-// This function is now imported from @/lib/sheets
-
+/**
+ * Handles POST requests for tool submissions
+ * @param request - NextRequest containing tool submission data
+ * @returns NextResponse with success/error status and message
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -48,10 +58,10 @@ export async function POST(request: NextRequest) {
 
     const { website, email, comment } = validatedData.data;
 
-    // Start Perplexity research
+    // Research tool using Perplexity API
     const researchResult = await researchToolWithPerplexity(website, comment);
 
-    // Store the submission
+    // Prepare submission data for storage
     const submissionData = {
       website: researchResult.website,
       email: email,
@@ -72,8 +82,7 @@ export async function POST(request: NextRequest) {
 
     const submissionId = await storeToolSubmission(submissionData);
 
-    // TODO: Send confirmation email to user
-    // await sendConfirmationEmail(email, submissionId);
+    // Future enhancement: Send confirmation email to user
 
     return NextResponse.json({
       success: true,
@@ -82,7 +91,10 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Tool submission error:', error);
+    // Log error for debugging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Tool submission error:', error);
+    }
 
     return NextResponse.json(
       {
@@ -94,7 +106,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Handle OPTIONS for CORS if needed
+/**
+ * Handles OPTIONS requests for CORS support
+ * @returns NextResponse with 200 status for preflight requests
+ */
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200 });
 }
