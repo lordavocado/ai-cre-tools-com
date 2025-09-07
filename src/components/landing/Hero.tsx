@@ -17,7 +17,7 @@ export function Hero() {
   return (
     <section className="relative min-h-[calc(100vh-56px)] pt-10 md:pt-16 pb-0 bg-white overflow-hidden flex items-start">
       {/* Background image anchored to bottom with a smooth white-to-transparent blend from the top */}
-      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
         {/* Top gradient keeps the heading area clean white */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/0" />
         {/* Image only occupies the lower portion to emphasize bottom visuals */}
@@ -25,12 +25,12 @@ export function Hero() {
           className="absolute left-0 right-0 bottom-0 h-1/2 bg-no-repeat bg-bottom"
           style={{
             backgroundImage: "url('/hero-background-ai-cre-tools.jpg')",
-            backgroundSize: "40%", // zoomed out further so it sits farther back
+            backgroundSize: "55%", // slightly larger for better visibility
             backgroundPosition: "center bottom",
           }}
         >
           {/* overlays to push the illustration into the background */}
-          <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-white/30 backdrop-blur-[1px]" />
           <div className="absolute inset-0 bg-emerald-200/10 mix-blend-multiply" />
         </div>
       </div>
