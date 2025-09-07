@@ -7,7 +7,7 @@ import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { siteConfig } from "@/config/site";
-import { CATEGORY_ICONS } from "@/lib/category-icons";
+// Using the same visual style as tool card chips (CategoryChips)
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export interface DirectorySearchCategory {
@@ -138,30 +138,25 @@ function DirectorySearchContent({
 
         {/* Categories Section */}
         <div className="flex flex-wrap gap-1.5">
-          {categories.map((category) => {
-            const IconComponent = CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS];
-            return (
-              <Badge
-                key={category.id}
-                variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
-                className={`
-                  cursor-pointer px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 rounded-lg
-                  transition-all duration-200 shadow-sm
-                  ${selectedCategories.includes(category.slug)
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-700 hover:from-blue-700 hover:to-indigo-700 hover:border-blue-800 hover:scale-105'
-                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 hover:scale-105'
-                  }
-                `}
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleCategory(category.slug);
-                }}
-              >
-                {IconComponent && <IconComponent className="h-3 w-3" />}
-                {category.name}
-              </Badge>
-            );
-          })}
+          {categories.map((category) => (
+            <Badge
+              key={category.id}
+              variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
+              className={`
+                cursor-pointer px-3 py-1.5 text-xs font-normal rounded-md transition-colors duration-200
+                ${selectedCategories.includes(category.slug)
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-none'
+                  : 'bg-emerald-50 text-emerald-700 border-none hover:bg-emerald-100'
+                }
+              `}
+              onClick={(e) => {
+                e.preventDefault();
+                toggleCategory(category.slug);
+              }}
+            >
+              {category.name}
+            </Badge>
+          ))}
         </div>
 
 

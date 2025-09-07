@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { NewsletterForm } from "./NewsletterForm";
 import Link from "next/link";
 import { computedSiteConfig } from "@/config/site";
+import Image from "next/image";
 export function Hero() {
   const title = computedSiteConfig.hero.title;
   const scrollToDirectory = () => {
@@ -16,6 +17,22 @@ export function Hero() {
 
   return (
     <section className="relative py-20 md:py-32 bg-white overflow-hidden">
+      {/* Background image anchored to bottom with a smooth white-to-transparent blend from the top */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Top gradient keeps the heading area clean white */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/0" />
+        {/* Image only occupies the lower portion to emphasize bottom visuals */}
+        <div className="absolute bottom-0 left-0 right-0 h-2/3">
+          <Image
+            src="https://sgaejkzumgooaxqmildg.supabase.co/storage/v1/object/sign/website_images/ai-cre-tools-hero-background.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9mOTIwNDg2Mi0wYzVmLTRkMzEtOGUwMS00MzYyZmIzODk5NGEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX2ltYWdlcy9haS1jcmUtdG9vbHMtaGVyby1iYWNrZ3JvdW5kLmpwZyIsImlhdCI6MTc1NzIzODM2MCwiZXhwIjoxOTE0OTE4MzYwfQ.dnCf5vZ1pDeAoKGASlR7dtOaiHcIG1HrTz4L0H0RjLs"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-bottom"
+          />
+        </div>
+      </div>
       <div className="container text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -215,6 +215,14 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       }
+      ,
+      // Supabase storage (signed URLs) for hero background and assets
+      {
+        protocol: 'https',
+        hostname: 'sgaejkzumgooaxqmildg.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/sign/**',
+      }
     ],
   },
   async rewrites() {
