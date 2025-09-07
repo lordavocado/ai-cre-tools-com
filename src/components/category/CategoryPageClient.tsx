@@ -204,7 +204,7 @@ export function CategoryPageClient({
       </div>
 
       {/* Key Use Cases Section */}
-      <div className="container py-16 md:py-24 px-6 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container py-24 md:py-32 px-6 bg-gradient-to-br from-green-50/30 via-white to-emerald-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Key Use Cases</h2>
@@ -332,7 +332,7 @@ export function CategoryPageClient({
 
       {/* Enhanced Category Description */}
       {category.longDescription && (
-        <div className="container py-16 md:py-24 px-6">
+        <div className="container py-24 md:py-32 px-6">
           <div className="max-w-4xl mx-auto">
             <Card className="border-0 shadow-xl bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-slate-900">
               <CardContent className="p-8 md:p-10">
@@ -348,7 +348,7 @@ export function CategoryPageClient({
       )}
 
       {/* Enhanced FAQ Section */}
-      <div className="container py-16 md:py-24 px-6">
+      <div className="container py-24 md:py-32 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
@@ -410,7 +410,7 @@ export function CategoryPageClient({
       </div>
 
       {/* Related Categories Section */}
-      <div className="container py-16 md:py-24 px-6 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 dark:from-slate-900/50 dark:via-slate-800 dark:to-slate-900/50">
+      <div className="container py-24 md:py-32 px-6 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30 dark:from-slate-900/50 dark:via-slate-800 dark:to-slate-900/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Explore Related Categories</h2>
@@ -454,7 +454,7 @@ export function CategoryPageClient({
       </div>
 
       {/* Main Tools Grid */}
-      <div id="tools-section" className="container py-16 md:py-24 px-6">
+      <div id="tools-section" className="container py-24 md:py-32 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-serif mb-4">All {category.name} Tools</h2>
