@@ -160,26 +160,28 @@ The application uses Supabase as the primary database with the following schema:
 ### `ecosystem_apps` Table
 ```sql
 create table public.ecosystem_apps (
-  slug        text primary key,        -- unique identifier, e.g. "dreamoffice"
-  website_url text,                    -- app website
-  name        text not null,           -- display name
-  category    text,                    -- free text category
-  features    text[] default '{}',     -- array of features
-  one_liner   text,                    -- short tagline
-  description text,                    -- longer description
-  country     text,
-  city        text,
-  icon_url    text,                    -- link to favicon/logo
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now()
+  slug         text primary key,        -- unique identifier, e.g. "dreamoffice"
+  website_url  text,                    -- app website
+  name         text not null,           -- display name
+  category     text,                    -- free text category
+  features     text[] default '{}',     -- array of features
+  one_liner    text,                    -- short tagline
+  description  text,                    -- longer description
+  country      text,
+  city         text,
+  icon_url     text,                    -- link to favicon/logo
+  display_order integer default 999,   -- ordering for featured/priority tools (lower = first)
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
 );
 ```
 
 ### Database Features
 - **Row Level Security (RLS)**: Enabled with read-only policy for anon users
-- **Indexes**: Optimized indexes for slug, category, country/city, and features
+- **Indexes**: Optimized indexes for slug, category, country/city, features, and display_order
 - **Full-text Search**: GIN index for search across name, one_liner, and description
 - **Auto-updating Timestamps**: Automatic `updated_at` trigger
+- **Custom Ordering**: `display_order` column allows featured/priority tool positioning
 
 ### Data Migration from Google Sheets
 The application was migrated from Google Sheets to Supabase for:

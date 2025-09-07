@@ -1,0 +1,205 @@
+# Cursor Rules for AI CRE Tools Directory
+
+This project is a Next.js 15 directory application for AI Commercial Real Estate tools, using Supabase as the database backend.
+
+## Project Overview
+
+- **Framework**: Next.js 15 with App Router
+- **Database**: Supabase (PostgreSQL)
+- **Styling**: Tailwind CSS + shadcn/ui
+- **TypeScript**: Strict mode enabled
+- **Architecture**: Server-side rendering with static generation
+
+## Database Schema (Supabase)
+
+### Primary Table: `ecosystem_apps`
+```sql
+create table public.ecosystem_apps (
+  slug         text primary key,        -- unique identifier
+  website_url  text,                    -- app website
+  name         text not null,           -- display name
+  category     text,                    -- category slug
+  features     text[] default '{}',     -- array of features
+  one_liner    text,                    -- short tagline
+  description  text,                    -- longer description
+  country      text,
+  city         text,
+  icon_url     text,                    -- link to favicon/logo
+  display_order integer default 999,   -- ordering (lower = first)
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+```
+
+### Key Points:
+- `display_order` controls sort order (1-9 for featured tools, 999 for others)
+- All queries should use: `ORDER BY display_order ASC, name ASC`
+- Categories are hardcoded in code, not in database
+- RLS enabled with read-only access for public
+
+## TypeScript Interfaces
+
+### Primary Interface: `DirectoryItem`
+```typescript
+interface DirectoryItem {
+  id: string;              // maps to slug
+  slug: string;            // maps to slug
+  name: string;            // maps to name
+  tagline: string;         // maps to one_liner
+  description: string;     // maps to description
+  category: string;        // maps to category
+  website: string;         // maps to website_url
+  imageUrl?: string;       // maps to icon_url
+  features?: Array<{name: string; description?: string}>; // transformed from features array
+  country?: string;        // maps to country
+  city?: string;          // maps to city
+}
+```
+
+## Data Layer (`src/lib/supabase.ts`)
+
+### Key Functions:
+- `getDirectoryItems()` - Main data fetching with search/filter support
+- `getDirectoryItemBySlug()` - Get single item by slug
+- `getCategories()` - Returns hardcoded categories with item counts
+- `getFeaturedItems()` - Gets priority items (display_order 1-9)
+
+### Important Notes:
+- All functions are server-side only
+- Caching implemented with 5-minute duration
+- Error handling with fallbacks for build compatibility
+- Uses display_order for consistent ordering
+
+## Hardcoded Categories
+
+Categories are defined in `src/lib/supabase.ts`:
+1. `property-search-acquisition`
+2. `property-analysis-valuation`
+3. `development-construction`
+4. `legal-compliance-due-diligence`
+5. `property-management-operations`
+6. `asset-portfolio-management`
+7. `transactions-brokerage`
+8. `marketing-leasing-enablement`
+9. `data-workflow-infrastructure`
+10. `productivity-copilots`
+
+## File Structure
+
+```
+src/
+├── lib/supabase.ts           # Database layer (SERVER-SIDE ONLY)
+├── types/index.ts            # TypeScript interfaces
+├── components/
+│   ├── listing/              # Directory grid and search
+│   └── category/             # Category-specific components
+└── app/
+    ├── page.tsx              # Homepage (SSR)
+    ├── [slug]/page.tsx       # Tool detail pages (SSG)
+    ├── categories/           # Category pages (SSR)
+    └── api/sheets/route.ts   # API endpoints
+```
+
+## Development Guidelines
+
+### When Working with Data:
+1. **Always use server-side rendering** - no "use client" on main pages
+2. **Use consistent ordering** - display_order ASC, name ASC
+3. **Import from supabase.ts** - never from sheets.ts for main data
+4. **Handle errors gracefully** - provide fallbacks for missing data
+
+### When Adding Features:
+1. Check if data exists in `DirectoryItem` interface first
+2. If new database columns needed, update schema and mappings
+3. Maintain server-side only execution in data layer
+4. Update TypeScript interfaces accordingly
+
+### Database Queries:
+```typescript
+// Correct ordering for all queries
+.order('display_order', { ascending: true })
+.order('name', { ascending: true })
+
+// Search implementation
+.or(`name.ilike.%${searchTerm}%,one_liner.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
+
+// Category filtering
+.or(categoryConditions.map(cat => `category.ilike.%${cat}%`))
+```
+
+### Environment Variables:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key (optional)
+```
+
+## Code Quality Standards
+
+### TypeScript:
+- Strict mode enabled
+- No `any` types
+- Proper interface definitions
+- Server/client separation enforced
+
+### Performance:
+- Server-side rendering for all main pages
+- Static generation for tool detail pages
+- Intelligent caching in data layer
+- No client-side database calls
+
+### Error Handling:
+- Graceful degradation for missing data
+- Build compatibility with placeholder env vars
+- User-friendly error messages
+- Proper fallback mechanisms
+
+## Migration Notes
+
+**Migrated from Google Sheets to Supabase for:**
+- Better performance and reliability
+- Advanced querying with SQL
+- Full-text search capabilities
+- No API rate limiting
+- Real-time capabilities (future)
+
+**Remaining Google Sheets dependencies:**
+- Tool submissions (requires additional Supabase table)
+- Admin functionality (planned migration)
+
+## Common Patterns
+
+### Page Component Structure:
+```typescript
+// Server component (no "use client")
+export default async function Page() {
+  const items = await getDirectoryItems();
+  // ... render with server-side data
+}
+
+// Static generation
+export async function generateStaticParams() {
+  const items = await getDirectoryItems();
+  return items.map(item => ({ slug: item.slug }));
+}
+```
+
+### Data Fetching:
+```typescript
+// Always server-side
+import { getDirectoryItems } from '@/lib/supabase'; // ✅
+import { getDirectoryItems } from '@/lib/sheets';   // ❌ Legacy
+
+// With proper ordering
+const items = await getDirectoryItems(); // Already includes display_order sorting
+```
+
+## Testing Commands
+
+```bash
+npm run typecheck  # TypeScript validation
+npm run build      # Production build test
+npm run dev        # Development server (port 9002)
+```
+
+Remember: This is a server-side rendered application. Keep data fetching on the server, maintain TypeScript strict mode, and ensure proper error handling throughout.

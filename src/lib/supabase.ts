@@ -29,6 +29,7 @@ const COLUMN_MAPPINGS = {
   FEATURES: 'features',
   COUNTRY: 'country',
   CITY: 'city',
+  DISPLAY_ORDER: 'display_order',
   CREATED_AT: 'created_at',
   UPDATED_AT: 'updated_at',
 };
@@ -412,6 +413,7 @@ export async function getDirectoryItems(
     let query = supabase
       .from(TABLE_NAME)
       .select('*')
+      .order('display_order', { ascending: true })
       .order('name', { ascending: true });
 
     // Apply search filter if provided
@@ -548,12 +550,12 @@ export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem
   try {
     const supabase = getSupabaseClient();
     
-    // Get items ordered by creation date (most recent first) as a simple featured logic
-    // In the future, you could add a 'featured' column or use other criteria
+    // Get featured items using display_order (prioritized tools first) and limit results
     const { data, error } = await supabase
       .from(TABLE_NAME)
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('display_order', { ascending: true })
+      .order('name', { ascending: true })
       .limit(limit);
 
     if (error) {
