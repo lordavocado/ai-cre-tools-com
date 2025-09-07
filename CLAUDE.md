@@ -25,9 +25,9 @@ npm run genkit:watch    # Start GenKit with file watching
 This is a **Next.js 15 directory/marketplace application** built for showcasing AI Commercial Real Estate tools. The architecture follows modern React patterns with server-side data fetching:
 
 ### Core Data Flow
-- **Data Source**: Google Sheets API (configured in `src/lib/sheets.ts`)
-- **Content Management**: Google Sheets serves as the CMS for directory items and newsletter subscriptions
-- **Categories**: Hardcoded categories defined in `src/lib/sheets.ts` with rich descriptions
+- **Data Source**: Supabase Database (configured in `src/lib/supabase.ts`)
+- **Content Management**: Supabase `ecosystem_apps` table serves as the database for directory items
+- **Categories**: Hardcoded categories defined in `src/lib/supabase.ts` with rich descriptions
 - **Routing**: Next.js App Router with dynamic routes for tools (`[slug]`) and categories (`[category]`)
 
 ### Key Architecture Components
@@ -37,10 +37,11 @@ This is a **Next.js 15 directory/marketplace application** built for showcasing 
 - Template-based SEO generation for categories and tools
 - Interpolation system for dynamic content replacement
 
-**Data Layer** (`src/lib/sheets.ts`):
-- Google Sheets integration with column mapping configuration
-- Server-side data fetching with caching
-- Type-safe data transformations from sheets to TypeScript interfaces
+**Data Layer** (`src/lib/supabase.ts`):
+- Supabase database integration with type-safe queries
+- Server-side data fetching with intelligent caching for optimal performance
+- Type-safe data transformations from Supabase to TypeScript interfaces
+- Built-in error handling and fallback mechanisms
 
 **Component Architecture**:
 - **UI Layer**: shadcn/ui components in `src/components/ui/`
@@ -61,10 +62,12 @@ This is a **Next.js 15 directory/marketplace application** built for showcasing 
 
 ### Key Integration Points
 
-**Google Sheets Setup**:
-- Sheet names configured in `SHEET_NAMES` constant
-- Column mappings in `COLUMN_MAPPINGS` for flexible schema
-- Categories hardcoded in code (not from sheets) for better control
+**Supabase Database Setup**:
+- Table: `ecosystem_apps` with comprehensive schema for CRE tools
+- Column mappings configured for flexible data transformations
+- Categories hardcoded in code (not from database) for better control and performance
+- Full-text search capabilities with GIN indexes
+- Row Level Security (RLS) enabled for data protection
 
 **SEO & Analytics**:
 - Structured data generation for search engines
@@ -99,14 +102,15 @@ src/
 ## Development Guidelines
 
 **Making Changes to Categories**:
-- Categories are hardcoded in `src/lib/sheets.ts` (HARDCODED_CATEGORIES array)
+- Categories are hardcoded in `src/lib/supabase.ts` (categories array in getCategories function)
 - Each category requires: id, slug, name, description, longDescription (HTML), imageUrl, icon
-- Category changes require code deployment (not just sheet updates)
+- Category changes require code deployment (not database updates)
 
 **Adding New Tools**:
-- Add data to Google Sheets following the column mapping in `COLUMN_MAPPINGS`
-- Features should be JSON: `[{"name": "Feature 1"}, {"name": "Feature 2"}]`
+- Add data directly to Supabase `ecosystem_apps` table
+- Features should be string array: `["Feature 1", "Feature 2", "Feature 3"]`
 - Category field must match existing category slugs
+- Use the Supabase dashboard or SQL commands to add new tools
 
 **Styling Approach**:
 - Tailwind CSS with CSS variables for theming
@@ -115,14 +119,17 @@ src/
 - Dark mode support via class-based toggle
 
 **Environment Configuration**:
-- Google Sheets integration requires service account credentials
+- Supabase integration requires project URL and API keys:
+  - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+  - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` - Supabase anon/public key
+  - `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin operations (optional)
 - Mailchimp integration for newsletter functionality
 - PostHog for analytics (optional)
 
 ## Important Files to Know
 
 - `src/config/site.ts` - Central site configuration and SEO settings
-- `src/lib/sheets.ts` - Google Sheets integration and data fetching logic
+- `src/lib/supabase.ts` - Supabase database integration and data fetching logic
 - `src/types/index.ts` - Core TypeScript interfaces  
 - `tailwind.config.ts` - Tailwind CSS configuration with shadcn/ui theme
 - `next.config.js` - Next.js configuration (minimal, relies on defaults)
@@ -145,6 +152,43 @@ The project includes comprehensive documentation:
 **Testing**: No dedicated test framework is configured. Manual testing is done via the development server.
 
 The application is production-ready and optimized for SEO, performance, and user experience in the commercial real estate AI tools directory space.
+
+## Supabase Database Schema
+
+The application uses Supabase as the primary database with the following schema:
+
+### `ecosystem_apps` Table
+```sql
+create table public.ecosystem_apps (
+  slug        text primary key,        -- unique identifier, e.g. "dreamoffice"
+  website_url text,                    -- app website
+  name        text not null,           -- display name
+  category    text,                    -- free text category
+  features    text[] default '{}',     -- array of features
+  one_liner   text,                    -- short tagline
+  description text,                    -- longer description
+  country     text,
+  city        text,
+  icon_url    text,                    -- link to favicon/logo
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+```
+
+### Database Features
+- **Row Level Security (RLS)**: Enabled with read-only policy for anon users
+- **Indexes**: Optimized indexes for slug, category, country/city, and features
+- **Full-text Search**: GIN index for search across name, one_liner, and description
+- **Auto-updating Timestamps**: Automatic `updated_at` trigger
+
+### Data Migration from Google Sheets
+The application was migrated from Google Sheets to Supabase for:
+- ✅ Better performance and reliability
+- ✅ Advanced querying capabilities with SQL
+- ✅ Full-text search functionality
+- ✅ Real-time capabilities (if needed in future)
+- ✅ Better scalability and concurrent access
+- ✅ No API rate limiting issues
 
 ## Code Quality and Cleanup Standards
 

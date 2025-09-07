@@ -1,6 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getCategories, getDirectoryItems } from '@/lib/sheets';
+import { getCategories, getDirectoryItems } from '@/lib/supabase';
 import type { DirectoryItem } from '@/types';
 import { siteConfig } from '@/config/site';
 import { CategoryPageClient } from '@/components/category/CategoryPageClient';

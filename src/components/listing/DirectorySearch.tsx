@@ -137,7 +137,7 @@ function DirectorySearchContent({
         </div>
 
         {/* Categories Section */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {categories.map((category) => {
             const IconComponent = CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS];
             return (
@@ -145,11 +145,11 @@ function DirectorySearchContent({
                 key={category.id}
                 variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
                 className={`
-                  cursor-pointer px-3 py-1.5 text-sm font-normal flex items-center gap-2
-                  transition-colors duration-200 rounded-md
+                  cursor-pointer px-2.5 py-1 text-xs font-medium flex items-center gap-1.5 rounded-lg
+                  transition-all duration-200 shadow-sm
                   ${selectedCategories.includes(category.slug)
-                    ? 'bg-neutral-900 text-white hover:bg-neutral-800'
-                    : 'bg-neutral-50 text-neutral-600 hover:bg-neutral-100 border-none'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-700 hover:from-blue-700 hover:to-indigo-700 hover:border-blue-800 hover:scale-105'
+                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 hover:scale-105'
                   }
                 `}
                 onClick={(e) => {
@@ -157,7 +157,7 @@ function DirectorySearchContent({
                   toggleCategory(category.slug);
                 }}
               >
-                {IconComponent && <IconComponent className="h-4 w-4" />}
+                {IconComponent && <IconComponent className="h-3 w-3" />}
                 {category.name}
               </Badge>
             );

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, Clock, User, ArrowLeft, List } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost as BlogPostType } from '@/lib/blog';
@@ -23,7 +23,7 @@ export function BlogPost({ post }: BlogPostProps) {
     return categoryMap[category] || '/categories';
   };
 
-  const hasToc = Array.isArray(post.toc) && post.toc.length > 0;
+  // Removed table of contents sidebar
 
   return (
     <article className="max-w-6xl mx-auto px-4 py-8">
@@ -89,7 +89,7 @@ export function BlogPost({ post }: BlogPostProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Main content */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-12">
           <div
             className="prose prose-lg prose-slate max-w-none mb-12
                        prose-headings:font-semibold prose-headings:tracking-tight
@@ -102,29 +102,6 @@ export function BlogPost({ post }: BlogPostProps) {
             dangerouslySetInnerHTML={{ __html: post.htmlContent }}
           />
         </div>
-
-        {/* TOC sidebar */}
-        {hasToc && (
-          <aside className="lg:col-span-4">
-            <div className="sticky top-24 rounded-lg border p-5 bg-card">
-              <div className="flex items-center gap-2 mb-3">
-                <List className="h-4 w-4" />
-                <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">On this page</h2>
-              </div>
-              <nav className="text-sm">
-                <ul className="space-y-2">
-                  {post.toc!.map((h) => (
-                    <li key={h.id} className={h.level > 2 ? 'ml-4' : ''}>
-                      <a href={`#${h.id}`} className="text-muted-foreground hover:text-foreground">
-                        {h.text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-          </aside>
-        )}
       </div>
 
       {/* Category CTA */}

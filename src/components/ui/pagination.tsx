@@ -53,26 +53,26 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
     <nav
       role="navigation"
       aria-label="pagination"
-      className={cn("flex items-center justify-center gap-2 mt-8", className)}
+      className={cn("flex items-center justify-center gap-1 mt-8", className)}
     >
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         aria-label="Go to previous page"
+        className="h-8 w-8 p-0"
       >
         <ChevronLeft className="h-4 w-4" />
-        Previous
       </Button>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 mx-2">
         {visiblePages.map((page, index) => {
           if (page === '...') {
             return (
               <span
                 key={`ellipsis-${index}`}
-                className="flex h-9 w-9 items-center justify-center"
+                className="flex h-8 w-8 items-center justify-center text-muted-foreground"
                 aria-hidden="true"
               >
                 <MoreHorizontal className="h-4 w-4" />
@@ -86,12 +86,15 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
           return (
             <Button
               key={pageNumber}
-              variant={isCurrentPage ? "default" : "outline"}
+              variant={isCurrentPage ? "default" : "ghost"}
               size="sm"
               onClick={() => onPageChange(pageNumber)}
               aria-label={`Go to page ${pageNumber}`}
               aria-current={isCurrentPage ? "page" : undefined}
-              className="min-w-9"
+              className={cn(
+                "h-8 w-8 p-0 font-medium",
+                isCurrentPage && "bg-primary text-primary-foreground shadow-sm"
+              )}
             >
               {pageNumber}
             </Button>
@@ -100,13 +103,13 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
       </div>
 
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         aria-label="Go to next page"
+        className="h-8 w-8 p-0"
       >
-        Next
         <ChevronRight className="h-4 w-4" />
       </Button>
     </nav>

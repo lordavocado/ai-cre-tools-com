@@ -345,19 +345,7 @@ export default function TermsOfServicePage() {
           <p>These Terms, together with our Privacy Policy and any other legal notices published by us on the Service,
           constitute the entire agreement between you and us regarding the use of the Service.</p>
 
-          <h2>14. CONTACT INFORMATION</h2>
-          
-          <div className="bg-blue-50 dark:bg-blue-950/30 p-6 rounded-lg border border-blue-200 dark:border-blue-800 my-6">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">Questions About These Terms?</h4>
-            <p className="text-blue-800 dark:text-blue-200 mb-3">
-              If you have questions about these Terms of Service, please contact us:
-            </p>
-            <ul className="text-blue-800 dark:text-blue-200 text-sm">
-              <li><strong>Email:</strong> legal@{siteConfig.url.replace('https://', '').replace('http://', '')}</li>
-              <li><strong>General inquiries:</strong> hi@{siteConfig.url.replace('https://', '').replace('http://', '')}</li>
-              <li><strong>Response time:</strong> Within 5 business days</li>
-            </ul>
-          </div>
+          {/* Contact information section removed due to lack of support email addresses */}
         </div>
       </div>
     </>

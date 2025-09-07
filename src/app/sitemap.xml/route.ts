@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { getGuides } from '@/lib/markdown';
-import { getDirectoryItems, getCategories } from '@/lib/sheets';
+import { getDirectoryItems, getCategories } from '@/lib/supabase';
 import { getAllBlogPosts } from '@/lib/blog';
 import { isValidSlug, isValidSlugFormat } from '@/lib/routing-utils-client';
 import { siteConfig } from '@/config/site';

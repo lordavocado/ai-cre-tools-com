@@ -4,7 +4,7 @@ import { DirectorySearch, type DirectorySearchCategory } from "@/components/list
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { IntersectionLoader } from "@/components/performance/intersection-loader";
-import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/sheets";
+import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/supabase";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -235,11 +235,6 @@ export default async function Home({ searchParams }: HomeProps) {
                 Find {siteConfig.categoryName.toLowerCase()} tailored to specific needs across various categories.
               </p>
             </div>
-            <Button asChild variant="outline">
-              <Link href="/categories">
-                View All Categories <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
           </div>
           <IntersectionLoader className="min-h-[200px]">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

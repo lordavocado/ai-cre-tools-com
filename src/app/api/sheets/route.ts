@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDirectoryItems, getCategories, getDirectoryItemBySlug } from '@/lib/sheets';
+import { getDirectoryItems, getCategories, getDirectoryItemBySlug } from '@/lib/supabase';
 import { getGuides } from '@/lib/markdown';
 
 export async function GET(request: Request) {

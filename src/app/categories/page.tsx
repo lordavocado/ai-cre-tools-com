@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: `Explore all categories of ${siteConfig.categoryName.toLowerCase()} available in our directory.`,
 };
 
-import { getCategories } from "@/lib/sheets";
+import { getCategories } from "@/lib/supabase";
 
 export default async function CategoriesPage() {
   try {

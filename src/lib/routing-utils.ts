@@ -128,7 +128,7 @@ export async function checkSlugConflicts(
 
   try {
     // Dynamic imports to avoid client-side issues
-    const { getDirectoryItems, getCategories } = await import('@/lib/sheets');
+    const { getDirectoryItems, getCategories } = await import('@/lib/supabase');
     
     // Check tool slug conflicts
     const tools = await getDirectoryItems();
@@ -291,7 +291,7 @@ export async function generateURLSuggestions(requestedPath: string): Promise<Arr
 
   try {
     // Dynamic imports to avoid client-side issues
-    const { getDirectoryItems, getCategories } = await import('@/lib/sheets');
+    const { getDirectoryItems, getCategories } = await import('@/lib/supabase');
     
     // Get tools and categories
     const [tools, categories] = await Promise.all([

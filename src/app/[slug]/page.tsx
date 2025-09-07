@@ -1,4 +1,4 @@
-import { getDirectoryItemBySlug, getDirectoryItems } from "@/lib/sheets";
+import { getDirectoryItemBySlug, getDirectoryItems } from "@/lib/supabase";
 import { isValidSlug, isValidSlugFormat } from "@/lib/routing-utils-client";
 import type { Metadata, ResolvingMetadata } from 'next';
 import Link from "next/link";
