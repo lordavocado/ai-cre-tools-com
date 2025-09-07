@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { NewsletterForm } from "./NewsletterForm";
 import Link from "next/link";
 import { computedSiteConfig } from "@/config/site";
-import Image from "next/image";
 export function Hero() {
   const title = computedSiteConfig.hero.title;
   const scrollToDirectory = () => {
@@ -22,17 +21,13 @@ export function Hero() {
         {/* Top gradient keeps the heading area clean white */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/0" />
         {/* Image only occupies the lower portion to emphasize bottom visuals */}
-        <div className="absolute bottom-0 left-0 right-0 h-2/3">
-          <Image
-            src="https://sgaejkzumgooaxqmildg.supabase.co/storage/v1/object/public/website_images/ai-cre-tools-hero-background.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            unoptimized
-            className="object-cover object-bottom"
-          />
-        </div>
+        <div
+          className="absolute bottom-0 left-0 right-0 h-2/3 bg-no-repeat bg-cover bg-bottom"
+          style={{
+            backgroundImage:
+              "url('/hero-background-ai-cre-tools.jpg')",
+          }}
+        />
       </div>
       <div className="container text-center relative z-10">
         <motion.div
