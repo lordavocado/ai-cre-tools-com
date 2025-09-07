@@ -15,22 +15,23 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-[calc(100vh-56px)] py-16 md:py-24 bg-white overflow-hidden flex items-center">
+    <section className="relative min-h-[calc(100vh-56px)] pt-10 md:pt-16 pb-0 bg-white overflow-hidden flex items-start">
       {/* Background image anchored to bottom with a smooth white-to-transparent blend from the top */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         {/* Top gradient keeps the heading area clean white */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/0" />
         {/* Image only occupies the lower portion to emphasize bottom visuals */}
         <div
-          className="absolute left-0 right-0 bottom-0 h-2/3 bg-no-repeat bg-bottom"
+          className="absolute left-0 right-0 bottom-0 h-1/2 bg-no-repeat bg-bottom"
           style={{
             backgroundImage: "url('/hero-background-ai-cre-tools.jpg')",
-            backgroundSize: "60%", // zoomed out for a smaller feel
+            backgroundSize: "40%", // zoomed out further so it sits farther back
             backgroundPosition: "center bottom",
           }}
         >
-          {/* slight green tint over the image area only */}
-          <div className="absolute inset-0 bg-emerald-200/10" />
+          {/* overlays to push the illustration into the background */}
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-emerald-200/10 mix-blend-multiply" />
         </div>
       </div>
       <div className="container text-center relative z-10">
@@ -46,7 +47,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8 text-gray-900 leading-tight"
+            className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-gray-900 leading-tight"
           >
             Find the Best CRE AI Tools
           </motion.h1>
@@ -56,7 +57,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-base md:text-lg lg:text-xl font-medium text-gray-600 max-w-3xl mx-auto mb-8 leading-relaxed"
+            className="text-base md:text-lg lg:text-xl font-medium text-gray-600 max-w-3xl mx-auto mb-6 leading-relaxed"
           >
             Discover Commercial Real Estate AI tools that fits your business needs or get inspired by AI features developed by real estate innovators.
           </motion.h2>
@@ -67,7 +68,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="mb-6"
+            className="mb-4"
           >
             {/* Primary CTA and Newsletter */}
             <div className="flex flex-row flex-nowrap gap-4 justify-center items-center w-full overflow-x-auto">
