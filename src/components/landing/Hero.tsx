@@ -15,18 +15,17 @@ export function Hero() {
   };
 
   return (
-    <section className="relative py-20 md:py-32 bg-white overflow-hidden">
+    <section className="relative min-h-[calc(100vh-56px)] py-16 md:py-24 bg-white overflow-hidden flex items-center">
       {/* Background image anchored to bottom with a smooth white-to-transparent blend from the top */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         {/* Top gradient keeps the heading area clean white */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white/0" />
         {/* Image only occupies the lower portion to emphasize bottom visuals */}
         <div
-          className="absolute left-0 right-0 h-2/3 bg-no-repeat bg-bottom"
+          className="absolute left-0 right-0 bottom-0 h-2/3 bg-no-repeat bg-bottom"
           style={{
-            bottom: "-32px", // push image further down
             backgroundImage: "url('/hero-background-ai-cre-tools.jpg')",
-            backgroundSize: "90%", // zoom out a bit
+            backgroundSize: "60%", // zoomed out for a smaller feel
             backgroundPosition: "center bottom",
           }}
         >
