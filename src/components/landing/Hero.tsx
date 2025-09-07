@@ -24,7 +24,7 @@ export function Hero() {
         {/* Image only occupies the lower portion to emphasize bottom visuals */}
         <div className="absolute bottom-0 left-0 right-0 h-2/3">
           <Image
-            src="https://sgaejkzumgooaxqmildg.supabase.co/storage/v1/object/sign/website_images/ai-cre-tools-hero-background.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9mOTIwNDg2Mi0wYzVmLTRkMzEtOGUwMS00MzYyZmIzODk5NGEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ3ZWJzaXRlX2ltYWdlcy9haS1jcmUtdG9vbHMtaGVyby1iYWNrZ3JvdW5kLmpwZyIsImlhdCI6MTc1NzIzODM2MCwiZXhwIjoxOTE0OTE4MzYwfQ.dnCf5vZ1pDeAoKGASlR7dtOaiHcIG1HrTz4L0H0RjLs"
+            src="https://sgaejkzumgooaxqmildg.supabase.co/storage/v1/object/public/website_images/ai-cre-tools-hero-background.jpg"
             alt=""
             fill
             priority
