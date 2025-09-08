@@ -44,10 +44,10 @@ export const siteConfig = {
       locale: 'en_US',
       siteName: 'AI CRE Tools',
       images: {
-        default: '/og-image.png',
+        default: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'AI CRE Tools - The Directory for Commercial Real Estate AI'
+        alt: 'Find the best AI tools for commercial real estate'
       }
     },
 
@@ -57,10 +57,10 @@ export const siteConfig = {
       site: '@aicretools',
       creator: '@aicretools',
       images: {
-        default: '/twitter-image.png',
+        default: '/twitter-image',
         width: 1200,
         height: 630,
-        alt: 'AI CRE Tools Directory'
+        alt: 'Find the best AI tools for commercial real estate'
       }
     },
 

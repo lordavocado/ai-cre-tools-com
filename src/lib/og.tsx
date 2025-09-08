@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+export { ImageResponse } from 'next/og';
 import { siteConfig } from '@/config/site';
 
 export const OG_WIDTH = siteConfig.seo.openGraph.images.width || 1200;
