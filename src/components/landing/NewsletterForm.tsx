@@ -12,7 +12,7 @@ import { Mail } from "lucide-react";
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" aria-disabled={pending} disabled={pending} aria-label="Subscribe to email updates" className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30">
+    <Button type="submit" aria-disabled={pending} disabled={pending} aria-label="Subscribe to email updates" className="w-full sm:w-auto bg-neutral-200 text-neutral-900 hover:bg-neutral-300 border border-neutral-300 hover:shadow-lg hover:shadow-neutral-400/30">
       <Mail className="mr-1 h-4 w-4" />
       {pending ? "Subscribing..." : "Get email updates"}
     </Button>
