@@ -41,7 +41,7 @@ export function CategoryChipsWithIcons({
         const badgeContent = (
           <Badge 
             variant={variant} 
-            className={`capitalize ${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100/60 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-200 transition-all duration-200 shadow-sm flex items-center gap-1.5`}
+            className={`capitalize ${badgeSize} font-medium px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 hover:border-emerald-200 transition-all duration-200 shadow-sm flex items-center gap-1.5`}
           >
             {IconComponent && <IconComponent className={iconSize} />}
             {displayName}
