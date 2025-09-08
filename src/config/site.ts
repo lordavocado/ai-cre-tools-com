@@ -5,7 +5,7 @@ export const siteConfig = {
   // Site metadata
   name: "AI CRE Tools",
   description: "The leading directory for Commercial Real Estate AI tools. Find and choose the best AI solutions for your CRE needs.",
-  url: "https://aicretools.com",
+  url: "https://www.aicretools.com",
 
   // SEO Configuration
   seo: {
@@ -68,8 +68,8 @@ export const siteConfig = {
     structuredData: {
       organization: {
         name: 'AI CRE Tools',
-        url: 'https://aicretools.com',
-        logo: 'https://aicretools.com/ai-cre-tools-logo.jpg',
+        url: 'https://www.aicretools.com',
+        logo: 'https://www.aicretools.com/ai-cre-tools-logo.jpg',
         description: 'The most comprehensive directory of Commercial Real Estate AI tools and solutions.',
         sameAs: [
           'https://twitter.com/aicretools',
@@ -78,7 +78,7 @@ export const siteConfig = {
       },
       website: {
         name: 'AI CRE Tools',
-        url: 'https://aicretools.com',
+        url: 'https://www.aicretools.com',
         description: 'Find and compare the best Commercial Real Estate AI tools and solutions.',
         inLanguage: 'en-US'
       }
