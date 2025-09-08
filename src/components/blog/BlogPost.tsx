@@ -14,11 +14,11 @@ export function BlogPost({ post }: BlogPostProps) {
   const getCategoryLink = (category: string) => {
     const categoryMap: Record<string, string> = {
       'Property Management': '/categories/property-management-operations',
-      'Real Estate Investment': '/categories/investment-portfolio-management',
-      'Brokerage': '/categories/transaction-brokerage',
-      'Market Analysis': '/categories/market-analysis-valuation',
+      'Real Estate Investment': '/categories/asset-portfolio-management',
+      'Brokerage': '/categories/transactions-brokerage',
+      'Market Analysis': '/categories/property-analysis-valuation',
       'Development': '/categories/development-construction',
-      'Legal': '/categories/legal-compliance'
+      'Legal': '/categories/legal-compliance-due-diligence'
     };
     return categoryMap[category] || '/categories';
   };
