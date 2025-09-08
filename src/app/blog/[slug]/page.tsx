@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      url: `https://aicretools.com/blog/${post.slug}`,
+      url: `${siteConfig.url}/blog/${post.slug}`,
       siteName: siteConfig.seo.openGraph.siteName,
       type: 'article',
       authors: [post.author],

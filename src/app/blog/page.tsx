@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'AI CRE Tools Blog - Insights for Commercial Real Estate Professionals',
     description: 'Stay updated with the latest AI trends in commercial real estate. Expert insights, tool reviews, and practical guides for property managers, investors, and brokers.',
-    url: 'https://aicretools.com/blog',
+    url: `${siteConfig.url}/blog`,
     siteName: siteConfig.seo.openGraph.siteName,
     type: 'website',
     images: [{

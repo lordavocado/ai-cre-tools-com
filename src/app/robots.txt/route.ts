@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { siteConfig } from '@/config/site';
 
 export async function GET() {
+  const host = new URL(siteConfig.url).host;
   const robotsTxt = `# Robots.txt for ${siteConfig.name}
 # Generated on ${new Date().toISOString()}
 
@@ -75,7 +76,7 @@ Crawl-delay: 1
 Sitemap: ${siteConfig.url}/sitemap.xml
 
 # Host directive for international sites
-Host: ${siteConfig.url}`;
+Host: ${host}`;
 
   return new NextResponse(robotsTxt, {
     headers: {
