@@ -15,7 +15,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-[calc(100vh-56px)] pt-10 md:pt-16 pb-0 bg-white overflow-hidden flex items-center">
+    <section className="relative min-h-[70vh] pt-10 md:pt-16 pb-0 bg-white overflow-hidden flex items-center">
       <div className="container text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -65,6 +65,10 @@ export function Hero() {
             </div>
           </motion.div>
         </motion.div>
+      </div>
+      {/* Subtle divider at bottom of hero */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12">
+        <div className="h-full w-full bg-gradient-to-b from-transparent to-gray-100" />
       </div>
     </section>
   );

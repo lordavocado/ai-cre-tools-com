@@ -206,12 +206,12 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <Hero />
 
-      <section id="directory" className="py-16 md:py-24">
+      <section id="directory" className="pt-10 pb-16 md:pt-14 md:pb-24">
         <div className="container pl-6">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Discover Top {siteConfig.categoryName} ({initialItems.length})
           </h2>
-          <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground text-center mb-8 md:mb-10 max-w-2xl mx-auto">
             Explore our curated directory of {siteConfig.categoryName.toLowerCase()}. Use the filters below to find exactly what you need.
           </p>
                   <DirectorySearch 
