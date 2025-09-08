@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
 import { CategoryChipsWithIcons } from "@/components/ui/category-chips-with-icons";
-import { ImageWithFallback } from "@/components/ui/image-with-fallback";
+import { SafeImage } from "@/components/ui/safe-image";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 
@@ -317,22 +317,46 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
           {/* Hero Section with Tool Info */}
           <div className="relative mb-4 p-8 bg-white rounded-3xl border border-slate-200/60 shadow-xl">
             <div className="flex flex-col lg:flex-row gap-8 items-start">
-              {/* Logo and Basic Info */}
-              <div className="flex flex-col sm:flex-row gap-6 lg:flex-col lg:items-center">
-                <div className="relative w-32 h-32 mx-auto sm:mx-0 lg:mx-auto rounded-3xl overflow-hidden shadow-lg shrink-0 flex items-center justify-center bg-neutral-50 border border-neutral-200">
-                  <ImageWithFallback
-                    src={item.imageUrl || "/ai-cre-tools-logo.jpg"}
+              {/* Logo */}
+              <div className="flex flex-col items-center">
+                <div className="relative w-32 h-32 mx-auto rounded-3xl overflow-hidden shadow-lg shrink-0 flex items-center justify-center bg-neutral-50 border border-neutral-200">
+                  <SafeImage
+                    src={item.imageUrl}
+                    website={item.website}
                     alt={`${item.name} logo`}
-                    width={112}
-                    height={112}
-                    className="object-contain drop-shadow-md"
-                    data-ai-hint="product logo company"
+                    className="w-28 h-28 object-contain drop-shadow-md"
                   />
                 </div>
-                
-                {/* Quick Actions */}
-                <div className="flex flex-col gap-3 sm:flex-1 lg:flex-initial lg:w-full">
-                  <Button asChild variant="default" className="w-full bg-neutral-900 hover:bg-neutral-800 text-white shadow-md hover:shadow-lg transition-all duration-200">
+              </div>
+
+              {/* Main Content: title, subtitle, location, categories, actions */}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-3">{item.name}</h1>
+                <p className="text-xl text-slate-600 leading-relaxed mb-4">{item.tagline}</p>
+
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                  {item.country && (
+                    <div className="flex items-center gap-2 text-sm bg-slate-50/80 px-3 py-2 rounded-xl border border-slate-200/50 shadow-sm">
+                      <Users className="h-4 w-4 text-slate-500" />
+                      <span className="text-slate-600 text-sm">
+                        {item.city && `${item.city}, `}{item.country}
+                      </span>
+                    </div>
+                  )}
+                  {item.category && (
+                    <CategoryChipsWithIcons categories={item.category} variant="outline" />
+                  )}
+                  {item.rating && (
+                    <div className="flex items-center gap-2 text-sm bg-amber-50/80 px-4 py-2 rounded-xl border border-amber-200/50 shadow-sm">
+                      <Star className="h-5 w-5 text-amber-500 fill-amber-400" />
+                      <span className="font-semibold text-slate-700">{item.rating.toFixed(1)}</span>
+                      {item.reviewCount && <span className="text-slate-500">({item.reviewCount} reviews)</span>}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <Button asChild variant="default" className="sm:w-auto bg-neutral-900 hover:bg-neutral-800 text-white shadow-md hover:shadow-lg transition-all duration-200">
                     <Link href={item.website} target="_blank" rel="noopener noreferrer">
                       Visit Website <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
@@ -340,38 +364,8 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
                   <FavoriteButton 
                     toolId={item.id} 
                     variant="with-text" 
-                    className="w-full"
+                    className="sm:w-auto"
                   />
-                </div>
-              </div>
-
-              {/* Main Content */}
-              <div className="flex-1 min-w-0">
-                <div className="mb-6">
-                  <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-3">{item.name}</h1>
-                  <p className="text-xl text-slate-600 leading-relaxed mb-6">{item.tagline}</p>
-                  
-                  {/* Rating, Categories, and Location */}
-                  <div className="flex flex-wrap items-center gap-4 mb-6">
-                    {item.rating && (
-                      <div className="flex items-center gap-2 text-sm bg-amber-50/80 px-4 py-2 rounded-xl border border-amber-200/50 shadow-sm">
-                        <Star className="h-5 w-5 text-amber-500 fill-amber-400" />
-                        <span className="font-semibold text-slate-700">{item.rating.toFixed(1)}</span>
-                        {item.reviewCount && <span className="text-slate-500">({item.reviewCount} reviews)</span>}
-                      </div>
-                    )}
-                    {item.country && (
-                      <div className="flex items-center gap-2 text-sm bg-slate-50/80 px-3 py-2 rounded-xl border border-slate-200/50 shadow-sm">
-                        <Users className="h-4 w-4 text-slate-500" />
-                        <span className="text-slate-600 text-sm">
-                          {item.city && `${item.city}, `}{item.country}
-                        </span>
-                      </div>
-                    )}
-                    {item.category && (
-                      <CategoryChipsWithIcons categories={item.category} variant="outline" />
-                    )}
-                  </div>
                 </div>
 
                 {/* Key Stats Grid */}
