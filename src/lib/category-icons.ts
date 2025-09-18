@@ -6,6 +6,7 @@ export const CATEGORY_ICONS = {
   'property-analysis-valuation': DollarSign,
   'development-construction': Building,
   'transactions-brokerage': TrendingUp,
+  'cre-lending-intelligence': Activity,
   'property-management-operations': PieChart,
   'legal-compliance-duediligence': FileText,
   'asset-portfolio-management': PieChart,

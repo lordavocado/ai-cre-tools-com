@@ -284,7 +284,7 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
             <p class="text-foreground mb-4">Comprehensive tools for facilitating property transactions, deal management, and brokerage operations that streamline the entire transaction lifecycle from prospecting to closing.</p>
             <p class="text-foreground"><strong>Workflows supported:</strong> Deal pipeline management, client relationship management, transaction coordination, document management, commission tracking, market analysis, client communications.</p>
           </div>
-          
+
           <div>
             <h3 class="text-xl font-semibold mb-3 text-primary">Why it matters</h3>
             <p class="text-foreground mb-4">Successful transactions require careful coordination of multiple parties, documents, and deadlines. AI tools help brokers manage complex deals more effectively, improve client service, and close transactions faster while reducing the risk of errors or missed opportunities.</p>
@@ -294,6 +294,28 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
       imageUrl: '/categories/category-transactions-brokerage.jpg',
       itemCount: 0,
       icon: 'transactions-brokerage',
+    },
+    {
+      id: 'cre-lending-intelligence',
+      slug: 'cre-lending-intelligence',
+      name: 'CRE Lending Intelligence',
+      description: 'AI-powered underwriting, credit analysis, and lending automation for commercial real estate financiers.',
+      longDescription: `
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-xl font-semibold mb-3 text-primary">What it covers</h3>
+            <p class="text-foreground mb-4">AI platforms that help banks, debt funds, and private lenders evaluate CRE loans faster through automated data aggregation, deal screening, credit modeling, and portfolio monitoring.</p>
+            <p class="text-foreground"><strong>Workflows supported:</strong> Loan origination, borrower due diligence, cash flow underwriting, credit committee preparation, portfolio surveillance, covenant monitoring.</p>
+          </div>
+
+          <div>
+            <h3 class="text-xl font-semibold mb-3 text-primary">Why it matters</h3>
+            <p class="text-foreground mb-4">CRE lending teams face pressure to deploy capital quickly while managing risk. AI-driven intelligence reduces manual analysis, improves decision quality, and creates auditable processes that satisfy regulators and investors.</p>
+          </div>
+        </div>
+      `,
+      itemCount: 0,
+      icon: 'cre-lending-intelligence',
     },
     {
       id: 'marketing-leasing-enablement',
