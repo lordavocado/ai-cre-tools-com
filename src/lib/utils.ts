@@ -59,20 +59,83 @@ const HARDCODED_CATEGORIES = [
   },
 ];
 
+const CATEGORY_LOOKUP_BY_SLUG = new Map(
+  HARDCODED_CATEGORIES.map((category) => [category.slug.toLowerCase(), category])
+);
+
+const CATEGORY_LOOKUP_BY_NAME = new Map(
+  HARDCODED_CATEGORIES.map((category) => [category.name.toLowerCase(), category])
+);
+
+export interface CategoryInfo {
+  slug: string;
+  displayName: string;
+  hasPage: boolean;
+}
+
+function createSlugCandidate(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/&/g, ' ')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function formatCategoryDisplay(value: string): string {
+  if (!value) {
+    return 'Unknown';
+  }
+
+  if (/[A-Z]/.test(value)) {
+    return value;
+  }
+
+  return value
+    .replace(/[-_]/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+/**
+ * Resolve category information from a slug or name.
+ * Provides normalized slug for routing, formatted display name, and whether a page exists.
+ */
+export function resolveCategoryInfo(rawCategory: string): CategoryInfo {
+  const trimmed = rawCategory.trim();
+  const lower = trimmed.toLowerCase();
+
+  const directSlugMatch = CATEGORY_LOOKUP_BY_SLUG.get(lower);
+  const slugCandidate = createSlugCandidate(trimmed);
+  const normalizedSlugMatch = CATEGORY_LOOKUP_BY_SLUG.get(slugCandidate);
+  const nameMatch = CATEGORY_LOOKUP_BY_NAME.get(lower);
+
+  const matchedCategory = directSlugMatch ?? normalizedSlugMatch ?? nameMatch;
+
+  if (matchedCategory) {
+    return {
+      slug: matchedCategory.slug,
+      displayName: matchedCategory.name,
+      hasPage: true,
+    };
+  }
+
+  return {
+    slug: slugCandidate || lower.replace(/\s+/g, '-') || trimmed,
+    displayName: formatCategoryDisplay(trimmed || slugCandidate),
+    hasPage: false,
+  };
+}
+
 /**
  * Get the display name for a category slug
  */
 export function getCategoryDisplayName(slug: string): string {
-  const category = HARDCODED_CATEGORIES.find(cat => cat.slug === slug);
-  if (category) {
-    return category.name;
-  }
-  
-  // Fallback: capitalize and replace dashes with spaces
-  return slug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  return resolveCategoryInfo(slug).displayName;
 }
 
 /**

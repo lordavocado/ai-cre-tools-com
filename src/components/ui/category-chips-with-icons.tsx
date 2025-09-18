@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
+import { resolveCategoryInfo } from "@/lib/utils";
 
 interface CategoryChipsWithIconsProps {
   categories: string;
@@ -32,11 +33,11 @@ export function CategoryChipsWithIcons({
 
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
-      {categoryList.map((category, index) => {
-        const displayName = category.replace('-', ' ');
+      {categoryList.map((categoryValue, index) => {
+        const { slug, displayName, hasPage } = resolveCategoryInfo(categoryValue);
 
         // Find the icon for this category
-        const IconComponent = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS];
+        const IconComponent = CATEGORY_ICONS[slug as keyof typeof CATEGORY_ICONS];
         
         const badgeContent = (
           <Badge 
@@ -48,10 +49,12 @@ export function CategoryChipsWithIcons({
           </Badge>
         );
 
-        return showLinks ? (
-          <Link 
-            key={index} 
-            href={`/categories/${category}`}
+        const shouldLink = showLinks && hasPage;
+
+        return shouldLink ? (
+          <Link
+            key={index}
+            href={`/categories/${slug}`}
             className="hover:opacity-90 transition-all duration-200 hover:scale-105"
           >
             {badgeContent}
