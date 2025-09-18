@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Pagination } from "@/components/ui/pagination";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useState } from "react";
+import Link from "next/link";
 
 interface DirectoryGridProps {
   items: DirectoryItem[];
@@ -53,6 +54,35 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
             onPageChange={setCurrentPage}
           />
         </div>
+      )}
+
+      {items.length > itemsPerPage && (
+        <section className="space-y-4 border-t border-neutral-200 pt-8" aria-label="All tools in this listing">
+          <div className="space-y-1">
+            <h2 className="text-xl font-semibold text-neutral-900">Browse every tool in this list</h2>
+            <p className="text-sm text-neutral-600">
+              Jump directly to any tool featured in this directory view. All links are organized alphabetically for easy
+              scanning.
+            </p>
+          </div>
+          <nav aria-label="Alphabetical list of tools">
+            <ul className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-2 text-sm">
+              {items
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((item) => (
+                  <li key={`index-${item.id}`} className="break-inside-avoid">
+                    <Link
+                      href={`/${item.slug}`}
+                      className="text-primary hover:text-primary/80 hover:underline focus-visible:underline"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </nav>
+        </section>
       )}
     </div>
   );
