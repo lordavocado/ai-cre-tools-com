@@ -1,4 +1,4 @@
-import { Activity, Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building, type LucideIcon } from 'lucide-react';
+import { Play, TrendingUp, Users, RotateCcw, TestTube, DollarSign, Brain, MessageSquare, Search, PieChart, FileText, Building, type LucideIcon } from 'lucide-react';
 
 // Icon mapping for SSR-safe icon handling
 export const CATEGORY_ICONS = {
@@ -6,7 +6,6 @@ export const CATEGORY_ICONS = {
   'property-analysis-valuation': DollarSign,
   'development-construction': Building,
   'transactions-brokerage': TrendingUp,
-  'cre-lending-intelligence': Activity,
   'property-management-operations': PieChart,
   'legal-compliance-duediligence': FileText,
   'asset-portfolio-management': PieChart,
