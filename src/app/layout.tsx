@@ -17,6 +17,9 @@ import { CriticalResources } from '@/components/performance/critical-resources';
 import { PerformanceMonitor } from '@/components/performance/performance-monitor';
 import { HydrationTracker } from '@/components/performance/hydration-tracker';
 
+const GOOGLE_TAG_MANAGER_ID = 'GTM-K9T6242L';
+const AHREFS_ANALYTICS_KEY = 'U2yhP/o27yj/thHEpDz3zw';
+
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -129,6 +132,40 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){
+                w[l]=w[l]||[];
+                w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+                var f=d.getElementsByTagName(s)[0],
+                  j=d.createElement(s),
+                  dl=l!='dataLayer'?'&l='+l:'';
+                j.async=true;
+                j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+                f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${GOOGLE_TAG_MANAGER_ID}');
+            `,
+          }}
+        />
+        {/* End Google Tag Manager */}
+
+        {/* Ahrefs Analytics trigger for GTM */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w){
+                w.dataLayer = w.dataLayer || [];
+                w.dataLayer.push({
+                  event: 'ahrefs.analytics.init',
+                  ahrefsAnalyticsKey: '${AHREFS_ANALYTICS_KEY}'
+                });
+              })(window);
+            `,
+          }}
+        />
+
         {/* Critical inline styles for immediate rendering */}
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -272,6 +309,14 @@ export default function RootLayout({
           inter.variable
         )}
       >
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `
+              <iframe src="https://www.googletagmanager.com/ns.html?id=${GOOGLE_TAG_MANAGER_ID}"
+              height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            `,
+          }}
+        />
         <CSSFallback />
         <CriticalResources />
         <PostHogProvider>
@@ -298,7 +343,39 @@ export default function RootLayout({
             <Toaster />
           </FavoritesProvider>
         </PostHogProvider>
-        
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(){
+                var injected = false;
+                function loadAhrefsAnalytics(){
+                  if (injected) { return; }
+                  injected = true;
+                  var ahrefs_analytics_script = document.createElement('script');
+                  ahrefs_analytics_script.id = 'ahrefs-analytics-script';
+                  ahrefs_analytics_script.async = true;
+                  ahrefs_analytics_script.src = 'https://analytics.ahrefs.com/analytics.js';
+                  ahrefs_analytics_script.setAttribute('data-key', '${AHREFS_ANALYTICS_KEY}');
+                  var head = document.getElementsByTagName('head')[0];
+                  if (head) {
+                    head.appendChild(ahrefs_analytics_script);
+                  }
+                }
+
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({ event: 'ahrefs.analytics.load' });
+
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                  loadAhrefsAnalytics();
+                } else {
+                  document.addEventListener('DOMContentLoaded', loadAhrefsAnalytics);
+                }
+              })();
+            `,
+          }}
+        />
+
         {/* Enhanced Structured Data for Better SEO */}
         <script
           type="application/ld+json"
