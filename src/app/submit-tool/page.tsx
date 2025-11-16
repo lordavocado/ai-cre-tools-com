@@ -31,7 +31,7 @@ export default function SubmitToolPage() {
               </Link>
             </Button>
             <Button asChild variant="outline" className="w-full sm:w-auto gap-2">
-              <Link href="https://twitter.com/aicretools" target="_blank" rel="noopener noreferrer">
+              <Link href="https://x.com/nkjorg" target="_blank" rel="noopener noreferrer">
                 <Twitter className="h-5 w-5" />
                 Message on X (Twitter)
               </Link>
