@@ -23,19 +23,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Handle trailing slash normalization
-  const normalizedPath = normalizeURL(pathname, false); // We prefer no trailing slash
-  
-  // Redirect if URL needs normalization (except for root path)
-  if (pathname !== '/' && pathname !== normalizedPath) {
-    url.pathname = normalizedPath;
-    return NextResponse.redirect(url, 301); // Permanent redirect for SEO
-  }
+  const isGooglebot = /googlebot/i.test(request.headers.get('user-agent') ?? '');
 
-  // Handle lowercase URL enforcement for SEO consistency
-  const lowercasePath = pathname.toLowerCase();
-  if (pathname !== lowercasePath) {
-    url.pathname = lowercasePath;
+  // Handle trailing slash normalization (prefer no trailing slash)
+  const normalizedPath = normalizeURL(pathname, false);
+  const lowerCasePath = normalizedPath.toLowerCase();
+  const differsBySlashOnly =
+    pathname !== '/' && pathname !== normalizedPath && pathname.replace(/\/+$/, '') === normalizedPath;
+
+  // Redirect mixed-case URLs to lowercase canonical versions while allowing trailing slash variants
+  if (pathname !== lowerCasePath && pathname.replace(/\/+$/, '') !== lowerCasePath) {
+    url.pathname = lowerCasePath;
     return NextResponse.redirect(url, 301);
   }
 
@@ -52,8 +50,8 @@ export function middleware(request: NextRequest) {
     '/submit': '/submit-tool',
   };
 
-  const redirectTarget = redirectMap[pathname];
-  if (redirectTarget) {
+  const redirectTarget = redirectMap[normalizedPath];
+  if (redirectTarget && !(isGooglebot && differsBySlashOnly)) {
     url.pathname = redirectTarget;
     return NextResponse.redirect(url, 301);
   }
@@ -74,6 +72,11 @@ export function middleware(request: NextRequest) {
   if (!request.headers.get('user-agent')?.includes('bot')) {
     response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
   }
+
+  // Prefer canonical hints over redirects for trailing slash variants
+  const canonicalPath = lowerCasePath || '/';
+  const canonicalUrl = `${request.nextUrl.origin}${canonicalPath}${search}`;
+  response.headers.set('Link', `<${canonicalUrl}>; rel="canonical"`);
 
   return response;
 }
