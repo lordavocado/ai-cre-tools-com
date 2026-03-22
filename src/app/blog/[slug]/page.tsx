@@ -61,6 +61,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: post.title,
       description: post.excerpt,
       images: [post.imageUrl || siteConfig.seo.openGraph.images.default]
+    },
+    alternates: {
+      canonical: `${siteConfig.url}/blog/${post.slug}`,
     }
   };
 }

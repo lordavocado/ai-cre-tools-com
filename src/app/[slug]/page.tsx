@@ -1,6 +1,6 @@
 import { getDirectoryItemBySlug, getDirectoryItems } from "@/lib/supabase";
 import { isValidSlug, isValidSlugFormat } from "@/lib/routing-utils-client";
-import type { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata } from 'next';
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,7 @@ import { SafeImage } from "@/components/ui/safe-image";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const items = await getDirectoryItems();
@@ -36,8 +36,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> },
-  parent: ResolvingMetadata
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<Metadata> {
   const { slug } = await params;
   const item = await getDirectoryItemBySlug(slug);

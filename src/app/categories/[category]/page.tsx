@@ -1,4 +1,4 @@
-import type { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getCategories, getDirectoryItems } from '@/lib/supabase';
 import type { DirectoryItem } from '@/types';
@@ -8,19 +8,20 @@ import { CategoryPageClient } from '@/components/category/CategoryPageClient';
 // Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
 // If you need fresh data, consider using revalidate instead
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  const categories = await getCategories();
+  const categories = await getCategories(false);
   return categories.map((category) => ({
     category: category.slug,
   }));
 }
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ category: string }> },
-  parent: ResolvingMetadata
+  { params }: { params: Promise<{ category: string }> }
 ): Promise<Metadata> {
   const { category: slug } = await params;
-  const categories = await getCategories();
+  const categories = await getCategories(false);
   const category = categories.find((cat) => cat.slug === slug);
 
   if (!category) {
@@ -52,6 +53,9 @@ export async function generateMetadata(
       card: 'summary_large_image',
       title: `${category.name} AI Tools for Commercial Real Estate`,
       description: category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`,
+    },
+    alternates: {
+      canonical: `${siteConfig.url}/categories/${slug}`,
     },
   };
 }

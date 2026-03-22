@@ -48,10 +48,8 @@ export const metadata: Metadata = {
     canonical: `${siteConfig.url}/favorites`,
   },
   robots: {
-    index: true,
-    follow: true,
-    'max-image-preview': 'large',
-    'max-snippet': -1,
+    index: false,
+    follow: false,
   },
 };
 

@@ -6,6 +6,9 @@ import { siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   title: `All ${siteConfig.categoryName} Categories`,
   description: `Explore all categories of ${siteConfig.categoryName.toLowerCase()} available in our directory.`,
+  alternates: {
+    canonical: `${siteConfig.url}/categories`,
+  },
 };
 
 import { getCategories } from "@/lib/supabase";

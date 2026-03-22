@@ -27,30 +27,26 @@ export async function GET() {
     let directoryItems: DirectoryItem[] = [];
     try {
       directoryItems = await getDirectoryItems();
-    } catch (error) {
+    } catch {
       // Continue without directory items - fallback handling below
     }
     const blogPosts = await getAllBlogPosts();
 
-    // Get unique categories from directory items, with fallback to hardcoded categories
+    // Get unique categories from directory items, with fallback to canonical category definitions
     let categories: string[] = [];
     if (directoryItems.length > 0) {
-      categories = [...new Set(directoryItems.map(item => item.category).filter(Boolean))];
-    } else {
-      // Fallback to known category slugs when Google Sheets fails
       categories = [
-        'property-search-acquisition',
-        'property-analysis-valuation', 
-        'development-construction',
-        'legal-compliance-duediligence',
-        'property-management-operations',
-        'asset-portfolio-management',
-        'transactions-brokerage',
-        'marketingleasing-enablement',
-        'data-workflow-infrastructure',
-        'productivity-copilots'
+        ...new Set(
+          directoryItems.flatMap((item) =>
+            item.category
+              .split(',')
+              .map((category) => category.trim())
+              .filter(Boolean)
+          )
+        ),
       ];
-      // Using fallback categories when sheets are unavailable
+    } else {
+      categories = (await getCategories(false)).map((category) => category.slug);
     }
 
     // Static pages
@@ -84,18 +80,6 @@ export async function GET() {
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 0.9,
-      },
-      {
-        url: `${baseUrl}/submit-tool`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-      },
-      {
-        url: `${baseUrl}/favorites`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
       },
       {
         url: `${baseUrl}/privacy-policy`,

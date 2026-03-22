@@ -6,6 +6,9 @@ import { getGuides } from '@/lib/markdown';
 export const metadata: Metadata = {
   title: `Guides | ${siteConfig.name}`,
   description: 'Practical guides and tutorials for AI in commercial real estate.',
+  alternates: {
+    canonical: `${siteConfig.url}/guides`,
+  },
 };
 
 export default async function GuidesIndexPage() {
@@ -33,4 +36,3 @@ export default async function GuidesIndexPage() {
     </main>
   );
 }
-

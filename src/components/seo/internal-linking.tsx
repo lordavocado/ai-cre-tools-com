@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { siteConfig } from '@/config/site';
 
 interface InternalLinkProps {
   href: string;
@@ -28,7 +27,7 @@ export function AutomationLinks() {
     { href: '/categories/property-management-operations', text: 'property management automation', keyword: 'automate property management tasks' },
     { href: '/categories/development-construction', text: 'construction process automation', keyword: 'automate commercial real estate processes' },
     { href: '/categories/transactions-brokerage', text: 'transaction automation', keyword: 'commercial real estate efficiency tools' },
-    { href: '/categories/legal-compliance-duediligence', text: 'due diligence automation', keyword: 'AI for real estate due diligence' },
+    { href: '/categories/legal-compliance-due-diligence', text: 'due diligence automation', keyword: 'AI for real estate due diligence' },
   ];
 
   return (
@@ -50,7 +49,7 @@ export function AutomationLinks() {
 export function AnalysisLinks() {
   const links = [
     { href: '/categories/property-analysis-valuation', text: 'property valuation AI', keyword: 'AI real estate market analysis' },
-    { href: '/categories/marketingleasing-enablement', text: 'market analysis tools', keyword: 'AI real estate market analysis' },
+    { href: '/categories/marketing-leasing-enablement', text: 'market analysis tools', keyword: 'AI real estate market analysis' },
     { href: '/categories/asset-portfolio-management', text: 'portfolio analysis', keyword: 'AI property risk assessment' },
     { href: '/categories/data-workflow-infrastructure', text: 'data analysis platforms', keyword: 'commercial real estate efficiency tools' },
   ];
@@ -98,9 +97,9 @@ export function CostReductionLinks() {
 export function RiskAssessmentLinks() {
   const links = [
     { href: '/categories/property-analysis-valuation', text: 'property risk analysis', keyword: 'AI property risk assessment' },
-    { href: '/categories/legal-compliance-duediligence', text: 'compliance risk assessment', keyword: 'AI for real estate due diligence' },
+    { href: '/categories/legal-compliance-due-diligence', text: 'compliance risk assessment', keyword: 'AI for real estate due diligence' },
     { href: '/categories/asset-portfolio-management', text: 'portfolio risk management', keyword: 'AI property risk assessment' },
-    { href: '/categories/marketingleasing-enablement', text: 'market risk evaluation', keyword: 'AI real estate market analysis' },
+    { href: '/categories/marketing-leasing-enablement', text: 'market risk evaluation', keyword: 'AI real estate market analysis' },
   ];
 
   return (
@@ -202,16 +201,16 @@ export function FooterLinks() {
       title: 'Analysis & Insights',
       links: [
         { href: '/categories/property-analysis-valuation', text: 'Property Analysis', keyword: 'AI real estate market analysis' },
-        { href: '/categories/marketingleasing-enablement', text: 'Market Intelligence', keyword: 'AI real estate market analysis' },
+        { href: '/categories/marketing-leasing-enablement', text: 'Market Intelligence', keyword: 'AI real estate market analysis' },
         { href: '/categories/asset-portfolio-management', text: 'Portfolio Management', keyword: 'AI property risk assessment' },
       ]
     },
     {
       title: 'Risk & Compliance',
       links: [
-        { href: '/categories/legal-compliance-duediligence', text: 'Due Diligence', keyword: 'AI for real estate due diligence' },
+        { href: '/categories/legal-compliance-due-diligence', text: 'Due Diligence', keyword: 'AI for real estate due diligence' },
         { href: '/categories/property-analysis-valuation', text: 'Risk Assessment', keyword: 'AI property risk assessment' },
-        { href: '/categories/legal-compliance-duediligence', text: 'Compliance Tools', keyword: 'AI commercial lease analysis' },
+        { href: '/categories/legal-compliance-due-diligence', text: 'Compliance Tools', keyword: 'AI commercial lease analysis' },
       ]
     }
   ];

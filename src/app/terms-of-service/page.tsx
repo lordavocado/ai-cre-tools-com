@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
@@ -283,7 +284,7 @@ export default function TermsOfServicePage() {
 
           <h2>8. PRIVACY AND DATA PROTECTION</h2>
 
-          <p>Your privacy is important to us. Please review our <a href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</a> to understand:</p>
+          <p>Your privacy is important to us. Please review our <Link href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link> to understand:</p>
           <ul>
             <li>What information we collect and why</li>
             <li>How we use and protect your data</li>

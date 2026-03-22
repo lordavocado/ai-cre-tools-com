@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
     images: [siteConfig.seo.openGraph.images.default]
+  },
+  alternates: {
+    canonical: `${siteConfig.url}/blog`,
   }
 };
 

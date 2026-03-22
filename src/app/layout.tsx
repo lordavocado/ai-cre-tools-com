@@ -1,8 +1,7 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
-import { Hero } from '@/components/ui/hero';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
@@ -98,24 +97,21 @@ export const metadata: Metadata = {
     ],
     shortcut: '/favicon.ico',
   },
+  
+  // Web app manifest
+  manifest: '/site.webmanifest',
+};
 
-  // Mobile-specific viewport optimization
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-    viewportFit: 'cover',
-  },
-
-  // Theme color for mobile browsers
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
   ],
-  
-  // Web app manifest
-  manifest: '/site.webmanifest',
 };
 
 const inter = Inter({ 

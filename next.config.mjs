@@ -2,14 +2,6 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
   // Performance optimizations to eliminate render-blocking resources
   experimental: {
     optimizePackageImports: [
@@ -75,11 +67,11 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' *.posthog.com *.google.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' *.posthog.com *.google.com *.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
               "font-src 'self' fonts.gstatic.com",
-              "img-src 'self' data: blob: https: *.posthog.com sgaejkzumgooaxqmildg.supabase.co *.supabase.co",
-              "connect-src 'self' *.posthog.com *.google.com *.googleapis.com",
+              "img-src 'self' data: blob: https: *.posthog.com *.google-analytics.com sgaejkzumgooaxqmildg.supabase.co *.supabase.co",
+              "connect-src 'self' *.posthog.com *.google.com *.googleapis.com *.googletagmanager.com *.google-analytics.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

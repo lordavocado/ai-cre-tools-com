@@ -1,6 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { normalizeURL } from './src/lib/routing-utils';
 
+function isAdminPath(pathname: string) {
+  return pathname === '/admin' || pathname.startsWith('/admin/');
+}
+
+function isAdminApiPath(pathname: string) {
+  return pathname === '/api/admin' || pathname.startsWith('/api/admin/');
+}
+
+function unauthorizedAdminResponse() {
+  return new NextResponse('Unauthorized', {
+    status: 401,
+    headers: {
+      'WWW-Authenticate': 'Basic realm="Admin Area"',
+    },
+  });
+}
+
+function hasValidAdminAuth(request: NextRequest, username: string, password: string) {
+  const authHeader = request.headers.get('authorization');
+
+  if (!authHeader || !authHeader.toLowerCase().startsWith('basic ')) {
+    return false;
+  }
+
+  try {
+    const encodedCredentials = authHeader.split(' ')[1];
+
+    if (!encodedCredentials) {
+      return false;
+    }
+
+    const decodedCredentials = atob(encodedCredentials);
+    const separatorIndex = decodedCredentials.indexOf(':');
+
+    if (separatorIndex === -1) {
+      return false;
+    }
+
+    const providedUsername = decodedCredentials.slice(0, separatorIndex);
+    const providedPassword = decodedCredentials.slice(separatorIndex + 1);
+
+    return providedUsername === username && providedPassword === password;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Next.js middleware for SEO URL normalization and routing optimization
  * Handles trailing slashes, canonicalization, and redirects
@@ -8,6 +55,22 @@ import { normalizeURL } from './src/lib/routing-utils';
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const url = request.nextUrl.clone();
+  const adminRequest = isAdminPath(pathname) || isAdminApiPath(pathname);
+
+  if (adminRequest) {
+    const adminUsername = process.env.ADMIN_USERNAME ?? 'admin';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      return new NextResponse('Admin routes are unavailable.', { status: 503 });
+    }
+
+    if (!hasValidAdminAuth(request, adminUsername, adminPassword)) {
+      return unauthorizedAdminResponse();
+    }
+
+    return NextResponse.next();
+  }
 
   // Skip middleware for:
   // - API routes
@@ -16,8 +79,7 @@ export function middleware(request: NextRequest) {
   const skipMiddleware = 
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
-    pathname.includes('.') ||
-    pathname.startsWith('/admin/');
+    pathname.includes('.');
 
   if (skipMiddleware) {
     return NextResponse.next();
@@ -75,7 +137,7 @@ export function middleware(request: NextRequest) {
 
   // Prefer canonical hints over redirects for trailing slash variants
   const canonicalPath = lowerCasePath || '/';
-  const canonicalUrl = `${request.nextUrl.origin}${canonicalPath}${search}`;
+  const canonicalUrl = `${request.nextUrl.origin}${canonicalPath}`;
   response.headers.set('Link', `<${canonicalUrl}>; rel="canonical"`);
 
   return response;
@@ -86,6 +148,8 @@ export function middleware(request: NextRequest) {
  */
 export const config = {
   matcher: [
+    '/admin/:path*',
+    '/api/admin/:path*',
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)

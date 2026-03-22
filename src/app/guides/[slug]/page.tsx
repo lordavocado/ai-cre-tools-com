@@ -29,6 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: guide.title,
       description: guide.excerpt,
     },
+    alternates: {
+      canonical: `${siteConfig.url}/guides/${guide.slug}`,
+    },
   };
 }
 
@@ -49,4 +52,3 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
     </main>
   );
 }
-
