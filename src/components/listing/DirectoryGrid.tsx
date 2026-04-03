@@ -40,7 +40,7 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 space-y-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {currentItems.map((item) => (
           <DirectoryItemCard key={item.id} item={item} />
         ))}
@@ -57,10 +57,13 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
       )}
 
       {items.length > itemsPerPage && (
-        <section className="space-y-4 border-t border-neutral-200 pt-8" aria-label="All tools in this listing">
+        <section
+          className="space-y-4 rounded-[28px] border border-slate-200/80 bg-white px-6 py-8 shadow-[0_18px_70px_-55px_rgba(15,23,42,0.45)]"
+          aria-label="All tools in this listing"
+        >
           <div className="space-y-1">
-            <h2 className="text-xl font-semibold text-neutral-900">Browse every tool in this list</h2>
-            <p className="text-sm text-neutral-600">
+            <h2 className="text-xl font-semibold text-slate-950">Browse every tool in this list</h2>
+            <p className="text-sm text-slate-600">
               Jump directly to any tool featured in this directory view. All links are organized alphabetically for easy
               scanning.
             </p>

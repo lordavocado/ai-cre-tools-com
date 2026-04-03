@@ -7,7 +7,7 @@ import { IntersectionLoader } from "@/components/performance/intersection-loader
 import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/supabase";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Building2, ClipboardCheck, Sparkles } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
@@ -99,6 +99,7 @@ export default async function Home({ searchParams }: HomeProps) {
   try {
     // Get items first, then categories to avoid circular dependency
     const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
+    const featuredItems = await getFeaturedItems(3);
     
     // Get categories without item counts initially to avoid circular dependency
     let categoriesFromSheet: Category[];
@@ -204,40 +205,102 @@ export default async function Home({ searchParams }: HomeProps) {
         }}
       />
 
-      <Hero />
+      <Hero
+        featuredItems={featuredItems}
+        totalItems={initialItems.length}
+        totalCategories={categoriesFromSheet.length}
+        categories={searchCategories}
+      />
 
-      <section id="directory" className="pt-10 pb-16 md:pt-14 md:pb-24">
-        <div className="container pl-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            Discover Top {siteConfig.categoryName} ({initialItems.length})
-          </h2>
-          <p className="text-lg text-muted-foreground text-center mb-8 md:mb-10 max-w-2xl mx-auto">
-            Explore our curated directory of {siteConfig.categoryName.toLowerCase()}. Use the filters below to find exactly what you need.
-          </p>
-                  <DirectorySearch 
-          categories={searchCategories}
-          initialSearchTerm={searchTerm}
-          initialCategoryFilter={categoryFilter}
-          totalItems={initialItems.length}
-        />
+      <section className="relative z-10 -mt-6 pb-6 md:-mt-10 md:pb-10">
+        <div className="container px-6">
+          <div className="grid gap-4 lg:grid-cols-3">
+            <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_80px_-48px_rgba(15,23,42,0.45)]">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <h2 className="mt-4 text-xl font-semibold text-slate-950">Compare the right software faster</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Use one directory to evaluate commercial real estate AI tools instead of bouncing across generic lists and
+                vendor sites.
+              </p>
+            </div>
+            <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_80px_-48px_rgba(15,23,42,0.45)]">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <ClipboardCheck className="h-5 w-5" />
+              </div>
+              <h2 className="mt-4 text-xl font-semibold text-slate-950">Browse by real CRE workflows</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Filter for underwriting, due diligence, leasing, property management, and portfolio workflows with clear
+                category paths.
+              </p>
+            </div>
+            <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_80px_-48px_rgba(15,23,42,0.45)]">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <h2 className="mt-4 text-xl font-semibold text-slate-950">Built for commercial real estate teams</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                The directory language, categories, and comparisons stay aligned to investors, developers, brokers, and
+                operators instead of consumer real estate.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="directory"
+        className="border-y border-slate-200/70 bg-[linear-gradient(180deg,_rgba(248,250,252,0.6)_0%,_rgba(255,255,255,1)_18%,_rgba(248,250,252,0.7)_100%)] py-14 md:py-20"
+      >
+        <div className="container px-6">
+          <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Directory</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+                Compare commercial real estate AI tools in one clean workspace.
+              </h2>
+              <p className="mt-4 text-lg leading-8 text-slate-600">
+                Search by company, software capability, or category to build a focused shortlist without losing context.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-white/90 px-5 py-4 text-sm text-slate-600 shadow-sm">
+              <div className="font-semibold text-slate-950">{initialItems.length} tools currently indexed</div>
+              <div className="mt-1">Use the filters below to narrow the list quickly.</div>
+            </div>
+          </div>
+
+          <DirectorySearch
+            categories={searchCategories}
+            initialSearchTerm={searchTerm}
+            initialCategoryFilter={categoryFilter}
+            totalItems={initialItems.length}
+          />
           <DirectoryGrid items={initialItems} />
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-secondary/30">
-        <div className="container pl-6">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">
-                Browse {siteConfig.categoryName} by Category
+      <section className="bg-slate-50/80 py-16 md:py-24">
+        <div className="container px-6">
+          <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Categories</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+                Browse software by CRE workflow, not generic SaaS labels.
               </h2>
-              <p className="text-lg text-muted-foreground mb-4 md:mb-0">
-                Find {siteConfig.categoryName.toLowerCase()} tailored to specific needs across various categories.
+              <p className="mt-4 text-lg leading-8 text-slate-600">
+                Start from the job to be done, then move into the tools that support that workflow best.
               </p>
             </div>
+            <Button asChild variant="outline" className="w-fit rounded-xl border-slate-300 bg-white">
+              <Link href="/categories">
+                View all categories
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
           <IntersectionLoader className="min-h-[200px]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
               {topCategories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
@@ -338,12 +401,6 @@ export default async function Home({ searchParams }: HomeProps) {
     // Fallback when data fetching fails - prevent infinite re-renders
     console.error('Error loading homepage data:', error);
     
-    // Provide minimal fallback data to prevent further errors
-    const initialItems: any[] = [];
-    const categoriesFromSheet: Category[] = [];
-    const topCategories: Category[] = [];
-    const searchCategories: DirectorySearchCategory[] = [];
-    
     // Mark this as an error state to prevent retry loops
     if (typeof window !== 'undefined') {
       console.warn('Homepage entered error fallback state');
@@ -366,18 +423,18 @@ export default async function Home({ searchParams }: HomeProps) {
           }}
         />
 
-        <Hero />
+        <Hero featuredItems={[]} totalItems={0} totalCategories={0} categories={[]} />
 
         <section id="directory" className="py-16 md:py-24">
-          <div className="container pl-6">
-            <div className="text-center py-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {siteConfig.categoryName} Directory
+          <div className="container px-6">
+            <div className="rounded-[28px] border border-slate-200/80 bg-white p-10 text-center shadow-[0_18px_70px_-55px_rgba(15,23,42,0.45)]">
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+                {siteConfig.categoryName} directory update in progress
               </h2>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-slate-600">
                 We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
               </p>
-              <Button asChild>
+              <Button asChild className="mt-8 rounded-xl bg-slate-950 hover:bg-slate-800">
                 <Link href="/categories">
                   Explore Categories <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -386,16 +443,16 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         </section>
 
-        <section className="py-16 md:py-24 bg-secondary/30">
-          <div className="container pl-6">
-            <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <section className="bg-slate-50/80 py-16 md:py-24">
+          <div className="container px-6">
+            <div className="rounded-[28px] border border-slate-200/80 bg-white p-10 text-center shadow-[0_18px_70px_-55px_rgba(15,23,42,0.45)]">
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
                 Browse by Category
               </h2>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="mt-4 text-lg leading-8 text-slate-600">
                 Our directory is organized by specific use cases in commercial real estate.
               </p>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="mt-8 rounded-xl border-slate-300 bg-white">
                 <Link href="/categories">
                   View All Categories <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>

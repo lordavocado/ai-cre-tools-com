@@ -3,11 +3,9 @@
 import { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Search, X } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { siteConfig } from "@/config/site";
-// Using the same visual style as tool card chips (CategoryChips)
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export interface DirectorySearchCategory {
@@ -107,26 +105,43 @@ function DirectorySearchContent({
   };
 
   return (
-    <div className="mx-auto max-w-[1200px] px-6 mb-12">
-      <div className="space-y-8">
-        {/* Search Section */}
-        <div className="max-w-2xl">
+    <div className="mx-auto mb-12 max-w-[1200px] px-6">
+      <div className="space-y-6 rounded-[28px] border border-slate-200/80 bg-white/95 p-5 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.4)] md:p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Search and filter
+            </div>
+            <h3 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
+              Narrow the directory by company, capability, or workflow.
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600 md:text-base">
+              Start broad, then refine by category to find the right commercial real estate software faster.
+            </p>
+          </div>
+          <div className="text-sm text-slate-500 md:pt-1">
+            {isPending ? "Updating results..." : `${totalItems} tools in this view`}
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <Input
               id="search-term"
               type="text"
-              placeholder="Search by keywords..."
+              placeholder="Search company names, workflows, or software capabilities"
               value={searchTerm}
               onChange={handleSearchChange}
-              className="h-12 pl-12 pr-12 border-neutral-200 text-base bg-white placeholder:text-neutral-400 focus-visible:ring-neutral-900 focus-visible:ring-offset-0 focus-visible:ring-1 transition-colors"
+              className="h-14 rounded-2xl border-slate-200 bg-slate-50 pl-12 pr-12 text-base placeholder:text-slate-400 focus-visible:border-sky-300 focus-visible:bg-white focus-visible:ring-4 focus-visible:ring-sky-100 focus-visible:ring-offset-0"
               aria-label="Search directory items"
             />
             {searchTerm && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 hover:bg-neutral-50 text-neutral-400"
+                className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full text-slate-400 hover:bg-white hover:text-slate-700"
                 onClick={clearSearch}
                 aria-label="Clear search term"
               >
@@ -134,19 +149,34 @@ function DirectorySearchContent({
               </Button>
             )}
           </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={clearSearch}
+            disabled={!searchTerm && selectedCategories.length === 0}
+            className="h-14 rounded-2xl border-slate-200 px-5 text-sm font-semibold text-slate-700"
+          >
+            Clear all filters
+          </Button>
         </div>
 
-        {/* Categories Section */}
-        <div className="flex flex-wrap gap-1.5">
+        <div>
+          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            Browse by category
+          </div>
+          <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
-            <Badge
+            <Button
               key={category.id}
-              variant={selectedCategories.includes(category.slug) ? "default" : "secondary"}
+              type="button"
+              variant={selectedCategories.includes(category.slug) ? "default" : "outline"}
+              aria-pressed={selectedCategories.includes(category.slug)}
               className={`
-                cursor-pointer px-3 py-1.5 text-xs font-normal rounded-md transition-colors duration-200
+                h-auto rounded-full px-4 py-2 text-sm font-medium transition-all duration-200
                 ${selectedCategories.includes(category.slug)
-                  ? 'bg-emerald-600 text-white hover:bg-emerald-700 border-none'
-                  : 'bg-emerald-50 text-emerald-700 border-none hover:bg-emerald-100'
+                  ? 'border-slate-950 bg-slate-950 text-white hover:bg-slate-800'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-900'
                 }
               `}
               onClick={(e) => {
@@ -155,24 +185,30 @@ function DirectorySearchContent({
               }}
             >
               {category.name}
-            </Badge>
+            </Button>
           ))}
+          </div>
         </div>
 
-
-        {/* Results Count */}
-        {totalItems > 0 && (
-          <div className="text-sm text-neutral-500">
-            {totalItems} {siteConfig.categoryName.toLowerCase()} {totalItems === 1 ? 'found' : 'found'}
+        {(selectedCategories.length > 0 || searchTerm) && (
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            <span className="font-medium text-slate-900">Active filters</span>
+            {searchTerm ? <span className="rounded-full bg-white px-3 py-1">Search: {searchTerm}</span> : null}
+            {selectedCategories.map((categorySlug) => {
+              const category = categories.find((entry) => entry.slug === categorySlug);
+              return (
+                <span key={categorySlug} className="rounded-full bg-white px-3 py-1">
+                  {category?.name ?? categorySlug}
+                </span>
+              );
+            })}
           </div>
         )}
 
-        {/* Loading State */}
-        {isPending && (
-          <div className="text-sm text-neutral-500">
-            Loading...
-          </div>
-        )}
+        <div className="text-sm text-slate-500">
+          Search across {siteConfig.categoryName.toLowerCase()} with filters that keep the page context intact while the
+          results update.
+        </div>
       </div>
     </div>
   );
