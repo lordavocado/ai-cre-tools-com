@@ -7,7 +7,7 @@ import { IntersectionLoader } from "@/components/performance/intersection-loader
 import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/supabase";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Building2, ClipboardCheck, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
@@ -212,61 +212,14 @@ export default async function Home({ searchParams }: HomeProps) {
         categories={searchCategories}
       />
 
-      <section className="relative z-10 -mt-6 pb-6 md:-mt-10 md:pb-10">
+      <section id="directory" className="border-b border-slate-200 py-14 md:py-20">
         <div className="container px-6">
-          <div className="grid gap-4 lg:grid-cols-3">
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_80px_-48px_rgba(15,23,42,0.45)]">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <h2 className="mt-4 text-xl font-semibold text-slate-950">Compare the right software faster</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Use one directory to evaluate commercial real estate AI tools instead of bouncing across generic lists and
-                vendor sites.
-              </p>
-            </div>
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_80px_-48px_rgba(15,23,42,0.45)]">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-                <ClipboardCheck className="h-5 w-5" />
-              </div>
-              <h2 className="mt-4 text-xl font-semibold text-slate-950">Browse by real CRE workflows</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Filter for underwriting, due diligence, leasing, property management, and portfolio workflows with clear
-                category paths.
-              </p>
-            </div>
-            <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_20px_80px_-48px_rgba(15,23,42,0.45)]">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700">
-                <Building2 className="h-5 w-5" />
-              </div>
-              <h2 className="mt-4 text-xl font-semibold text-slate-950">Built for commercial real estate teams</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                The directory language, categories, and comparisons stay aligned to investors, developers, brokers, and
-                operators instead of consumer real estate.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="directory"
-        className="border-y border-slate-200/70 bg-[linear-gradient(180deg,_rgba(248,250,252,0.6)_0%,_rgba(255,255,255,1)_18%,_rgba(248,250,252,0.7)_100%)] py-14 md:py-20"
-      >
-        <div className="container px-6">
-          <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">Directory</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
-                Compare commercial real estate AI tools in one clean workspace.
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+                All tools
               </h2>
-              <p className="mt-4 text-lg leading-8 text-slate-600">
-                Search by company, software capability, or category to build a focused shortlist without losing context.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white/90 px-5 py-4 text-sm text-slate-600 shadow-sm">
-              <div className="font-semibold text-slate-950">{initialItems.length} tools currently indexed</div>
-              <div className="mt-1">Use the filters below to narrow the list quickly.</div>
+              <p className="mt-1 text-sm text-slate-500">{initialItems.length} tools indexed</p>
             </div>
           </div>
 
@@ -280,19 +233,14 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-slate-50/80 py-16 md:py-24">
+      <section className="bg-slate-50 py-14 md:py-20">
         <div className="container px-6">
-          <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">Categories</p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
-                Browse software by CRE workflow, not generic SaaS labels.
-              </h2>
-              <p className="mt-4 text-lg leading-8 text-slate-600">
-                Start from the job to be done, then move into the tools that support that workflow best.
-              </p>
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">Browse by category</h2>
+              <p className="mt-1 text-sm text-slate-500">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
-            <Button asChild variant="outline" className="w-fit rounded-xl border-slate-300 bg-white">
+            <Button asChild variant="outline" className="w-fit rounded-lg border-slate-300 bg-white">
               <Link href="/categories">
                 View all categories
                 <ArrowRight className="h-4 w-4" />
