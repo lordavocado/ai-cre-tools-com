@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Building2, TrendingUp, Users, Award, Target, Globe, Mail } from 'lucide-react';
-import { SimpleNewsletterForm } from '@/components/forms/SimpleNewsletterForm';
+import { NewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
 export const metadata: Metadata = {
   title: `About Us | ${siteConfig.name}`,
@@ -271,7 +271,7 @@ export default function AboutPage() {
                 Get the latest insights, tool reviews, and industry updates delivered to your inbox.
               </p>
               <div className="flex justify-center">
-                <SimpleNewsletterForm source="about-page" />
+                <NewsletterForm source="about-page" />
               </div>
             </div>
           </div>
