@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getToolSubmissions, updateSubmissionStatus } from '@/lib/sheets';
+import { getToolSubmissions, updateSubmissionStatus } from '@/lib/supabase';
 
 // Schema for updating submission status
 const updateStatusSchema = z.object({

@@ -213,7 +213,7 @@ export function CategoryPageClient({
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
             {/* Use Case Cards - Dynamic based on category */}
             {(() => {
               const getCategoryUseCases = (categorySlug: string) => {
@@ -304,7 +304,7 @@ export function CategoryPageClient({
               
               return getCategoryUseCases(slug).map((useCase, index) => (
                 <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800">
-                  <CardContent className="p-6">
+                  <CardContent className="p-8 md:p-10">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/20 group-hover:scale-110 transition-transform duration-300">
                         {useCase.icon}
@@ -357,9 +357,9 @@ export function CategoryPageClient({
             </p>
           </div>
           
-          <div className="grid gap-6">
+          <div className="grid gap-8">
             <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   What are {category.name} tools?
@@ -371,7 +371,7 @@ export function CategoryPageClient({
             </Card>
             
             <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
                   <Zap className="h-5 w-5 text-blue-500" />
                   How do I choose the right {category.name} tool?
@@ -383,7 +383,7 @@ export function CategoryPageClient({
             </Card>
 
             <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
                   <Users className="h-5 w-5 text-purple-500" />
                   Are these {category.name} tools suitable for small businesses?
@@ -395,7 +395,7 @@ export function CategoryPageClient({
             </Card>
 
             <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
+              <CardContent className="p-8">
                 <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
                   <Shield className="h-5 w-5 text-orange-500" />
                   What should I expect in terms of implementation time?
@@ -419,7 +419,7 @@ export function CategoryPageClient({
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12">
             {categories.slice(0, 4).filter(cat => cat.slug !== slug).map((relatedCategory) => (
               <Link 
                 key={relatedCategory.slug} 
@@ -427,7 +427,7 @@ export function CategoryPageClient({
                 className="group block"
               >
                 <Card className="border-0 shadow-md hover:shadow-2xl transition-all duration-500 group-hover:scale-105 bg-white/80 backdrop-blur-sm dark:bg-slate-800/80 h-full">
-                  <CardContent className="p-8 text-center flex flex-col items-center justify-center min-h-[180px]">
+                  <CardContent className="p-10 md:p-12 text-center flex flex-col items-center justify-center min-h-[200px]">
                     <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-blue-500/20 rounded-2xl mx-auto mb-6 flex items-center justify-center group-hover:from-primary/20 group-hover:to-blue-500/30 transition-all duration-300">
                       <ArrowRight className="h-8 w-8 text-primary group-hover:scale-110 transition-transform duration-300" />
                     </div>

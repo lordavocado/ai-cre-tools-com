@@ -212,7 +212,7 @@ export default async function Home({ searchParams }: HomeProps) {
         categories={searchCategories}
       />
 
-      <section id="directory" className="border-b border-slate-200 py-14 md:py-20">
+      <section id="directory" className="border-b border-slate-200 py-16 md:py-24">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -233,7 +233,7 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-14 md:py-20">
+      <section className="bg-slate-50 py-16 md:py-24">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -248,7 +248,7 @@ export default async function Home({ searchParams }: HomeProps) {
             </Button>
           </div>
           <IntersectionLoader className="min-h-[200px]">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
               {topCategories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}

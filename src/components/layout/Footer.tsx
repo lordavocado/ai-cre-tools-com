@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Rocket, Twitter, Linkedin, Github, Heart } from 'lucide-react';
 import { siteConfig, computedSiteConfig } from '@/config/site';
+import { SimpleNewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -15,6 +16,10 @@ export function Footer() {
             <p className="text-sm leading-relaxed text-neutral-600">
               {computedSiteConfig.footer.description}
             </p>
+            <div className="pt-4">
+              <p className="text-sm font-medium text-neutral-900 mb-2">Newsletter</p>
+              <SimpleNewsletterForm source="footer" />
+            </div>
             <div className="pt-2 border-t border-neutral-200">
               <div className="flex flex-col space-y-1 text-xs text-neutral-500">
                 <Link href="/privacy-policy" className="hover:text-neutral-700 transition-colors">Privacy Policy</Link>

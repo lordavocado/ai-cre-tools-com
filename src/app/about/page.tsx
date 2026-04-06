@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Building2, TrendingUp, Users, Award, Target, Globe, Mail } from 'lucide-react';
-import { AdvancedNewsletterForm } from '@/components/forms/AdvancedNewsletterForm';
+import { SimpleNewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
 export const metadata: Metadata = {
   title: `About Us | ${siteConfig.name} - The Leading ${siteConfig.categoryName} Directory`,
@@ -271,18 +271,7 @@ export default function AboutPage() {
                 Get the latest insights, tool reviews, and industry updates delivered to your inbox.
               </p>
               <div className="flex justify-center">
-                <AdvancedNewsletterForm 
-                  source="about-page"
-                  title=""
-                  description=""
-                  availableInterests={[
-                    { id: "new-tools", name: "New AI Tools" },
-                    { id: "industry-news", name: "Industry News" },
-                    { id: "case-studies", name: "Case Studies" },
-                    { id: "expert-insights", name: "Expert Insights" }
-                  ]}
-                  availableTags={["Early Access", "VIP Updates"]}
-                />
+                <SimpleNewsletterForm source="about-page" />
               </div>
             </div>
           </div>

@@ -5,26 +5,26 @@ import { useFormStatus } from 'react-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { subscribeToNewsletter } from "@/app/actions";
-import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from 'react';
 import { Mail } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" aria-disabled={pending} disabled={pending} aria-label="Subscribe to email updates" className="w-full sm:w-auto bg-neutral-200 text-neutral-900 hover:bg-neutral-300 border border-neutral-300 hover:shadow-lg hover:shadow-neutral-400/30">
-      <Mail className="mr-1 h-4 w-4" />
-      {pending ? "Subscribing..." : "Get email updates"}
+    <Button type="submit" aria-disabled={pending} disabled={pending} className="bg-blue-600 hover:bg-blue-700 text-white">
+      {pending ? "Subscribing..." : "Subscribe"}
     </Button>
   );
 }
 
-interface NewsletterFormProps {
+interface SimpleNewsletterFormProps {
   source?: string;
-  className?: string;
 }
 
-export function NewsletterForm({ source = "homepage", className }: NewsletterFormProps) {
+export function SimpleNewsletterForm({ 
+  source = "footer" 
+}: SimpleNewsletterFormProps) {
   const initialState = { message: "", success: false };
   const [state, formAction] = useActionState(subscribeToNewsletter, initialState);
   const { toast } = useToast();
@@ -40,23 +40,19 @@ export function NewsletterForm({ source = "homepage", className }: NewsletterFor
   }, [state, toast]);
 
   return (
-    <form action={formAction} className={className || ""}>
-      <div className="flex gap-2 w-full">
+    <form action={formAction} className="flex gap-2">
+      <div className="relative flex-1">
+        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          type="email"
           name="email"
+          type="email"
           placeholder="Enter your email"
           required
-          className="text-sm min-w-0 flex-1 md:w-64"
-          aria-label="Email for newsletter"
+          className="pl-10"
         />
-        <SubmitButton />
       </div>
-      {/* Hidden field to track signup source */}
       <input type="hidden" name="source" value={source} />
-      {state.message && !state.success && (
-        <p className="text-sm text-destructive">{state.message}</p>
-      )}
+      <SubmitButton />
     </form>
   );
 }

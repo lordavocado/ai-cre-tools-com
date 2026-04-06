@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { researchToolWithPerplexity } from '@/lib/perplexity';
-import { storeToolSubmission } from '@/lib/sheets';
+import { storeToolSubmission } from '@/lib/supabase';
 
 /**
  * Validation schema for tool submission form data

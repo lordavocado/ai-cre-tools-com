@@ -617,3 +617,201 @@ export function getSupabaseCacheStatus() {
     isValid: isCacheValid(allItemsCacheTimestamp),
   };
 }
+
+// --- Tool Submissions ---
+
+const SUBMISSIONS_TABLE = 'tool_submissions';
+
+/**
+ * Tool submission interface for managing user-submitted tools
+ */
+export interface ToolSubmission {
+  submissionId: string;
+  website: string;
+  email: string;
+  comment: string;
+  slug?: string;
+  name?: string;
+  category?: string;
+  features?: string;
+  oneLiner?: string;
+  description?: string;
+  country?: string;
+  city?: string;
+  iconLink?: string;
+  researchStatus: string;
+  submittedAt: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
+/** Database row type for tool_submissions table */
+interface ToolSubmissionRow {
+  submission_id: string;
+  website: string;
+  email: string;
+  comment: string;
+  slug: string | null;
+  name: string | null;
+  category: string | null;
+  features: string | null;
+  one_liner: string | null;
+  description: string | null;
+  country: string | null;
+  city: string | null;
+  icon_link: string | null;
+  research_status: string;
+  submitted_at: string;
+  status: string;
+}
+
+/**
+ * Stores a new tool submission in Supabase
+ * @param submissionData - Tool submission data without submissionId
+ * @returns Promise resolving to generated submission ID
+ */
+export async function storeToolSubmission(submissionData: Omit<ToolSubmission, 'submissionId'>): Promise<string> {
+  const submissionId = `submission_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  try {
+    const supabase = getSupabaseClient();
+
+    const insertData: ToolSubmissionRow = {
+      submission_id: submissionId,
+      website: submissionData.website,
+      email: submissionData.email,
+      comment: submissionData.comment,
+      slug: submissionData.slug || null,
+      name: submissionData.name || null,
+      category: submissionData.category || null,
+      features: submissionData.features || null,
+      one_liner: submissionData.oneLiner || null,
+      description: submissionData.description || null,
+      country: submissionData.country || null,
+      city: submissionData.city || null,
+      icon_link: submissionData.iconLink || null,
+      research_status: submissionData.researchStatus,
+      submitted_at: submissionData.submittedAt,
+      status: submissionData.status,
+    };
+
+    const { error } = await supabase
+      .from(SUBMISSIONS_TABLE)
+      .insert(insertData as any);
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      throw new Error(`Failed to store submission: ${error.message}`);
+    }
+
+    return submissionId;
+
+  } catch (error) {
+    console.error('Error storing tool submission:', error);
+    
+    if (error instanceof Error && error.message.includes('not properly configured')) {
+      console.warn('Supabase not configured, returning placeholder ID');
+      return submissionId;
+    }
+    
+    throw error;
+  }
+}
+
+/**
+ * Retrieves tool submissions from Supabase with optional status filtering
+ * @param status - Optional status filter ('pending' | 'approved' | 'rejected')
+ * @returns Promise resolving to array of tool submissions
+ */
+export async function getToolSubmissions(status?: 'pending' | 'approved' | 'rejected'): Promise<ToolSubmission[]> {
+  try {
+    const supabase = getSupabaseClient();
+
+    let query = supabase
+      .from(SUBMISSIONS_TABLE)
+      .select('*')
+      .order('submitted_at', { ascending: false });
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Supabase query error:', error);
+      throw new Error(`Failed to fetch submissions: ${error.message}`);
+    }
+
+    if (!data) {
+      return [];
+    }
+
+    return (data as unknown as ToolSubmissionRow[]).map((row): ToolSubmission => ({
+      submissionId: row.submission_id,
+      website: row.website,
+      email: row.email,
+      comment: row.comment,
+      slug: row.slug || undefined,
+      name: row.name || undefined,
+      category: row.category || undefined,
+      features: row.features || undefined,
+      oneLiner: row.one_liner || undefined,
+      description: row.description || undefined,
+      country: row.country || undefined,
+      city: row.city || undefined,
+      iconLink: row.icon_link || undefined,
+      researchStatus: row.research_status,
+      submittedAt: row.submitted_at,
+      status: (row.status as 'pending' | 'approved' | 'rejected') || 'pending',
+    }));
+
+  } catch (error) {
+    console.error('Error fetching tool submissions:', error);
+    
+    if (error instanceof Error && error.message.includes('not properly configured')) {
+      console.warn('Supabase not configured, returning empty array');
+      return [];
+    }
+    
+    return [];
+  }
+}
+
+/**
+ * Updates the status of a tool submission
+ * @param submissionId - Unique identifier for the submission
+ * @param status - New status to set ('pending' | 'approved' | 'rejected')
+ * @returns Promise resolving to boolean indicating success
+ */
+export async function updateSubmissionStatus(
+  submissionId: string,
+  status: 'pending' | 'approved' | 'rejected'
+): Promise<boolean> {
+  try {
+    const supabase = getSupabaseClient();
+
+    // Use raw SQL via rpc or direct update with type bypass
+    // The table isn't in generated types yet, so we use any casting
+    const { error } = await (supabase
+      .from(SUBMISSIONS_TABLE) as any)
+      .update({ status })
+      .eq('submission_id', submissionId);
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw new Error(`Failed to update submission: ${error.message}`);
+    }
+
+    return true;
+
+  } catch (error) {
+    console.error('Error updating submission status:', error);
+    
+    if (error instanceof Error && error.message.includes('not properly configured')) {
+      console.warn('Supabase not configured, returning false');
+      return false;
+    }
+    
+    return false;
+  }
+}
