@@ -4,7 +4,7 @@ export const siteConfig = {
 
   // Site metadata
   name: "AI CRE Tools",
-  description: "The leading directory for Commercial Real Estate AI tools. Find and choose the best AI solutions for your CRE needs.",
+  description: "Compare top AI tools for commercial real estate. Find the best CRE software for your needs.",
   url: "https://www.aicretools.com",
 
   // SEO Configuration
@@ -84,17 +84,19 @@ export const siteConfig = {
       }
     },
 
-    // Category-specific SEO templates
+    // Category-specific SEO templates (optimized for SERP display)
+    // Title: max 60 chars, Description: max 155 chars
     categoryMetaTemplates: {
-      title: "{categoryName} - Best AI Software & Solutions | AI CRE Tools",
-      description: "Discover the best {categoryName} tools and software. Compare features, pricing, and reviews to find the perfect AI solution for your commercial real estate needs.",
+      title: "Best {categoryName} Tools 2026 | AI CRE Tools",
+      description: "Compare top {categoryName} software for commercial real estate. Find AI solutions with features, pricing & reviews.",
       keywords: "{categoryName}, {categoryName} tools, {categoryName} software, best {categoryName}, {categoryName} solutions, {categoryName} platforms, cre ai"
     },
 
-    // Tool page SEO templates
+    // Tool page SEO templates (optimized for SERP display)
+    // Title: max 60 chars, Description: max 155 chars
     toolMetaTemplates: {
-      title: "{toolName} - {toolTagline} | AI CRE Tools",
-      description: "{toolName}: {toolDescription} Compare features, pricing, and user reviews. Find the best CRE AI solution for your needs.",
+      title: "{toolName} Review & Features | AI CRE Tools",
+      description: "{toolName} - {toolTagline}. Compare features, pricing & alternatives for your CRE needs.",
       keywords: "{toolName}, {toolName} review, {toolName} pricing, {toolName} features, {toolName} alternatives, cre ai tool"
     }
   },
@@ -166,13 +168,35 @@ export function interpolateText(text: string, replacements: Record<string, strin
   return result;
 }
 
+// SEO constants for optimal SERP display
+const SEO_LIMITS = {
+  TITLE_MAX: 60,
+  DESCRIPTION_MAX: 155,
+} as const;
+
+// Truncate text at word boundary with ellipsis
+function truncateAtWord(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  
+  const truncated = text.slice(0, maxLength - 3);
+  const lastSpace = truncated.lastIndexOf(' ');
+  
+  if (lastSpace > maxLength * 0.6) {
+    return truncated.slice(0, lastSpace) + '...';
+  }
+  return truncated + '...';
+}
+
 // SEO helper functions
 export function generateCategoryMeta(categoryName: string, categoryDescription?: string) {
   const { categoryMetaTemplates } = siteConfig.seo;
   
+  const rawTitle = interpolateText(categoryMetaTemplates.title, { categoryName });
+  const rawDescription = categoryDescription || interpolateText(categoryMetaTemplates.description, { categoryName });
+  
   return {
-    title: interpolateText(categoryMetaTemplates.title, { categoryName }),
-    description: categoryDescription || interpolateText(categoryMetaTemplates.description, { categoryName }),
+    title: truncateAtWord(rawTitle, SEO_LIMITS.TITLE_MAX),
+    description: truncateAtWord(rawDescription, SEO_LIMITS.DESCRIPTION_MAX),
     keywords: interpolateText(categoryMetaTemplates.keywords, { categoryName }),
   };
 }
@@ -180,15 +204,24 @@ export function generateCategoryMeta(categoryName: string, categoryDescription?:
 export function generateToolMeta(toolName: string, toolTagline?: string, toolDescription?: string) {
   const { toolMetaTemplates } = siteConfig.seo;
   
+  // Use shorter tagline, fall back to generic
+  const shortTagline = toolTagline 
+    ? truncateAtWord(toolTagline, 40) 
+    : 'CRE AI Tool';
+  
+  const rawTitle = interpolateText(toolMetaTemplates.title, { 
+    toolName, 
+    toolTagline: shortTagline 
+  });
+  
+  const rawDescription = interpolateText(toolMetaTemplates.description, { 
+    toolName, 
+    toolTagline: shortTagline
+  });
+  
   return {
-    title: interpolateText(toolMetaTemplates.title, { 
-      toolName, 
-      toolTagline: toolTagline || 'CRE AI Tool' 
-    }),
-    description: interpolateText(toolMetaTemplates.description, { 
-      toolName, 
-      toolDescription: toolDescription || `${toolName} is a comprehensive CRE AI solution.` 
-    }),
+    title: truncateAtWord(rawTitle, SEO_LIMITS.TITLE_MAX),
+    description: truncateAtWord(rawDescription, SEO_LIMITS.DESCRIPTION_MAX),
     keywords: interpolateText(toolMetaTemplates.keywords, { toolName }),
   };
 }

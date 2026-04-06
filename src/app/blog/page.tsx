@@ -4,8 +4,8 @@ import { getAllBlogPosts, type BlogPost } from '@/lib/blog';
 import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
-  title: 'AI CRE Tools Blog - Insights for Commercial Real Estate Professionals | AI CRE Tools',
-  description: 'Stay updated with the latest AI trends in commercial real estate. Expert insights, tool reviews, and practical guides for property managers, investors, and brokers.',
+  title: 'CRE AI Blog - Insights & Trends | AI CRE Tools',
+  description: 'Latest AI trends in commercial real estate. Expert insights, tool reviews & guides for CRE professionals.',
   keywords: [
     'commercial real estate blog',
     'CRE AI insights',
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     'AI in real estate'
   ],
   openGraph: {
-    title: 'AI CRE Tools Blog - Insights for Commercial Real Estate Professionals',
-    description: 'Stay updated with the latest AI trends in commercial real estate. Expert insights, tool reviews, and practical guides for property managers, investors, and brokers.',
+    title: 'CRE AI Blog - Insights & Trends | AI CRE Tools',
+    description: 'Latest AI trends in commercial real estate. Expert insights, tool reviews & guides for CRE professionals.',
     url: `${siteConfig.url}/blog`,
     siteName: siteConfig.seo.openGraph.siteName,
     type: 'website',
@@ -31,8 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI CRE Tools Blog - CRE AI Insights',
-    description: 'Stay updated with the latest AI trends in commercial real estate. Expert insights, tool reviews, and practical guides.',
+    title: 'CRE AI Blog | AI CRE Tools',
+    description: 'Latest AI trends in commercial real estate. Expert insights & tool reviews for CRE pros.',
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
     images: [siteConfig.seo.openGraph.images.default]

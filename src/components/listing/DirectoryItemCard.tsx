@@ -122,7 +122,7 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
             asChild
             className="h-11 rounded-xl border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700"
           >
-            <Link href={item.website} target="_blank" rel="noreferrer">
+            <Link href={item.website} target="_blank" rel="noopener noreferrer">
               Website
               <ExternalLink className="h-4 w-4" />
             </Link>

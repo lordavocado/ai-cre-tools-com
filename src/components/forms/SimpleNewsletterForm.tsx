@@ -5,26 +5,26 @@ import { useFormStatus } from 'react-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { subscribeToNewsletter } from "@/app/actions";
+import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from 'react';
 import { Mail } from "lucide-react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" aria-disabled={pending} disabled={pending} className="bg-blue-600 hover:bg-blue-700 text-white">
-      {pending ? "Subscribing..." : "Subscribe"}
+    <Button type="submit" aria-disabled={pending} disabled={pending} aria-label="Subscribe to email updates" className="w-full sm:w-auto bg-neutral-200 text-neutral-900 hover:bg-neutral-300 border border-neutral-300 hover:shadow-lg hover:shadow-neutral-400/30">
+      <Mail className="mr-1 h-4 w-4" />
+      {pending ? "Subscribing..." : "Get email updates"}
     </Button>
   );
 }
 
-interface SimpleNewsletterFormProps {
+interface NewsletterFormProps {
   source?: string;
+  className?: string;
 }
 
-export function SimpleNewsletterForm({ 
-  source = "footer" 
-}: SimpleNewsletterFormProps) {
+export function NewsletterForm({ source = "homepage", className }: NewsletterFormProps) {
   const initialState = { message: "", success: false };
   const [state, formAction] = useActionState(subscribeToNewsletter, initialState);
   const { toast } = useToast();
@@ -40,19 +40,30 @@ export function SimpleNewsletterForm({
   }, [state, toast]);
 
   return (
-    <form action={formAction} className="flex gap-2">
-      <div className="relative flex-1">
-        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <form action={formAction} className={className || ""}>
+      <div className="flex gap-2 w-full">
+        <label htmlFor="newsletter-email" className="sr-only">
+          Email address for newsletter
+        </label>
         <Input
-          name="email"
+          id="newsletter-email"
           type="email"
+          name="email"
           placeholder="Enter your email"
           required
-          className="pl-10"
+          className="text-sm min-w-0 flex-1 md:w-64"
+          aria-describedby="newsletter-hint"
         />
+        <SubmitButton />
       </div>
+      <span id="newsletter-hint" className="sr-only">
+        Subscribe to receive AI CRE Tools updates
+      </span>
+      {/* Hidden field to track signup source */}
       <input type="hidden" name="source" value={source} />
-      <SubmitButton />
+      {state.message && !state.success && (
+        <p className="text-sm text-destructive" role="alert">{state.message}</p>
+      )}
     </form>
   );
 }

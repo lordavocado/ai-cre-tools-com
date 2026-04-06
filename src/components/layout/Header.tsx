@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { ArrowUpRight, Menu } from 'lucide-react';
 import { GlobalSearch } from './GlobalSearch';
 import { siteConfig } from '@/config/site';
@@ -49,13 +49,23 @@ export function Header() {
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-xl border-slate-300 bg-white">
-                  <Menu className="h-5 w-5" />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="rounded-xl border-slate-300 bg-white"
+                  aria-label="Open navigation menu"
+                  aria-haspopup="dialog"
+                >
+                  <Menu className="h-5 w-5" aria-hidden="true" />
                   <span className="sr-only">Toggle Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="border-l border-slate-200 bg-white">
-                <nav className="grid gap-6 text-lg font-medium mt-8">
+              <SheetContent 
+                side="right" 
+                className="border-l border-slate-200 bg-white"
+              >
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <nav className="grid gap-6 text-lg font-medium mt-8" aria-label="Mobile navigation">
                   <Link href="/" className="mb-4 flex items-center gap-3">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold uppercase tracking-[0.2em] text-white">
                       AI

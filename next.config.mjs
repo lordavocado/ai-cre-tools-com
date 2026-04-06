@@ -249,9 +249,7 @@ const nextConfig = {
       { source: '/categories/market-analysis-valuation', destination: '/categories/property-analysis-valuation', permanent: true },
       { source: '/categories/legal-compliance', destination: '/categories/legal-compliance-due-diligence', permanent: true },
 
-      // Guides fallback legacy paths
-      { source: '/guides/getting-started', destination: '/guides/getting-started', permanent: true },
-      { source: '/guides', destination: '/guides', permanent: true },
+      // Note: Guides routes removed - they were self-referential redirects causing loops
     ];
   },
   // This is required to support PostHog trailing slash API requests

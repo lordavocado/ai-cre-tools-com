@@ -8,8 +8,8 @@ import { ArrowRight, Building2, TrendingUp, Users, Award, Target, Globe, Mail } 
 import { SimpleNewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
 export const metadata: Metadata = {
-  title: `About Us | ${siteConfig.name} - The Leading ${siteConfig.categoryName} Directory`,
-  description: `Learn about ${siteConfig.name}, the premier platform for discovering and comparing ${siteConfig.categoryName.toLowerCase()}. Our mission is to help professionals make informed decisions about AI tools in commercial real estate.`,
+  title: `About Us | ${siteConfig.name}`,
+  description: `Discover ${siteConfig.name}, the top platform for comparing CRE AI tools. We help professionals find the best solutions.`,
   keywords: [
     'about us',
     'commercial real estate AI',
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     ...siteConfig.seo.primaryKeywords
   ],
   openGraph: {
-    title: `About ${siteConfig.name} - Leading ${siteConfig.categoryName} Directory`,
-    description: `Discover our mission to revolutionize commercial real estate through AI technology. Learn how ${siteConfig.name} helps professionals find the perfect tools for their needs.`,
+    title: `About Us | ${siteConfig.name}`,
+    description: `Discover ${siteConfig.name}, the top platform for comparing CRE AI tools. We help professionals find the best solutions.`,
     url: `${siteConfig.url}/about`,
     siteName: siteConfig.seo.openGraph.siteName,
     images: [
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: siteConfig.seo.twitter.card,
-    title: `About ${siteConfig.name}`,
-    description: `The leading directory for ${siteConfig.categoryName.toLowerCase()}. Discover, compare, and choose the best AI tools for your commercial real estate needs.`,
+    title: `About Us | ${siteConfig.name}`,
+    description: `The leading CRE AI tools directory. Compare & choose the best solutions for your needs.`,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
   },
