@@ -219,7 +219,7 @@ export default async function Home({ searchParams }: HomeProps) {
               <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
                 All tools
               </h2>
-              <p className="mt-1 text-sm text-slate-500">{initialItems.length} tools indexed</p>
+              <p className="mt-1 text-sm text-slate-500">{initialItems.length} AI tools</p>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
-import { ArrowUpRight, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { GlobalSearch } from './GlobalSearch';
 import { siteConfig } from '@/config/site';
 
@@ -39,12 +39,7 @@ export function Header() {
             />
           </div>
 
-          <Button asChild variant="outline" size="sm" className="hidden rounded-xl border-slate-300 bg-white lg:inline-flex">
-            <Link href="/submit-tool">
-              Submit a tool
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </Button>
+
 
           <div className="md:hidden">
             <Sheet>
@@ -92,9 +87,7 @@ export function Header() {
                     </Link>
                   ))}
 
-                  <Button asChild className="mt-2 rounded-xl bg-slate-950 text-white hover:bg-slate-800">
-                    <Link href="/submit-tool">Submit a tool</Link>
-                  </Button>
+
                 </nav>
               </SheetContent>
             </Sheet>

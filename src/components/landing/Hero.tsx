@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ArrowRight, Search, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NewsletterForm } from "@/components/forms/SimpleNewsletterForm";
 import type { DirectoryItem } from "@/types";
 import type { DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 
@@ -42,8 +43,8 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
   return (
     <section className="border-b border-slate-200 bg-white py-16 md:py-24">
       <div className="container px-6">
-        <motion.div {...motionProps} className="mx-auto max-w-2xl text-center">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-600">
+        <motion.div {...motionProps} className="max-w-2xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-600">
             <ShieldCheck className="h-3.5 w-3.5" />
             Curated for commercial real estate teams
           </div>
@@ -52,12 +53,12 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
             Find the best commercial real estate AI tools without the noise.
           </h1>
 
-          <p className="mt-6 text-lg leading-8 text-slate-600">
+          <p className="mt-5 text-lg leading-8 text-slate-600">
             Compare software for investors, developers, brokers, asset managers, and operators — one focused directory
             built for real commercial workflows.
           </p>
 
-          <form onSubmit={handleSearchSubmit} className="mt-10">
+          <form onSubmit={handleSearchSubmit} className="mt-8">
             <div className="flex flex-col gap-3 sm:flex-row">
               <label htmlFor="hero-search" className="sr-only">
                 Search commercial real estate AI tools
@@ -83,7 +84,7 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
             </div>
 
             {quickCategories.length > 0 && (
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-slate-500">Browse:</span>
                 {quickCategories.map((category) => (
                   <button
@@ -99,9 +100,9 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
             )}
           </form>
 
-          <div className="mt-10 flex items-center justify-center gap-6 text-sm text-slate-500">
+          <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
             <span>
-              <strong className="font-semibold text-slate-900">{totalItems}+</strong> tools indexed
+              <strong className="font-semibold text-slate-900">{totalItems}+</strong> AI tools
             </span>
             <span className="h-4 w-px bg-slate-200" />
             <span>
@@ -111,7 +112,7 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
             <span>Updated weekly</span>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-3">
+          <div className="mt-6 flex items-center gap-3">
             <Button asChild variant="outline" className="rounded-lg border-slate-300">
               <Link href="/categories">
                 Browse categories
@@ -121,6 +122,11 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
             <Button asChild variant="ghost" className="rounded-lg text-slate-600 hover:text-slate-900">
               <Link href="/submit-tool">Submit a tool</Link>
             </Button>
+          </div>
+
+          <div className="mt-10 pt-8 border-t border-slate-200">
+            <p className="text-sm font-medium text-slate-700 mb-3">Get weekly updates on new CRE AI tools</p>
+            <NewsletterForm source="hero" />
           </div>
         </motion.div>
       </div>
