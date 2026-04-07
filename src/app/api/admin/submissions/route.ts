@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getToolSubmissions, updateSubmissionStatus } from '@/lib/supabase';
+import {
+  createAdminUnauthorizedApiResponse,
+  isAuthenticatedAdminApiRequest,
+} from '@/lib/admin-auth';
+import { isSupabaseStorageConfigured } from '@/lib/tool-submissions-config';
 
 // Schema for updating submission status
 const updateStatusSchema = z.object({
@@ -10,6 +15,17 @@ const updateStatusSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    if (!isAuthenticatedAdminApiRequest(request)) {
+      return createAdminUnauthorizedApiResponse();
+    }
+
+    if (!isSupabaseStorageConfigured()) {
+      return NextResponse.json(
+        { error: 'The submissions dashboard is unavailable because Supabase storage is not configured.' },
+        { status: 503 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
@@ -37,6 +53,17 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    if (!isAuthenticatedAdminApiRequest(request)) {
+      return createAdminUnauthorizedApiResponse();
+    }
+
+    if (!isSupabaseStorageConfigured()) {
+      return NextResponse.json(
+        { error: 'Submission review is unavailable because Supabase storage is not configured.' },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate the request body
@@ -76,4 +103,3 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
-

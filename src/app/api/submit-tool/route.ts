@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { researchToolWithPerplexity } from '@/lib/perplexity';
 import { storeToolSubmission } from '@/lib/supabase';
+import { isSupabaseStorageConfigured } from '@/lib/tool-submissions-config';
 
 /**
  * Validation schema for tool submission form data
@@ -40,6 +41,16 @@ type SubmitToolData = z.infer<typeof submitToolSchema>;
  */
 export async function POST(request: NextRequest) {
   try {
+    if (!isSupabaseStorageConfigured()) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Tool submissions are temporarily unavailable because submission storage is not configured.'
+        },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate the request body
@@ -83,18 +94,19 @@ export async function POST(request: NextRequest) {
     const submissionId = await storeToolSubmission(submissionData);
 
     // Future enhancement: Send confirmation email to user
+    const automatedResearchCompleted = researchResult.research_status === 'completed';
 
     return NextResponse.json({
       success: true,
-      message: 'Your tool submission has been received! We will research this tool and review it for inclusion in our directory. You will receive an email update within 2-3 business days.',
-      submissionId
-    });
+      message: automatedResearchCompleted
+        ? 'Your tool submission has been received! We will review it for inclusion in our directory and follow up by email.'
+        : 'Your tool submission was saved, but automated research could not complete. It is now queued for manual review.',
+      submissionId,
+      researchStatus: researchResult.research_status,
+    }, { status: automatedResearchCompleted ? 200 : 202 });
 
   } catch (error) {
-    // Log error for debugging (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Tool submission error:', error);
-    }
+    console.error('Tool submission error:', error);
 
     return NextResponse.json(
       {

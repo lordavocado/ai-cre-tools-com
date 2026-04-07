@@ -145,6 +145,8 @@ export async function researchToolWithPerplexity(
     };
   } catch (error) {
     console.error('Perplexity research error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message.slice(0, 500) : 'Unknown Perplexity research error';
 
     // Return partial data with error status
     return {
@@ -153,8 +155,8 @@ export async function researchToolWithPerplexity(
       name: 'Research Failed',
       category: 'Unknown',
       features: 'Research in progress',
-      one_liner: 'Tool research failed - manual review required',
-      description: `Failed to automatically research this tool. Manual review required. User comment: ${userComment}`,
+      one_liner: 'Automated research failed - manual review required',
+      description: `Failed to automatically research this tool. Reason: ${errorMessage}. User comment: ${userComment}`,
       country: '',
       city: '',
       icon_link: '',
@@ -165,4 +167,3 @@ export async function researchToolWithPerplexity(
 
 // Export categories for use in other parts of the app
 export { CRE_CATEGORIES };
-

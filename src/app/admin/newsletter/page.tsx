@@ -1,15 +1,24 @@
 import { getListStats, getListTags, getListInterests } from "@/lib/mailchimp";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Users, UserPlus, UserMinus, UserX, Tags, Target } from "lucide-react";
 import Link from "next/link";
+import { requireAdminPageAuth } from "@/lib/admin-auth";
 
 export default async function NewsletterAdminPage() {
+  await requireAdminPageAuth('/admin/newsletter');
+
   // Gracefully handle missing Mailchimp env vars to avoid build failures
   if (!process.env.MAILCHIMP_API_KEY || !process.env.MAILCHIMP_LIST_ID) {
     return (
       <div className="container py-12 md:py-16 max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold mb-6">Newsletter Administration</h1>
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <h1 className="text-3xl md:text-4xl font-bold">Newsletter Administration</h1>
+          <form action="/api/admin/logout" method="post">
+            <Button type="submit" variant="outline">Sign Out</Button>
+          </form>
+        </div>
         <Card>
           <CardHeader>
             <CardTitle>Mailchimp Not Configured</CardTitle>
@@ -57,7 +66,12 @@ export default async function NewsletterAdminPage() {
   if (error) {
     return (
       <div className="container py-12 md:py-16 max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold mb-6">Newsletter Administration</h1>
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <h1 className="text-3xl md:text-4xl font-bold">Newsletter Administration</h1>
+          <form action="/api/admin/logout" method="post">
+            <Button type="submit" variant="outline">Sign Out</Button>
+          </form>
+        </div>
         <Card className="border-destructive">
           <CardHeader>
             <CardTitle className="text-destructive">Error</CardTitle>
@@ -75,11 +89,16 @@ export default async function NewsletterAdminPage() {
 
   return (
     <div className="container py-12 md:py-16 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Newsletter Administration</h1>
-        <p className="text-muted-foreground">
-          Monitor your Mailchimp newsletter subscription statistics.
-        </p>
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Newsletter Administration</h1>
+          <p className="text-muted-foreground">
+            Monitor your Mailchimp newsletter subscription statistics.
+          </p>
+        </div>
+        <form action="/api/admin/logout" method="post">
+          <Button type="submit" variant="outline">Sign Out</Button>
+        </form>
       </div>
 
       {stats && (
