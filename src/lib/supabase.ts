@@ -622,6 +622,9 @@ export function getSupabaseCacheStatus() {
 
 const SUBMISSIONS_TABLE = 'tool_submissions';
 
+export type ToolSubmissionStatus = 'pending' | 'approved' | 'rejected';
+export type ToolResearchStatus = 'pending' | 'completed' | 'failed';
+
 /**
  * Tool submission interface for managing user-submitted tools
  */
@@ -641,7 +644,21 @@ export interface ToolSubmission {
   iconLink?: string;
   researchStatus: string;
   submittedAt: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: ToolSubmissionStatus;
+}
+
+export interface ToolSubmissionUpdateInput {
+  website?: string;
+  slug?: string;
+  name?: string;
+  category?: string;
+  features?: string;
+  oneLiner?: string;
+  description?: string;
+  country?: string;
+  city?: string;
+  iconLink?: string;
+  researchStatus?: ToolResearchStatus;
 }
 
 /** Database row type for tool_submissions table */
@@ -662,6 +679,32 @@ interface ToolSubmissionRow {
   research_status: string;
   submitted_at: string;
   status: string;
+}
+
+function mapToolSubmissionRow(row: ToolSubmissionRow): ToolSubmission {
+  return {
+    submissionId: row.submission_id,
+    website: row.website,
+    email: row.email,
+    comment: row.comment,
+    slug: row.slug || undefined,
+    name: row.name || undefined,
+    category: row.category || undefined,
+    features: row.features || undefined,
+    oneLiner: row.one_liner || undefined,
+    description: row.description || undefined,
+    country: row.country || undefined,
+    city: row.city || undefined,
+    iconLink: row.icon_link || undefined,
+    researchStatus: row.research_status,
+    submittedAt: row.submitted_at,
+    status: (row.status as ToolSubmissionStatus) || 'pending',
+  };
+}
+
+function trimToNullable(value: string): string | null {
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 /**
@@ -746,24 +789,7 @@ export async function getToolSubmissions(status?: 'pending' | 'approved' | 'reje
       return [];
     }
 
-    return (data as unknown as ToolSubmissionRow[]).map((row): ToolSubmission => ({
-      submissionId: row.submission_id,
-      website: row.website,
-      email: row.email,
-      comment: row.comment,
-      slug: row.slug || undefined,
-      name: row.name || undefined,
-      category: row.category || undefined,
-      features: row.features || undefined,
-      oneLiner: row.one_liner || undefined,
-      description: row.description || undefined,
-      country: row.country || undefined,
-      city: row.city || undefined,
-      iconLink: row.icon_link || undefined,
-      researchStatus: row.research_status,
-      submittedAt: row.submitted_at,
-      status: (row.status as 'pending' | 'approved' | 'rejected') || 'pending',
-    }));
+    return (data as unknown as ToolSubmissionRow[]).map(mapToolSubmissionRow);
 
   } catch (error) {
     console.error('Error fetching tool submissions:', error);
@@ -778,6 +804,43 @@ export async function getToolSubmissions(status?: 'pending' | 'approved' | 'reje
 }
 
 /**
+ * Retrieves a single tool submission by ID.
+ * @param submissionId - Unique identifier for the submission
+ * @returns Promise resolving to the submission or undefined when not found
+ */
+export async function getToolSubmissionById(submissionId: string): Promise<ToolSubmission | undefined> {
+  try {
+    const supabase = getSupabaseClient();
+
+    const { data, error } = await (supabase
+      .from(SUBMISSIONS_TABLE) as any)
+      .select('*')
+      .eq('submission_id', submissionId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Supabase query error:', error);
+      throw new Error(`Failed to fetch submission: ${error.message}`);
+    }
+
+    if (!data) {
+      return undefined;
+    }
+
+    return mapToolSubmissionRow(data as ToolSubmissionRow);
+  } catch (error) {
+    console.error('Error fetching tool submission by ID:', error);
+
+    if (error instanceof Error && error.message.includes('not properly configured')) {
+      console.warn('Supabase not configured, returning undefined');
+      return undefined;
+    }
+
+    return undefined;
+  }
+}
+
+/**
  * Updates the status of a tool submission
  * @param submissionId - Unique identifier for the submission
  * @param status - New status to set ('pending' | 'approved' | 'rejected')
@@ -785,7 +848,7 @@ export async function getToolSubmissions(status?: 'pending' | 'approved' | 'reje
  */
 export async function updateSubmissionStatus(
   submissionId: string,
-  status: 'pending' | 'approved' | 'rejected'
+  status: ToolSubmissionStatus
 ): Promise<boolean> {
   try {
     const supabase = getSupabaseClient();
@@ -813,5 +876,83 @@ export async function updateSubmissionStatus(
     }
     
     return false;
+  }
+}
+
+/**
+ * Updates editable fields for a tool submission and returns the latest saved record.
+ * @param submissionId - Unique identifier for the submission
+ * @param updates - Partial set of editable submission fields
+ * @returns Promise resolving to the updated submission or undefined when not found
+ */
+export async function updateToolSubmission(
+  submissionId: string,
+  updates: ToolSubmissionUpdateInput
+): Promise<ToolSubmission | undefined> {
+  try {
+    const supabase = getSupabaseClient();
+
+    const updateData: Record<string, string | null> = {};
+
+    if (updates.website !== undefined) {
+      updateData.website = updates.website.trim();
+    }
+    if (updates.slug !== undefined) {
+      updateData.slug = trimToNullable(updates.slug);
+    }
+    if (updates.name !== undefined) {
+      updateData.name = trimToNullable(updates.name);
+    }
+    if (updates.category !== undefined) {
+      updateData.category = trimToNullable(updates.category);
+    }
+    if (updates.features !== undefined) {
+      updateData.features = trimToNullable(updates.features);
+    }
+    if (updates.oneLiner !== undefined) {
+      updateData.one_liner = trimToNullable(updates.oneLiner);
+    }
+    if (updates.description !== undefined) {
+      updateData.description = trimToNullable(updates.description);
+    }
+    if (updates.country !== undefined) {
+      updateData.country = trimToNullable(updates.country);
+    }
+    if (updates.city !== undefined) {
+      updateData.city = trimToNullable(updates.city);
+    }
+    if (updates.iconLink !== undefined) {
+      updateData.icon_link = trimToNullable(updates.iconLink);
+    }
+    if (updates.researchStatus !== undefined) {
+      updateData.research_status = updates.researchStatus;
+    }
+
+    const { data, error } = await (supabase
+      .from(SUBMISSIONS_TABLE) as any)
+      .update(updateData)
+      .eq('submission_id', submissionId)
+      .select('*')
+      .maybeSingle();
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw new Error(`Failed to update submission details: ${error.message}`);
+    }
+
+    if (!data) {
+      return undefined;
+    }
+
+    return mapToolSubmissionRow(data as ToolSubmissionRow);
+  } catch (error) {
+    console.error('Error updating tool submission:', error);
+
+    if (error instanceof Error && error.message.includes('not properly configured')) {
+      console.warn('Supabase not configured, returning undefined');
+      return undefined;
+    }
+
+    return undefined;
   }
 }

@@ -18,13 +18,15 @@ import {
   Users,
   Twitter,
   Linkedin,
-  Facebook
+  Facebook,
+  ChevronRight,
 } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard"; // For related items
 import { CategoryChipsWithIcons } from "@/components/ui/category-chips-with-icons";
 import { SafeImage } from "@/components/ui/safe-image";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
+import { resolveCategoryInfo } from "@/lib/utils";
 
 export const revalidate = 3600;
 
@@ -49,7 +51,7 @@ export async function generateMetadata(
 
   const toolMeta = generateToolMeta(item.name, item.tagline, item.description);
   const canonicalUrl = `${siteConfig.url}/${slug}`;
-  const categories = item.category.split(',').map(cat => cat.trim());
+  const categories = item.category.split(',').map(cat => cat.trim()).filter(Boolean);
 
   return {
     title: toolMeta.title,
@@ -141,8 +143,37 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
   }
   
   // Split categories and get the first one for related items lookup
-  const categories = item.category.split(',').map(cat => cat.trim());
+  const categories = item.category.split(',').map(cat => cat.trim()).filter(Boolean);
   const primaryCategory = categories[0];
+  const primaryCategoryInfo = primaryCategory ? resolveCategoryInfo(primaryCategory) : null;
+  const toolPageUrl = `${siteConfig.url}/${slug}`;
+  const breadcrumbItems = [
+    {
+      name: "Home",
+      href: "/",
+      absoluteUrl: siteConfig.url,
+    },
+    {
+      name: "Categories",
+      href: "/categories",
+      absoluteUrl: `${siteConfig.url}/categories`,
+    },
+    ...(primaryCategoryInfo
+      ? [
+          {
+            name: primaryCategoryInfo.displayName,
+            href: primaryCategoryInfo.hasPage ? `/categories/${primaryCategoryInfo.slug}` : undefined,
+            absoluteUrl: primaryCategoryInfo.hasPage
+              ? `${siteConfig.url}/categories/${primaryCategoryInfo.slug}`
+              : `${siteConfig.url}/categories`,
+          },
+        ]
+      : []),
+    {
+      name: item.name,
+      absoluteUrl: toolPageUrl,
+    },
+  ];
   
   // Fetch related items (e.g., same category, excluding current item)
   const allItemsInCategory = await getDirectoryItems(undefined, primaryCategory);
@@ -204,30 +235,16 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
             dateModified: item.lastUpdated || new Date().toISOString(),
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `${siteConfig.url}/${slug}`,
+              "@id": toolPageUrl,
             },
             breadcrumb: {
               "@type": "BreadcrumbList",
-              itemListElement: [
-                {
-                  "@type": "ListItem",
-                  position: 1,
-                  name: "Home",
-                  item: siteConfig.url,
-                },
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: "Tools",
-                  item: `${siteConfig.url}/#directory`,
-                },
-                {
-                  "@type": "ListItem",
-                  position: 3,
-                  name: item.name,
-                  item: `${siteConfig.url}/${slug}`,
-                },
-              ],
+              itemListElement: breadcrumbItems.map((breadcrumb, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                name: breadcrumb.name,
+                item: breadcrumb.absoluteUrl,
+              })),
             },
             about: [
               {
@@ -313,6 +330,30 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
 
       <div className="container py-8 md:py-12 px-4 md:px-6">
         <div className="max-w-5xl mx-auto">
+          <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-1.5 text-sm text-slate-500">
+            {breadcrumbItems.map((breadcrumb, index) => {
+              const isCurrentPage = index === breadcrumbItems.length - 1;
+
+              return (
+                <span key={`${breadcrumb.name}-${index}`} className="flex items-center gap-1.5">
+                  {index > 0 && <ChevronRight className="h-3.5 w-3.5 shrink-0" />}
+                  {breadcrumb.href && !isCurrentPage ? (
+                    <Link href={breadcrumb.href} className="transition-colors hover:text-slate-900">
+                      {breadcrumb.name}
+                    </Link>
+                  ) : (
+                    <span
+                      aria-current={isCurrentPage ? "page" : undefined}
+                      className={isCurrentPage ? "font-medium text-slate-900" : "text-slate-500"}
+                    >
+                      {breadcrumb.name}
+                    </span>
+                  )}
+                </span>
+              );
+            })}
+          </nav>
+
           {/* Hero Section with Tool Info */}
           <div className="relative mb-4 p-8 bg-white rounded-3xl border border-slate-200/60 shadow-xl">
             <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -562,26 +603,12 @@ export default async function DirectoryItemPage({ params }: { params: Promise<{ 
               }),
               breadcrumb: {
                 "@type": "BreadcrumbList",
-                itemListElement: [
-                  {
-                    "@type": "ListItem",
-                    position: 1,
-                    name: "Home",
-                    item: siteConfig.url
-                  },
-                  {
-                    "@type": "ListItem",
-                    position: 2,
-                    name: "Categories",
-                    item: `${siteConfig.url}/categories`
-                  },
-                  ...categories.map((cat, index) => ({
-                    "@type": "ListItem",
-                    position: 3 + index,
-                    name: cat,
-                    item: `${siteConfig.url}/categories/${cat.toLowerCase().replace(/\s+/g, '-')}`
-                  }))
-                ]
+                itemListElement: breadcrumbItems.map((breadcrumb, index) => ({
+                  "@type": "ListItem",
+                  position: index + 1,
+                  name: breadcrumb.name,
+                  item: breadcrumb.absoluteUrl
+                }))
               }
             })
           }}

@@ -209,7 +209,6 @@ export default async function Home({ searchParams }: HomeProps) {
         featuredItems={featuredItems}
         totalItems={initialItems.length}
         totalCategories={categoriesFromSheet.length}
-        categories={searchCategories}
       />
 
       <section id="directory" className="border-b border-slate-200 py-16 md:py-24">
@@ -371,7 +370,7 @@ export default async function Home({ searchParams }: HomeProps) {
           }}
         />
 
-        <Hero featuredItems={[]} totalItems={0} totalCategories={0} categories={[]} />
+        <Hero featuredItems={[]} totalItems={0} totalCategories={0} />
 
         <section id="directory" className="py-16 md:py-24">
           <div className="container px-6">

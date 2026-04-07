@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 
 // Perplexity API response schema
 const PerplexityResponseSchema = z.object({
@@ -37,20 +38,9 @@ const ScrapedToolDataSchema = z.object({
 
 type ScrapedToolData = z.infer<typeof ScrapedToolDataSchema>;
 
-// Platform categories for CRE AI tools
-const CRE_CATEGORIES = [
-  'Development & Construction',
-  'Efficiency & General Tools',
-  'Investment & Portfolio Management',
-  'Legal & Compliance',
-  'Market Analysis & Valuation',
-  'Property Management & Operations',
-  'Transaction & Brokerage'
-];
-
 // Generate the scraping prompt
 function generateScrapingPrompt(website: string, userComment: string): string {
-  return `Scrape information for the following AI-powered real estate tools - some are not direct real estate tools but can be used for commercial real estate professionals. For each tool, extract and organize the following details in a table with these columns: • slug: A URL-friendly, lowercase identifier for the tool (e.g., "openai-gpt"). • website: The official website URL of the tool. • name: The full name of the tool. • category: The main category or type of the tool from these options: ${CRE_CATEGORIES.join(', ')}. • features: A comma-separated list of the tool's main features. • one liner: A concise, one-sentence summary of what the tool does. • description: A long SEO in markdown format paragraph (1000 characters sentences) describing the product and value proposition more in details • country: The country where the company or tool is based. • city: The city where the company or tool is based (if available). • icon link: A direct link to the tool's logo or icon image (preferably a PNG or SVG).
+  return `Scrape information for the following AI-powered real estate tools - some are not direct real estate tools but can be used for commercial real estate professionals. For each tool, extract and organize the following details in a table with these columns: • slug: A URL-friendly, lowercase identifier for the tool (e.g., "openai-gpt"). • website: The official website URL of the tool. • name: The full name of the tool. • category: The main category or type of the tool from these options: ${TOOL_SUBMISSION_CATEGORIES.join(', ')}. • features: A comma-separated list of the tool's main features. • one liner: A concise, one-sentence summary of what the tool does. • description: A long SEO in markdown format paragraph (1000 characters sentences) describing the product and value proposition more in details • country: The country where the company or tool is based. • city: The city where the company or tool is based (if available). • icon link: A direct link to the tool's logo or icon image (preferably a PNG or SVG).
 
 Instructions: • Only include tools that are specifically focused on real estate and use AI as a core technology. • Ensure all fields are filled out as completely as possible. • If a field (like city) is not available, leave it blank. • For icon link, provide a direct image URL (not a webpage).
 
@@ -164,6 +154,3 @@ export async function researchToolWithPerplexity(
     };
   }
 }
-
-// Export categories for use in other parts of the app
-export { CRE_CATEGORIES };
