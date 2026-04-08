@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
-    "generate-social-images": "node scripts/generate-social-images.js"
+    "generate-social-images": "node scripts/generate-social-images.js",
+    "generate-tag-taxonomy": "node scripts/generate-tag-taxonomy.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
