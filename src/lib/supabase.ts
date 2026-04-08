@@ -11,6 +11,7 @@ if (typeof window !== 'undefined') {
 
 import type { DirectoryItem, Category } from '@/types';
 import { createClient } from '@supabase/supabase-js';
+import { normalizeToolDescription } from '@/lib/tool-content';
 
 // --- Configuration ---
 
@@ -692,7 +693,7 @@ function mapToolSubmissionRow(row: ToolSubmissionRow): ToolSubmission {
     category: row.category || undefined,
     features: row.features || undefined,
     oneLiner: row.one_liner || undefined,
-    description: row.description || undefined,
+    description: row.description ? normalizeToolDescription(row.description) : undefined,
     country: row.country || undefined,
     city: row.city || undefined,
     iconLink: row.icon_link || undefined,
@@ -705,6 +706,15 @@ function mapToolSubmissionRow(row: ToolSubmissionRow): ToolSubmission {
 function trimToNullable(value: string): string | null {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeDescriptionToNullable(value: string | undefined): string | null {
+  if (value === undefined) {
+    return null;
+  }
+
+  const normalized = normalizeToolDescription(value);
+  return normalized.length > 0 ? normalized : null;
 }
 
 /**
@@ -728,7 +738,7 @@ export async function storeToolSubmission(submissionData: Omit<ToolSubmission, '
       category: submissionData.category || null,
       features: submissionData.features || null,
       one_liner: submissionData.oneLiner || null,
-      description: submissionData.description || null,
+      description: normalizeDescriptionToNullable(submissionData.description),
       country: submissionData.country || null,
       city: submissionData.city || null,
       icon_link: submissionData.iconLink || null,
@@ -913,7 +923,7 @@ export async function updateToolSubmission(
       updateData.one_liner = trimToNullable(updates.oneLiner);
     }
     if (updates.description !== undefined) {
-      updateData.description = trimToNullable(updates.description);
+      updateData.description = normalizeDescriptionToNullable(updates.description);
     }
     if (updates.country !== undefined) {
       updateData.country = trimToNullable(updates.country);

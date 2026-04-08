@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 import type { ToolSubmission, ToolSubmissionStatus } from '@/lib/supabase';
+import { getCategoryDisplayName } from '@/lib/utils';
 import {
   CheckCircle,
   XCircle,
@@ -70,6 +71,14 @@ function normalizeResearchStatus(status: string): SubmissionFormState['researchS
   }
 
   return 'pending';
+}
+
+function formatSubmissionCategory(category: string) {
+  if (!category) {
+    return '';
+  }
+
+  return getCategoryDisplayName(category);
 }
 
 export default function SubmissionsDashboard() {
@@ -225,37 +234,55 @@ export default function SubmissionsDashboard() {
   }, [formState, redirectToLogin, replaceSubmissionInState, selectedSubmission, toast]);
 
   const handleStatusUpdate = async (status: 'approved' | 'rejected') => {
-    if (!selectedSubmission) {
+    if (!selectedSubmission || (status === 'approved' && !formState)) {
       return;
     }
 
     setPendingAction(status === 'approved' ? 'approve' : 'reject');
 
     try {
-      const saveResult = await persistSubmissionUpdates({ silent: true });
+      let response: Response;
 
-      if (!saveResult.success) {
-        return;
+      if (status === 'approved') {
+        response = await fetch('/api/admin/submissions', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'publishSubmission',
+            submissionId: selectedSubmission.submissionId,
+            updates: formState,
+          }),
+        });
+      } else {
+        const saveResult = await persistSubmissionUpdates({ silent: true });
+
+        if (!saveResult.success) {
+          return;
+        }
+
+        response = await fetch('/api/admin/submissions', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'updateStatus',
+            submissionId: selectedSubmission.submissionId,
+            status,
+          }),
+        });
       }
-
-      const response = await fetch('/api/admin/submissions', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'updateStatus',
-          submissionId: selectedSubmission.submissionId,
-          status,
-        }),
-      });
 
       const data = await response.json().catch(() => null);
 
       if (response.ok) {
         toast({
-          title: 'Success',
-          description: `Submission ${status} successfully`,
+          title: status === 'approved' ? 'Published' : 'Rejected',
+          description: data?.message || (status === 'approved'
+            ? 'Submission accepted and published to the live directory.'
+            : 'Submission rejected successfully.'),
         });
         setSelectedSubmission(null);
         await fetchSubmissions({ background: true });
@@ -269,14 +296,18 @@ export default function SubmissionsDashboard() {
 
       toast({
         title: 'Error',
-        description: data?.error || `Failed to ${status} submission`,
+        description: data?.error || (status === 'approved'
+          ? 'Failed to accept and publish submission'
+          : 'Failed to reject submission'),
         variant: 'destructive',
       });
     } catch (error) {
       console.error('Error updating submission status:', error);
       toast({
         title: 'Error',
-        description: `Failed to ${status} submission`,
+        description: status === 'approved'
+          ? 'Failed to accept and publish submission'
+          : 'Failed to reject submission',
         variant: 'destructive',
       });
     } finally {
@@ -374,11 +405,14 @@ export default function SubmissionsDashboard() {
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="mb-2 text-3xl font-bold text-gray-900">Tool Submissions Dashboard</h1>
-          <p className="text-gray-600">Review, re-run research, and manually correct tool submissions.</p>
+          <p className="text-gray-600">Review pending submissions, accept them into the live directory, and open the published record for edits afterward.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button asChild variant="outline">
             <Link href="/admin">Back to Admin</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/tools">Open Live Tools</Link>
           </Button>
           <form action="/api/admin/logout" method="post">
             <Button type="submit" variant="outline">Sign Out</Button>
@@ -438,13 +472,15 @@ export default function SubmissionsDashboard() {
         <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto">
           {selectedSubmission && formState && (
             <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Eye className="h-5 w-5" />
-                  Submission Details
-                </DialogTitle>
-                <DialogDescription>Review the tool submission and take action.</DialogDescription>
-              </DialogHeader>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Eye className="h-5 w-5" />
+                    Submission Details
+                  </DialogTitle>
+                <DialogDescription>
+                  Review the queued submission, then accept it to run the full scrape and publish flow.
+                </DialogDescription>
+                </DialogHeader>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -508,7 +544,7 @@ export default function SubmissionsDashboard() {
                         </h3>
                         <div className="space-y-2 rounded-lg bg-gray-50 p-3 text-sm">
                           {selectedSubmission.name && <p><strong>Name:</strong> {selectedSubmission.name}</p>}
-                          {selectedSubmission.category && <p><strong>Category:</strong> {selectedSubmission.category}</p>}
+                          {selectedSubmission.category && <p><strong>Category:</strong> {formatSubmissionCategory(selectedSubmission.category)}</p>}
                           {selectedSubmission.oneLiner && <p><strong>Tagline:</strong> {selectedSubmission.oneLiner}</p>}
                         </div>
                       </div>
@@ -533,7 +569,7 @@ export default function SubmissionsDashboard() {
                       Manual Review Fields
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      Use this when automated research fails or needs correction before approval.
+                      Anything you set here is saved first, then used as the preferred value when the accept-and-publish flow runs.
                     </p>
                   </div>
 
@@ -689,7 +725,7 @@ export default function SubmissionsDashboard() {
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    Retry Research
+                    {selectedSubmission.researchStatus === 'pending' ? 'Run Research Preview' : 'Refresh Research Preview'}
                   </Button>
 
                   <Button
@@ -730,7 +766,17 @@ export default function SubmissionsDashboard() {
                       ) : (
                         <CheckCircle className="mr-2 h-4 w-4" />
                       )}
-                      Approve
+                      Accept & Publish
+                    </Button>
+                  </div>
+                )}
+
+                {selectedSubmission.status === 'approved' && selectedSubmission.slug && (
+                  <div className="flex flex-wrap gap-2">
+                    <Button asChild variant="outline">
+                      <Link href={`/admin/tools?slug=${encodeURIComponent(selectedSubmission.slug)}`}>
+                        Edit Live Tool
+                      </Link>
                     </Button>
                   </div>
                 )}
@@ -808,7 +854,7 @@ function SubmissionsList({ submissions, onViewDetails }: SubmissionsListProps) {
 
                 {(submission.category || submission.oneLiner) && (
                   <div className="mt-3 flex flex-wrap gap-4 text-sm">
-                    {submission.category && <span><strong>Category:</strong> {submission.category}</span>}
+                    {submission.category && <span><strong>Category:</strong> {formatSubmissionCategory(submission.category)}</span>}
                     {submission.oneLiner && <span><strong>Tagline:</strong> {submission.oneLiner}</span>}
                   </div>
                 )}

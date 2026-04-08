@@ -7,16 +7,39 @@ import {
   updateSubmissionStatus,
   updateToolSubmission,
 } from '@/lib/supabase';
+import { generateSEOSlug, isValidSlug, isValidSlugFormat } from '@/lib/routing-utils';
 import {
   createAdminUnauthorizedApiResponse,
   isAuthenticatedAdminApiRequest,
 } from '@/lib/admin-auth';
 import {
   isPerplexityConfigured,
+  isSupabaseAdminConfigured,
   isSupabaseStorageConfigured,
 } from '@/lib/tool-submissions-config';
 import { researchToolWithPerplexity } from '@/lib/perplexity';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
+import { publishToolFromSubmission } from '@/lib/supabase-admin';
+import { getCategoryDisplayName } from '@/lib/utils';
+
+const editableSubmissionFieldsSchema = z.object({
+  website: z.string().url().optional(),
+  slug: z.string().max(120).optional(),
+  name: z.string().max(200).optional(),
+  category: z.string()
+    .refine(
+      (value) => value.length === 0 || TOOL_SUBMISSION_CATEGORIES.includes(value as (typeof TOOL_SUBMISSION_CATEGORIES)[number]),
+      { message: 'Category must be one of the supported submission categories' }
+    )
+    .optional(),
+  features: z.string().max(3000).optional(),
+  oneLiner: z.string().max(300).optional(),
+  description: z.string().max(10000).optional(),
+  country: z.string().max(120).optional(),
+  city: z.string().max(120).optional(),
+  iconLink: z.union([z.literal(''), z.string().url()]).optional(),
+  researchStatus: z.enum(['pending', 'completed', 'failed']).optional(),
+}).strict();
 
 const updateStatusSchema = z.object({
   action: z.literal('updateStatus'),
@@ -27,24 +50,7 @@ const updateStatusSchema = z.object({
 const updateDetailsSchema = z.object({
   action: z.literal('updateDetails'),
   submissionId: z.string(),
-  updates: z.object({
-    website: z.string().url().optional(),
-    slug: z.string().max(120).optional(),
-    name: z.string().max(200).optional(),
-    category: z.string()
-      .refine(
-        (value) => value.length === 0 || TOOL_SUBMISSION_CATEGORIES.includes(value as (typeof TOOL_SUBMISSION_CATEGORIES)[number]),
-        { message: 'Category must be one of the supported submission categories' }
-      )
-      .optional(),
-    features: z.string().max(3000).optional(),
-    oneLiner: z.string().max(300).optional(),
-    description: z.string().max(10000).optional(),
-    country: z.string().max(120).optional(),
-    city: z.string().max(120).optional(),
-    iconLink: z.union([z.literal(''), z.string().url()]).optional(),
-    researchStatus: z.enum(['pending', 'completed', 'failed']).optional(),
-  }).strict(),
+  updates: editableSubmissionFieldsSchema,
 });
 
 const retryResearchSchema = z.object({
@@ -52,11 +58,150 @@ const retryResearchSchema = z.object({
   submissionId: z.string(),
 });
 
+const publishSubmissionSchema = z.object({
+  action: z.literal('publishSubmission'),
+  submissionId: z.string(),
+  updates: editableSubmissionFieldsSchema,
+});
+
 const submissionPatchSchema = z.discriminatedUnion('action', [
   updateStatusSchema,
   updateDetailsSchema,
   retryResearchSchema,
+  publishSubmissionSchema,
 ]);
+
+type EditableSubmissionFields = z.infer<typeof editableSubmissionFieldsSchema>;
+
+function trimValue(value: string | undefined) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function pickPreferredValue(...values: Array<string | undefined>) {
+  for (const value of values) {
+    const trimmed = trimValue(value);
+
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+
+  return '';
+}
+
+function buildSlugCandidate(manualSlug: string | undefined, researchSlug: string | undefined, fallbackName: string) {
+  const candidate = pickPreferredValue(manualSlug, researchSlug);
+
+  if (candidate && isValidSlugFormat(candidate) && isValidSlug(candidate)) {
+    return candidate;
+  }
+
+  return generateSEOSlug(candidate || fallbackName);
+}
+
+function buildPublishDraft(params: {
+  submission: Awaited<ReturnType<typeof getToolSubmissionById>>;
+  researchResult: Awaited<ReturnType<typeof researchToolWithPerplexity>>;
+  manualOverrides: EditableSubmissionFields;
+}) {
+  const submission = params.submission;
+
+  if (!submission) {
+    return null;
+  }
+
+  const name = pickPreferredValue(
+    params.manualOverrides.name,
+    params.researchResult.name,
+    submission.name
+  );
+
+  return {
+    website: pickPreferredValue(
+      params.manualOverrides.website,
+      params.researchResult.website,
+      submission.website
+    ),
+    slug: buildSlugCandidate(
+      params.manualOverrides.slug,
+      params.researchResult.slug,
+      name
+    ),
+    name,
+    category: pickPreferredValue(
+      params.manualOverrides.category,
+      params.researchResult.category,
+      submission.category
+    ),
+    features: pickPreferredValue(
+      params.manualOverrides.features,
+      params.researchResult.features,
+      submission.features
+    ),
+    oneLiner: pickPreferredValue(
+      params.manualOverrides.oneLiner,
+      params.researchResult.one_liner,
+      submission.oneLiner
+    ),
+    description: pickPreferredValue(
+      params.manualOverrides.description,
+      params.researchResult.description,
+      submission.description
+    ),
+    country: pickPreferredValue(
+      params.manualOverrides.country,
+      params.researchResult.country,
+      submission.country
+    ),
+    city: pickPreferredValue(
+      params.manualOverrides.city,
+      params.researchResult.city,
+      submission.city
+    ),
+    iconLink: pickPreferredValue(
+      params.manualOverrides.iconLink,
+      params.researchResult.icon_link,
+      submission.iconLink
+    ),
+  };
+}
+
+function validatePublishDraft(draft: ReturnType<typeof buildPublishDraft>) {
+  if (!draft) {
+    return 'Submission not found.';
+  }
+
+  if (!draft.website) {
+    return 'Website is required before publishing.';
+  }
+
+  if (!draft.name) {
+    return 'Name is required before publishing.';
+  }
+
+  if (!draft.slug || !isValidSlugFormat(draft.slug) || !isValidSlug(draft.slug)) {
+    return 'Slug must use lowercase letters, numbers, and hyphens, and it cannot conflict with a reserved route.';
+  }
+
+  if (!draft.category) {
+    return 'Category is required before publishing.';
+  }
+
+  if (!draft.oneLiner) {
+    return 'Tagline is required before publishing.';
+  }
+
+  if (!draft.description) {
+    return 'Description is required before publishing.';
+  }
+
+  return null;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,7 +219,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
-    // Validate status parameter
     if (status && !['pending', 'approved', 'rejected'].includes(status)) {
       return NextResponse.json(
         { error: 'Invalid status parameter' },
@@ -110,8 +254,6 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-
-    // Validate the request body
     const validatedData = submissionPatchSchema.safeParse(body);
 
     if (!validatedData.success) {
@@ -156,6 +298,101 @@ export async function PATCH(request: NextRequest) {
         success: true,
         message: 'Submission details updated',
         submission: updatedSubmission,
+      });
+    }
+
+    if (action.action === 'publishSubmission') {
+      if (!isSupabaseAdminConfigured()) {
+        return NextResponse.json(
+          { error: 'Live publishing is unavailable because the Supabase service role key is not configured.' },
+          { status: 503 }
+        );
+      }
+
+      if (!isPerplexityConfigured()) {
+        return NextResponse.json(
+          { error: 'Accept and publish is unavailable because Perplexity is not configured.' },
+          { status: 503 }
+        );
+      }
+
+      const preparedSubmission = Object.keys(action.updates).length > 0
+        ? await updateToolSubmission(action.submissionId, action.updates)
+        : await getToolSubmissionById(action.submissionId);
+
+      if (!preparedSubmission) {
+        return NextResponse.json(
+          { error: 'Submission not found or could not be prepared for publishing.' },
+          { status: 404 }
+        );
+      }
+
+      const researchResult = await researchToolWithPerplexity(
+        preparedSubmission.website,
+        preparedSubmission.comment
+      );
+      const researchStatus = researchResult.research_status as ToolResearchStatus;
+      const publishDraft = buildPublishDraft({
+        submission: preparedSubmission,
+        researchResult,
+        manualOverrides: action.updates,
+      });
+      const publishValidationError = validatePublishDraft(publishDraft);
+
+      if (publishValidationError) {
+        const failedSubmission = await updateToolSubmission(action.submissionId, {
+          researchStatus,
+          oneLiner: researchResult.one_liner,
+          description: researchResult.description,
+        });
+
+        return NextResponse.json(
+          {
+            error: publishValidationError,
+            submission: failedSubmission,
+          },
+          { status: 422 }
+        );
+      }
+
+      const publishedTool = await publishToolFromSubmission({ draft: publishDraft! });
+      const finalizedSubmission = await updateToolSubmission(action.submissionId, {
+        website: publishedTool.websiteUrl,
+        slug: publishedTool.slug,
+        name: publishedTool.name,
+        category: getCategoryDisplayName(publishedTool.category),
+        features: publishedTool.features.join(', '),
+        oneLiner: publishedTool.oneLiner,
+        description: publishedTool.description,
+        country: publishedTool.country,
+        city: publishedTool.city,
+        iconLink: publishedTool.iconUrl,
+        researchStatus,
+      });
+
+      if (!finalizedSubmission) {
+        return NextResponse.json(
+          { error: 'The tool was published, but the submission record could not be updated afterward.' },
+          { status: 500 }
+        );
+      }
+
+      const statusUpdated = await updateSubmissionStatus(action.submissionId, 'approved');
+
+      if (!statusUpdated) {
+        return NextResponse.json(
+          { error: 'The tool was published, but the submission status could not be marked as approved.' },
+          { status: 500 }
+        );
+      }
+
+      const approvedSubmission = await getToolSubmissionById(action.submissionId);
+
+      return NextResponse.json({
+        success: true,
+        message: 'Submission accepted, researched, and published to the live directory.',
+        submission: approvedSubmission ?? finalizedSubmission,
+        tool: publishedTool,
       });
     }
 
@@ -229,7 +466,7 @@ export async function PATCH(request: NextRequest) {
   } catch (error) {
     console.error('Error updating submission:', error);
     return NextResponse.json(
-      { error: 'Failed to update submission' },
+      { error: error instanceof Error ? error.message : 'Failed to update submission' },
       { status: 500 }
     );
   }

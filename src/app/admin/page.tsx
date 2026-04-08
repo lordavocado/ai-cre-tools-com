@@ -42,15 +42,15 @@ export default async function AdminHomePage() {
               Submit Tool Flow
             </CardTitle>
             <CardDescription>
-              Tool research starts during submission. There is no separate manual &quot;start scraping&quot; action in admin yet.
+              New submissions now queue for review first. Accepting them in admin is what runs research and publishes them live.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <ol className="list-decimal pl-5 text-sm text-gray-700 space-y-2">
               <li>The public form posts to <code>/api/submit-tool</code>.</li>
-              <li>The API tries to research the tool with Perplexity immediately.</li>
-              <li>The submission is then saved for review in the admin queue.</li>
-              <li>Admin can approve or reject the saved submission from the submissions dashboard.</li>
+              <li>The submission is saved into the admin review queue.</li>
+              <li>Admin can inspect and adjust the pending record before accepting it.</li>
+              <li>Accept runs the Perplexity research flow and publishes the tool into the live directory.</li>
             </ol>
             <Button asChild>
               <Link href="/admin/submissions">
@@ -85,6 +85,13 @@ export default async function AdminHomePage() {
             </div>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-700">
+                <Database className="h-4 w-4 text-gray-500" />
+                Live publishing (service role)
+              </div>
+              <StatusBadge ok={status.supabaseAdminConfigured} label={status.supabaseAdminConfigured ? 'Configured' : 'Missing'} />
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-sm text-gray-700">
                 <Search className="h-4 w-4 text-gray-500" />
                 Automated research (Perplexity)
               </div>
@@ -94,18 +101,35 @@ export default async function AdminHomePage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>Submissions Review</CardTitle>
             <CardDescription>
-              Review pending tools, inspect research results, and approve or reject entries.
+              Review pending tools, accept them into the live directory, or reject them.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild variant="outline">
               <Link href="/admin/submissions">
                 Go to Review Queue
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Live Tools</CardTitle>
+            <CardDescription>
+              Edit the published directory entries after a submission has been accepted.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="outline">
+              <Link href="/admin/tools">
+                Open Live Tools
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

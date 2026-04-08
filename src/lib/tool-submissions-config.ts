@@ -20,6 +20,11 @@ export function isSupabaseStorageConfigured() {
     && hasRealValue(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY);
 }
 
+export function isSupabaseAdminConfigured() {
+  return hasRealValue(process.env.NEXT_PUBLIC_SUPABASE_URL)
+    && hasRealValue(process.env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
 export function isPerplexityConfigured() {
   return Boolean(process.env.PERPLEXITY_API_KEY);
 }
@@ -28,6 +33,7 @@ export function getToolSubmissionSystemStatus() {
   return {
     adminBasicAuthConfigured: isAdminBasicAuthConfigured(),
     supabaseStorageConfigured: isSupabaseStorageConfigured(),
+    supabaseAdminConfigured: isSupabaseAdminConfigured(),
     perplexityConfigured: isPerplexityConfigured(),
   };
 }

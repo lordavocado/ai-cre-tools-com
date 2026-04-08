@@ -55,3 +55,18 @@ export interface NewsletterSubscription {
   email: string;
 }
 
+export interface AdminTool {
+  slug: string;
+  name: string;
+  websiteUrl: string;
+  category: string;
+  features: string[];
+  oneLiner: string;
+  description: string;
+  country: string;
+  city: string;
+  iconUrl: string;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}

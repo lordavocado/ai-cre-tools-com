@@ -102,7 +102,7 @@ export default function SubmitToolPage() {
             Tool Submission Form
           </CardTitle>
           <CardDescription>
-            Please provide the tool&apos;s website, your email for follow-up, and explain why this tool would be valuable for CRE professionals.
+            Please provide the tool&apos;s website, your email in case we need clarification, and explain why this tool would be valuable for CRE professionals.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -200,9 +200,9 @@ export default function SubmitToolPage() {
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <h3 className="font-medium text-blue-900 mb-2">What happens next?</h3>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Our AI will automatically research and extract tool information</li>
               <li>• We&apos;ll review your submission for relevance and quality</li>
-              <li>• You&apos;ll receive an email confirmation and updates</li>
+              <li>• If we accept it, we&apos;ll run our research flow and prepare it for publishing</li>
+              <li>• We may reach out if we need clarification during review</li>
               <li>• Approved tools will be added to our directory within 2-3 business days</li>
             </ul>
           </div>
