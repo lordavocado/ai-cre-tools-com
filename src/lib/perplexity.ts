@@ -65,6 +65,7 @@ Please provide the extracted information in JSON format with the following struc
 // Call Perplexity API
 async function callPerplexityAPI(prompt: string): Promise<string> {
   const apiKey = process.env.PERPLEXITY_API_KEY;
+  const model = process.env.PERPLEXITY_MODEL ?? 'sonar-pro';
 
   if (!apiKey) {
     throw new Error('PERPLEXITY_API_KEY environment variable is not set');
@@ -77,7 +78,7 @@ async function callPerplexityAPI(prompt: string): Promise<string> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'llama-3.1-sonar-large-128k-online',
+      model,
       messages: [
         {
           role: 'system',

@@ -17,6 +17,9 @@ function StatusBadge({ ok, label }: { ok: boolean; label: string }) {
 export default async function AdminHomePage() {
   await requireAdminPageAuth('/admin');
   const status = getToolSubmissionSystemStatus();
+  const researchStatusLabel = status.researchProvider
+    ? `${status.researchProvider.charAt(0).toUpperCase()}${status.researchProvider.slice(1)}`
+    : 'Missing';
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8">
@@ -50,7 +53,7 @@ export default async function AdminHomePage() {
               <li>The public form posts to <code>/api/submit-tool</code>.</li>
               <li>The submission is saved into the admin review queue.</li>
               <li>Admin can inspect and adjust the pending record before accepting it.</li>
-              <li>Accept runs the Perplexity research flow and publishes the tool into the live directory.</li>
+              <li>Accept runs the automated research flow and publishes the tool into the live directory.</li>
             </ol>
             <Button asChild>
               <Link href="/admin/submissions">
@@ -93,9 +96,9 @@ export default async function AdminHomePage() {
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-700">
                 <Search className="h-4 w-4 text-gray-500" />
-                Automated research (Perplexity)
+                Automated research provider
               </div>
-              <StatusBadge ok={status.perplexityConfigured} label={status.perplexityConfigured ? 'Configured' : 'Missing'} />
+              <StatusBadge ok={status.researchProviderConfigured} label={researchStatusLabel} />
             </div>
           </CardContent>
         </Card>

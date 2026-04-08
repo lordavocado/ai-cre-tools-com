@@ -13,11 +13,11 @@ import {
   isAuthenticatedAdminApiRequest,
 } from '@/lib/admin-auth';
 import {
-  isPerplexityConfigured,
+  isResearchProviderConfigured,
   isSupabaseAdminConfigured,
   isSupabaseStorageConfigured,
 } from '@/lib/tool-submissions-config';
-import { researchToolWithPerplexity } from '@/lib/perplexity';
+import { researchTool } from '@/lib/tool-research';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 import { publishToolFromSubmission } from '@/lib/supabase-admin';
 import { getCategoryDisplayName } from '@/lib/utils';
@@ -106,7 +106,7 @@ function buildSlugCandidate(manualSlug: string | undefined, researchSlug: string
 
 function buildPublishDraft(params: {
   submission: Awaited<ReturnType<typeof getToolSubmissionById>>;
-  researchResult: Awaited<ReturnType<typeof researchToolWithPerplexity>>;
+  researchResult: Awaited<ReturnType<typeof researchTool>>;
   manualOverrides: EditableSubmissionFields;
 }) {
   const submission = params.submission;
@@ -309,9 +309,9 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      if (!isPerplexityConfigured()) {
+      if (!isResearchProviderConfigured()) {
         return NextResponse.json(
-          { error: 'Accept and publish is unavailable because Perplexity is not configured.' },
+          { error: 'Accept and publish is unavailable because no automated research provider is configured.' },
           { status: 503 }
         );
       }
@@ -327,7 +327,7 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      const researchResult = await researchToolWithPerplexity(
+      const researchResult = await researchTool(
         preparedSubmission.website,
         preparedSubmission.comment
       );
@@ -396,9 +396,9 @@ export async function PATCH(request: NextRequest) {
       });
     }
 
-    if (!isPerplexityConfigured()) {
+    if (!isResearchProviderConfigured()) {
       return NextResponse.json(
-        { error: 'Automated research is unavailable because Perplexity is not configured.' },
+        { error: 'Automated research is unavailable because no research provider is configured.' },
         { status: 503 }
       );
     }
@@ -412,7 +412,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const researchResult = await researchToolWithPerplexity(
+    const researchResult = await researchTool(
       existingSubmission.website,
       existingSubmission.comment
     );

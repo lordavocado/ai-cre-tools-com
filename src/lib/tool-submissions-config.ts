@@ -29,11 +29,34 @@ export function isPerplexityConfigured() {
   return Boolean(process.env.PERPLEXITY_API_KEY);
 }
 
+export function isTavilyConfigured() {
+  return Boolean(process.env.TAVILY_API_KEY);
+}
+
+export function getConfiguredResearchProvider() {
+  if (isTavilyConfigured()) {
+    return 'tavily' as const;
+  }
+
+  if (isPerplexityConfigured()) {
+    return 'perplexity' as const;
+  }
+
+  return null;
+}
+
+export function isResearchProviderConfigured() {
+  return getConfiguredResearchProvider() !== null;
+}
+
 export function getToolSubmissionSystemStatus() {
   return {
     adminBasicAuthConfigured: isAdminBasicAuthConfigured(),
     supabaseStorageConfigured: isSupabaseStorageConfigured(),
     supabaseAdminConfigured: isSupabaseAdminConfigured(),
+    researchProviderConfigured: isResearchProviderConfigured(),
+    researchProvider: getConfiguredResearchProvider(),
+    tavilyConfigured: isTavilyConfigured(),
     perplexityConfigured: isPerplexityConfigured(),
   };
 }
