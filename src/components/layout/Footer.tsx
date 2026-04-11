@@ -7,49 +7,52 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-200 bg-gray-900 text-white">
+    <footer className="border-t border-stone-200 bg-stone-50">
       <div className="mx-auto max-w-[1200px] px-6">
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 gap-0 border-b border-white/10 py-14 md:grid-cols-3 md:gap-12">
+        <div className="grid grid-cols-1 gap-0 border-b border-stone-200 py-14 md:grid-cols-3 md:gap-12">
 
           {/* Brand + social */}
           <div>
-            <Link href="/" className="inline-block font-serif text-xl font-bold text-white">
-              {siteConfig.name}
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
+                AI
+              </span>
+              <span className="text-sm font-bold text-gray-950">{siteConfig.name}</span>
             </Link>
-            <p className="mt-2 text-sm leading-6 text-white/60">
-              Find the best AI tools for commercial real estate
+            <p className="mt-3 text-sm leading-6 text-stone-500">
+              Find the best AI tools for commercial real estate.
             </p>
-            <p className="mt-4 font-mono text-[10px] font-bold uppercase tracking-widest text-white/30">
-              Curated for investors, brokers, developers, and operators
+            <p className="mt-3 text-[11px] font-semibold uppercase tracking-widest text-stone-400">
+              Curated for investors, brokers & operators
             </p>
 
-            <div className="mt-6 flex items-center gap-4">
+            <div className="mt-6 flex items-center gap-3">
               <Link
                 href={`https://linkedin.com/${siteConfig.social.linkedin}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="text-white/50 transition-colors hover:text-white"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-500 transition-colors hover:border-brand-200 hover:text-brand-600"
               >
-                <Linkedin size={18} aria-hidden="true" />
+                <Linkedin size={15} aria-hidden="true" />
               </Link>
               <Link
                 href={`https://twitter.com/${siteConfig.social.twitter.replace(/^@/, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter / X"
-                className="text-white/50 transition-colors hover:text-white"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-500 transition-colors hover:border-brand-200 hover:text-brand-600"
               >
-                <Twitter size={18} aria-hidden="true" />
+                <Twitter size={15} aria-hidden="true" />
               </Link>
             </div>
           </div>
 
           {/* Browse links */}
           <div className="mt-10 md:mt-0">
-            <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest text-white/40">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-stone-400">
               Browse
             </p>
             <nav className="flex flex-col gap-3">
@@ -63,7 +66,7 @@ export function Footer() {
                 <Link
                   key={href}
                   href={href}
-                  className="text-sm text-white/60 transition-colors hover:text-white"
+                  className="text-sm text-stone-500 transition-colors hover:text-stone-900"
                 >
                   {label}
                 </Link>
@@ -73,29 +76,29 @@ export function Footer() {
 
           {/* Newsletter */}
           <div className="mt-10 md:mt-0">
-            <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest text-white/40">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-stone-400">
               Stay Updated
             </p>
-            <p className="mb-4 text-sm leading-6 text-white/60">
+            <p className="mb-4 text-sm leading-6 text-stone-500">
               New CRE AI tools, without the inbox clutter.
             </p>
             <NewsletterForm
               source="footer"
-              inputClassName="rounded-none border-2 border-white/30 bg-white/10 text-white placeholder:text-white/30 focus:ring-0 focus:border-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-              buttonClassName="rounded-none border-2 border-white bg-white text-black font-bold shadow-none transition-colors hover:bg-transparent hover:text-white hover:shadow-none"
+              inputClassName="rounded-xl border border-stone-200 bg-white text-sm focus:ring-2 focus:ring-brand-100 focus-visible:outline-none"
+              buttonClassName="rounded-xl border border-brand-600 bg-brand-600 text-white text-sm font-semibold shadow-none transition-colors hover:bg-brand-700"
             />
           </div>
 
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col items-center justify-between gap-4 py-6 text-sm text-white/30 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 py-6 text-sm text-stone-400 sm:flex-row">
           <p>&copy; {currentYear} {siteConfig.name}. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link href="/privacy-policy" className="transition-colors hover:text-white">
+            <Link href="/privacy-policy" className="transition-colors hover:text-stone-700">
               Privacy
             </Link>
-            <Link href="/terms-of-service" className="transition-colors hover:text-white">
+            <Link href="/terms-of-service" className="transition-colors hover:text-stone-700">
               Terms
             </Link>
           </div>
