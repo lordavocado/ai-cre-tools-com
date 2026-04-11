@@ -4,9 +4,8 @@ import { DirectorySearch, type DirectorySearchCategory } from "@/components/list
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
 import { CategoryCard } from "@/components/category/CategoryCard";
 import { IntersectionLoader } from "@/components/performance/intersection-loader";
-import { getDirectoryItems, getCategories, getFeaturedItems } from "@/lib/supabase";
+import { getDirectoryItems, getCategories } from "@/lib/supabase";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
@@ -80,8 +79,7 @@ export const metadata: Metadata = {
   },
 };
 
-// Revalidate every hour
-export const revalidate = 3600; 
+export const revalidate = 3600;
 
 interface HomeProps {
   searchParams: Promise<{
@@ -97,20 +95,15 @@ export default async function Home({ searchParams }: HomeProps) {
   const categoryFilter = category || "";
 
   try {
-    // Get items first, then categories to avoid circular dependency
+    // Items fetched first so the module-level cache is warm when getCategories runs
     const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
-    const featuredItems = await getFeaturedItems(3);
-    
-    // Get categories without item counts initially to avoid circular dependency
     let categoriesFromSheet: Category[];
     try {
-      categoriesFromSheet = await getCategories(true); // Include item counts
-    } catch (categoryError) {
-      console.warn('Failed to get categories with item counts, falling back to basic categories:', categoryError);
-      categoriesFromSheet = await getCategories(false); // Fallback without item counts
+      categoriesFromSheet = await getCategories(true);
+    } catch {
+      categoriesFromSheet = await getCategories(false);
     }
-    
-    const topCategories = categoriesFromSheet; // Show all categories instead of just 4
+
     const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
       ({ id, slug, name, icon }) => ({ id, slug, name, icon })
     );
@@ -206,19 +199,18 @@ export default async function Home({ searchParams }: HomeProps) {
       />
 
       <Hero
-        featuredItems={featuredItems}
         totalItems={initialItems.length}
         totalCategories={categoriesFromSheet.length}
       />
 
-      <section id="directory" className="border-b border-slate-200 py-16 md:py-24">
+      <section id="directory" className="border-b border-gray-200 py-16 md:py-20">
         <div className="container px-6">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+              <h2 className="text-xl font-semibold text-gray-900">
                 All tools
               </h2>
-              <p className="mt-1 text-sm text-slate-500">{initialItems.length} AI tools</p>
+              <p className="mt-0.5 text-sm text-gray-400">{initialItems.length} AI tools</p>
             </div>
           </div>
 
@@ -232,23 +224,24 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-16 md:py-24">
+      <section className="bg-gray-50 py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">Browse by category</h2>
-              <p className="mt-1 text-sm text-slate-500">Organized by CRE workflow, not generic SaaS labels.</p>
+              <h2 className="text-xl font-semibold text-gray-900">Browse by category</h2>
+              <p className="mt-0.5 text-sm text-gray-400">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
-            <Button asChild variant="outline" className="w-fit rounded-lg border-slate-300 bg-white">
-              <Link href="/categories">
-                View all categories
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+            <Link
+              href="/categories"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-300"
+            >
+              View all categories
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
           <IntersectionLoader className="min-h-[200px]">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
-              {topCategories.map((category) => (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              {categoriesFromSheet.map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
             </div>
@@ -344,15 +337,7 @@ export default async function Home({ searchParams }: HomeProps) {
         />
       </>
     );
-  } catch (error) {
-    // Fallback when data fetching fails - prevent infinite re-renders
-    console.error('Error loading homepage data:', error);
-    
-    // Mark this as an error state to prevent retry loops
-    if (typeof window !== 'undefined') {
-      console.warn('Homepage entered error fallback state');
-    }
-    
+  } catch {
     return (
       <>
         {/* Basic Structured Data for error case */}
@@ -370,40 +355,42 @@ export default async function Home({ searchParams }: HomeProps) {
           }}
         />
 
-        <Hero featuredItems={[]} totalItems={0} totalCategories={0} />
+        <Hero totalItems={0} totalCategories={0} />
 
-        <section id="directory" className="py-16 md:py-24">
+        <section id="directory" className="py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-[28px] border border-slate-200/80 bg-white p-10 text-center shadow-[0_18px_70px_-55px_rgba(15,23,42,0.45)]">
-              <h2 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+            <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
+              <h2 className="text-2xl font-semibold text-gray-900">
                 {siteConfig.categoryName} directory update in progress
               </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-slate-600">
+              <p className="mx-auto mt-3 max-w-xl text-base text-gray-500">
                 We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
               </p>
-              <Button asChild className="mt-8 rounded-xl bg-slate-950 hover:bg-slate-800">
-                <Link href="/categories">
-                  Explore Categories <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <Link
+                href="/categories"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+              >
+                Explore Categories <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="bg-slate-50/80 py-16 md:py-24">
+        <section className="bg-gray-50 py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-[28px] border border-slate-200/80 bg-white p-10 text-center shadow-[0_18px_70px_-55px_rgba(15,23,42,0.45)]">
-              <h2 className="text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl">
+            <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
+              <h2 className="text-2xl font-semibold text-gray-900">
                 Browse by Category
               </h2>
-              <p className="mt-4 text-lg leading-8 text-slate-600">
+              <p className="mt-3 text-base text-gray-500">
                 Our directory is organized by specific use cases in commercial real estate.
               </p>
-              <Button asChild variant="outline" className="mt-8 rounded-xl border-slate-300 bg-white">
-                <Link href="/categories">
-                  View All Categories <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <Link
+                href="/categories"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                View All Categories <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </div>
         </section>

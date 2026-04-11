@@ -1,15 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ArrowLeft, Heart, Search, Star } from "lucide-react";
 import Link from "next/link";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
 import { useFavoritesContext } from "@/providers/FavoritesProvider";
-import { useEffect, useState } from "react";
-import React from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { DirectoryItem } from "@/types";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 
@@ -21,7 +17,6 @@ export function FavoritesClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  // Fetch favorite tools data
   useEffect(() => {
     if (!isLoading && favorites.length > 0) {
       const fetchFavoriteTools = async () => {
@@ -32,8 +27,6 @@ export function FavoritesClient() {
             const favTools = allTools.filter(tool => favorites.includes(tool.id));
             setFavoriteTools(favTools);
           }
-        } catch (error) {
-          console.error('Failed to fetch favorite tools:', error);
         } finally {
           setLoading(false);
         }
@@ -44,66 +37,69 @@ export function FavoritesClient() {
     }
   }, [favorites, isLoading]);
 
-  // Filter tools based on search
-  const filteredTools = favoriteTools.filter(tool => 
-    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.tagline.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTools = useMemo(
+    () => favoriteTools.filter(tool => {
+      const term = searchTerm.toLowerCase();
+      return (
+        tool.name.toLowerCase().includes(term) ||
+        tool.tagline.toLowerCase().includes(term) ||
+        tool.category.toLowerCase().includes(term)
+      );
+    }),
+    [favoriteTools, searchTerm]
   );
 
-  // Pagination
   const totalPages = Math.ceil(filteredTools.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentTools = filteredTools.slice(startIndex, endIndex);
 
-  // Reset pagination when search changes
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
   if (loading || isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 md:py-16">
+      <div className="container mx-auto px-6 py-12 md:py-16">
         <div className="flex items-center gap-4 mb-8">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Directory
-            </Link>
-          </Button>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to Directory
+          </Link>
         </div>
-        <div className="text-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-6"></div>
-          <p className="text-lg text-muted-foreground">Loading your favorites...</p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-gray-900 mb-4" />
+          <p className="text-sm text-gray-500">Loading your favorites...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-16">
+    <div className="container mx-auto px-6 py-12 md:py-16">
       {/* Header with back button */}
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Directory
-          </Link>
-        </Button>
+      <div className="flex items-center gap-4 mb-10">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to Directory
+        </Link>
       </div>
 
       {/* Page Title */}
-      <div className="text-center mb-12">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <Star className="h-8 w-8 text-yellow-500 fill-yellow-500" />
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight">My Favorite Tools</h1>
+      <div className="mb-10">
+        <div className="flex items-center gap-2.5 mb-3">
+          <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">My Favorite Tools</h1>
         </div>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Your personal collection of saved AI CRE tools
-        </p>
+        <p className="text-sm text-gray-500">Your personal collection of saved AI CRE tools</p>
         {favorites.length > 0 && (
-          <Badge variant="secondary" className="mt-6 px-4 py-2 text-sm">
+          <Badge variant="secondary" className="mt-4 px-3 py-1 text-xs">
             {favorites.length} tool{favorites.length !== 1 ? 's' : ''} saved
           </Badge>
         )}
@@ -111,58 +107,52 @@ export function FavoritesClient() {
 
       {/* Empty State */}
       {favorites.length === 0 ? (
-        <Card className="max-w-3xl mx-auto border-dashed border-2 bg-muted/20">
-          <CardContent className="p-16 text-center">
-            <div className="mb-8">
-              <Heart className="h-20 w-20 text-muted-foreground/60 mx-auto mb-4" />
-              <div className="w-24 h-1 bg-gradient-to-r from-transparent via-muted-foreground/20 to-transparent mx-auto"></div>
-            </div>
-            <h2 className="text-3xl font-bold mb-4 text-foreground">No Favorites Yet</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
-              Start building your collection by exploring our directory and saving tools you like.
-            </p>
-            <Button size="lg" asChild className="px-8 py-3">
-              <Link href="/">
-                <Search className="h-4 w-4 mr-2" />
-                Explore Tools
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="max-w-lg mx-auto rounded-xl border border-gray-200 bg-white p-12 text-center">
+          <Heart className="h-10 w-10 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">No Favorites Yet</h2>
+          <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto leading-6">
+            Start building your collection by exploring our directory and saving tools you like.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+          >
+            <Search className="h-3.5 w-3.5" />
+            Explore Tools
+          </Link>
+        </div>
       ) : (
         <>
           {/* Search Bar */}
-          <div className="max-w-lg mx-auto mb-12">
+          <div className="max-w-sm mb-8">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <Input
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
                 type="text"
                 placeholder="Search your favorites..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-3 text-lg border-2 focus:border-primary rounded-xl"
+                className="w-full pl-10 pr-4 h-10 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-colors"
               />
             </div>
           </div>
 
           {/* Search Results */}
           {searchTerm && (
-            <div className="text-center mb-6">
-              <p className="text-muted-foreground">
-                Found {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} matching "{searchTerm}"
-              </p>
-            </div>
+            <p className="text-xs text-gray-400 mb-6">
+              {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} matching &ldquo;{searchTerm}&rdquo;
+            </p>
           )}
 
           {/* Tools Grid */}
           {filteredTools.length > 0 ? (
             <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {currentTools.map((tool) => (
                   <DirectoryItemCard key={tool.id} item={tool} />
                 ))}
               </div>
-              
+
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex justify-center">
@@ -175,21 +165,19 @@ export function FavoritesClient() {
               )}
             </div>
           ) : (
-            <Card className="max-w-3xl mx-auto border-dashed border-2 bg-muted/20">
-              <CardContent className="p-16 text-center">
-                <div className="mb-8">
-                  <Search className="h-20 w-20 text-muted-foreground/60 mx-auto mb-4" />
-                  <div className="w-24 h-1 bg-gradient-to-r from-transparent via-muted-foreground/20 to-transparent mx-auto"></div>
-                </div>
-                <h2 className="text-3xl font-bold mb-4">No Results Found</h2>
-                <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
-                  No tools match your search criteria. Try adjusting your search terms.
-                </p>
-                <Button variant="outline" size="lg" onClick={() => setSearchTerm("")} className="px-8 py-3">
-                  Clear Search
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="max-w-lg mx-auto rounded-xl border border-gray-200 bg-white p-12 text-center">
+              <Search className="h-10 w-10 text-gray-300 mx-auto mb-4" />
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">No Results Found</h2>
+              <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto leading-6">
+                No tools match your search. Try adjusting your search terms.
+              </p>
+              <button
+                onClick={() => setSearchTerm("")}
+                className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                Clear Search
+              </button>
+            </div>
           )}
         </>
       )}
