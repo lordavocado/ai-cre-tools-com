@@ -26,23 +26,23 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
 
   return (
     <div className="group flex h-full flex-col rounded-xl border border-stone-200 bg-white shadow-sm transition-all duration-200 hover:border-brand-200 hover:shadow-md hover:-translate-y-0.5">
-      <div className="flex-1 p-5">
+      <div className="flex-1 p-4">
         {/* Header: icon + name + favorite */}
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-stone-100 bg-stone-50">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-stone-100 bg-stone-50">
               <SafeImage
                 src={item.imageUrl}
                 alt={item.name}
                 website={item.website}
-                className="h-10 w-10 object-contain"
+                className="h-8 w-8 object-contain"
                 fallbackText={item.name.charAt(0)}
               />
             </div>
             <div className="min-w-0">
               <Link
                 href={`/${item.slug}`}
-                className="font-bold leading-tight text-gray-950 hover:text-brand-600 transition-colors"
+                className="text-sm font-semibold leading-tight text-gray-950 hover:text-brand-600 transition-colors"
               >
                 {item.name}
               </Link>
@@ -62,31 +62,31 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
 
         {/* Tagline */}
         {item.tagline && (
-          <p className="mb-3 line-clamp-1 text-sm leading-6 text-stone-600">
+          <p className="mb-2.5 line-clamp-1 text-sm leading-5 text-stone-600">
             {item.tagline}
           </p>
         )}
 
         {/* Categories */}
         {item.category && (
-          <div className="mb-3">
+          <div className="mb-2.5">
             <CategoryChips categories={item.category} size="sm" showLinks={true} />
           </div>
         )}
 
         {/* Description */}
         {item.description && (
-          <p className="line-clamp-2 text-sm leading-6 text-stone-400">
+          <p className="line-clamp-2 text-xs leading-5 text-stone-400">
             {item.description}
           </p>
         )}
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between gap-3 border-t border-stone-100 px-5 py-3">
+      <div className="flex items-center justify-between gap-3 border-t border-stone-100 px-4 py-2.5">
         <Link
           href={`/${item.slug}`}
-          className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+          className="text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors"
         >
           View profile →
         </Link>

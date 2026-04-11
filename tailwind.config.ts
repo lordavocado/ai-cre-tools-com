@@ -11,6 +11,7 @@ export default {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         serif: ['Brief', 'Georgia', 'serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

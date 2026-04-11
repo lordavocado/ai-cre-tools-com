@@ -207,7 +207,7 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-950">
+              <h2 className="font-display text-2xl font-normal text-gray-950">
                 All tools
               </h2>
               <p className="mt-0.5 text-sm text-stone-400">{initialItems.length} AI tools</p>
@@ -228,7 +228,7 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-950">Browse by category</h2>
+              <h2 className="font-display text-2xl font-normal text-gray-950">Browse by category</h2>
               <p className="mt-0.5 text-sm text-stone-400">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link

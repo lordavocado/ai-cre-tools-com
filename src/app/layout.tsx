@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, DM_Serif_Display } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -114,10 +114,18 @@ export const viewport: Viewport = {
   ],
 };
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter'
+})
+
+const dmSerifDisplay = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+  variable: '--font-display',
+  style: ['normal', 'italic'],
 })
 
 export default function RootLayout({
@@ -302,7 +310,8 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-white font-sans antialiased',
-          inter.variable
+          inter.variable,
+          dmSerifDisplay.variable
         )}
       >
         <noscript

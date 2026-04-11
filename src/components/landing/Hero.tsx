@@ -4,7 +4,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
-import { NewsletterForm } from "@/components/forms/SimpleNewsletterForm";
 import Link from "next/link";
 
 interface HeroProps {
@@ -55,10 +54,10 @@ export function Hero({ totalItems, totalCategories }: HeroProps) {
           </div>
 
           {/* Heading */}
-          <h1 className="text-5xl font-extrabold leading-[1.08] tracking-tight text-gray-950 md:text-[72px]">
+          <h1 className="font-display text-5xl font-normal leading-[1.08] tracking-tight text-gray-950 md:text-[72px]">
             Find the best AI tools
             <br />
-            <span className="text-brand-500">for commercial real estate</span>
+            <span className="italic text-brand-500">for commercial real estate</span>
           </h1>
 
           {/* Subtext */}
@@ -130,17 +129,6 @@ export function Hero({ totalItems, totalCategories }: HeroProps) {
           </div>
         </motion.div>
 
-        {/* Newsletter strip */}
-        <div className="mx-auto mt-12 max-w-md">
-          <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-widest text-stone-400">
-            Weekly CRE AI digest — free
-          </p>
-          <NewsletterForm
-            source="hero"
-            inputClassName="rounded-xl border border-stone-200 bg-white text-sm focus:ring-2 focus:ring-brand-100 focus-visible:outline-none"
-            buttonClassName="rounded-xl border border-brand-600 bg-brand-600 text-white text-sm font-semibold shadow-none transition-colors hover:bg-brand-700"
-          />
-        </div>
       </div>
     </section>
   );

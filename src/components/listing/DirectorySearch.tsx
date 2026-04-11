@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Search, X, SlidersHorizontal } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export interface DirectorySearchCategory {
@@ -29,7 +29,6 @@ function DirectorySearchContent({
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     initialCategoryFilter ? initialCategoryFilter.split(",").map((c) => c.trim()) : []
   );
-  const [showCategories, setShowCategories] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -87,7 +86,7 @@ function DirectorySearchContent({
     );
   };
 
-  const clearAll = () => {
+  const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategories([]);
   };
@@ -95,10 +94,9 @@ function DirectorySearchContent({
   const hasFilters = searchTerm || selectedCategories.length > 0;
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 space-y-3">
       {/* Search bar row */}
       <div className="flex items-center gap-3">
-        {/* Search input */}
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" aria-hidden="true" />
           <input
@@ -120,35 +118,14 @@ function DirectorySearchContent({
           )}
         </div>
 
-        {/* Filters toggle */}
-        <button
-          onClick={() => setShowCategories((v) => !v)}
-          className={`inline-flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition-all ${
-            showCategories || selectedCategories.length > 0
-              ? "border-brand-600 bg-brand-600 text-white"
-              : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
-          }`}
-          aria-expanded={showCategories}
-        >
-          <SlidersHorizontal className="h-3.5 w-3.5" />
-          Filters
-          {selectedCategories.length > 0 && (
-            <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-xs font-semibold">
-              {selectedCategories.length}
-            </span>
-          )}
-        </button>
-
-        {/* Order by (placeholder — matches OpenAlternative pattern) */}
-        <div className="hidden md:inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-4 text-sm text-stone-500">
+        <div className="hidden md:inline-flex h-11 shrink-0 items-center rounded-lg border border-stone-200 bg-white px-4 text-sm text-stone-500">
           {isPending ? "Updating…" : `${totalItems} tools`}
         </div>
 
-        {/* Clear */}
         {hasFilters && (
           <button
-            onClick={clearAll}
-            className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-sm text-stone-500 hover:text-stone-900 transition-colors"
+            onClick={clearFilters}
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-sm text-stone-500 hover:text-stone-900 transition-colors"
             aria-label="Clear all filters"
           >
             <X className="h-3.5 w-3.5" />
@@ -157,32 +134,39 @@ function DirectorySearchContent({
         )}
       </div>
 
-      {/* Category chips panel */}
-      {showCategories && (
-        <div className="mt-3 rounded-xl border border-stone-200 bg-white p-4">
-          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-stone-400">
-            Browse by category
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => {
-              const isActive = selectedCategories.includes(category.slug);
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => toggleCategory(category.slug)}
-                  aria-pressed={isActive}
-                  className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-brand-600 text-white"
-                      : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
-                  }`}
-                >
-                  {category.name}
-                </button>
-              );
-            })}
-          </div>
+      {/* Category chips — always visible, horizontally scrollable */}
+      {categories.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button
+            type="button"
+            onClick={() => setSelectedCategories([])}
+            aria-pressed={selectedCategories.length === 0}
+            className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
+              selectedCategories.length === 0
+                ? "bg-gray-950 text-white"
+                : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((category) => {
+            const isActive = selectedCategories.includes(category.slug);
+            return (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => toggleCategory(category.slug)}
+                aria-pressed={isActive}
+                className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-brand-600 text-white"
+                    : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
+                }`}
+              >
+                {category.name}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
