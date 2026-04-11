@@ -23,7 +23,7 @@ const AHREFS_ANALYTICS_KEY = 'U2yhP/o27yj/thHEpDz3zw';
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
+    default: `${siteConfig.name} — Best AI Real Estate Tools Directory`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   
   // Enhanced Open Graph metadata for better social sharing
   openGraph: {
-    title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
+    title: `AI CRE Tools — Best AI Real Estate Tools for Commercial Property`,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.seo.openGraph.siteName,
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   // Enhanced Twitter/X Cards
   twitter: {
     card: 'summary_large_image',
-    title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
+    title: `AI CRE Tools — Best AI Real Estate Tools Directory`,
     description: siteConfig.description,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
@@ -414,6 +414,8 @@ export default function RootLayout({
                 `https://github.com/${handle}`
               ) : [],
               knowsAbout: [
+                "AI Real Estate Tools",
+                "Best AI Real Estate Tools",
                 "Commercial Real Estate",
                 "AI Tools",
                 "PropTech",

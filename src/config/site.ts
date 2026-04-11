@@ -4,13 +4,17 @@ export const siteConfig = {
 
   // Site metadata
   name: "AI CRE Tools",
-  description: "Compare top AI tools for commercial real estate. Find the best CRE software for your needs.",
+  description: "The best AI real estate tools for commercial property teams. Compare software for investors, brokers, asset managers, and operators — one focused directory.",
   url: "https://www.aicretools.com",
 
   // SEO Configuration
   seo: {
     // Primary keywords for the site
     primaryKeywords: [
+      'ai real estate tools',
+      'best ai real estate tools',
+      'ai tools for real estate',
+      'real estate ai tools',
       'commercial real estate ai tools',
       'cre ai software',
       'ai for real estate',
@@ -21,6 +25,10 @@ export const siteConfig = {
 
     // Secondary/Long-tail keywords
     secondaryKeywords: [
+      'ai real estate software',
+      'real estate technology tools',
+      'ai tools real estate investors',
+      'commercial real estate tools directory',
       'ai in property management',
       'real estate investment analysis tools',
       'ai for property valuation',
@@ -47,7 +55,7 @@ export const siteConfig = {
         default: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Find the best AI tools for commercial real estate'
+        alt: 'Find the best AI real estate tools'
       }
     },
 
@@ -60,7 +68,7 @@ export const siteConfig = {
         default: '/twitter-image',
         width: 1200,
         height: 630,
-        alt: 'Find the best AI tools for commercial real estate'
+        alt: 'Find the best AI real estate tools'
       }
     },
 
@@ -70,7 +78,7 @@ export const siteConfig = {
         name: 'AI CRE Tools',
         url: 'https://www.aicretools.com',
         logo: 'https://www.aicretools.com/ai-cre-tools-logo.jpg',
-        description: 'The most comprehensive directory of Commercial Real Estate AI tools and solutions.',
+        description: 'The most comprehensive directory of AI real estate tools for commercial property professionals.',
         sameAs: [
           'https://twitter.com/aicretools',
           'https://linkedin.com/company/aicretools'
@@ -87,7 +95,7 @@ export const siteConfig = {
     // Category-specific SEO templates (optimized for SERP display)
     // Title: max 60 chars, Description: max 155 chars
     categoryMetaTemplates: {
-      title: "Best {categoryName} Tools 2026 | AI CRE Tools",
+      title: "Best {categoryName} AI Tools for Real Estate | AI CRE Tools",
       description: "Compare top {categoryName} software for commercial real estate. Find AI solutions with features, pricing & reviews.",
       keywords: "{categoryName}, {categoryName} tools, {categoryName} software, best {categoryName}, {categoryName} solutions, {categoryName} platforms, cre ai"
     },
@@ -96,7 +104,7 @@ export const siteConfig = {
     // Title: max 60 chars, Description: max 155 chars
     toolMetaTemplates: {
       title: "{toolName} Review & Features | AI CRE Tools",
-      description: "{toolName} - {toolTagline}. Compare features, pricing & alternatives for your CRE needs.",
+      description: "{toolName} - {toolTagline}. Compare features, pricing & alternatives for real estate teams.",
       keywords: "{toolName}, {toolName} review, {toolName} pricing, {toolName} features, {toolName} alternatives, cre ai tool"
     }
   },

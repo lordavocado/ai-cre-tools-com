@@ -23,8 +23,8 @@ const FAQSection = dynamic(
 
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
-  title: `${siteConfig.name} - Find & Compare the Best ${siteConfig.categoryName}`,
-  description: `Discover and compare the best ${siteConfig.categoryName.toLowerCase()} for your commercial real estate business. Detailed information and comparisons to help you choose the perfect AI solution.`,
+  title: `Best AI Real Estate Tools 2026 | AI CRE Tools Directory`,
+  description: `Discover and compare the best AI real estate tools for commercial property. Software for investors, brokers, asset managers, and operators — one focused directory.`,
   keywords: [
     ...siteConfig.seo.primaryKeywords,
     ...siteConfig.seo.secondaryKeywords,
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   ],
   
   openGraph: {
-    title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
-    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect AI solution for commercial real estate.`,
+    title: `Best AI Real Estate Tools 2026 | AI CRE Tools`,
+    description: `Find and compare the best AI real estate tools for commercial property. Detailed comparisons to help you choose the right software for your team.`,
     url: siteConfig.url,
     siteName: siteConfig.seo.openGraph.siteName,
     images: [
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   
   twitter: {
     card: siteConfig.seo.twitter.card,
-    title: `${siteConfig.name} - The Ultimate ${siteConfig.categoryName} Directory`,
+    title: `Best AI Real Estate Tools 2026 | AI CRE Tools`,
     description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect AI solution for commercial real estate.`,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
