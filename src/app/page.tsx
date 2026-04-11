@@ -203,14 +203,14 @@ export default async function Home({ searchParams }: HomeProps) {
         totalCategories={categoriesFromSheet.length}
       />
 
-      <section id="directory" className="border-b border-gray-200 py-16 md:py-20">
+      <section id="directory" className="border-b border-stone-200 py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-2xl font-bold text-gray-950">
                 All tools
               </h2>
-              <p className="mt-0.5 text-sm text-gray-400">{initialItems.length} AI tools</p>
+              <p className="mt-0.5 text-sm text-stone-400">{initialItems.length} AI tools</p>
             </div>
           </div>
 
@@ -224,16 +224,16 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-gray-50 py-16 md:py-20">
+      <section className="bg-stone-50/60 py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Browse by category</h2>
-              <p className="mt-0.5 text-sm text-gray-400">Organized by CRE workflow, not generic SaaS labels.</p>
+              <h2 className="text-2xl font-bold text-gray-950">Browse by category</h2>
+              <p className="mt-0.5 text-sm text-stone-400">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link
               href="/categories"
-              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:border-gray-300"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-brand-200 bg-white px-4 py-2 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-50"
             >
               View all categories
               <ArrowRight className="h-3.5 w-3.5" />
@@ -359,16 +359,16 @@ export default async function Home({ searchParams }: HomeProps) {
 
         <section id="directory" className="py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
-              <h2 className="text-2xl font-semibold text-gray-900">
+            <div className="rounded-xl border border-stone-200 bg-white p-10 text-center">
+              <h2 className="text-2xl font-bold text-gray-950">
                 {siteConfig.categoryName} directory update in progress
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-base text-gray-500">
+              <p className="mx-auto mt-3 max-w-xl text-base text-stone-500">
                 We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
               >
                 Explore Categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -376,18 +376,18 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         </section>
 
-        <section className="bg-gray-50 py-16 md:py-20">
+        <section className="bg-stone-50/60 py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
-              <h2 className="text-2xl font-semibold text-gray-900">
+            <div className="rounded-xl border border-stone-200 bg-white p-10 text-center">
+              <h2 className="text-2xl font-bold text-gray-950">
                 Browse by Category
               </h2>
-              <p className="mt-3 text-base text-gray-500">
+              <p className="mt-3 text-base text-stone-500">
                 Our directory is organized by specific use cases in commercial real estate.
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-5 py-2 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-50"
               >
                 View All Categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>

@@ -49,3 +49,4 @@ firestore-debug.log
 # nested duplicate folder (can be removed)
 ai-cre-tools-com/
 .gstack/
+.env*.local

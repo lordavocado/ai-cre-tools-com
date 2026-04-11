@@ -12,14 +12,14 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Link href={`/categories/${category.slug}`} className="group block h-full">
-      <div className="relative flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-gray-300 hover:shadow-md">
+      <div className="relative flex h-full flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-brand-200 hover:shadow-md hover:-translate-y-0.5">
         {/* Icon + count */}
         <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 text-gray-600">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
             {IconComponent ? <IconComponent className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
           </div>
           {category.itemCount !== undefined && (
-            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">
+            <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-500">
               {category.itemCount} tool{category.itemCount !== 1 ? "s" : ""}
             </span>
           )}
@@ -27,16 +27,16 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
         {/* Text */}
         <div className="flex-1 space-y-2">
-          <h3 className="font-semibold leading-tight text-gray-900 transition-colors group-hover:text-gray-600">
+          <h3 className="font-semibold leading-tight text-gray-900 transition-colors group-hover:text-brand-600">
             {category.name}
           </h3>
-          <p className="line-clamp-3 text-sm leading-6 text-gray-500">
+          <p className="line-clamp-3 text-sm leading-6 text-stone-500">
             {category.description}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="mt-5 flex items-center gap-1 text-sm font-medium text-gray-900">
+        <div className="mt-5 flex items-center gap-1 text-sm font-medium text-brand-600">
           <span>Explore</span>
           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
         </div>

@@ -109,7 +109,7 @@ export const viewport: Viewport = {
   userScalable: true,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: light)', color: '#f8f7f5' },
     { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
   ],
 };
@@ -166,17 +166,17 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{
           __html: `
             :root {
-              --background: 0 0% 100%;
-              --foreground: 0 0% 9%;
-              --primary: 0 0% 9%;
-              --primary-foreground: 0 0% 98%;
-              --secondary: 0 0% 96%;
-              --secondary-foreground: 0 0% 9%;
-              --muted: 0 0% 96%;
-              --muted-foreground: 0 0% 45%;
-              --border: 0 0% 90%;
-              --ring: 0 0% 9%;
-              --radius: 0.5rem;
+              --background: 30 14% 97%;
+              --foreground: 224 71% 4%;
+              --primary: 239 84% 67%;
+              --primary-foreground: 0 0% 100%;
+              --secondary: 30 10% 94%;
+              --secondary-foreground: 224 71% 4%;
+              --muted: 30 10% 94%;
+              --muted-foreground: 220 9% 46%;
+              --border: 30 10% 88%;
+              --ring: 239 84% 67%;
+              --radius: 0.625rem;
             }
             * { box-sizing: border-box; }
             html { height: 100%; scroll-behavior: smooth; }
@@ -185,8 +185,8 @@ export default function RootLayout({
               padding: 0; 
               font-family: 'Inter', system-ui, -apple-system, sans-serif; 
               line-height: 1.6; 
-              color: hsl(0 0% 9%); 
-              background-color: hsl(0 0% 100%);
+              color: hsl(224 71% 4%);
+              background-color: hsl(30 14% 97%);
               min-height: 100vh;
               font-feature-settings: "rlig" 1, "calt" 1;
               -webkit-font-smoothing: antialiased;

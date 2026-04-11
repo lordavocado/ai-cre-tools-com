@@ -100,14 +100,14 @@ function DirectorySearchContent({
       <div className="flex items-center gap-3">
         {/* Search input */}
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search tools, capabilities, workflows…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Search directory"
-            className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-10 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-400 focus:ring-4 focus:ring-gray-100 transition-all"
+            className="h-11 w-full rounded-lg border border-stone-200 bg-white pl-10 pr-10 text-sm text-gray-900 placeholder:text-stone-400 outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100 transition-all"
           />
           {searchTerm && (
             <button
@@ -123,10 +123,10 @@ function DirectorySearchContent({
         {/* Filters toggle */}
         <button
           onClick={() => setShowCategories((v) => !v)}
-          className={`inline-flex h-10 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition-all ${
+          className={`inline-flex h-11 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition-all ${
             showCategories || selectedCategories.length > 0
-              ? "border-gray-900 bg-gray-900 text-white"
-              : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+              ? "border-brand-600 bg-brand-600 text-white"
+              : "border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
           }`}
           aria-expanded={showCategories}
         >
@@ -140,7 +140,7 @@ function DirectorySearchContent({
         </button>
 
         {/* Order by (placeholder — matches OpenAlternative pattern) */}
-        <div className="hidden md:inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm text-gray-500">
+        <div className="hidden md:inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-4 text-sm text-stone-500">
           {isPending ? "Updating…" : `${totalItems} tools`}
         </div>
 
@@ -148,7 +148,7 @@ function DirectorySearchContent({
         {hasFilters && (
           <button
             onClick={clearAll}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-sm text-stone-500 hover:text-stone-900 transition-colors"
             aria-label="Clear all filters"
           >
             <X className="h-3.5 w-3.5" />
@@ -159,8 +159,8 @@ function DirectorySearchContent({
 
       {/* Category chips panel */}
       {showCategories && (
-        <div className="mt-3 rounded-xl border border-gray-200 bg-white p-4">
-          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-gray-400">
+        <div className="mt-3 rounded-xl border border-stone-200 bg-white p-4">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wider text-stone-400">
             Browse by category
           </p>
           <div className="flex flex-wrap gap-2">
@@ -174,8 +174,8 @@ function DirectorySearchContent({
                   aria-pressed={isActive}
                   className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-gray-900 text-white"
-                      : "border border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                      ? "bg-brand-600 text-white"
+                      : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
                   }`}
                 >
                   {category.name}
