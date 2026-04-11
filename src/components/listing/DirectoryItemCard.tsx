@@ -25,12 +25,12 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   const websiteLabel = getWebsiteLabel(item.website);
 
   return (
-    <div className="group flex h-full flex-col border-2 border-black bg-white transition-colors hover:bg-slate-50">
+    <div className="group flex h-full flex-col rounded-xl border border-gray-200 bg-white transition-all duration-200 hover:border-gray-300 hover:shadow-md">
       <div className="flex-1 p-5">
         {/* Header: icon + name + favorite */}
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border-2 border-black bg-white">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
               <SafeImage
                 src={item.imageUrl}
                 alt={item.name}
@@ -42,12 +42,12 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
             <div className="min-w-0">
               <Link
                 href={`/${item.slug}`}
-                className="font-serif text-lg font-bold leading-tight text-black decoration-2 underline-offset-2 hover:underline"
+                className="font-semibold leading-tight text-gray-900 hover:text-gray-600 transition-colors"
               >
                 {item.name}
               </Link>
               {websiteLabel && (
-                <p className="mt-0.5 truncate font-mono text-[10px] text-slate-400">
+                <p className="mt-0.5 truncate text-xs text-gray-400">
                   {websiteLabel}
                 </p>
               )}
@@ -56,13 +56,13 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           <FavoriteButton
             toolId={item.id}
             size="sm"
-            className="shrink-0 rounded-none border-2 border-black bg-white shadow-none hover:bg-black hover:text-white"
+            className="shrink-0 rounded-lg border border-gray-200 bg-white shadow-none hover:bg-gray-50 hover:border-gray-300"
           />
         </div>
 
         {/* Tagline */}
         {item.tagline && (
-          <p className="mb-3 line-clamp-2 text-sm leading-6 text-slate-600">
+          <p className="mb-3 line-clamp-2 text-sm leading-6 text-gray-600">
             {item.tagline}
           </p>
         )}
@@ -76,17 +76,17 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
 
         {/* Description */}
         {item.description && (
-          <p className="line-clamp-2 text-sm leading-6 text-slate-500">
+          <p className="line-clamp-2 text-sm leading-6 text-gray-400">
             {item.description}
           </p>
         )}
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between gap-3 border-t-2 border-black px-5 py-3">
+      <div className="flex items-center justify-between gap-3 border-t border-gray-100 px-5 py-3">
         <Link
           href={`/${item.slug}`}
-          className="text-sm font-bold text-black decoration-2 underline-offset-2 hover:underline"
+          className="text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors"
         >
           View profile →
         </Link>
@@ -95,7 +95,7 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
             href={item.website}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-black"
+            className="inline-flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-gray-700"
           >
             Visit site
             <ExternalLink className="h-3 w-3" aria-hidden="true" />

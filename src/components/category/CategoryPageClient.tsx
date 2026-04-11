@@ -86,30 +86,30 @@ export function CategoryPageClient({
       />
 
       {/* Hero */}
-      <section className="border-b border-slate-200 bg-white py-12 md:py-20">
+      <section className="border-b border-gray-200 bg-white py-12 md:py-16">
         <div className="container px-6">
           {/* Breadcrumb */}
-          <nav className="mb-8 flex items-center gap-1.5 text-sm text-slate-500">
-            <Link href="/" className="transition-colors hover:text-slate-900">Home</Link>
+          <nav className="mb-8 flex items-center gap-1.5 text-sm text-gray-400">
+            <Link href="/" className="transition-colors hover:text-gray-700">Home</Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <Link href="/categories" className="transition-colors hover:text-slate-900">Categories</Link>
+            <Link href="/categories" className="transition-colors hover:text-gray-700">Categories</Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="font-medium text-slate-900">{category.name}</span>
+            <span className="font-medium text-gray-700">{category.name}</span>
           </nav>
 
           <div className="mx-auto max-w-2xl text-center">
             {/* Category icon */}
             {IconComponent && (
-              <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
-                <IconComponent className="h-7 w-7" />
+              <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                <IconComponent className="h-6 w-6" />
               </div>
             )}
 
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               {category.name}
             </h1>
 
-            <p className="mt-4 text-lg leading-8 text-slate-600">
+            <p className="mt-4 text-base leading-7 text-gray-500">
               {category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`}
             </p>
 
@@ -156,17 +156,17 @@ export function CategoryPageClient({
       </section>
 
       {/* Tools grid — the main content */}
-      <section id="tools-section" className="border-b border-slate-200 py-16 md:py-24">
+      <section id="tools-section" className="border-b border-gray-200 py-14 md:py-20">
         <div className="container px-6">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+              <h2 className="text-xl font-semibold text-gray-900">
                 All {category.name} tools
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-0.5 text-sm text-gray-400">
                 {itemsInCategory.length > 0
-                  ? `${itemsInCategory.length} ${category.name.toLowerCase()} solutions compared`
-                  : `Discover ${category.name.toLowerCase()} solutions for commercial real estate`}
+                  ? `${itemsInCategory.length} solutions`
+                  : `Discover ${category.name.toLowerCase()} solutions`}
               </p>
             </div>
           </div>
@@ -174,28 +174,29 @@ export function CategoryPageClient({
           {itemsInCategory.length > 0 ? (
             <DirectoryGrid items={itemsInCategory} />
           ) : (
-            <div className="rounded-[28px] border border-slate-200/80 bg-white p-10 text-center shadow-[0_18px_70px_-55px_rgba(15,23,42,0.45)]">
+            <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
               {itemsLoadError ? (
-                <div className="space-y-3">
-                  <h3 className="text-xl font-semibold text-slate-950">Tools loading issue</h3>
-                  <p className="mx-auto max-w-md text-slate-600">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-900">Tools loading issue</h3>
+                  <p className="mx-auto max-w-md text-gray-500 text-sm">
                     We&apos;re temporarily unable to load the tools for this category. Please try again later.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <h3 className="text-xl font-semibold text-slate-950">No tools available yet</h3>
-                  <p className="mx-auto max-w-md text-slate-600">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-900">No tools available yet</h3>
+                  <p className="mx-auto max-w-md text-gray-500 text-sm">
                     We&apos;re constantly adding new {category.name.toLowerCase()} tools. Check back soon or explore related categories.
                   </p>
                 </div>
               )}
-              <Button asChild className="mt-8 rounded-xl bg-slate-950 hover:bg-slate-800">
-                <Link href="/categories">
-                  Browse all categories
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
+              <Link
+                href="/categories"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+              >
+                Browse all categories
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           )}
         </div>

@@ -1,9 +1,9 @@
 export function FeaturedOn() {
   return (
-    <section className="py-12 md:py-16 border-t bg-background/50">
-      <div className="container pl-6">
+    <section className="border-t border-gray-200 py-10 md:py-14">
+      <div className="container px-6">
         <div className="text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-8">Featured On</h2>
+          <p className="mb-6 text-xs font-semibold uppercase tracking-wider text-gray-400">Featured on</p>
           <div className="flex justify-center items-center gap-8 flex-wrap">
             <a 
               href="https://fazier.com/launches/www.aicretools.com" 

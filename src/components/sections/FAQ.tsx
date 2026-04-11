@@ -43,14 +43,14 @@ const faqData = [
 
 export function FAQ() {
   return (
-    <section className="py-16 md:py-24 bg-muted/30">
+    <section className="py-16 md:py-20 bg-gray-50 border-t border-gray-200">
       <div className="container px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="mb-10">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Frequently Asked Questions
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get answers to common questions about {siteConfig.categoryName.toLowerCase()} and how to choose the right solution for your needs.
+          <p className="text-sm text-gray-500 max-w-2xl">
+            Common questions about {siteConfig.categoryName.toLowerCase()} and how to choose the right solution for your needs.
           </p>
         </div>
         

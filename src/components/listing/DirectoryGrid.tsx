@@ -58,7 +58,7 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
 
       {items.length > itemsPerPage && (
         <section
-          className="space-y-4 border-2 border-black bg-white px-6 py-8"
+          className="space-y-4 rounded-xl border border-gray-200 bg-white px-6 py-8"
           aria-label="All tools in this listing"
         >
           <div className="space-y-1">

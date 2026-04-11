@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Building2, TrendingUp, Users, Award, Target, Globe, Mail } from 'lucide-react';
+import { ArrowRight, Building2, TrendingUp, Users, Target, Globe } from 'lucide-react';
 import { NewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
 export const metadata: Metadata = {
@@ -108,192 +105,120 @@ export default function AboutPage() {
       />
 
       <div className="min-h-screen bg-white">
-        <div className="container py-16 md:py-24 max-w-6xl mx-auto px-4">
-          {/* Hero Section */}
-          <div className="text-center mb-20">
-            <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-medium bg-blue-50 text-blue-700 border-blue-200">
-              About {siteConfig.name}
-            </Badge>
-            <h1 className="text-5xl md:text-6xl font-serif tracking-tight mb-6 text-gray-900">
-              Revolutionizing Commercial Real Estate Through AI
+        <div className="container py-16 md:py-20 max-w-4xl mx-auto px-6">
+
+          {/* Hero */}
+          <div className="mb-16">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">About {siteConfig.name}</p>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+              The CRE AI tools directory built for real workflows
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              We're on a mission to help commercial real estate professionals discover, 
-              compare, and implement the most effective AI tools for their business needs.
+            <p className="mt-4 text-base leading-7 text-gray-500 max-w-2xl">
+              We help commercial real estate professionals discover, compare, and implement the best AI tools —
+              organized by how CRE teams actually work, not generic SaaS categories.
             </p>
           </div>
 
           {/* Mission & Vision */}
-          <div className="grid md:grid-cols-2 gap-12 mb-20">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-blue-100 rounded-xl">
-                  <Target className="h-6 w-6 text-blue-600" />
-                </div>
-                <h2 className="text-2xl font-serif text-gray-900">Our Mission</h2>
+          <div className="grid md:grid-cols-2 gap-6 mb-14">
+            <div className="rounded-xl border border-gray-200 bg-white p-7">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+                <Target className="h-5 w-5" />
               </div>
-              <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                To democratize access to AI technology in commercial real estate by providing 
-                comprehensive, unbiased information about the best tools available.
-              </p>
-              <p className="text-gray-600 leading-relaxed">
-                We believe every real estate professional should have access to cutting-edge 
-                AI tools that can transform their business operations, increase efficiency, 
-                and drive better outcomes.
+              <h2 className="mb-3 text-lg font-semibold text-gray-900">Our Mission</h2>
+              <p className="text-sm leading-6 text-gray-500">
+                To democratize access to AI technology in commercial real estate by providing comprehensive,
+                unbiased information about the best tools available — so every professional can find the
+                right software faster.
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-purple-100 rounded-xl">
-                  <Globe className="h-6 w-6 text-purple-600" />
-                </div>
-                <h2 className="text-2xl font-serif text-gray-900">Our Vision</h2>
+            <div className="rounded-xl border border-gray-200 bg-white p-7">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+                <Globe className="h-5 w-5" />
               </div>
-              <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                To become the definitive resource for commercial real estate AI solutions, 
-                fostering innovation and growth across the industry.
-              </p>
-              <p className="text-gray-600 leading-relaxed">
-                We envision a future where AI seamlessly integrates into every aspect of 
-                commercial real estate, from property valuation to portfolio management, 
-                creating unprecedented opportunities for growth and efficiency.
+              <h2 className="mb-3 text-lg font-semibold text-gray-900">Our Vision</h2>
+              <p className="text-sm leading-6 text-gray-500">
+                To become the definitive resource for CRE AI tools, fostering innovation and
+                helping the industry make better technology decisions — from property valuation
+                to portfolio management.
               </p>
             </div>
           </div>
 
           {/* What We Do */}
-          <div className="mb-20">
-            <h2 className="text-4xl font-serif text-center mb-12 text-gray-900">What We Do</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Building2 className="h-10 w-10 text-blue-600" />
+          <div className="mb-14">
+            <h2 className="mb-8 text-xl font-semibold text-gray-900">What we do</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { icon: Building2, title: "Curate AI Tools", desc: "We research and catalog the most relevant AI tools specifically designed for CRE professionals." },
+                { icon: TrendingUp, title: "Provide Comparisons", desc: "Our organized categories help you understand the best use case for each tool in your workflow." },
+                { icon: Users, title: "Build Community", desc: "We foster a community of forward-thinking professionals who share insights on AI in real estate." },
+              ].map(({ icon: Icon, title, desc }) => (
+                <div key={title} className="rounded-xl border border-gray-200 bg-white p-6">
+                  <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <h3 className="mb-2 font-semibold text-gray-900">{title}</h3>
+                  <p className="text-sm leading-6 text-gray-500">{desc}</p>
                 </div>
-                <h3 className="text-xl font-serif mb-4 text-gray-900">Curate AI Tools</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  We research, evaluate, and catalog the most innovative AI tools specifically 
-                  designed for commercial real estate professionals.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <TrendingUp className="h-10 w-10 text-green-600" />
-                </div>
-                <h3 className="text-xl font-serif mb-4 text-gray-900">Provide Comparisons</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Our detailed comparisons help you understand the strengths, weaknesses, 
-                  and best use cases for each tool in your specific context.
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="bg-purple-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users className="h-10 w-10 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-serif mb-4 text-gray-900">Build Community</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  We foster a community of forward-thinking professionals who share insights 
-                  and experiences about AI implementation in real estate.
-                </p>
-              </div>
+              ))}
             </div>
           </div>
 
           {/* Why Trust Us */}
-          <div className="bg-gray-50 rounded-2xl p-8 mb-20">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-yellow-100 rounded-xl">
-                <Award className="h-6 w-6 text-yellow-600" />
-              </div>
-              <h2 className="text-3xl font-serif text-gray-900">Why Trust {siteConfig.name}?</h2>
-            </div>
-            <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-              Our commitment to transparency, accuracy, and unbiased information
-            </p>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h4 className="font-semibold mb-3 text-gray-900 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Independent Research
-                </h4>
-                <p className="text-gray-600 leading-relaxed">
-                  We maintain editorial independence and don't accept payment for tool placements. 
-                  Our recommendations are based solely on merit and functionality.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3 text-gray-900 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Industry Expertise
-                </h4>
-                <p className="text-gray-600 leading-relaxed">
-                  Our team combines deep knowledge of commercial real estate with technical 
-                  expertise in AI and software evaluation.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3 text-gray-900 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Continuous Updates
-                </h4>
-                <p className="text-gray-600 leading-relaxed">
-                  The AI landscape evolves rapidly. We continuously monitor new developments 
-                  and update our directory to ensure you have access to the latest tools.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-3 text-gray-900 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  User-Focused Approach
-                </h4>
-                <p className="text-gray-600 leading-relaxed">
-                  Every feature and recommendation is designed with the end user in mind, 
-                  helping you make informed decisions that drive real business results.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Newsletter Signup Section */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12 mb-20 text-center text-white">
-            <div className="max-w-2xl mx-auto">
-              <div className="flex justify-center mb-6">
-                <div className="bg-white/20 p-4 rounded-full">
-                  <Mail className="h-8 w-8 text-white" />
+          <div className="mb-14 rounded-xl border border-gray-200 bg-gray-50 p-8">
+            <h2 className="mb-6 text-xl font-semibold text-gray-900">Why trust {siteConfig.name}?</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { title: "Independent Research", desc: "We maintain editorial independence and don't accept payment for tool placements. Recommendations are based solely on merit." },
+                { title: "Industry Expertise", desc: "Deep knowledge of commercial real estate combined with technical expertise in AI and software evaluation." },
+                { title: "Continuous Updates", desc: "The AI landscape evolves rapidly. We continuously monitor new developments and keep the directory current." },
+                { title: "User-Focused", desc: "Every feature is designed with the end user in mind, helping you make informed decisions that drive real results." },
+              ].map(({ title, desc }) => (
+                <div key={title}>
+                  <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                    {title}
+                  </h4>
+                  <p className="text-sm leading-6 text-gray-500">{desc}</p>
                 </div>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-serif mb-4">
-                Stay Updated About New CRE AI Tools
-              </h2>
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                Get the latest insights, tool reviews, and industry updates delivered to your inbox.
-              </p>
-              <div className="flex justify-center">
-                <NewsletterForm source="about-page" />
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Call to Action */}
+          {/* Newsletter */}
+          <div className="mb-14 rounded-xl border border-gray-200 bg-gray-900 p-8 text-center text-white">
+            <h2 className="mb-2 text-xl font-semibold">Stay updated on new CRE AI tools</h2>
+            <p className="mb-6 text-sm text-gray-400">Weekly digest — no inbox clutter.</p>
+            <div className="mx-auto max-w-sm">
+              <NewsletterForm
+                source="about-page"
+                inputClassName="rounded-lg border border-white/20 bg-white/10 text-white placeholder:text-white/40 focus:ring-1 focus:ring-white focus-visible:outline-none"
+                buttonClassName="rounded-lg border border-white bg-white text-gray-900 font-semibold shadow-none transition-colors hover:bg-gray-100"
+              />
+            </div>
+          </div>
+
+          {/* CTA */}
           <div className="text-center">
-            <h2 className="text-3xl font-serif mb-6 text-gray-900">Ready to Transform Your Business?</h2>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Explore our comprehensive directory of {siteConfig.categoryName.toLowerCase()} 
-              and find the perfect solutions for your needs.
+            <h2 className="mb-3 text-xl font-semibold text-gray-900">Ready to explore?</h2>
+            <p className="mb-6 text-sm text-gray-500 max-w-md mx-auto">
+              Browse our directory of {siteConfig.categoryName.toLowerCase()} and find the right tools for your workflow.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-                <Link href="/categories">
-                  Explore Tools <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-3 text-lg">
-                <Link href="/#directory">
-                  Browse Directory
-                </Link>
-              </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/categories"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+              >
+                Explore Tools <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <Link
+                href="/#directory"
+                className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                Browse Directory
+              </Link>
             </div>
           </div>
         </div>
