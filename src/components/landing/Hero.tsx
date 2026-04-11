@@ -4,8 +4,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Search, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { NewsletterForm } from "@/components/forms/SimpleNewsletterForm";
+import Link from "next/link";
 import type { DirectoryItem } from "@/types";
 
 interface HeroProps {
@@ -33,61 +33,112 @@ export function Hero({ featuredItems: _featuredItems, totalItems, totalCategorie
     : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5 } };
 
   return (
-    <section className="border-b border-slate-200 bg-white py-16 md:py-24">
+    <section className="border-b-2 border-black bg-white py-14 md:py-20">
       <div className="container px-6">
-        <motion.div {...motionProps} className="max-w-[46rem]">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Curated for commercial real estate teams
-          </div>
-
-          <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-[0.95] tracking-tight text-slate-950 sm:text-5xl md:text-6xl">
-            Find the best commercial real estate AI tools.
-          </h1>
-
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-            Compare software for investors, developers, brokers, asset managers, and operators — one focused directory
-            built for real commercial workflows.
-          </p>
-
-          <form onSubmit={handleSearchSubmit} className="mt-8 max-w-3xl">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-stretch gap-3">
-              <label htmlFor="hero-search" className="sr-only">
-                Search commercial real estate AI tools
-              </label>
-              <div className="relative min-w-0">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-                <input
-                  id="hero-search"
-                  type="text"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search CRE AI tools..."
-                  className="h-12 w-full rounded-lg border border-slate-200 bg-slate-50 pl-12 pr-4 text-base text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-100"
-                />
-              </div>
-              <Button
-                type="submit"
-                className="h-12 shrink-0 rounded-lg bg-slate-950 px-5 text-base font-medium text-white shadow-sm hover:bg-slate-800 hover:text-white sm:px-6"
-              >
-                Search
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+        <motion.div
+          {...motionProps}
+          className="grid grid-cols-1 border-2 border-black md:grid-cols-5"
+        >
+          {/* Left column: badge, heading, subtext, search, nav */}
+          <div className="px-8 py-10 md:col-span-3 md:border-r-2 md:border-black">
+            <div className="mb-8 inline-flex items-center gap-2 border-2 border-black bg-[#9fcc89] px-3 py-1">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-black">
+                Curated for commercial real estate teams
+              </span>
             </div>
-          </form>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500">
-            <span>
-              <strong className="font-semibold text-slate-900">{totalItems}+</strong> AI tools
-            </span>
-            <span>
-              <strong className="font-semibold text-slate-900">{totalCategories}</strong> categories
-            </span>
+            <h1 className="font-serif text-5xl font-bold leading-[1.05] tracking-tight text-black md:text-6xl">
+              Find the best commercial real estate AI tools without the noise.
+            </h1>
+
+            <p className="mt-5 text-lg leading-7 text-slate-600">
+              Compare software for investors, developers, brokers, asset managers, and operators —
+              one focused directory built for real commercial workflows.
+            </p>
+
+            <form onSubmit={handleSearchSubmit} className="mt-8">
+              <div className="flex flex-col gap-0 sm:flex-row">
+                <label htmlFor="hero-search" className="sr-only">
+                  Search commercial real estate AI tools
+                </label>
+                <div className="relative flex-1">
+                  <Search
+                    className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="hero-search"
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search underwriting, due diligence, leasing tools…"
+                    className="h-12 w-full border-2 border-black bg-white pl-12 pr-4 text-base text-black outline-none placeholder:text-slate-400 focus:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-black sm:border-r-0"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="inline-flex h-12 items-center justify-center gap-2 border-2 border-black bg-black px-6 text-base font-bold text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-black"
+                >
+                  Search
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-6 flex items-center gap-4">
+              <Link
+                href="/categories"
+                className="inline-flex items-center gap-2 border-2 border-black bg-white px-4 py-2 text-sm font-bold text-black transition-colors hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+              >
+                Browse categories
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link
+                href="/submit-tool"
+                className="text-sm font-bold text-black underline decoration-2 underline-offset-2 hover:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
+              >
+                Submit a tool
+              </Link>
+            </div>
           </div>
 
-          <div className="mt-8 max-w-3xl border-t border-slate-200 pt-6">
-            <p className="text-sm font-medium text-slate-700 mb-3">Get weekly updates on new CRE AI tools</p>
-            <NewsletterForm source="hero" />
+          {/* Right column: stats + newsletter */}
+          <div className="flex flex-col border-t-2 border-black md:col-span-2 md:border-t-0">
+            <div className="grid grid-cols-2 border-b-2 border-black">
+              <div className="border-r-2 border-black p-6">
+                <div className="font-serif text-4xl font-bold leading-none text-black md:text-5xl">
+                  {totalItems}+
+                </div>
+                <div className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                  AI Tools
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="font-serif text-4xl font-bold leading-none text-black md:text-5xl">
+                  {totalCategories}
+                </div>
+                <div className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                  Categories
+                </div>
+              </div>
+              <div className="col-span-2 border-t-2 border-black p-4">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-black">
+                  Updated Weekly
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 p-6 md:p-8">
+              <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-widest text-black">
+                Weekly CRE AI Updates
+              </p>
+              <NewsletterForm
+                source="hero"
+                inputClassName="rounded-none border-2 border-black bg-white focus:ring-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-black"
+                buttonClassName="rounded-none border-2 border-black bg-black text-white shadow-none transition-colors hover:bg-white hover:text-black hover:shadow-none"
+              />
+            </div>
           </div>
         </motion.div>
       </div>

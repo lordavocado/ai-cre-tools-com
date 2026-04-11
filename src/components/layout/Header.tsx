@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { GlobalSearch } from './GlobalSearch';
@@ -7,87 +6,86 @@ import { siteConfig } from '@/config/site';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-[9998] w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-6 px-6">
+    <header className="sticky top-0 z-[9998] w-full border-b-2 border-black bg-white">
+      <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-6 px-6">
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold uppercase tracking-[0.2em] text-white">
+          <span className="inline-flex h-9 w-9 items-center justify-center border-2 border-black bg-black text-xs font-bold uppercase tracking-[0.2em] text-white">
             AI
           </span>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-slate-950">{siteConfig.name}</span>
-            <span className="hidden text-xs text-slate-500 sm:block">Commercial real estate software directory</span>
+            <span className="text-sm font-bold text-black">{siteConfig.name}</span>
+            <span className="hidden text-[10px] font-mono uppercase tracking-widest text-slate-400 sm:block">
+              CRE software directory
+            </span>
           </div>
         </Link>
 
-        <nav className="hidden md:flex md:items-center md:space-x-8">
+        {/* Desktop nav */}
+        <nav className="hidden md:flex md:items-center md:gap-8">
           {siteConfig.nav.items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-950"
+              className="text-sm font-medium text-slate-600 transition-colors hover:text-black"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
+        {/* Right: search + mobile menu */}
         <div className="flex items-center gap-3">
-          <div className="hidden md:flex flex-1 max-w-[320px] min-w-[220px]">
-            <GlobalSearch 
+          <div className="hidden md:flex flex-1 max-w-[300px] min-w-[200px]">
+            <GlobalSearch
               className="w-full"
               placeholder="Search tools, categories... (⌘K)"
             />
           </div>
 
-
-
+          {/* Mobile menu */}
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  className="rounded-xl border-slate-300 bg-white"
+                <button
+                  className="inline-flex h-9 w-9 items-center justify-center border-2 border-black bg-white transition-colors hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-black"
                   aria-label="Open navigation menu"
                   aria-haspopup="dialog"
                 >
-                  <Menu className="h-5 w-5" aria-hidden="true" />
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
+                  <Menu className="h-4 w-4" aria-hidden="true" />
+                </button>
               </SheetTrigger>
-              <SheetContent 
-                side="right" 
-                className="border-l border-slate-200 bg-white"
+              <SheetContent
+                side="right"
+                className="border-l-2 border-black bg-white"
               >
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                <nav className="grid gap-6 text-lg font-medium mt-8" aria-label="Mobile navigation">
-                  <Link href="/" className="mb-4 flex items-center gap-3">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold uppercase tracking-[0.2em] text-white">
+                <nav className="mt-8 grid gap-6 text-base font-medium" aria-label="Mobile navigation">
+                  <Link href="/" className="mb-2 flex items-center gap-3">
+                    <span className="inline-flex h-9 w-9 items-center justify-center border-2 border-black bg-black text-xs font-bold uppercase tracking-[0.2em] text-white">
                       AI
                     </span>
                     <div className="flex flex-col">
-                      <span className="text-base font-semibold text-slate-950">{siteConfig.name}</span>
-                      <span className="text-sm text-slate-500">Commercial real estate software directory</span>
+                      <span className="text-sm font-bold text-black">{siteConfig.name}</span>
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+                        CRE software directory
+                      </span>
                     </div>
                   </Link>
-                  
-                  <div className="mb-4">
-                    <GlobalSearch 
-                      className="w-full"
-                    />
+
+                  <div className="mb-2">
+                    <GlobalSearch className="w-full" />
                   </div>
-                  
+
                   {siteConfig.nav.items.map((item) => (
                     <Link
                       key={item.label}
                       href={item.href}
-                      className="text-slate-600 transition-colors hover:text-slate-950"
+                      className="text-slate-600 transition-colors hover:text-black"
                     >
                       {item.label}
                     </Link>
                   ))}
-
-
                 </nav>
               </SheetContent>
             </Sheet>
