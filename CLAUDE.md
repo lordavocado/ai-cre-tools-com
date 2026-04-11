@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## UI, Design & SEO Reference
+
+**Primary design reference: https://openalternative.co/**
+
+When making UI/design decisions or building new frontend features, visit and study openalternative.co first. It is the benchmark for:
+- Visual design quality, typography hierarchy, and spacing
+- Card layouts, hover states, and component polish
+- Color usage and indigo accent patterns
+- SEO page structure, metadata patterns, and content organization
+- Directory/listing page conventions
+
+When in doubt about a design decision, check what openalternative.co does.
+
 ## Common Development Commands
 
 ```bash
