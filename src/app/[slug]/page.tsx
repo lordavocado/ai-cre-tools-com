@@ -5,7 +5,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, Twitter, Linkedin, Facebook } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
-import { CategoryChipsWithIcons } from "@/components/ui/category-chips-with-icons";
 import { SafeImage } from "@/components/ui/safe-image";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
@@ -255,22 +254,22 @@ export default async function DirectoryItemPage({
       )}
 
       {/* Breadcrumb */}
-      <div className="border-b border-stone-200 bg-white">
+      <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-stone-400">
-            <Link href="/" className="transition-colors hover:text-stone-700">Home</Link>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#737373]">
+            <Link href="/" className="transition-colors hover:text-[#1f1f1f]">Home</Link>
             <span>/</span>
-            <span className="text-stone-700">{item.name}</span>
+            <span className="text-[#1f1f1f]">{item.name}</span>
           </nav>
         </div>
       </div>
 
       {/* Tool header */}
-      <div className="border-b border-stone-200 bg-white">
+      <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-10">
           <div className="flex flex-col gap-6 md:flex-row md:items-start">
             {/* Logo */}
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-stone-100 bg-stone-50">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e0e0e0] bg-[#fafafa]">
               <SafeImage
                 src={item.imageUrl}
                 website={item.website}
@@ -279,57 +278,44 @@ export default async function DirectoryItemPage({
               />
             </div>
 
-            {/* Name, tagline, categories, CTAs */}
+            {/* Name, tagline, categories, features */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold leading-tight text-gray-950 md:text-4xl">
+              <h1 className="text-3xl font-bold leading-tight text-[#1f1f1f] md:text-4xl">
                 {item.name}
               </h1>
               {item.tagline && (
-                <p className="mt-2 text-base leading-7 text-stone-500">{item.tagline}</p>
+                <p className="mt-2 text-base leading-7 text-[#737373]">{item.tagline}</p>
               )}
-              {item.category && (
-                <div className="mt-4">
-                  <CategoryChipsWithIcons categories={item.category} variant="outline" />
+              {item.features && item.features.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <span className="text-sm text-[#737373]">Used for:</span>
+                  {item.features.slice(0, 4).map((f, i) => (
+                    <span key={i} className="rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649]">
+                      {f.name}
+                    </span>
+                  ))}
                 </div>
               )}
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                {item.website && (
-                  <Link
-                    href={item.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
-                  >
-                    Visit Website
-                    <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                  </Link>
-                )}
-                <FavoriteButton
-                  toolId={item.id}
-                  variant="with-text"
-                  className="rounded-full border border-stone-200 bg-white shadow-none hover:bg-stone-50 hover:border-stone-300"
-                />
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Body: main content + sidebar */}
+      {/* Body: two-column layout — main content + sticky sidebar */}
       <div className="container px-6 py-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8">
 
-          {/* Left: content */}
-          <div className="space-y-6 md:col-span-2">
+          {/* Left column: about + features + pros/cons + tags + related tools */}
+          <div className="space-y-6">
 
             {/* About */}
             {item.description && (
-              <div className="rounded-xl border border-stone-200 bg-white p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-stone-400">
+              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">
                   About {item.name}
                 </p>
                 <div
-                  className="prose prose-slate max-w-none leading-relaxed text-stone-700"
+                  className="prose prose-slate max-w-none leading-relaxed text-[#1f1f1f]"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
               </div>
@@ -337,16 +323,16 @@ export default async function DirectoryItemPage({
 
             {/* Key Features */}
             {item.features && item.features.length > 0 && (
-              <div className="rounded-xl border border-stone-200 bg-white p-8">
-                <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-stone-400">
+              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
+                <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
                   Key Features
                 </p>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {item.features.map((feature, index) => (
-                    <div key={index} className="border-l-2 border-brand-200 pl-4">
-                      <p className="text-sm font-semibold text-gray-950">{feature.name}</p>
+                    <div key={index} className="border-l-2 border-[#b9e5b9] pl-4">
+                      <p className="text-sm font-semibold text-[#1f1f1f]">{feature.name}</p>
                       {feature.description && (
-                        <p className="mt-1 text-sm leading-6 text-stone-500">
+                        <p className="mt-1 text-sm leading-6 text-[#737373]">
                           {feature.description}
                         </p>
                       )}
@@ -359,8 +345,8 @@ export default async function DirectoryItemPage({
             {/* Pros & Cons */}
             {((item.pros && item.pros.length > 0) ||
               (item.cons && item.cons.length > 0)) && (
-              <div className="rounded-xl border border-stone-200 bg-white p-8">
-                <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-stone-400">
+              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
+                <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
                   Pros & Cons
                 </p>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -368,7 +354,7 @@ export default async function DirectoryItemPage({
                     <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-green-600">Pros</p>
                     <ul className="space-y-2">
                       {item.pros?.map((pro: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-stone-700">
+                        <li key={i} className="flex items-start gap-2 text-sm text-[#1f1f1f]">
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" aria-hidden="true" />
                           {pro}
                         </li>
@@ -376,11 +362,11 @@ export default async function DirectoryItemPage({
                     </ul>
                   </div>
                   <div>
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-400">Cons</p>
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Cons</p>
                     <ul className="space-y-2">
                       {item.cons?.map((con: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-stone-700">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-stone-300" aria-hidden="true" />
+                        <li key={i} className="flex items-start gap-2 text-sm text-[#1f1f1f]">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#e0e0e0]" aria-hidden="true" />
                           {con}
                         </li>
                       ))}
@@ -392,13 +378,13 @@ export default async function DirectoryItemPage({
 
             {/* Tags */}
             {item.tags && item.tags.length > 0 && (
-              <div className="rounded-xl border border-stone-200 bg-white p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-stone-400">Tags</p>
+              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">Tags</p>
                 <div className="flex flex-wrap gap-2">
                   {item.tags.map((tag, i) => (
                     <span
                       key={i}
-                      className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-600"
+                      className="rounded-full bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#737373]"
                     >
                       {typeof tag === "string" ? tag.trim() : tag}
                     </span>
@@ -406,41 +392,87 @@ export default async function DirectoryItemPage({
                 </div>
               </div>
             )}
+
+            {/* Related tools (inside left column on lg) */}
+            {relatedItems.length > 0 && (
+              <div>
+                <div className="border-t border-[#e0e0e0] pt-8 mb-6">
+                  <h2 className="text-xl font-bold text-[#1f1f1f]">Similar Tools</h2>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {relatedItems.map((relatedItem) => (
+                    <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right: quick facts sidebar */}
-          <div className="space-y-4">
+          {/* Right column: sticky sidebar */}
+          <div className="mt-6 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start space-y-4">
+
+            {/* CTA + category chip */}
+            <div className="rounded-xl border border-[#e0e0e0] bg-white p-6 space-y-4">
+              {item.website && (
+                <Link
+                  href={item.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-[6px] bg-[#629649] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4a7238]"
+                >
+                  Visit Website
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              )}
+              <FavoriteButton
+                toolId={item.id}
+                variant="with-text"
+                className="w-full justify-center rounded-[6px] border border-[#e0e0e0] bg-white shadow-none hover:bg-[#fafafa]"
+              />
+              {primaryCategory && (
+                <div className="pt-1">
+                  <Link
+                    href={`/categories/${primaryCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="inline-flex items-center rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649] hover:bg-[#e0f5e0] transition-colors"
+                  >
+                    {primaryCategory}
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Facts */}
             {hasQuickFacts && (
-              <div className="rounded-xl border border-stone-200 bg-white p-6">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-stone-400">Quick Facts</p>
-                <dl className="divide-y divide-stone-100">
+              <div className="rounded-xl border border-[#e0e0e0] bg-white p-6">
+                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">Quick Facts</p>
+                <dl className="divide-y divide-[#e0e0e0]">
                   {item.pricing && (
                     <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-stone-500">Pricing</dt>
-                      <dd className="text-right text-sm font-semibold text-gray-950">{item.pricing}</dd>
+                      <dt className="text-xs font-medium text-[#737373]">Pricing</dt>
+                      <dd className="text-right text-sm font-semibold text-[#1f1f1f]">{item.pricing}</dd>
                     </div>
                   )}
                   {item.foundedYear && (
                     <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-stone-500">Founded</dt>
-                      <dd className="text-sm font-semibold text-gray-950">{item.foundedYear}</dd>
+                      <dt className="text-xs font-medium text-[#737373]">Founded</dt>
+                      <dd className="text-sm font-semibold text-[#1f1f1f]">{item.foundedYear}</dd>
                     </div>
                   )}
                   {(item.country || item.city) && (
                     <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-stone-500">Location</dt>
-                      <dd className="text-right text-sm font-semibold text-gray-950">
+                      <dt className="text-xs font-medium text-[#737373]">Location</dt>
+                      <dd className="text-right text-sm font-semibold text-[#1f1f1f]">
                         {[item.city, item.country].filter(Boolean).join(", ")}
                       </dd>
                     </div>
                   )}
                   {item.rating && (
                     <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-stone-500">Rating</dt>
-                      <dd className="text-sm font-semibold text-gray-950">
+                      <dt className="text-xs font-medium text-[#737373]">Rating</dt>
+                      <dd className="text-sm font-semibold text-[#1f1f1f]">
                         {item.rating.toFixed(1)}/5
                         {item.reviewCount ? (
-                          <span className="ml-1 font-normal text-stone-400">({item.reviewCount})</span>
+                          <span className="ml-1 font-normal text-[#737373]">({item.reviewCount})</span>
                         ) : null}
                       </dd>
                     </div>
@@ -449,9 +481,10 @@ export default async function DirectoryItemPage({
               </div>
             )}
 
+            {/* Socials */}
             {hasSocials && (
-              <div className="rounded-xl border border-stone-200 bg-white p-6">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-400">Follow</p>
+              <div className="rounded-xl border border-[#e0e0e0] bg-white p-6">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Follow</p>
                 <div className="flex gap-2">
                   {item.socials?.twitter && (
                     <Link
@@ -459,7 +492,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Twitter"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 text-stone-500 transition-colors hover:bg-stone-50 hover:text-brand-600"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#629649]"
                     >
                       <Twitter size={14} aria-hidden="true" />
                     </Link>
@@ -470,7 +503,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="LinkedIn"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 text-stone-500 transition-colors hover:bg-stone-50 hover:text-brand-600"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#629649]"
                     >
                       <Linkedin size={14} aria-hidden="true" />
                     </Link>
@@ -481,7 +514,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 text-stone-500 transition-colors hover:bg-stone-50 hover:text-brand-600"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#629649]"
                     >
                       <Facebook size={14} aria-hidden="true" />
                     </Link>
@@ -492,20 +525,6 @@ export default async function DirectoryItemPage({
           </div>
         </div>
       </div>
-
-      {/* Related tools */}
-      {relatedItems.length > 0 && (
-        <div className="container px-6 pb-16">
-          <div className="border-t border-stone-200 pt-8 mb-6">
-            <h2 className="text-xl font-bold text-gray-950">Similar Tools</h2>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {relatedItems.map((relatedItem) => (
-              <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }

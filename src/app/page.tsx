@@ -2,7 +2,6 @@ import type { Category } from "@/types";
 import { Hero } from "@/components/landing/Hero";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
-import { CategoryCard } from "@/components/category/CategoryCard";
 import { IntersectionLoader } from "@/components/performance/intersection-loader";
 import { getDirectoryItems, getCategories } from "@/lib/supabase";
 import Link from "next/link";
@@ -203,14 +202,14 @@ export default async function Home({ searchParams }: HomeProps) {
         categories={searchCategories}
       />
 
-      <section id="directory" className="border-b border-stone-200 py-16 md:py-20">
+      <section id="directory" className="border-b border-[#e0e0e0] py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-display text-2xl font-normal text-gray-950">
+              <h2 className="font-display text-2xl font-normal text-[#1f1f1f]">
                 All tools
               </h2>
-              <p className="mt-0.5 text-sm text-stone-400">{initialItems.length} AI tools</p>
+              <p className="mt-0.5 text-sm text-[#737373]">{initialItems.length} AI tools</p>
             </div>
           </div>
 
@@ -224,25 +223,31 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-stone-50/60 py-16 md:py-20">
+      <section className="bg-[#fafafa] py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-display text-2xl font-normal text-gray-950">Browse by category</h2>
-              <p className="mt-0.5 text-sm text-stone-400">Organized by CRE workflow, not generic SaaS labels.</p>
+              <h2 className="font-display text-2xl font-normal text-[#1f1f1f]">Browse by category</h2>
+              <p className="mt-0.5 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link
               href="/categories"
-              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-brand-200 bg-white px-4 py-2 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-50"
+              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#629649] transition-colors hover:bg-[#f0f9f0] hover:text-[#4a7238]"
             >
               View all categories
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
           <IntersectionLoader className="min-h-[200px]">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-              {categoriesFromSheet.map((category) => (
-                <CategoryCard key={category.id} category={category} />
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3">
+              {categoriesFromSheet.map((cat) => (
+                <Link key={cat.slug} href={`/categories/${cat.slug}`}
+                  className="text-sm text-[#1f1f1f] hover:text-[#629649] font-medium transition-colors duration-100 py-1">
+                  {cat.name}
+                  {cat.itemCount !== undefined && (
+                    <span className="ml-1.5 text-[#737373]">({cat.itemCount})</span>
+                  )}
+                </Link>
               ))}
             </div>
           </IntersectionLoader>
@@ -359,16 +364,16 @@ export default async function Home({ searchParams }: HomeProps) {
 
         <section id="directory" className="py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-xl border border-stone-200 bg-white p-10 text-center">
-              <h2 className="text-2xl font-bold text-gray-950">
+            <div className="rounded-xl border border-[#e0e0e0] bg-white p-10 text-center">
+              <h2 className="text-2xl font-bold text-[#1f1f1f]">
                 {siteConfig.categoryName} directory update in progress
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-base text-stone-500">
+              <p className="mx-auto mt-3 max-w-xl text-base text-[#737373]">
                 We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-[#629649] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4a7238]"
               >
                 Explore Categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -376,18 +381,18 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         </section>
 
-        <section className="bg-stone-50/60 py-16 md:py-20">
+        <section className="bg-[#fafafa] py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-xl border border-stone-200 bg-white p-10 text-center">
-              <h2 className="text-2xl font-bold text-gray-950">
+            <div className="rounded-xl border border-[#e0e0e0] bg-white p-10 text-center">
+              <h2 className="text-2xl font-bold text-[#1f1f1f]">
                 Browse by Category
               </h2>
-              <p className="mt-3 text-base text-stone-500">
+              <p className="mt-3 text-base text-[#737373]">
                 Our directory is organized by specific use cases in commercial real estate.
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-5 py-2 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-50"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-5 py-2 text-sm font-medium text-[#629649] transition-colors hover:bg-[#f0f9f0] hover:text-[#4a7238]"
               >
                 View All Categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>
