@@ -66,9 +66,9 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
       {/* Use-case tags — sourced from features, max 2 shown */}
       {item.features && item.features.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {item.features.slice(0, 2).map((feature, i) => (
+          {item.features.slice(0, 2).map((feature) => (
             <span
-              key={i}
+              key={feature.name}
               className="rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649]"
             >
               {feature.name}

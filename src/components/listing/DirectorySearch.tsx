@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition, useCallback } from "react";
+import type React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -9,7 +10,7 @@ export interface DirectorySearchCategory {
   id: string;
   slug: string;
   name: string;
-  icon?: any;
+  icon?: string | React.ComponentType<{ className?: string }>;
 }
 
 interface DirectorySearchProps {
@@ -110,7 +111,7 @@ function DirectorySearchContent({
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#737373] transition-colors"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />

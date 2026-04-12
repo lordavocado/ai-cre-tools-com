@@ -7,6 +7,21 @@ import { cn } from "@/lib/utils";
 import type { DirectoryItem, Category } from "@/types";
 import { WebsiteFavicon } from "@/components/ui/website-favicon";
 
+/** Minimal shape required for relevance scoring across tools, categories, and blog posts */
+interface SearchableItem {
+  id?: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  one_liner?: string;
+  slug?: string;
+  tagline?: string;
+  excerpt?: string;
+  category?: string;
+  tags?: string[];
+  [key: string]: unknown;
+}
+
 /** Shape of a single search result */
 interface SearchResult {
   type: 'tool' | 'category' | 'guide';
@@ -157,7 +172,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         fetch(`/api/blog?search=${encodeURIComponent(searchTerm)}`)
       ]);
 
-      const [tools, categories, blogPosts]: [DirectoryItem[], Category[], any[]] = await Promise.all([
+      const [tools, categories, blogPosts]: [DirectoryItem[], Category[], SearchableItem[]] = await Promise.all([
         toolsResponse.json(),
         categoriesResponse.json(),
         blogResponse.json()
@@ -211,10 +226,10 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         if (relevanceScore > 0) {
           searchResults.push({
             type: 'guide',
-            id: post.id,
-            title: post.title,
-            description: post.excerpt,
-            url: `/blog/${post.slug}`,
+            id: post.id ?? '',
+            title: post.title ?? '',
+            description: post.excerpt ?? '',
+            url: `/blog/${post.slug ?? ''}`,
             category: post.category,
             relevanceScore
           });
@@ -226,7 +241,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         .slice(0, 8);
 
       setResults(sortedResults);
-      setIsOpen(sortedResults.length > 0);
+      setIsOpen(true);
       setSelectedIndex(-1);
 
       // Persist successful searches
@@ -235,10 +250,8 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         setRecentSearches(updatedRecent);
         localStorage.setItem('recent-searches', JSON.stringify(updatedRecent));
       }
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch {
       setResults([]);
-      setIsOpen(false);
     } finally {
       setIsLoading(false);
     }
@@ -251,23 +264,24 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
    * @param searchTerm - The user's query
    * @returns Numeric relevance score (0 = no match)
    */
-  const calculateRelevanceScore = (item: any, searchTerm: string): number => {
+  const calculateRelevanceScore = (item: DirectoryItem | Category | SearchableItem, searchTerm: string): number => {
+    const i = item as SearchableItem;
     const lowerSearchTerm = searchTerm.toLowerCase();
     const searchTerms = lowerSearchTerm.split(/\s+/).filter(term => term.length > 0);
 
     let score = 0;
 
-    if (item.name?.toLowerCase().includes(lowerSearchTerm)) score += 100;
-    if (item.title?.toLowerCase().includes(lowerSearchTerm)) score += 100;
+    if (i.name?.toLowerCase().includes(lowerSearchTerm)) score += 100;
+    if (i.title?.toLowerCase().includes(lowerSearchTerm)) score += 100;
 
     searchTerms.forEach(term => {
-      if (item.name?.toLowerCase().includes(term)) score += 50;
-      if (item.title?.toLowerCase().includes(term)) score += 50;
-      if (item.tagline?.toLowerCase().includes(term)) score += 30;
-      if (item.excerpt?.toLowerCase().includes(term)) score += 30;
-      if (item.description?.toLowerCase().includes(term)) score += 20;
-      if (item.category?.toLowerCase().includes(term)) score += 40;
-      if (item.tags?.some((tag: string) => tag.toLowerCase().includes(term))) score += 25;
+      if (i.name?.toLowerCase().includes(term)) score += 50;
+      if (i.title?.toLowerCase().includes(term)) score += 50;
+      if (i.tagline?.toLowerCase().includes(term)) score += 30;
+      if (i.excerpt?.toLowerCase().includes(term)) score += 30;
+      if (i.description?.toLowerCase().includes(term)) score += 20;
+      if (i.category?.toLowerCase().includes(term)) score += 40;
+      if (i.tags?.some((tag: string) => tag.toLowerCase().includes(term))) score += 25;
     });
 
     return score;
@@ -398,7 +412,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
           {/* Search container */}
           <div
             ref={overlayRef}
-            className="relative max-w-2xl w-full border border-[#e0e0e0] rounded-[8px] bg-white shadow-lg overflow-hidden"
+            className="relative max-w-2xl w-full border-[1.25px] border-[#e0e0e0] rounded-[8px] bg-white shadow-lg overflow-hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Search"
@@ -451,6 +465,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
                   <button
                     className="text-xs text-[#737373] hover:text-[#1f1f1f] transition-colors"
                     onClick={clearRecentSearches}
+                    aria-label="Clear recent searches"
                   >
                     Clear
                   </button>
