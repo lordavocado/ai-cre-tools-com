@@ -1,72 +1,72 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: 30 14% 97%;
-  --color-foreground: 224 71% 4%;
+  --color-background: 0 0% 100%;
+  --color-foreground: 0 0% 12%;
 
-  --color-card: 0 0% 100%;
-  --color-card-foreground: 224 71% 4%;
+  --color-card: 0 0% 98%;
+  --color-card-foreground: 0 0% 12%;
 
   --color-popover: 0 0% 100%;
-  --color-popover-foreground: 224 71% 4%;
+  --color-popover-foreground: 0 0% 12%;
 
-  --color-primary: 239 84% 67%;
+  --color-primary: 100 34% 43%;
   --color-primary-foreground: 0 0% 100%;
 
-  --color-secondary: 30 10% 94%;
-  --color-secondary-foreground: 224 71% 4%;
+  --color-secondary: 0 0% 98%;
+  --color-secondary-foreground: 0 0% 12%;
 
-  --color-muted: 30 10% 94%;
-  --color-muted-foreground: 220 9% 46%;
+  --color-muted: 0 0% 98%;
+  --color-muted-foreground: 0 0% 45%;
 
-  --color-accent: 239 100% 97%;
-  --color-accent-foreground: 239 84% 40%;
+  --color-accent: 120 53% 96%;
+  --color-accent-foreground: 100 34% 43%;
 
   --color-destructive: 0 84% 60%;
-  --color-destructive-foreground: 0 0% 98%;
+  --color-destructive-foreground: 0 0% 100%;
 
-  --color-border: 30 10% 88%;
-  --color-input: 30 10% 88%;
+  --color-border: 0 0% 88%;
+  --color-input: 0 0% 88%;
 
-  --color-ring: 239 84% 67%;
+  --color-ring: 100 34% 43%;
 
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 }
 
 @layer base {
   :root {
-    --background: 30 14% 97%;
-    --foreground: 224 71% 4%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
+    --popover-foreground: 0 0% 12%;
 
-    --primary: 239 84% 67%;
+    --primary: 100 34% 43%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 10% 94%;
-    --secondary-foreground: 224 71% 4%;
+    --secondary: 0 0% 98%;
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 30 10% 94%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 0 0% 98%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 239 100% 97%;
-    --accent-foreground: 239 84% 40%;
+    --accent: 120 53% 96%;
+    --accent-foreground: 100 34% 43%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 30 10% 88%;
-    --input: 30 10% 88%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
 
-    --ring: 239 84% 67%;
+    --ring: 100 34% 43%;
 
-    --radius: 0.625rem;
+    --radius: 0.5rem;
   }
-  
+
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -75,50 +75,50 @@
   }
 
   .dark {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
+    --background: 114 27% 5%;
+    --foreground: 0 0% 95%;
 
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
+    --card: 114 20% 8%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 114 20% 8%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 100 27% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 114 15% 13%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
+    --muted: 114 15% 13%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 114 20% 15%;
+    --accent-foreground: 100 27% 65%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
+    --border: 114 15% 18%;
+    --input: 114 15% 18%;
 
-    --ring: 0 0% 83%;
+    --ring: 100 27% 55%;
 
     /* Sidebar specific colors - dark theme */
-    --sidebar-background: 0 0% 8%; /* Darker Gray */
-    --sidebar-foreground: 0 0% 100%; /* White */
-    --sidebar-primary: 0 0% 100%; /* White */
-    --sidebar-primary-foreground: 0 0% 0%; /* Black */
-    --sidebar-accent: 0 0% 70%; /* Lighter Gray */
-    --sidebar-accent-foreground: 0 0% 0%; /* Black */
-    --sidebar-border: 0 0% 15%; /* Dark Gray */
-    --sidebar-ring: 0 0% 100%; /* White */
-    
-    --chart-1: 0 0% 80%;
-    --chart-2: 0 0% 60%;
-    --chart-3: 0 0% 40%;
-    --chart-4: 0 0% 70%;
-    --chart-5: 0 0% 50%;
+    --sidebar-background: 114 20% 7%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 100 27% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 114 15% 13%;
+    --sidebar-accent-foreground: 100 27% 65%;
+    --sidebar-border: 114 15% 18%;
+    --sidebar-ring: 100 27% 55%;
+
+    --chart-1: 100 27% 65%;
+    --chart-2: 100 27% 50%;
+    --chart-3: 100 20% 35%;
+    --chart-4: 120 30% 60%;
+    --chart-5: 120 20% 45%;
   }
 }
 
@@ -138,18 +138,18 @@
   .search-input-enhanced {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .search-input-enhanced:focus {
     transform: translateY(-1px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border-color: rgba(99, 102, 241, 0.5) !important;
+    border-color: rgba(98, 150, 73, 0.5) !important;
   }
-  
+
   .search-dropdown-enhanced {
     animation: search-dropdown-appear 0.2s ease-out;
     backdrop-filter: blur(8px);
   }
-  
+
   @keyframes search-dropdown-appear {
     from {
       opacity: 0;
@@ -160,16 +160,16 @@
       transform: translateY(0) scale(1);
     }
   }
-  
+
   /* Search result hover animations */
   .search-result-item {
     transition: all 0.2s ease-in-out;
   }
-  
+
   .search-result-item:hover {
     transform: translateX(4px);
   }
-  
+
   /* Z-index for search dropdown */
   .z-search-dropdown {
     z-index: 9999;
@@ -311,8 +311,6 @@
   .token.entity {
     cursor: help;
   }
-
-  /* Component-specific optimizations */
 }
 
 /* Global Search Z-Index Utilities */
@@ -328,22 +326,37 @@
 .search-input-enhanced {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(229, 231, 235, 0.8) !important;
+  border: 1px solid rgba(224, 224, 224, 0.8) !important;
   transition: all 0.2s ease-in-out !important;
 }
 
 .search-input-enhanced:focus {
   background: rgba(255, 255, 255, 0.95) !important;
-  border-color: rgba(156, 163, 175, 0.8) !important;
-  box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06) !important;
+  border-color: rgba(98, 150, 73, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(98, 150, 73, 0.08) !important;
 }
 
 /* Search dropdown enhancements */
 .search-dropdown-enhanced {
   background: rgba(255, 255, 255, 0.98) !important;
   backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(229, 231, 235, 0.8) !important;
+  border: 1px solid rgba(224, 224, 224, 0.8) !important;
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.08),
     0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Hero architectural grid texture */
+.hero-grid-texture {
+  background-image:
+    linear-gradient(#e8e8e8 1px, transparent 1px),
+    linear-gradient(90deg, #e8e8e8 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.08;
+}
+
+/* Nav fade mask */
+.nav-fade-mask {
+  background: linear-gradient(to bottom, #ffffff, transparent);
+  pointer-events: none;
 }
