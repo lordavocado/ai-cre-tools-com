@@ -2,17 +2,21 @@
 
 import type { DirectoryItem } from "@/types";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-import { CategoryChips } from "@/components/ui/category-chips";
 import { SafeImage } from "@/components/ui/safe-image";
-import { FavoriteButton } from "@/components/ui/favorite-button";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
+/** Props for DirectoryItemCard */
 interface DirectoryItemCardProps {
+  /** The directory item to display */
   item: DirectoryItem;
 }
 
-function getWebsiteLabel(website: string | undefined) {
+/**
+ * Extracts a clean domain label from a website URL for display.
+ * @param website - The full website URL
+ * @returns The hostname without www prefix, or null if unavailable
+ */
+function getDomainLabel(website: string | undefined): string | null {
   if (!website) return null;
   try {
     return new URL(website).hostname.replace(/^www\./, "");
@@ -21,91 +25,70 @@ function getWebsiteLabel(website: string | undefined) {
   }
 }
 
+/**
+ * Inner card content — separated to enable ErrorBoundary wrapping.
+ * @component
+ */
 function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
-  const websiteLabel = getWebsiteLabel(item.website);
+  const domainLabel = getDomainLabel(item.website);
 
   return (
-    <div className="group flex h-full flex-col rounded-xl border border-stone-200 bg-white shadow-sm transition-all duration-200 hover:border-brand-200 hover:shadow-md hover:-translate-y-0.5">
-      <div className="flex-1 p-4">
-        {/* Header: icon + name + favorite */}
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-stone-100 bg-stone-50">
-              <SafeImage
-                src={item.imageUrl}
-                alt={item.name}
-                website={item.website}
-                className="h-8 w-8 object-contain"
-                fallbackText={item.name.charAt(0)}
-              />
-            </div>
-            <div className="min-w-0">
-              <Link
-                href={`/${item.slug}`}
-                className="text-sm font-semibold leading-tight text-gray-950 hover:text-brand-600 transition-colors"
-              >
-                {item.name}
-              </Link>
-              {websiteLabel && (
-                <p className="mt-0.5 truncate text-xs text-stone-400">
-                  {websiteLabel}
-                </p>
-              )}
-            </div>
-          </div>
-          <FavoriteButton
-            toolId={item.id}
-            size="sm"
-            className="shrink-0 rounded-lg border border-stone-200 bg-white shadow-none hover:bg-stone-50 hover:border-stone-300"
+    <Link
+      href={`/${item.slug}`}
+      className="block bg-[#fafafa] border-[1.25px] border-[#e0e0e0] rounded-[8px] p-5 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)]"
+    >
+      {/* Header row: favicon + name + domain */}
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[8px]">
+          <SafeImage
+            src={item.imageUrl}
+            alt={item.name}
+            website={item.website}
+            className="h-full w-full object-contain"
+            fallbackText={item.name.charAt(0)}
           />
         </div>
-
-        {/* Tagline */}
-        {item.tagline && (
-          <p className="mb-2.5 line-clamp-1 text-sm leading-5 text-stone-600">
-            {item.tagline}
-          </p>
-        )}
-
-        {/* Categories */}
-        {item.category && (
-          <div className="mb-2.5">
-            <CategoryChips categories={item.category} size="sm" showLinks={true} />
-          </div>
-        )}
-
-        {/* Description */}
-        {item.description && (
-          <p className="line-clamp-2 text-xs leading-5 text-stone-400">
-            {item.description}
-          </p>
-        )}
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-[#1f1f1f]">{item.name}</p>
+          {domainLabel && (
+            <p className="text-xs text-[#737373] truncate">{domainLabel}</p>
+          )}
+        </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between gap-3 border-t border-stone-100 px-4 py-2.5">
-        <Link
-          href={`/${item.slug}`}
-          className="text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors"
-        >
-          View profile →
-        </Link>
-        {item.website ? (
-          <Link
-            href={item.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-stone-400 transition-colors hover:text-stone-700"
-          >
-            Visit site
-            <ExternalLink className="h-3 w-3" aria-hidden="true" />
-          </Link>
-        ) : null}
-      </div>
-    </div>
+      {/* One-liner tagline */}
+      {item.tagline && (
+        <p className="text-sm text-[#737373] line-clamp-2 mt-2">
+          {item.tagline}
+        </p>
+      )}
+
+      {/* Use-case tags — sourced from features, max 2 shown */}
+      {item.features && item.features.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {item.features.slice(0, 2).map((feature, i) => (
+            <span
+              key={i}
+              className="rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649]"
+            >
+              {feature.name}
+            </span>
+          ))}
+        </div>
+      )}
+    </Link>
   );
 }
 
+/**
+ * A card component for displaying a directory item with favicon, name, domain,
+ * tagline, and up to two feature tags. Wrapped in an ErrorBoundary.
+ * @component
+ * @example
+ * ```tsx
+ * <DirectoryItemCard item={directoryItem} />
+ * ```
+ */
 export function DirectoryItemCard({ item }: DirectoryItemCardProps) {
   return (
     <ErrorBoundary componentName="DirectoryItemCard">
