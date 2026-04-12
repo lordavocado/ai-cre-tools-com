@@ -11,7 +11,7 @@ import { useState } from 'react';
 function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={`flex items-center gap-2.5 ${className ?? ""}`}>
-      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
+      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#629649] text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
         AI
       </span>
       <span className="text-sm font-bold text-gray-950">{siteConfig.name}</span>

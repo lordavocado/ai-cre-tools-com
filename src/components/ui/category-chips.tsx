@@ -37,7 +37,7 @@ export function CategoryChips({
         const badgeContent = (
           <Badge
             variant={variant}
-            className={`${badgeSize} font-normal px-3 py-1.5 rounded-full bg-stone-100 text-stone-600 border-none hover:bg-brand-50 hover:text-brand-700 transition-colors duration-200`}
+            className={`${badgeSize} font-normal px-3 py-1.5 rounded-full bg-stone-100 text-stone-600 border-none hover:bg-[#f0f9f0] hover:text-[#629649] transition-colors duration-200`}
           >
             {displayName}
           </Badge>
