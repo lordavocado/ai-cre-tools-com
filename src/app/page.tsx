@@ -220,7 +220,7 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-semiboldtext-2xl font-normal text-[#1f1f1f]">
+              <h2 className="text-2xl font-semibold text-[#1f1f1f]">
                 All tools
               </h2>
               <p className="mt-0.5 text-sm text-[#737373]">{initialItems.length} AI tools</p>
@@ -237,34 +237,38 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
-      <section className="bg-[#fafafa] py-16 md:py-20">
+      <section className="border-b border-[#e0e0e0] py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-semiboldtext-2xl font-normal text-[#1f1f1f]">Browse by category</h2>
-              <p className="mt-0.5 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
+              <h2 className="text-2xl font-semibold text-[#1f1f1f]">Browse by category</h2>
+              <p className="mt-1 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link
               href="/categories"
-              className="inline-flex w-fit items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#629649] transition-colors hover:bg-[#f0f9f0] hover:text-[#4a7238]"
+              className="inline-flex w-fit items-center gap-1.5 rounded-[6px] border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa]"
             >
               View all categories
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-          <IntersectionLoader className="min-h-[200px]">
-            <div className="grid grid-cols-2 gap-x-8 gap-y-2 sm:grid-cols-3">
-              {categoriesFromSheet.map((cat) => (
-                <Link key={cat.slug} href={`/categories/${cat.slug}`}
-                  className="text-sm text-[#1f1f1f] hover:text-[#629649] font-medium transition-colors duration-100 py-1">
-                  {cat.name}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {categoriesFromSheet.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/categories/${cat.slug}`}
+                className="group flex flex-col gap-2 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-4 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)] hover:bg-white"
+              >
+                <span className="text-xl leading-none">{cat.icon}</span>
+                <div>
+                  <p className="text-sm font-medium text-[#1f1f1f] leading-snug">{cat.name}</p>
                   {cat.itemCount !== undefined && (
-                    <span className="ml-1.5 text-[#737373]">({cat.itemCount})</span>
+                    <p className="mt-0.5 text-xs text-[#737373]">{cat.itemCount} tools</p>
                   )}
-                </Link>
-              ))}
-            </div>
-          </IntersectionLoader>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
