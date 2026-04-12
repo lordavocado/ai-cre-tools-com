@@ -201,6 +201,7 @@ export default async function Home({ searchParams }: HomeProps) {
       <Hero
         totalItems={initialItems.length}
         totalCategories={categoriesFromSheet.length}
+        categories={searchCategories}
       />
 
       <section id="directory" className="border-b border-stone-200 py-16 md:py-20">
