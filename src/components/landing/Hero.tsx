@@ -37,9 +37,13 @@ interface HeroProps {
  * <Hero totalItems={120} totalCategories={10} categories={categories} />
  * ```
  */
+/** Sentinel value representing the "All categories" chip */
+const ALL_SLUG = "all";
+
 export function Hero({ totalItems, categories = [] }: HeroProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>(ALL_SLUG);
 
   /** Navigate to the directory section with an optional search query */
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -51,10 +55,15 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
     router.push(url);
   };
 
-  /** Navigate to the directory section filtered by a specific category */
+  /** Mark the chip active and navigate to the directory section filtered by the given category */
   const handleCategoryClick = (slug: string) => {
-    const params = new URLSearchParams({ category: slug });
-    router.push(`/?${params.toString()}#directory`);
+    setActiveCategory(slug);
+    if (slug === ALL_SLUG) {
+      router.push("/#directory");
+    } else {
+      const params = new URLSearchParams({ category: slug });
+      router.push(`/?${params.toString()}#directory`);
+    }
   };
 
   const placeholderCount = totalItems > 0 ? `${totalItems}+` : "100+";
@@ -107,12 +116,29 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
         {/* Category chips */}
         {categories.length > 0 && (
           <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {/* "All" chip — active by default */}
+            <button
+              key={ALL_SLUG}
+              type="button"
+              onClick={() => handleCategoryClick(ALL_SLUG)}
+              className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${
+                activeCategory === ALL_SLUG
+                  ? "bg-[#629649] text-white border border-transparent"
+                  : "bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] hover:bg-[#f0f9f0]"
+              }`}
+            >
+              All
+            </button>
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryClick(cat.slug)}
-                className="bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] rounded-[6px] px-3 py-1.5 text-sm hover:bg-[#f0f9f0] transition-colors cursor-pointer"
+                className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${
+                  activeCategory === cat.slug
+                    ? "bg-[#629649] text-white border border-transparent"
+                    : "bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] hover:bg-[#f0f9f0]"
+                }`}
               >
                 {cat.name}
               </button>
