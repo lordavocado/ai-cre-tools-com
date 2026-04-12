@@ -5,17 +5,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
-import type { DirectoryItem } from '@/types';
+import type { DirectoryItem, Category } from '@/types';
 import { siteConfig } from '@/config/site';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import {
   CheckCircle, Zap, Users, Shield, ArrowRight, Star,
-  ChevronRight, Workflow, BarChart3, Target,
+  ChevronRight,
 } from 'lucide-react';
 
 interface CategoryPageClientProps {
-  category: any;
-  categories: any[];
+  category: Category;
+  categories: Category[];
   itemsInCategory: DirectoryItem[];
   itemsLoadError: boolean;
   slug: string;

@@ -315,7 +315,7 @@ export default async function DirectoryItemPage({
                   About {item.name}
                 </p>
                 <div
-                  className="prose prose-slate max-w-none leading-relaxed text-[#1f1f1f]"
+                  className="prose prose-neutral max-w-none leading-relaxed text-[#1f1f1f]"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
               </div>
