@@ -50,3 +50,6 @@ firestore-debug.log
 ai-cre-tools-com/
 .gstack/
 .env*.local
+
+# git worktrees
+.worktrees/
