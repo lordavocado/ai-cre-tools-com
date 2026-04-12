@@ -67,12 +67,18 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
   const placeholderCount = totalItems > 0 ? `${totalItems}+` : "100+";
 
   return (
-    <section className="relative overflow-hidden bg-white py-[80px]">
+    <section className="relative overflow-hidden bg-white py-[100px]">
       {/* Architectural grid texture */}
       <div className="hero-grid-texture absolute inset-0" aria-hidden="true" />
+      {/* Radial gradient — white centre glow to focus attention on content */}
+      <div
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.6) 60%, transparent 100%)" }}
+        aria-hidden="true"
+      />
       {/* Bottom fade into page background */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-[200px] bg-gradient-to-t from-white to-transparent"
+        className="absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-white to-transparent"
         aria-hidden="true"
       />
 
