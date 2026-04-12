@@ -253,254 +253,247 @@ export default async function DirectoryItemPage({
         />
       )}
 
-      {/* Breadcrumb */}
+      {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#737373]">
-            <Link href="/" className="transition-colors hover:text-[#1f1f1f]">Home</Link>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[#737373]">
+            <Link href="/" className="hover:text-[#1f1f1f] transition-colors">Home</Link>
+            <span>/</span>
+            <Link href="/#directory" className="hover:text-[#1f1f1f] transition-colors">Tools</Link>
             <span>/</span>
             <span className="text-[#1f1f1f]">{item.name}</span>
           </nav>
         </div>
       </div>
 
-      {/* Tool header */}
       <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-            {/* Favicon via Google S2 */}
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[8px] border border-[#e0e0e0] bg-[#fafafa]">
-              {item.website ? (
-                <img
-                  src={`https://www.google.com/s2/favicons?sz=64&domain=${new URL(item.website).hostname}`}
-                  alt={`${item.name} logo`}
-                  className="h-10 w-10 object-contain"
-                  loading="eager"
-                />
-              ) : (
-                <span className="text-lg font-bold text-[#737373]">
-                  {item.name.charAt(0)}
-                </span>
-              )}
+          {/* Top row: favicon + identity + action buttons */}
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-4">
+              {/* Favicon */}
+              <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-[#fafafa]">
+                {item.website ? (
+                  <img
+                    src={`https://www.google.com/s2/favicons?sz=64&domain=${new URL(item.website).hostname}`}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-9 w-9 object-contain"
+                    loading="eager"
+                  />
+                ) : (
+                  <span className="text-xl font-bold text-[#737373]">{item.name.charAt(0)}</span>
+                )}
+              </div>
+
+              {/* Name + tagline + chips */}
+              <div className="min-w-0">
+                <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.4px] text-[#1f1f1f]">
+                  {item.name}
+                </h1>
+                {item.tagline && (
+                  <p className="mt-1 text-sm text-[#737373]">{item.tagline}</p>
+                )}
+                {item.features && item.features.length > 0 && (
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {item.features.slice(0, 5).map((f, i) => (
+                      <span
+                        key={i}
+                        className="rounded-[6px] bg-[#f0f9f0] px-2 py-0.5 text-[11px] font-medium text-[#629649]"
+                      >
+                        {f.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Name, tagline, features */}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.5px] text-[#1f1f1f]">
-                {item.name}
-              </h1>
-              {item.tagline && (
-                <p className="mt-1.5 text-sm leading-6 text-[#737373]">{item.tagline}</p>
-              )}
-              {item.features && item.features.length > 0 && (
-                <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs text-[#737373]">Used for:</span>
-                  {item.features.slice(0, 4).map((f, i) => (
-                    <span key={i} className="rounded-[6px] bg-[#f0f9f0] px-2 py-0.5 text-xs text-[#629649]">
-                      {f.name}
-                    </span>
-                  ))}
-                </div>
+            {/* Action buttons — live in the header, always visible */}
+            <div className="flex shrink-0 items-center gap-2">
+              <FavoriteButton
+                toolId={item.id}
+                variant="icon"
+                className="rounded-[6px] border border-[#e0e0e0] bg-white p-2 text-[#737373] shadow-none hover:bg-[#fafafa] hover:text-[#629649]"
+              />
+              {item.website && (
+                <Link
+                  href={item.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#629649] px-4 py-2 text-sm font-medium text-white transition-colors duration-100 hover:bg-[#4a7238]"
+                >
+                  Visit Website
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Body: two-column layout — main content + sticky sidebar */}
+      {/* ── Body ──────────────────────────────────────────────────────── */}
       <div className="container px-6 py-10">
-        <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8">
+        <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-10">
 
-          {/* Left column: about + features + pros/cons + tags + related tools */}
-          <div className="space-y-6">
+          {/* ── Left: content sections, separated by dividers — no boxes ── */}
+          <div>
 
             {/* About */}
             {item.description && (
-              <div>
-                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">
+              <section className="pb-8">
+                <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">
                   About {item.name}
                 </h2>
                 <div
-                  className="prose prose-neutral max-w-none text-sm leading-7 text-[#1f1f1f]"
+                  className="prose prose-neutral max-w-none text-sm leading-7 text-[#1f1f1f] [&_a]:text-[#629649] [&_a:hover]:text-[#4a7238]"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
-              </div>
+              </section>
             )}
 
             {/* Key Features */}
             {item.features && item.features.length > 0 && (
-              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
-                <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
+              <section className="border-t border-[#e0e0e0] py-8">
+                <h2 className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
                   Key Features
-                </p>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {item.features.map((feature, index) => (
-                    <div key={index} className="border-l-2 border-[#b9e5b9] pl-4">
-                      <p className="text-sm font-semibold text-[#1f1f1f]">{feature.name}</p>
-                      {feature.description && (
-                        <p className="mt-1 text-sm leading-6 text-[#737373]">
-                          {feature.description}
-                        </p>
-                      )}
-                    </div>
+                </h2>
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {item.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#629649]" aria-hidden="true" />
+                      <div>
+                        <p className="text-sm font-medium text-[#1f1f1f]">{feature.name}</p>
+                        {feature.description && (
+                          <p className="mt-0.5 text-xs leading-5 text-[#737373]">{feature.description}</p>
+                        )}
+                      </div>
+                    </li>
                   ))}
-                </div>
-              </div>
+                </ul>
+              </section>
             )}
 
             {/* Pros & Cons */}
-            {((item.pros && item.pros.length > 0) ||
-              (item.cons && item.cons.length > 0)) && (
-              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
-                <p className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
-                  Pros & Cons
-                </p>
+            {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
+              <section className="border-t border-[#e0e0e0] py-8">
+                <h2 className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
+                  Pros &amp; Cons
+                </h2>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  <div>
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-green-600">Pros</p>
-                    <ul className="space-y-2">
-                      {item.pros?.map((pro: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-[#1f1f1f]">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" aria-hidden="true" />
-                          {pro}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Cons</p>
-                    <ul className="space-y-2">
-                      {item.cons?.map((con: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-[#1f1f1f]">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#e0e0e0]" aria-hidden="true" />
-                          {con}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {item.pros && item.pros.length > 0 && (
+                    <div>
+                      <p className="mb-3 text-xs font-semibold text-[#629649]">Pros</p>
+                      <ul className="space-y-2">
+                        {item.pros.map((pro: string, i: number) => (
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#629649]" />
+                            {pro}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {item.cons && item.cons.length > 0 && (
+                    <div>
+                      <p className="mb-3 text-xs font-semibold text-[#737373]">Cons</p>
+                      <ul className="space-y-2">
+                        {item.cons.map((con: string, i: number) => (
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#e0e0e0]" />
+                            {con}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              </div>
+              </section>
             )}
 
-            {/* Tags */}
-            {item.tags && item.tags.length > 0 && (
-              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">Tags</p>
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="rounded-full bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#737373]"
-                    >
-                      {typeof tag === "string" ? tag.trim() : tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Related tools (inside left column on lg) */}
+            {/* Similar Tools */}
             {relatedItems.length > 0 && (
-              <div>
-                <div className="border-t border-[#e0e0e0] pt-8 mb-6">
-                  <h2 className="text-xl font-bold text-[#1f1f1f]">Similar Tools</h2>
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <section className="border-t border-[#e0e0e0] pt-8">
+                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
+                  Similar tools
+                </h2>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {relatedItems.map((relatedItem) => (
                     <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
                   ))}
                 </div>
-              </div>
+              </section>
             )}
           </div>
 
-          {/* Right column: sticky sidebar */}
-          <div className="mt-6 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start space-y-4">
+          {/* ── Right: single unified info card ─────────────────────────── */}
+          <aside className="mt-8 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start">
+            <div className="rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] overflow-hidden">
 
-            {/* CTA + category chip */}
-            <div className="rounded-xl border border-[#e0e0e0] bg-white p-6 space-y-4">
-              {item.website && (
-                <Link
-                  href={item.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-[6px] bg-[#629649] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4a7238]"
-                >
-                  Visit Website
-                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
-              )}
-              <FavoriteButton
-                toolId={item.id}
-                variant="with-text"
-                className="w-full justify-center rounded-[6px] border border-[#e0e0e0] bg-white shadow-none hover:bg-[#fafafa]"
-              />
-              {primaryCategory && (
-                <div className="pt-1">
-                  <Link
-                    href={`/categories/${primaryCategory}`}
-                    className="inline-flex items-center rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649] hover:bg-[#e0f5e0] transition-colors"
-                  >
-                    {getCategoryLabel(primaryCategory)}
-                  </Link>
-                </div>
-              )}
-            </div>
+              {/* Info rows */}
+              <dl className="divide-y divide-[#e0e0e0]">
+                {primaryCategory && (
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <dt className="text-xs text-[#737373]">Category</dt>
+                    <dd>
+                      <Link
+                        href={`/categories/${primaryCategory}`}
+                        className="text-xs font-medium text-[#629649] hover:text-[#4a7238] transition-colors"
+                      >
+                        {getCategoryLabel(primaryCategory)}
+                      </Link>
+                    </dd>
+                  </div>
+                )}
+                {item.website && (
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <dt className="text-xs text-[#737373]">Website</dt>
+                    <dd>
+                      <Link
+                        href={item.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-[#1f1f1f] hover:text-[#629649] transition-colors"
+                      >
+                        {new URL(item.website).hostname.replace(/^www\./, "")}
+                      </Link>
+                    </dd>
+                  </div>
+                )}
+                {item.pricing && (
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <dt className="text-xs text-[#737373]">Pricing</dt>
+                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.pricing}</dd>
+                  </div>
+                )}
+                {item.foundedYear && (
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <dt className="text-xs text-[#737373]">Founded</dt>
+                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.foundedYear}</dd>
+                  </div>
+                )}
+                {(item.city || item.country) && (
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <dt className="text-xs text-[#737373]">Location</dt>
+                    <dd className="text-xs font-medium text-[#1f1f1f]">
+                      {[item.city, item.country].filter(Boolean).join(", ")}
+                    </dd>
+                  </div>
+                )}
+              </dl>
 
-            {/* Quick Facts */}
-            {hasQuickFacts && (
-              <div className="rounded-xl border border-[#e0e0e0] bg-white p-6">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">Quick Facts</p>
-                <dl className="divide-y divide-[#e0e0e0]">
-                  {item.pricing && (
-                    <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-[#737373]">Pricing</dt>
-                      <dd className="text-right text-sm font-semibold text-[#1f1f1f]">{item.pricing}</dd>
-                    </div>
-                  )}
-                  {item.foundedYear && (
-                    <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-[#737373]">Founded</dt>
-                      <dd className="text-sm font-semibold text-[#1f1f1f]">{item.foundedYear}</dd>
-                    </div>
-                  )}
-                  {(item.country || item.city) && (
-                    <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-[#737373]">Location</dt>
-                      <dd className="text-right text-sm font-semibold text-[#1f1f1f]">
-                        {[item.city, item.country].filter(Boolean).join(", ")}
-                      </dd>
-                    </div>
-                  )}
-                  {item.rating && (
-                    <div className="flex items-start justify-between gap-4 py-3">
-                      <dt className="text-xs font-medium text-[#737373]">Rating</dt>
-                      <dd className="text-sm font-semibold text-[#1f1f1f]">
-                        {item.rating.toFixed(1)}/5
-                        {item.reviewCount ? (
-                          <span className="ml-1 font-normal text-[#737373]">({item.reviewCount})</span>
-                        ) : null}
-                      </dd>
-                    </div>
-                  )}
-                </dl>
-              </div>
-            )}
-
-            {/* Socials */}
-            {hasSocials && (
-              <div className="rounded-xl border border-[#e0e0e0] bg-white p-6">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Follow</p>
-                <div className="flex gap-2">
+              {/* Social links */}
+              {hasSocials && (
+                <div className="border-t border-[#e0e0e0] flex items-center gap-1.5 px-4 py-3">
                   {item.socials?.twitter && (
                     <Link
                       href={`https://twitter.com/${item.socials.twitter}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Twitter"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#629649]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e0e0e0] text-[#737373] hover:bg-white hover:text-[#629649] transition-colors"
                     >
-                      <Twitter size={14} aria-hidden="true" />
+                      <Twitter size={12} aria-hidden="true" />
                     </Link>
                   )}
                   {item.socials?.linkedin && (
@@ -509,9 +502,9 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="LinkedIn"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#629649]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e0e0e0] text-[#737373] hover:bg-white hover:text-[#629649] transition-colors"
                     >
-                      <Linkedin size={14} aria-hidden="true" />
+                      <Linkedin size={12} aria-hidden="true" />
                     </Link>
                   )}
                   {item.socials?.facebook && (
@@ -520,15 +513,16 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#629649]"
+                      className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e0e0e0] text-[#737373] hover:bg-white hover:text-[#629649] transition-colors"
                     >
-                      <Facebook size={14} aria-hidden="true" />
+                      <Facebook size={12} aria-hidden="true" />
                     </Link>
                   )}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </aside>
+
         </div>
       </div>
     </>
