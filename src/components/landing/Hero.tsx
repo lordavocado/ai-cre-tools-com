@@ -119,7 +119,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
 
         {/* Category chips */}
         {categories.length > 0 && (
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
             {/* "All" chip — active by default */}
             <button
               key={ALL_SLUG}

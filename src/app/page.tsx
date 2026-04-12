@@ -216,7 +216,7 @@ export default async function Home({ searchParams }: HomeProps) {
         categories={heroCategories}
       />
 
-      <section id="directory" className="border-b border-[#e0e0e0] py-16 md:py-20">
+      <section id="directory" className="border-b border-[#e0e0e0] bg-[#fafafa] py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>

@@ -35,7 +35,7 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   return (
     <Link
       href={`/${item.slug}`}
-      className="block bg-[#fafafa] border-[1.25px] border-[#e0e0e0] rounded-[8px] p-5 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)]"
+      className="block bg-white border border-[#e0e0e0] rounded-[8px] p-5 transition-colors duration-100 hover:border-[rgba(98,150,73,0.5)] hover:shadow-sm"
     >
       {/* Header row: favicon + name + domain */}
       <div className="flex items-start gap-3">

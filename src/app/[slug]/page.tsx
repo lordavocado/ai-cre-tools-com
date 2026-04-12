@@ -8,6 +8,7 @@ import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { getCategoryLabel } from "@/config/design-tokens";
+import { ToolFavicon } from "@/components/ui/tool-favicon";
 
 export const revalidate = 3600;
 
@@ -274,12 +275,11 @@ export default async function DirectoryItemPage({
               {/* Favicon */}
               <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-[#fafafa]">
                 {item.website ? (
-                  <img
-                    src={`https://www.google.com/s2/favicons?sz=64&domain=${new URL(item.website).hostname}`}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-9 w-9 object-contain"
-                    loading="eager"
+                  <ToolFavicon
+                    website={item.website}
+                    name={item.name}
+                    apiSize={64}
+                    className="h-9 w-9"
                   />
                 ) : (
                   <span className="text-xl font-bold text-[#737373]">{item.name.charAt(0)}</span>
