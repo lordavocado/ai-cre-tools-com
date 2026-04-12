@@ -332,8 +332,12 @@ export default function RootLayout({
                 <AnalyticsPerformanceMonitor />
               </>
             )}
-            <JSExecutionOptimizer />
-            <ScriptExecutionMonitor />
+            {process.env.NODE_ENV === 'development' && (
+              <>
+                <JSExecutionOptimizer />
+                <ScriptExecutionMonitor />
+              </>
+            )}
             <PerformanceMonitor
               enableConsoleLogging={process.env.NODE_ENV === 'development'}
               enableRealUserMonitoring={true}

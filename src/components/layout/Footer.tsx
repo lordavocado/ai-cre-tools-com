@@ -66,11 +66,11 @@ export function Footer() {
             <nav className="flex flex-col gap-2.5">
               {[
                 { href: '/categories', label: 'All Categories' },
-                { href: '/categories/valuation-analytics', label: 'Valuation & Analytics' },
-                { href: '/categories/leasing-tenant', label: 'Leasing & Tenant' },
-                { href: '/categories/investment-underwriting', label: 'Investment & Underwriting' },
-                { href: '/categories/property-management', label: 'Property Management' },
-                { href: '/categories/market-research', label: 'Market Research' },
+                { href: '/categories/property-analysis-valuation', label: 'Property Analysis' },
+                { href: '/categories/marketing-leasing-enablement', label: 'Marketing & Leasing' },
+                { href: '/categories/asset-portfolio-management', label: 'Asset Management' },
+                { href: '/categories/property-management-operations', label: 'Property Management' },
+                { href: '/categories/transactions-brokerage', label: 'Transactions' },
               ].map(({ href, label }) => (
                 <Link
                   key={href}
