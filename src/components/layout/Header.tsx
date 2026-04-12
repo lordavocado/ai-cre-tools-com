@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/s
 import { Menu, Search } from 'lucide-react';
 import { GlobalSearch } from './GlobalSearch';
 import { siteConfig } from '@/config/site';
-import { useRef } from 'react';
+import { useState } from 'react';
 
 /** Site logo mark shown in header and mobile drawer. */
 function Logo({ className }: { className?: string }) {
@@ -24,18 +24,7 @@ function Logo({ className }: { className?: string }) {
  * @component
  */
 export function Header() {
-  /** Ref forwarded to GlobalSearch so the pill button can programmatically open it. */
-  const searchRef = useRef<{ focus: () => void }>(null);
-
-  const handleSearchPillClick = () => {
-    // Dispatch Cmd+K so GlobalSearch's global keydown listener activates focus
-    const event = new KeyboardEvent('keydown', {
-      key: 'k',
-      metaKey: true,
-      bubbles: true,
-    });
-    document.dispatchEvent(event);
-  };
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <>
@@ -58,9 +47,9 @@ export function Header() {
 
           {/* Right: search pill + CTA + mobile menu */}
           <div className="flex items-center gap-3">
-            {/* Search pill trigger — opens GlobalSearch via Cmd+K dispatch */}
+            {/* Search pill trigger — opens GlobalSearch overlay */}
             <button
-              onClick={handleSearchPillClick}
+              onClick={() => setSearchOpen(true)}
               className="hidden md:flex items-center gap-2 rounded-[8px] border border-[#e0e0e0] bg-white px-3 py-1.5 text-sm text-[#737373] hover:border-[#629649] transition-colors duration-100"
               aria-label="Open search"
             >
@@ -70,7 +59,11 @@ export function Header() {
 
             {/* GlobalSearch handles Cmd+K and renders its own dropdown overlay */}
             <div className="hidden">
-              <GlobalSearch placeholder="Search tools... (⌘K)" />
+              <GlobalSearch
+                placeholder="Search tools... (⌘K)"
+                isOpen={searchOpen}
+                onClose={() => setSearchOpen(false)}
+              />
             </div>
 
             <Link

@@ -31,9 +31,13 @@ interface SearchResult {
 interface GlobalSearchProps {
   className?: string;
   placeholder?: string;
+  /** When true, programmatically opens the search overlay and focuses the input */
+  isOpen?: boolean;
+  /** Called when the search overlay requests to be closed */
+  onClose?: () => void;
 }
 
-export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)" }: GlobalSearchProps) {
+export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)", isOpen: isOpenProp, onClose }: GlobalSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,6 +56,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setSelectedIndex(-1);
+        onClose?.();
       }
     }
 
@@ -90,6 +95,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
           setIsOpen(false);
           setSelectedIndex(-1);
           inputRef.current?.blur();
+          onClose?.();
           break;
       }
     }
@@ -105,6 +111,13 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
       setRecentSearches(JSON.parse(saved).slice(0, 5));
     }
   }, []);
+
+  // Sync controlled open prop — focus the input when the parent opens the overlay
+  useEffect(() => {
+    if (isOpenProp) {
+      inputRef.current?.focus();
+    }
+  }, [isOpenProp]);
 
   // Debounced search
   useEffect(() => {

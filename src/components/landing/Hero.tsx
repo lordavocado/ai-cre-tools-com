@@ -21,8 +21,6 @@ export interface HeroCategory {
 interface HeroProps {
   /** Total number of directory items — used for the search placeholder count */
   totalItems: number;
-  /** Total number of categories — kept for potential future use */
-  totalCategories: number;
   /** Category list rendered as filter chips below the search bar */
   categories?: HeroCategory[];
 }
@@ -34,7 +32,7 @@ interface HeroProps {
  * @component
  * @example
  * ```tsx
- * <Hero totalItems={120} totalCategories={10} categories={categories} />
+ * <Hero totalItems={120} categories={categories} />
  * ```
  */
 /** Sentinel value representing the "All categories" chip */
@@ -131,7 +129,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
             </button>
             {categories.map((cat) => (
               <button
-                key={cat.id}
+                key={cat.slug}
                 type="button"
                 onClick={() => handleCategoryClick(cat.slug)}
                 className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${

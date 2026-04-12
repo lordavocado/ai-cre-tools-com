@@ -200,7 +200,6 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <Hero
         totalItems={initialItems.length}
-        totalCategories={categoriesFromSheet.length}
         categories={searchCategories}
       />
 
@@ -356,7 +355,7 @@ export default async function Home({ searchParams }: HomeProps) {
           }}
         />
 
-        <Hero totalItems={0} totalCategories={0} />
+        <Hero totalItems={0} />
 
         <section id="directory" className="py-16 md:py-20">
           <div className="container px-6">
