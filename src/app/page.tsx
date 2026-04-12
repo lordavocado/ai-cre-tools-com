@@ -103,9 +103,23 @@ export default async function Home({ searchParams }: HomeProps) {
       categoriesFromSheet = await getCategories(false);
     }
 
+    // All categories for the search filter
     const searchCategories: DirectorySearchCategory[] = categoriesFromSheet.map(
       ({ id, slug, name, icon }) => ({ id, slug, name, icon })
     );
+
+    // Curated subset of 6 for the hero chip row (most recognisable CRE workflows)
+    const HERO_CATEGORY_SLUGS = [
+      'property-analysis-valuation',
+      'property-management-operations',
+      'transactions-brokerage',
+      'marketing-leasing-enablement',
+      'asset-portfolio-management',
+      'legal-compliance-due-diligence',
+    ];
+    const heroCategories = categoriesFromSheet
+      .filter((c) => HERO_CATEGORY_SLUGS.includes(c.slug))
+      .sort((a, b) => HERO_CATEGORY_SLUGS.indexOf(a.slug) - HERO_CATEGORY_SLUGS.indexOf(b.slug));
 
     return (
       <>
@@ -199,14 +213,14 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <Hero
         totalItems={initialItems.length}
-        categories={searchCategories}
+        categories={heroCategories}
       />
 
       <section id="directory" className="border-b border-[#e0e0e0] py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-display text-2xl font-normal text-[#1f1f1f]">
+              <h2 className="font-semiboldtext-2xl font-normal text-[#1f1f1f]">
                 All tools
               </h2>
               <p className="mt-0.5 text-sm text-[#737373]">{initialItems.length} AI tools</p>
@@ -227,7 +241,7 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="font-display text-2xl font-normal text-[#1f1f1f]">Browse by category</h2>
+              <h2 className="font-semiboldtext-2xl font-normal text-[#1f1f1f]">Browse by category</h2>
               <p className="mt-0.5 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link

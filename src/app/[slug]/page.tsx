@@ -5,9 +5,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, Twitter, Linkedin, Facebook } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
-import { SafeImage } from "@/components/ui/safe-image";
 import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
+import { getCategoryLabel } from "@/config/design-tokens";
 
 export const revalidate = 3600;
 
@@ -266,31 +266,37 @@ export default async function DirectoryItemPage({
 
       {/* Tool header */}
       <div className="border-b border-[#e0e0e0] bg-white">
-        <div className="container px-6 py-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-start">
-            {/* Logo */}
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e0e0e0] bg-[#fafafa]">
-              <SafeImage
-                src={item.imageUrl}
-                website={item.website}
-                alt={`${item.name} logo`}
-                className="h-12 w-12 object-contain"
-              />
+        <div className="container px-6 py-8">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+            {/* Favicon via Google S2 */}
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[8px] border border-[#e0e0e0] bg-[#fafafa]">
+              {item.website ? (
+                <img
+                  src={`https://www.google.com/s2/favicons?sz=64&domain=${new URL(item.website).hostname}`}
+                  alt={`${item.name} logo`}
+                  className="h-10 w-10 object-contain"
+                  loading="eager"
+                />
+              ) : (
+                <span className="text-lg font-bold text-[#737373]">
+                  {item.name.charAt(0)}
+                </span>
+              )}
             </div>
 
-            {/* Name, tagline, categories, features */}
+            {/* Name, tagline, features */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold leading-tight text-[#1f1f1f] md:text-4xl">
+              <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.5px] text-[#1f1f1f]">
                 {item.name}
               </h1>
               {item.tagline && (
-                <p className="mt-2 text-base leading-7 text-[#737373]">{item.tagline}</p>
+                <p className="mt-1.5 text-sm leading-6 text-[#737373]">{item.tagline}</p>
               )}
               {item.features && item.features.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  <span className="text-sm text-[#737373]">Used for:</span>
+                <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs text-[#737373]">Used for:</span>
                   {item.features.slice(0, 4).map((f, i) => (
-                    <span key={i} className="rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649]">
+                    <span key={i} className="rounded-[6px] bg-[#f0f9f0] px-2 py-0.5 text-xs text-[#629649]">
                       {f.name}
                     </span>
                   ))}
@@ -310,12 +316,12 @@ export default async function DirectoryItemPage({
 
             {/* About */}
             {item.description && (
-              <div className="rounded-xl border border-[#e0e0e0] bg-white p-8">
-                <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">
+              <div>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">
                   About {item.name}
-                </p>
+                </h2>
                 <div
-                  className="prose prose-neutral max-w-none leading-relaxed text-[#1f1f1f]"
+                  className="prose prose-neutral max-w-none text-sm leading-7 text-[#1f1f1f]"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
               </div>
@@ -432,10 +438,10 @@ export default async function DirectoryItemPage({
               {primaryCategory && (
                 <div className="pt-1">
                   <Link
-                    href={`/categories/${primaryCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                    href={`/categories/${primaryCategory}`}
                     className="inline-flex items-center rounded-[6px] bg-[#f0f9f0] px-2 py-1 text-xs text-[#629649] hover:bg-[#e0f5e0] transition-colors"
                   >
-                    {primaryCategory}
+                    {getCategoryLabel(primaryCategory)}
                   </Link>
                 </div>
               )}

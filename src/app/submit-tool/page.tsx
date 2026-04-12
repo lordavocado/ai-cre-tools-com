@@ -85,12 +85,13 @@ export default function SubmitToolPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Submit a New AI CRE Tool
+    <div className="container mx-auto px-6 py-14 md:py-20 max-w-2xl">
+      <div className="mb-10 border-b border-[#e0e0e0] pb-10">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Submit a Tool</p>
+        <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#1f1f1f] mb-3">
+          Add an AI CRE Tool to the directory
         </h1>
-        <p className="text-lg text-gray-600">
+        <p className="text-sm text-[#737373] leading-6">
           Help us expand our directory by submitting AI tools for commercial real estate professionals.
         </p>
       </div>
@@ -169,7 +170,7 @@ export default function SubmitToolPage() {
                       />
                     </FormControl>
                     <FormMessage />
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-[#737373] mt-1">
                       {field.value?.length || 0}/500 characters
                     </p>
                   </FormItem>
