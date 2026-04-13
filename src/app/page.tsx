@@ -257,9 +257,11 @@ export default async function Home({ searchParams }: HomeProps) {
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
-                className="group flex flex-col gap-2 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-4 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)] hover:bg-white"
+                className="group flex flex-col gap-3 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-4 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)] hover:bg-white"
               >
-                <span className="text-xl leading-none">{cat.icon}</span>
+                <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-[#f0f9f0] text-xs font-bold text-[#629649]">
+                  {cat.name.charAt(0)}
+                </div>
                 <div>
                   <p className="text-sm font-medium text-[#1f1f1f] leading-snug">{cat.name}</p>
                   {cat.itemCount !== undefined && (
