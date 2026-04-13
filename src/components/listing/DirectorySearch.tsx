@@ -145,7 +145,7 @@ function DirectorySearchContent({
             className={`shrink-0 rounded-[6px] px-3 py-1.5 text-sm font-medium transition-colors ${
               selectedCategories.length === 0
                 ? "bg-[#1f1f1f] text-white"
-                : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#f0f9f0] hover:border-[#629649]/40"
+                : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#efefef] hover:border-[#c8c8c8]"
             }`}
           >
             All
@@ -160,8 +160,8 @@ function DirectorySearchContent({
                 aria-pressed={isActive}
                 className={`shrink-0 rounded-[6px] px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-[#629649] text-white border-transparent"
-                    : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#f0f9f0] hover:border-[#629649]/40"
+                    ? "bg-[#1f1f1f] text-white border-transparent"
+                    : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#efefef] hover:border-[#c8c8c8]"
                 }`}
               >
                 {category.name}

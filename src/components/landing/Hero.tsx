@@ -1,70 +1,32 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Search } from "lucide-react";
+import Link from "next/link";
+import { NewsletterForm } from "@/components/forms/SimpleNewsletterForm";
 
 /** Minimal category shape needed for the hero chip row */
 export interface HeroCategory {
   /** Unique identifier */
   id: string;
-  /** URL-safe slug used as the query param value */
+  /** URL-safe slug used as the category page path */
   slug: string;
   /** Display label */
   name: string;
 }
 
-/**
- * Props for the Hero component
- * @interface HeroProps
- */
 interface HeroProps {
-  /** Total number of directory items — used for the search placeholder count */
+  /** Total number of directory items — used in the subtitle count */
   totalItems: number;
-  /** Category list rendered as filter chips below the search bar */
+  /** Category list rendered as navigation chips below the CTA */
   categories?: HeroCategory[];
 }
 
 /**
  * Search-first centered hero section for the homepage.
- * Renders a heading, search bar, and category filter chips.
- * Search and category chip clicks navigate to the directory section.
+ * Renders a heading, newsletter sign-up, and category navigation chips.
  * @component
- * @example
- * ```tsx
- * <Hero totalItems={120} categories={categories} />
- * ```
  */
-/** Sentinel value representing the "All categories" chip */
-const ALL_SLUG = "all";
-
 export function Hero({ totalItems, categories = [] }: HeroProps) {
-  const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string>(ALL_SLUG);
-
-  /** Navigate to the directory section with an optional search query */
-  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedQuery = query.trim();
-    const params = new URLSearchParams();
-    if (trimmedQuery) params.set("search", trimmedQuery);
-    const url = params.toString() ? `/?${params.toString()}#directory` : "/#directory";
-    router.push(url);
-  };
-
-  /** Mark the chip active and navigate to the directory section filtered by the given category */
-  const handleCategoryClick = (slug: string) => {
-    setActiveCategory(slug);
-    if (slug === ALL_SLUG) {
-      router.push("/#directory");
-    } else {
-      const params = new URLSearchParams({ category: slug });
-      router.push(`/?${params.toString()}#directory`);
-    }
-  };
-
-  const placeholderCount = totalItems > 0 ? `${totalItems}+` : "100+";
+  const count = totalItems > 0 ? `${totalItems}+` : "200+";
 
   return (
     <section className="relative overflow-hidden bg-white py-[100px]">
@@ -73,7 +35,10 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
       {/* Radial gradient — white centre glow to focus attention on content */}
       <div
         className="absolute inset-0"
-        style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.6) 60%, transparent 100%)" }}
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.6) 60%, transparent 100%)",
+        }}
         aria-hidden="true"
       />
       {/* Bottom fade into page background */}
@@ -84,68 +49,43 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-[1088px] px-8 text-center">
-        <h1 className="text-[48px] font-semibold tracking-[-1.2px] leading-[1] text-[#1f1f1f]">
+        <h1 className="text-[48px] font-semibold tracking-[-1.2px] leading-[1.1] text-[#1f1f1f]">
           Find the Best AI Tools for{" "}
           <br className="hidden sm:block" />
           Commercial Real Estate
         </h1>
-        <p className="mt-4 text-[16px] text-[#737373] max-w-lg mx-auto">
-          Discover and compare AI-powered tools built for CRE professionals —
-          brokers, asset managers, developers, and operators.
+        <p className="mt-4 text-[16px] text-[#737373] max-w-lg mx-auto leading-relaxed">
+          {count} AI tools for CRE professionals — curated, categorised, and updated weekly.
+          Get new tools in your inbox.
         </p>
 
-        {/* Search bar */}
-        <div className="mt-8 mx-auto max-w-2xl">
-          <form onSubmit={handleSearchSubmit}>
-            <label htmlFor="hero-search" className="sr-only">
-              Search commercial real estate AI tools
-            </label>
-            <div className="flex items-center h-12 border border-[#e0e0e0] rounded-[8px] bg-white px-4 focus-within:border-[#629649] focus-within:ring-1 focus-within:ring-[#629649] transition-colors">
-              <Search
-                className="h-5 w-5 shrink-0 text-[#737373]"
-                aria-hidden="true"
-              />
-              <input
-                id="hero-search"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={`Search ${placeholderCount} CRE AI tools...`}
-                className="flex-1 bg-transparent pl-3 text-sm text-[#1f1f1f] outline-none placeholder:text-[#737373]"
-              />
-            </div>
-          </form>
+        {/* Newsletter sign-up */}
+        <div className="mt-8 mx-auto max-w-md">
+          <NewsletterForm
+            source="hero"
+            fieldsClassName="flex-col sm:flex-row"
+            inputClassName="h-12 rounded-[8px] border-[#e0e0e0] bg-white text-sm placeholder:text-[#737373] focus-visible:ring-[#629649] focus-visible:border-[#629649]"
+            buttonClassName="h-12 rounded-[8px] bg-[#629649] text-white font-medium shadow-none hover:bg-[#4a7238] border-0 sm:w-auto w-full"
+          />
         </div>
 
-        {/* Category chips */}
+        {/* Category navigation chips */}
         {categories.length > 0 && (
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            {/* "All" chip — active by default */}
-            <button
-              key={ALL_SLUG}
-              type="button"
-              onClick={() => handleCategoryClick(ALL_SLUG)}
-              className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${
-                activeCategory === ALL_SLUG
-                  ? "bg-[#629649] text-white border border-transparent"
-                  : "bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] hover:bg-[#f0f9f0]"
-              }`}
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            <Link
+              href="/#directory"
+              className="rounded-[6px] bg-[#1f1f1f] px-3 py-1.5 text-sm text-white transition-colors hover:bg-[#333]"
             >
-              All
-            </button>
+              All tools
+            </Link>
             {categories.map((cat) => (
-              <button
+              <Link
                 key={cat.slug}
-                type="button"
-                onClick={() => handleCategoryClick(cat.slug)}
-                className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${
-                  activeCategory === cat.slug
-                    ? "bg-[#629649] text-white border border-transparent"
-                    : "bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] hover:bg-[#f0f9f0]"
-                }`}
+                href={`/categories/${cat.slug}`}
+                className="rounded-[6px] border border-[#e0e0e0] bg-[#fafafa] px-3 py-1.5 text-sm text-[#1f1f1f] transition-colors hover:bg-[#efefef] hover:border-[#c8c8c8]"
               >
                 {cat.name}
-              </button>
+              </Link>
             ))}
           </div>
         )}
