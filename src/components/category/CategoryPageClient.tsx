@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import type { DirectoryItem, Category } from '@/types';
@@ -123,7 +122,7 @@ export function CategoryPageClient({
                 <>
                   <span className="h-4 w-px bg-[#e0e0e0]" />
                   <span className="flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />
+                    <Star className="h-3.5 w-3.5 fill-[#629649] text-[#629649]" />
                     <strong className="font-semibold text-[#1f1f1f]">{topTools.length}</strong> top rated
                   </span>
                 </>
@@ -142,11 +141,11 @@ export function CategoryPageClient({
                     href={`/${tool.slug}`}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-3 py-1 text-sm text-[#1f1f1f] transition hover:border-[rgba(98,150,73,0.4)] hover:bg-[#fafafa]"
                   >
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+                    <Star className="h-3 w-3 fill-[#629649] text-[#629649]" />
                     {tool.name}
-                    <Badge variant="secondary" className="ml-0.5 bg-amber-50 px-1.5 py-0 text-[10px] font-medium text-amber-700">
+                    <span className="ml-0.5 rounded-[4px] bg-[#f0f9f0] px-1.5 py-0 text-[10px] font-medium text-[#629649]">
                       {tool.rating}
-                    </Badge>
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -233,7 +232,7 @@ export function CategoryPageClient({
             <div className="mt-10 divide-y divide-[#e0e0e0]">
               {[
                 {
-                  icon: <CheckCircle className="h-5 w-5 text-emerald-500" />,
+                  icon: <CheckCircle className="h-5 w-5 text-[#629649]" />,
                   q: `What are ${category.name} tools?`,
                   a: `${category.name} tools are specialized AI-powered software solutions designed to help commercial real estate professionals ${category.description?.toLowerCase() || 'improve their workflows'}. These tools leverage artificial intelligence and machine learning to automate processes, provide insights, and improve decision-making.`,
                 },
@@ -243,12 +242,12 @@ export function CategoryPageClient({
                   a: `Consider your specific business needs, budget, team size, and existing technology stack. Look for tools that offer free trials, have strong customer support, and integrate well with your current workflow. Our directory provides detailed comparisons to help you make an informed decision.`,
                 },
                 {
-                  icon: <Users className="h-5 w-5 text-violet-500" />,
+                  icon: <Users className="h-5 w-5 text-[#737373]" />,
                   q: `Are these tools suitable for small businesses?`,
                   a: `Many ${category.name} tools offer scalable pricing plans suitable for businesses of all sizes. We indicate pricing models and company size recommendations in our directory to help you find solutions that fit your budget and requirements.`,
                 },
                 {
-                  icon: <Shield className="h-5 w-5 text-amber-500" />,
+                  icon: <Shield className="h-5 w-5 text-[#737373]" />,
                   q: `What should I expect for implementation time?`,
                   a: `Implementation time varies by tool complexity and business requirements. Simple tools may be ready in days, while comprehensive platforms might take weeks. Most vendors provide implementation support and training to ensure successful adoption.`,
                 },
