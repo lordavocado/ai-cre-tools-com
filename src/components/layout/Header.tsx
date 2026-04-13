@@ -28,6 +28,13 @@ export function Header() {
 
   return (
     <>
+      {/* GlobalSearch overlay — mounted outside header so it can cover full screen */}
+      <GlobalSearch
+        placeholder="Search tools… (⌘K)"
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
+
       <header className="sticky top-0 z-[9998] w-full border-b border-[#e0e0e0] bg-white">
         <div className="mx-auto flex h-[50px] max-w-[1200px] items-center justify-between gap-6 px-6">
           <Logo className="shrink-0" />
@@ -45,40 +52,24 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Right: search pill + CTA + mobile menu */}
+          {/* Right: search pill + mobile menu */}
           <div className="flex items-center gap-3">
             {/* Search pill trigger — opens GlobalSearch overlay */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="hidden md:flex items-center gap-2 rounded-[8px] border border-[#e0e0e0] bg-white px-3 py-1.5 text-sm text-[#737373] hover:border-[#629649] transition-colors duration-100"
+              className="hidden md:flex items-center gap-2 rounded-[8px] border border-[#e0e0e0] bg-white px-3 py-1.5 text-sm text-[#737373] hover:border-[#1f1f1f] hover:text-[#1f1f1f] transition-colors duration-100"
               aria-label="Open search"
             >
               <Search className="h-4 w-4" />
               <span>Search tools...</span>
             </button>
 
-            {/* GlobalSearch handles Cmd+K and renders its own dropdown overlay */}
-            <div className="hidden">
-              <GlobalSearch
-                placeholder="Search tools... (⌘K)"
-                isOpen={searchOpen}
-                onClose={() => setSearchOpen(false)}
-              />
-            </div>
-
-            <Link
-              href="/#newsletter"
-              className="hidden md:inline-flex items-center bg-[#629649] hover:bg-[#4a7238] text-white rounded-[6px] px-4 py-2 text-sm font-medium transition-colors duration-100"
-            >
-              Get Updates
-            </Link>
-
             {/* Mobile menu */}
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
                   <button
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#e0e0e0] bg-white text-[#737373] transition-colors hover:bg-stone-50"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#e0e0e0] bg-white text-[#737373] transition-colors hover:bg-[#fafafa]"
                     aria-label="Open navigation menu"
                     aria-haspopup="dialog"
                   >
@@ -89,11 +80,6 @@ export function Header() {
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <nav className="mt-8 grid gap-5 text-base font-medium" aria-label="Mobile navigation">
                     <Logo className="mb-2" />
-
-                    <div className="mb-2">
-                      <GlobalSearch className="w-full" />
-                    </div>
-
                     {siteConfig.nav.items.map((item) => (
                       <Link
                         key={item.label}
@@ -103,13 +89,6 @@ export function Header() {
                         {item.label}
                       </Link>
                     ))}
-
-                    <Link
-                      href="/#newsletter"
-                      className="inline-flex w-fit items-center bg-[#629649] hover:bg-[#4a7238] text-white rounded-[6px] px-4 py-2 text-sm font-medium transition-colors duration-100"
-                    >
-                      Get Updates
-                    </Link>
                   </nav>
                 </SheetContent>
               </Sheet>
