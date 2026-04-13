@@ -149,12 +149,15 @@ src/
 
 ## Additional Documentation Files
 
-The project includes comprehensive documentation:
-- **CONFIG_GUIDE.md** - Complete configuration reference
-- **ENVIRONMENT_SETUP.md** - Detailed environment setup instructions
-- **SECURITY.md** - Security best practices and guidelines
-- **SEO-Improvement-Guide.md** - SEO optimization strategies
-- **PAGESPEED-OPTIMIZATION-COMPLETE.md** - Performance optimization results
+All project docs live in `docs/` (not the repo root):
+- **docs/CONFIG_GUIDE.md** - Complete configuration reference
+- **docs/ENVIRONMENT_SETUP.md** - Detailed environment setup instructions
+- **docs/SECURITY.md** - Security best practices and guidelines
+- **docs/SEO-GUIDE.md** - SEO optimization strategies
+- **docs/ARCHITECTURE-GUIDE.md** - Architecture overview and patterns
+- **docs/CODEBASE-STRUCTURE-GUIDE.md** - File and folder map
+- **docs/supabase-schema.md** - Database schema reference
+- **docs/superpowers/specs/** - Design specs and planning documents
 
 ## Important Development Notes
 

@@ -53,3 +53,18 @@ ai-cre-tools-com/
 
 # git worktrees
 .worktrees/
+
+# IDE & tool configs (local only)
+.cursor/
+.agents/
+.claude/
+.firecrawl/
+.playwright-mcp/
+.tasks/
+skills-lock.json
+
+# Screenshot / design artifacts (keep out of repo)
+*.jpeg
+*.jpg
+aicretools-*.png
+openalternative-*.png
