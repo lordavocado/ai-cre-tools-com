@@ -32,7 +32,7 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {currentItems.map((item) => (
           <DirectoryItemCard key={item.id} item={item} />
         ))}
