@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Twitter, Linkedin } from 'lucide-react';
+import { Linkedin } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { NewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
@@ -36,24 +36,29 @@ export function Footer() {
               Curated for investors, brokers &amp; operators
             </p>
 
-            <div className="mt-5 flex items-center gap-3">
+            <div className="mt-5 flex flex-col gap-3">
               <Link
-                href={`https://linkedin.com/${siteConfig.social.linkedin}`}
+                href="https://www.linkedin.com/in/nichlaskvist/?skipRedirect=true"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                aria-label="LinkedIn — Made by Nichlas, feel free to connect"
+                className="inline-flex items-center gap-2 text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
               >
-                <Linkedin size={18} aria-hidden="true" />
+                <Linkedin size={16} aria-hidden="true" />
+                <span className="text-xs">Made by Nichlas — feel free to connect</span>
               </Link>
               <Link
-                href={`https://twitter.com/${siteConfig.social.twitter.replace(/^@/, '')}`}
+                href="https://x.com/nkjorg"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Twitter / X"
-                className="text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                aria-label="X (formerly Twitter)"
+                className="inline-flex items-center gap-2 text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
               >
-                <Twitter size={18} aria-hidden="true" />
+                {/* X (formerly Twitter) icon */}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.264 5.638 5.9-5.638Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+                </svg>
+                <span className="text-xs">@nkjorg</span>
               </Link>
             </div>
           </div>

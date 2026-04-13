@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { NewsletterForm } from "@/components/forms/SimpleNewsletterForm";
+import { subscribeToNewsletter } from "@/app/actions";
+import { useActionState } from "react";
+import { useEffect } from "react";
 
 /** Minimal category shape needed for the hero chip row */
 export interface HeroCategory {
@@ -27,6 +29,13 @@ interface HeroProps {
  */
 export function Hero({ totalItems, categories = [] }: HeroProps) {
   const count = totalItems > 0 ? `${totalItems}+` : "200+";
+  const [state, formAction] = useActionState(subscribeToNewsletter, { message: "", success: false });
+
+  useEffect(() => {
+    if (state.success) {
+      // Form submission feedback handled by state.success/message render below
+    }
+  }, [state]);
 
   return (
     <section className="relative overflow-hidden bg-white py-[100px]">
@@ -61,12 +70,31 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
 
         {/* Newsletter sign-up */}
         <div className="mt-8 mx-auto max-w-md">
-          <NewsletterForm
-            source="hero"
-            fieldsClassName="flex-col sm:flex-row"
-            inputClassName="h-12 rounded-[8px] border-[#e0e0e0] bg-white text-sm placeholder:text-[#737373] focus-visible:ring-[#629649] focus-visible:border-[#629649]"
-            buttonClassName="h-12 rounded-[8px] bg-[#629649] text-white font-medium shadow-none hover:bg-[#4a7238] border-0 sm:w-auto w-full"
-          />
+          {state.success ? (
+            <p className="text-sm text-[#629649] font-medium py-3">
+              You&rsquo;re in! We&rsquo;ll send new CRE AI tools straight to your inbox.
+            </p>
+          ) : (
+            <form action={formAction} className="flex flex-col sm:flex-row gap-2">
+              <input type="hidden" name="source" value="hero" />
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="Enter your email"
+                className="h-12 flex-1 rounded-[8px] border border-[#e0e0e0] bg-white px-4 text-sm text-[#1f1f1f] placeholder:text-[#999] outline-none focus:border-[#629649] focus:ring-1 focus:ring-[#629649] min-w-0"
+              />
+              <button
+                type="submit"
+                className="h-12 shrink-0 rounded-[8px] bg-[#629649] px-5 text-sm font-medium text-white hover:bg-[#4a7238] transition-colors duration-100"
+              >
+                Get updates
+              </button>
+            </form>
+          )}
+          {state.message && !state.success && (
+            <p className="mt-2 text-xs text-red-600">{state.message}</p>
+          )}
         </div>
 
         {/* Category navigation chips */}

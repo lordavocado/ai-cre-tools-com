@@ -380,28 +380,33 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
   };
 
   const showOverlay = isOpen || Boolean(isOpenProp);
+  // When used with external isOpen/onClose (e.g. from Header), skip rendering
+  // the built-in trigger input — the caller provides its own trigger.
+  const isExternallyControlled = Boolean(onClose);
 
   return (
     <>
-      {/* Trigger input — always visible in the header */}
-      <div className={cn("relative", className)}>
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder={placeholder}
-          value={query}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          className="pl-9 pr-4 h-9 w-full text-sm bg-white border border-[#e0e0e0] hover:border-[#c8c8c8] focus:border-[#629649] focus:outline-none focus:ring-1 focus:ring-[#629649]/30 rounded-lg truncate placeholder:text-[#a0a0a0]"
-          aria-label="Open global search"
-          aria-haspopup="dialog"
-          readOnly
-          onClick={() => {
-            setIsOpen(true);
-            setTimeout(() => inputRef.current?.focus(), 0);
-          }}
-        />
-      </div>
+      {/* Trigger input — only rendered when NOT externally controlled */}
+      {!isExternallyControlled && (
+        <div className={cn("relative", className)}>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder={placeholder}
+            value={query}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            className="pl-9 pr-4 h-9 w-full text-sm bg-white border border-[#e0e0e0] hover:border-[#c8c8c8] focus:border-[#629649] focus:outline-none focus:ring-1 focus:ring-[#629649]/30 rounded-lg truncate placeholder:text-[#a0a0a0]"
+            aria-label="Open global search"
+            aria-haspopup="dialog"
+            readOnly
+            onClick={() => {
+              setIsOpen(true);
+              setTimeout(() => inputRef.current?.focus(), 0);
+            }}
+          />
+        </div>
+      )}
 
       {/* Full-screen overlay */}
       {showOverlay && (
