@@ -1,21 +1,49 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight, Search } from "lucide-react";
-import Link from "next/link";
+import { Search } from "lucide-react";
 
-interface HeroProps {
-  totalItems: number;
-  totalCategories: number;
+/** Minimal category shape needed for the hero chip row */
+export interface HeroCategory {
+  /** Unique identifier */
+  id: string;
+  /** URL-safe slug used as the query param value */
+  slug: string;
+  /** Display label */
+  name: string;
 }
 
-export function Hero({ totalItems, totalCategories }: HeroProps) {
-  const reduceMotion = useReducedMotion();
+/**
+ * Props for the Hero component
+ * @interface HeroProps
+ */
+interface HeroProps {
+  /** Total number of directory items — used for the search placeholder count */
+  totalItems: number;
+  /** Category list rendered as filter chips below the search bar */
+  categories?: HeroCategory[];
+}
+
+/**
+ * Search-first centered hero section for the homepage.
+ * Renders a heading, search bar, and category filter chips.
+ * Search and category chip clicks navigate to the directory section.
+ * @component
+ * @example
+ * ```tsx
+ * <Hero totalItems={120} categories={categories} />
+ * ```
+ */
+/** Sentinel value representing the "All categories" chip */
+const ALL_SLUG = "all";
+
+export function Hero({ totalItems, categories = [] }: HeroProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>(ALL_SLUG);
 
+  /** Navigate to the directory section with an optional search query */
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedQuery = query.trim();
@@ -25,55 +53,56 @@ export function Hero({ totalItems, totalCategories }: HeroProps) {
     router.push(url);
   };
 
-  const containerProps = reduceMotion
-    ? {}
-    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.55, ease: "easeOut" as const } };
+  /** Mark the chip active and navigate to the directory section filtered by the given category */
+  const handleCategoryClick = (slug: string) => {
+    setActiveCategory(slug);
+    if (slug === ALL_SLUG) {
+      router.push("/#directory");
+    } else {
+      const params = new URLSearchParams({ category: slug });
+      router.push(`/?${params.toString()}#directory`);
+    }
+  };
+
+  const placeholderCount = totalItems > 0 ? `${totalItems}+` : "100+";
 
   return (
-    <section className="relative overflow-hidden border-b border-stone-200 bg-background py-24 md:py-36">
-      {/* Soft indigo glow behind content */}
+    <section className="relative overflow-hidden bg-white py-[100px]">
+      {/* Architectural grid texture */}
+      <div className="hero-grid-texture absolute inset-0" aria-hidden="true" />
+      {/* Radial gradient — white centre glow to focus attention on content */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[480px]"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 55% at 50% -5%, rgba(99,102,241,0.07) 0%, transparent 100%)",
-        }}
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.6) 60%, transparent 100%)" }}
+        aria-hidden="true"
+      />
+      {/* Bottom fade into page background */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-white to-transparent"
         aria-hidden="true"
       />
 
-      <div className="relative container px-6">
-        <motion.div {...containerProps} className="mx-auto max-w-3xl text-center">
+      {/* Content */}
+      <div className="relative z-10 mx-auto max-w-[1088px] px-8 text-center">
+        <h1 className="text-[48px] font-semibold tracking-[-1.2px] leading-[1] text-[#1f1f1f]">
+          Find the Best AI Tools for{" "}
+          <br className="hidden sm:block" />
+          Commercial Real Estate
+        </h1>
+        <p className="mt-4 text-[16px] text-[#737373] max-w-lg mx-auto">
+          Discover and compare AI-powered tools built for CRE professionals —
+          brokers, asset managers, developers, and operators.
+        </p>
 
-          {/* Badge */}
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
-            <span className="relative flex h-2 w-2" aria-hidden="true">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
-            </span>
-            Curated for commercial real estate teams
-          </div>
-
-          {/* Heading */}
-          <h1 className="font-display text-5xl font-normal leading-[1.08] tracking-tight text-gray-950 md:text-[72px]">
-            Find the best AI tools
-            <br />
-            <span className="italic text-brand-500">for commercial real estate</span>
-          </h1>
-
-          {/* Subtext */}
-          <p className="mx-auto mt-6 max-w-lg text-base leading-7 text-stone-500 md:text-lg">
-            Compare software for investors, brokers, asset managers, and operators —
-            one focused directory built for real CRE workflows.
-          </p>
-
-          {/* Search */}
-          <form onSubmit={handleSearchSubmit} className="mt-9 mx-auto max-w-xl">
-            <div className="flex items-center rounded-2xl border border-stone-200 bg-white shadow-md focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-100 focus-within:shadow-lg transition-all duration-200">
-              <label htmlFor="hero-search" className="sr-only">
-                Search commercial real estate AI tools
-              </label>
+        {/* Search bar */}
+        <div className="mt-8 mx-auto max-w-2xl">
+          <form onSubmit={handleSearchSubmit}>
+            <label htmlFor="hero-search" className="sr-only">
+              Search commercial real estate AI tools
+            </label>
+            <div className="flex items-center h-12 border border-[#e0e0e0] rounded-[8px] bg-white px-4 focus-within:border-[#629649] focus-within:ring-1 focus-within:ring-[#629649] transition-colors">
               <Search
-                className="ml-4 h-5 w-5 shrink-0 text-stone-400"
+                className="h-5 w-5 shrink-0 text-[#737373]"
                 aria-hidden="true"
               />
               <input
@@ -81,54 +110,45 @@ export function Hero({ totalItems, totalCategories }: HeroProps) {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search underwriting, due diligence, leasing tools…"
-                className="h-14 flex-1 bg-transparent px-3 text-sm text-gray-900 outline-none placeholder:text-stone-400"
+                placeholder={`Search ${placeholderCount} CRE AI tools...`}
+                className="flex-1 bg-transparent pl-3 text-sm text-[#1f1f1f] outline-none placeholder:text-[#737373]"
               />
-              <button
-                type="submit"
-                className="m-1.5 inline-flex h-11 items-center gap-1.5 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              >
-                Search
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </button>
             </div>
           </form>
+        </div>
 
-          {/* CTA links */}
-          <div className="mt-5 flex items-center justify-center gap-3">
-            <Link
-              href="/categories"
-              className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-5 py-2 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100 hover:border-brand-300"
+        {/* Category chips */}
+        {categories.length > 0 && (
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {/* "All" chip — active by default */}
+            <button
+              key={ALL_SLUG}
+              type="button"
+              onClick={() => handleCategoryClick(ALL_SLUG)}
+              className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${
+                activeCategory === ALL_SLUG
+                  ? "bg-[#629649] text-white border border-transparent"
+                  : "bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] hover:bg-[#f0f9f0]"
+              }`}
             >
-              Browse categories
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
-            <span className="h-4 w-px bg-stone-300" aria-hidden="true" />
-            <Link
-              href="/submit-tool"
-              className="text-sm font-medium text-stone-500 transition-colors hover:text-stone-900"
-            >
-              Submit a tool
-            </Link>
+              All
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.slug}
+                type="button"
+                onClick={() => handleCategoryClick(cat.slug)}
+                className={`rounded-[6px] px-3 py-1.5 text-sm transition-colors cursor-pointer ${
+                  activeCategory === cat.slug
+                    ? "bg-[#629649] text-white border border-transparent"
+                    : "bg-[#fafafa] border border-[#e0e0e0] text-[#1f1f1f] hover:bg-[#f0f9f0]"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
           </div>
-
-          {/* Stats */}
-          <div className="mt-14 grid grid-cols-3 divide-x divide-stone-200 rounded-2xl border border-stone-200 bg-white/70 shadow-sm backdrop-blur-sm">
-            <div className="py-5 text-center">
-              <div className="text-4xl font-extrabold tabular-nums text-gray-950">{totalItems}+</div>
-              <div className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-stone-400">AI Tools</div>
-            </div>
-            <div className="py-5 text-center">
-              <div className="text-4xl font-extrabold tabular-nums text-gray-950">{totalCategories}</div>
-              <div className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-stone-400">Categories</div>
-            </div>
-            <div className="py-5 text-center">
-              <div className="text-4xl font-extrabold text-gray-950">Weekly</div>
-              <div className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-stone-400">Updates</div>
-            </div>
-          </div>
-        </motion.div>
-
+        )}
       </div>
     </section>
   );

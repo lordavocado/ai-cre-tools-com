@@ -2,17 +2,27 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Loader2, FileText, Folder, Wrench, Sparkles, TrendingUp, Hash, ExternalLink, Star, Clock } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Search, Loader2, FileText, Folder, Wrench, Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { DirectoryItem, Category, Guide } from "@/types";
-import { CategoryChips } from "@/components/ui/category-chips";
+import type { DirectoryItem, Category } from "@/types";
 import { WebsiteFavicon } from "@/components/ui/website-favicon";
 
+/** Minimal shape required for relevance scoring across tools, categories, and blog posts */
+interface SearchableItem {
+  id?: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  one_liner?: string;
+  slug?: string;
+  tagline?: string;
+  excerpt?: string;
+  category?: string;
+  tags?: string[];
+  [key: string]: unknown;
+}
+
+/** Shape of a single search result */
 interface SearchResult {
   type: 'tool' | 'category' | 'guide';
   id: string;
@@ -28,12 +38,27 @@ interface SearchResult {
   isNew?: boolean;
 }
 
+/**
+ * Props for the GlobalSearch component
+ * @component
+ */
 interface GlobalSearchProps {
+  /** Additional class names for the trigger input wrapper */
   className?: string;
+  /** Placeholder text shown in the trigger input */
   placeholder?: string;
+  /** When true, programmatically opens the search overlay and focuses the input */
+  isOpen?: boolean;
+  /** Called when the search overlay requests to be closed */
+  onClose?: () => void;
 }
 
-export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)" }: GlobalSearchProps) {
+/**
+ * Full-screen search overlay with debounced search, keyboard navigation,
+ * relevance scoring, and localStorage recent searches.
+ * @component
+ */
+export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)", isOpen: isOpenProp, onClose }: GlobalSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,28 +66,29 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
-  
+
   const router = useRouter();
-  const searchRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Close dropdown when clicking outside
+  /** Close overlay when clicking the backdrop (outside the search container) */
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setSelectedIndex(-1);
+        onClose?.();
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [onClose]);
 
-  // Handle keyboard navigation and shortcuts
+  /** Global keyboard shortcuts: ⌘K to open, arrow keys / Enter / Escape inside overlay */
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      // Global shortcut to focus search (Cmd+K or Ctrl+K)
+      // Global shortcut to open search (Cmd+K or Ctrl+K)
       if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
         event.preventDefault();
         inputRef.current?.focus();
@@ -90,15 +116,16 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
           setIsOpen(false);
           setSelectedIndex(-1);
           inputRef.current?.blur();
+          onClose?.();
           break;
       }
     }
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, results, selectedIndex]);
+  }, [isOpen, results, selectedIndex, onClose]);
 
-  // Load recent searches on mount
+  /** Load recent searches from localStorage on mount */
   useEffect(() => {
     const saved = localStorage.getItem('recent-searches');
     if (saved) {
@@ -106,7 +133,15 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
     }
   }, []);
 
-  // Debounced search
+  /** Sync controlled open prop — focus the input when the parent opens the overlay */
+  useEffect(() => {
+    if (isOpenProp) {
+      setIsOpen(true);
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [isOpenProp]);
+
+  /** Debounced search — fires 300ms after the user stops typing */
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (query.trim().length >= 2) {
@@ -114,9 +149,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         setShowRecentSearches(false);
       } else {
         setResults([]);
-        // Only close the modal if there's no query, but don't auto-open based on recent searches
         if (query.trim().length === 0) {
-          setIsOpen(false);
           setShowRecentSearches(false);
         }
       }
@@ -125,6 +158,11 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
     return () => clearTimeout(timeoutId);
   }, [query]);
 
+  /**
+   * Fetches tools, categories, and blog posts in parallel then merges and
+   * ranks them by relevance score.
+   * @param searchTerm - The trimmed search string
+   */
   const performSearch = async (searchTerm: string) => {
     setIsLoading(true);
     try {
@@ -134,7 +172,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         fetch(`/api/blog?search=${encodeURIComponent(searchTerm)}`)
       ]);
 
-      const [tools, categories, blogPosts]: [DirectoryItem[], Category[], any[]] = await Promise.all([
+      const [tools, categories, blogPosts]: [DirectoryItem[], Category[], SearchableItem[]] = await Promise.all([
         toolsResponse.json(),
         categoriesResponse.json(),
         blogResponse.json()
@@ -142,7 +180,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
 
       const searchResults: SearchResult[] = [];
 
-      // Enhanced tool search with relevance scoring
+      // Tools with relevance scoring
       tools.forEach(tool => {
         const relevanceScore = calculateRelevanceScore(tool, searchTerm);
         if (relevanceScore > 0) {
@@ -157,17 +195,17 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
             tags: tool.tags,
             website: tool.website,
             pricing: tool.pricing,
-            isFeatured: false, // Not available in current data structure
-            isNew: false // Not available in current data structure
+            isFeatured: false,
+            isNew: false
           });
         }
       });
 
-      // Enhanced category search
+      // Categories
       const filteredCategories = categories.filter(category => {
-        const lowerSearchTerm = searchTerm.toLowerCase();
-        return category.name.toLowerCase().includes(lowerSearchTerm) ||
-               category.description.toLowerCase().includes(lowerSearchTerm);
+        const lower = searchTerm.toLowerCase();
+        return category.name.toLowerCase().includes(lower) ||
+               category.description.toLowerCase().includes(lower);
       });
 
       filteredCategories.forEach(category => {
@@ -182,77 +220,70 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
         });
       });
 
-      // Enhanced blog search
+      // Blog / guides
       blogPosts.forEach(post => {
         const relevanceScore = calculateRelevanceScore(post, searchTerm);
         if (relevanceScore > 0) {
           searchResults.push({
             type: 'guide',
-            id: post.id,
-            title: post.title,
-            description: post.excerpt,
-            url: `/blog/${post.slug}`,
+            id: post.id ?? '',
+            title: post.title ?? '',
+            description: post.excerpt ?? '',
+            url: `/blog/${post.slug ?? ''}`,
             category: post.category,
             relevanceScore
           });
         }
       });
 
-      // Sort by relevance score and limit results
       const sortedResults = searchResults
         .sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
         .slice(0, 8);
 
       setResults(sortedResults);
-      setIsOpen(sortedResults.length > 0);
+      setIsOpen(true);
       setSelectedIndex(-1);
-      
-      // Save successful searches to recent searches
+
+      // Persist successful searches
       if (sortedResults.length > 0) {
         const updatedRecent = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
         setRecentSearches(updatedRecent);
         localStorage.setItem('recent-searches', JSON.stringify(updatedRecent));
       }
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch {
       setResults([]);
-      setIsOpen(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Enhanced relevance scoring algorithm
-  const calculateRelevanceScore = (item: any, searchTerm: string): number => {
+  /**
+   * Calculates how relevant an item is for a given search term.
+   * Higher scores = better matches.
+   * @param item - Any object with searchable string fields
+   * @param searchTerm - The user's query
+   * @returns Numeric relevance score (0 = no match)
+   */
+  const calculateRelevanceScore = (item: DirectoryItem | Category | SearchableItem, searchTerm: string): number => {
+    const i = item as SearchableItem;
     const lowerSearchTerm = searchTerm.toLowerCase();
     const searchTerms = lowerSearchTerm.split(/\s+/).filter(term => term.length > 0);
-    
+
     let score = 0;
-    
-    // Exact matches get highest score
-    if (item.name?.toLowerCase().includes(lowerSearchTerm)) score += 100;
-    if (item.title?.toLowerCase().includes(lowerSearchTerm)) score += 100;
-    
-    // Partial word matches
+
+    if (i.name?.toLowerCase().includes(lowerSearchTerm)) score += 100;
+    if (i.title?.toLowerCase().includes(lowerSearchTerm)) score += 100;
+
     searchTerms.forEach(term => {
-      // Name/title matches
-      if (item.name?.toLowerCase().includes(term)) score += 50;
-      if (item.title?.toLowerCase().includes(term)) score += 50;
-      
-      // Tagline/excerpt matches
-      if (item.tagline?.toLowerCase().includes(term)) score += 30;
-      if (item.excerpt?.toLowerCase().includes(term)) score += 30;
-      
-      // Description matches
-      if (item.description?.toLowerCase().includes(term)) score += 20;
-      
-      // Category matches
-      if (item.category?.toLowerCase().includes(term)) score += 40;
-      
-      // Tag matches
-      if (item.tags?.some((tag: string) => tag.toLowerCase().includes(term))) score += 25;
+      if (i.name?.toLowerCase().includes(term)) score += 50;
+      if (i.title?.toLowerCase().includes(term)) score += 50;
+      if (i.tagline?.toLowerCase().includes(term)) score += 30;
+      if (i.excerpt?.toLowerCase().includes(term)) score += 30;
+      if (i.description?.toLowerCase().includes(term)) score += 20;
+      if (i.category?.toLowerCase().includes(term)) score += 40;
+      if (i.tags?.some((tag: string) => tag.toLowerCase().includes(term))) score += 25;
     });
-    
+
     return score;
   };
 
@@ -263,6 +294,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
     setIsOpen(false);
     setSelectedIndex(-1);
     inputRef.current?.blur();
+    onClose?.();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,9 +302,11 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
   };
 
   const handleInputFocus = () => {
-    if (results.length > 0 || (query.trim().length === 0 && recentSearches.length > 0)) {
+    if (results.length > 0) {
       setIsOpen(true);
-      setShowRecentSearches(query.trim().length === 0 && recentSearches.length > 0);
+    } else if (query.trim().length === 0 && recentSearches.length > 0) {
+      setIsOpen(true);
+      setShowRecentSearches(true);
     }
   };
 
@@ -284,23 +318,44 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
   const clearRecentSearches = () => {
     setRecentSearches([]);
     localStorage.removeItem('recent-searches');
+    setShowRecentSearches(false);
   };
 
-  // Highlight matching text in search results
-  const highlightMatch = (text: string, query: string) => {
-    if (!query.trim() || !text) return text;
-    
-    const searchTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 0);
+  const closeOverlay = () => {
+    setIsOpen(false);
+    setSelectedIndex(-1);
+    setQuery("");
+    setResults([]);
+    onClose?.();
+  };
+
+  /**
+   * Wraps matched substrings with a green highlight span.
+   * @param text - Source text to search within
+   * @param searchQuery - The current query string
+   * @returns JSX with highlighted matches or plain text
+   */
+  const highlightMatch = (text: string, searchQuery: string) => {
+    if (!searchQuery.trim() || !text) return text;
+
+    const searchTerms = searchQuery.toLowerCase().split(/\s+/).filter(term => term.length > 0);
     let highlightedText = text;
-    
+
     searchTerms.forEach(term => {
       const regex = new RegExp(`(${term})`, 'gi');
-      highlightedText = highlightedText.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 px-1 py-0.5 rounded-sm">$1</mark>');
+      highlightedText = highlightedText.replace(
+        regex,
+        '<mark class="bg-[#f0f9f0] text-[#629649] px-0.5 rounded-sm not-italic">$1</mark>'
+      );
     });
-    
+
     return <span dangerouslySetInnerHTML={{ __html: highlightedText }} />;
   };
 
+  /**
+   * Returns the icon element for a given result type.
+   * @param type - The result type: tool, category, or guide
+   */
   const getResultIcon = (type: SearchResult['type']) => {
     switch (type) {
       case 'tool':
@@ -312,194 +367,194 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
     }
   };
 
+  /**
+   * Returns the human-readable label for a result type badge.
+   * @param type - The result type
+   */
   const getResultTypeLabel = (type: SearchResult['type']) => {
     switch (type) {
-      case 'tool':
-        return 'Tool';
-      case 'category':
-        return 'Category';
-      case 'guide':
-        return 'Blog';
+      case 'tool': return 'Tool';
+      case 'category': return 'Category';
+      case 'guide': return 'Blog';
     }
   };
 
-  const getResultTypeColor = (type: SearchResult['type']) => {
-    return 'bg-neutral-100 text-neutral-600 border-neutral-200';
-  };
+  const showOverlay = isOpen || Boolean(isOpenProp);
 
   return (
-    <div ref={searchRef} className={cn("relative", className)}>
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors" />
-        <Input
-          ref={inputRef}
+    <>
+      {/* Trigger input — always visible in the header */}
+      <div className={cn("relative", className)}>
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <input
           type="text"
           placeholder={placeholder}
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
-          className="pl-12 pr-12 h-10 text-sm bg-white border border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-200 rounded-lg truncate"
-          aria-label="Global search"
-          aria-expanded={isOpen}
-          aria-haspopup="listbox"
-          role="combobox"
+          className="pl-9 pr-4 h-9 w-full text-sm bg-white border border-[#e0e0e0] hover:border-[#c8c8c8] focus:border-[#629649] focus:outline-none focus:ring-1 focus:ring-[#629649]/30 rounded-lg truncate placeholder:text-[#a0a0a0]"
+          aria-label="Open global search"
+          aria-haspopup="dialog"
+          readOnly
+          onClick={() => {
+            setIsOpen(true);
+            setTimeout(() => inputRef.current?.focus(), 0);
+          }}
         />
-        {isLoading && (
-          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-neutral-400" />
-        )}
-        {!isLoading && query && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-neutral-100"
-            onClick={() => {
-              setQuery("");
-              setResults([]);
-              setIsOpen(false);
-              inputRef.current?.focus();
-            }}
-          >
-            <Search className="h-3 w-3 rotate-45" />
-          </Button>
-        )}
       </div>
 
-      {isOpen && (
-        <Card className="absolute top-full left-0 right-0 mt-2 z-50 max-h-[500px] min-w-[400px] overflow-hidden shadow-lg border border-neutral-200 rounded-lg bg-white">
-          {showRecentSearches && recentSearches.length > 0 ? (
-            <>
-              <CardHeader className="px-6 py-4 border-b border-neutral-100">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-gray-700">Recent Searches</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+      {/* Full-screen overlay */}
+      {showOverlay && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 bg-white/95 backdrop-blur-sm">
+          {/* Click-outside backdrop */}
+          <div className="absolute inset-0" onClick={closeOverlay} aria-hidden="true" />
+
+          {/* Search container */}
+          <div
+            ref={overlayRef}
+            className="relative max-w-2xl w-full border-[1.25px] border-[#e0e0e0] rounded-[8px] bg-white shadow-lg overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search"
+          >
+            {/* Input row */}
+            <div className="flex items-center px-4 py-3 border-b border-[#e0e0e0]">
+              <Search className="h-5 w-5 text-[#a0a0a0] flex-shrink-0 mr-3" />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search tools..."
+                value={query}
+                onChange={handleInputChange}
+                className="flex-1 text-[18px] text-[#1f1f1f] placeholder:text-[#a0a0a0] bg-transparent border-none outline-none"
+                aria-label="Search"
+                aria-expanded={isOpen}
+                aria-haspopup="listbox"
+                role="combobox"
+                autoComplete="off"
+              />
+              {isLoading && (
+                <Loader2 className="h-4 w-4 animate-spin text-[#a0a0a0] flex-shrink-0 ml-2" />
+              )}
+              {!isLoading && query && (
+                <button
+                  className="ml-2 flex-shrink-0 text-[#a0a0a0] hover:text-[#1f1f1f] transition-colors"
+                  onClick={() => { setQuery(""); setResults([]); inputRef.current?.focus(); }}
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+              <button
+                className="ml-3 flex-shrink-0 text-[#a0a0a0] hover:text-[#1f1f1f] transition-colors text-xs"
+                onClick={closeOverlay}
+                aria-label="Close search"
+              >
+                Esc
+              </button>
+            </div>
+
+            {/* Recent searches */}
+            {showRecentSearches && recentSearches.length > 0 && results.length === 0 && (
+              <div>
+                <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                  <span className="text-[#737373] text-xs font-medium uppercase tracking-wide flex items-center gap-1.5">
+                    <Clock className="h-3 w-3" />
+                    Recent
+                  </span>
+                  <button
+                    className="text-xs text-[#737373] hover:text-[#1f1f1f] transition-colors"
                     onClick={clearRecentSearches}
-                    className="text-xs text-muted-foreground hover:text-gray-700 p-1 h-auto"
+                    aria-label="Clear recent searches"
                   >
                     Clear
-                  </Button>
+                  </button>
                 </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="py-2">
-                  {recentSearches.map((search, index) => (
-                    <Button
-                      key={search}
-                      variant="ghost"
-                      className="w-full justify-start px-6 py-3 rounded-none hover:bg-neutral-50 text-left"
-                      onClick={() => handleRecentSearchClick(search)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Search className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-gray-700">{search}</span>
-                      </div>
-                    </Button>
+                <ul className="py-1">
+                  {recentSearches.map((search) => (
+                    <li key={search}>
+                      <button
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#fafafa] text-left transition-colors"
+                        onClick={() => handleRecentSearchClick(search)}
+                      >
+                        <Search className="h-4 w-4 text-[#a0a0a0] flex-shrink-0" />
+                        <span className="text-sm text-[#1f1f1f]">{search}</span>
+                      </button>
+                    </li>
                   ))}
-                </div>
-              </CardContent>
-            </>
-          ) : results.length > 0 ? (
-            <CardContent className="p-0">
-              <div className="max-h-[550px] overflow-y-auto">
-                <div role="listbox" aria-label="Search results" className="py-2">
-                  {results.map((result, index) => (
-                    <Button
-                      key={`${result.type}-${result.id}`}
-                      variant="ghost"
+                </ul>
+              </div>
+            )}
+
+            {/* Results list */}
+            {results.length > 0 && (
+              <ul
+                role="listbox"
+                aria-label="Search results"
+                className="max-h-[420px] overflow-y-auto py-1"
+              >
+                {results.map((result, index) => (
+                  <li key={`${result.type}-${result.id}`} role="option" aria-selected={selectedIndex === index}>
+                    <button
                       className={cn(
-                        "w-full justify-start p-4 h-auto text-left rounded-none border-b border-neutral-100 last:border-b-0 hover:bg-neutral-50 search-result-item group",
-                        selectedIndex === index && "bg-neutral-50"
+                        "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-t border-[#e0e0e0] first:border-t-0",
+                        selectedIndex === index ? "bg-[#fafafa]" : "hover:bg-[#fafafa]"
                       )}
                       onClick={() => handleResultClick(result)}
-                      role="option"
-                      aria-selected={selectedIndex === index}
                     >
-                      <div className="flex items-start gap-4 w-full">
-                        <div className="flex-shrink-0 mt-1">
-                          {result.type === 'tool' && result.website ? (
-                            <div className="p-2 bg-neutral-100 text-neutral-600 rounded-lg transition-colors group-hover:bg-neutral-200 flex items-center justify-center">
-                              <WebsiteFavicon 
-                                website={result.website} 
-                                size="sm"
-                                fallback={getResultIcon(result.type)}
-                              />
-                            </div>
-                          ) : (
-                            <div className="p-2 bg-neutral-100 text-neutral-600 rounded-lg transition-colors group-hover:bg-neutral-200">
-                              {getResultIcon(result.type)}
-                            </div>
-                          )}
+                      {/* Icon / favicon */}
+                      <div className="flex-shrink-0 p-1.5 bg-[#f0f9f0] text-[#629649] rounded-[6px] flex items-center justify-center">
+                        {result.type === 'tool' && result.website ? (
+                          <WebsiteFavicon
+                            website={result.website}
+                            size="sm"
+                            fallback={getResultIcon(result.type)}
+                          />
+                        ) : (
+                          getResultIcon(result.type)
+                        )}
+                      </div>
+
+                      {/* Text */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#1f1f1f] font-medium text-sm truncate">
+                            {highlightMatch(result.title, query)}
+                          </span>
+                          <span className="flex-shrink-0 bg-[#f0f9f0] text-[#629649] text-xs rounded-[6px] px-2 py-0.5">
+                            {getResultTypeLabel(result.type)}
+                          </span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-3 mb-3">
-                            <div className="flex items-center gap-3 flex-wrap min-w-0">
-                              <span className="font-semibold text-base text-gray-900 truncate group-hover:text-gray-700">
-                                {highlightMatch(result.title, query)}
-                              </span>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Badge 
-                                  variant="outline" 
-                                  className={cn(
-                                    "text-xs font-medium border transition-colors",
-                                    getResultTypeColor(result.type)
-                                  )}
-                                >
-                                  {getResultTypeLabel(result.type)}
-                                </Badge>
-                              </div>
-                            </div>
-                            {result.website && (
-                              <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed mb-3 group-hover:text-gray-700">
+                        {result.description && (
+                          <p className="text-[#737373] text-sm truncate mt-0.5">
                             {highlightMatch(result.description, query)}
                           </p>
-                          <div className="flex items-center gap-3 flex-wrap">
-                            {result.category && (
-                              <CategoryChips 
-                                categories={result.category} 
-                                variant="secondary" 
-                                size="sm" 
-                                showLinks={false}
-                              />
-                            )}
-                            {result.pricing && (
-                              <span className="text-xs text-muted-foreground bg-neutral-100 px-2 py-1 rounded-md">
-                                {result.pricing}
-                              </span>
-                            )}
-                            {result.tags && result.tags.length > 0 && (
-                              <div className="flex items-center gap-1">
-                                <Hash className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-xs text-muted-foreground">
-                                  {result.tags.slice(0, 2).join(', ')}
-                                  {result.tags.length > 2 && ` +${result.tags.length - 2}`}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        )}
                       </div>
-                    </Button>
-                  ))}
-                </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* No results */}
+            {!isLoading && query.trim().length >= 2 && results.length === 0 && (
+              <div className="text-[#737373] text-sm text-center py-8">
+                No results for &ldquo;{query}&rdquo;
               </div>
-              {results.length === 8 && (
-                <div className="px-6 py-4 border-t border-neutral-100 bg-neutral-50/50">
-                  <p className="text-xs text-muted-foreground text-center">
-                    Showing top 8 results. Refine your search for more specific results.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          ) : null}
-        </Card>
+            )}
+
+            {/* Footer hint when max results shown */}
+            {results.length === 8 && (
+              <div className="px-4 py-3 border-t border-[#e0e0e0]">
+                <p className="text-xs text-[#737373] text-center">
+                  Showing top 8 results — refine your search for more specific results.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
-} 
+}

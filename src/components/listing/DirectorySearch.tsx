@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition, useCallback } from "react";
+import type React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -9,7 +10,7 @@ export interface DirectorySearchCategory {
   id: string;
   slug: string;
   name: string;
-  icon?: any;
+  icon?: string | React.ComponentType<{ className?: string }>;
 }
 
 interface DirectorySearchProps {
@@ -98,19 +99,19 @@ function DirectorySearchContent({
       {/* Search bar row */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999999]" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search tools, capabilities, workflows…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Search directory"
-            className="h-11 w-full rounded-lg border border-stone-200 bg-white pl-10 pr-10 text-sm text-gray-900 placeholder:text-stone-400 outline-none focus:border-brand-400 focus:ring-4 focus:ring-brand-100 transition-all"
+            className="h-11 w-full rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-white pl-10 pr-10 text-sm text-[#1f1f1f] placeholder:text-[#999999] outline-none focus:border-[#629649] focus:ring-1 focus:ring-[#629649] transition-all"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#737373] transition-colors"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />
@@ -118,14 +119,14 @@ function DirectorySearchContent({
           )}
         </div>
 
-        <div className="hidden md:inline-flex h-11 shrink-0 items-center rounded-lg border border-stone-200 bg-white px-4 text-sm text-stone-500">
+        <div className="hidden md:inline-flex h-11 shrink-0 items-center rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-white px-4 text-sm text-[#737373]">
           {isPending ? "Updating…" : `${totalItems} tools`}
         </div>
 
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-3 text-sm text-stone-500 hover:text-stone-900 transition-colors"
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-white px-3 text-sm text-[#737373] hover:text-[#1f1f1f] transition-colors"
             aria-label="Clear all filters"
           >
             <X className="h-3.5 w-3.5" />
@@ -141,10 +142,10 @@ function DirectorySearchContent({
             type="button"
             onClick={() => setSelectedCategories([])}
             aria-pressed={selectedCategories.length === 0}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
+            className={`shrink-0 rounded-[6px] px-3 py-1.5 text-sm font-medium transition-colors ${
               selectedCategories.length === 0
-                ? "bg-gray-950 text-white"
-                : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
+                ? "bg-[#1f1f1f] text-white"
+                : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#f0f9f0] hover:border-[#629649]/40"
             }`}
           >
             All
@@ -157,10 +158,10 @@ function DirectorySearchContent({
                 type="button"
                 onClick={() => toggleCategory(category.slug)}
                 aria-pressed={isActive}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
+                className={`shrink-0 rounded-[6px] px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-brand-600 text-white"
-                    : "border border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50"
+                    ? "bg-[#629649] text-white border-transparent"
+                    : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#f0f9f0] hover:border-[#629649]/40"
                 }`}
               >
                 {category.name}

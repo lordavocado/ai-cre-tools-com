@@ -12,14 +12,14 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Link href={`/categories/${category.slug}`} className="group block h-full">
-      <div className="relative flex h-full flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-brand-200 hover:shadow-md hover:-translate-y-0.5">
+      <div className="relative flex h-full flex-col rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-[#fafafa] p-5 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)]">
         {/* Icon + count */}
         <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+          <div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-[#f0f9f0] text-[#629649]">
             {IconComponent ? <IconComponent className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
           </div>
           {category.itemCount !== undefined && (
-            <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-500">
+            <span className="rounded-[6px] border border-[#e0e0e0] bg-[#fafafa] px-2 py-0.5 text-xs text-[#737373]">
               {category.itemCount} tool{category.itemCount !== 1 ? "s" : ""}
             </span>
           )}
@@ -27,16 +27,16 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
         {/* Text */}
         <div className="flex-1 space-y-2">
-          <h3 className="font-semibold leading-tight text-gray-900 transition-colors group-hover:text-brand-600">
+          <h3 className="font-semibold leading-tight text-[#1f1f1f] transition-colors group-hover:text-[#629649]">
             {category.name}
           </h3>
-          <p className="line-clamp-3 text-sm leading-6 text-stone-500">
+          <p className="line-clamp-3 text-sm leading-6 text-[#737373]">
             {category.description}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="mt-5 flex items-center gap-1 text-sm font-medium text-brand-600">
+        <div className="mt-5 flex items-center gap-1 text-sm font-medium text-[#629649]">
           <span>Explore</span>
           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
         </div>

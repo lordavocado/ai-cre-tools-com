@@ -91,11 +91,11 @@ export default async function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <div className="container mx-auto px-6 py-12 md:py-16">
-        <div className="mb-12">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Blog</p>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">AI CRE Tools Blog</h1>
-          <p className="mt-4 text-sm text-gray-500 max-w-2xl leading-6">
+      <div className="container mx-auto px-6 py-14 md:py-20">
+        <div className="mb-12 border-b border-[#e0e0e0] pb-10">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Blog</p>
+          <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#1f1f1f]">AI CRE Tools Blog</h1>
+          <p className="mt-3 text-sm text-[#737373] max-w-2xl leading-6">
             Expert insights on AI in commercial real estate. From property management to investment strategies,
             practical guides for real estate professionals.
           </p>

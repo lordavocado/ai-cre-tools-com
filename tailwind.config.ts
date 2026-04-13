@@ -10,31 +10,20 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        serif: ['Brief', 'Georgia', 'serif'],
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+      },
+      borderWidth: {
+        DEFAULT: '1.25px',
       },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        brand: {
-          50:  '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-        },
         green: {
           50: '#f0f9f0',
           100: '#dcf2dc',
           200: '#b9e5b9',
           300: '#87d287',
           400: '#5cbd5c',
-          500: '#9fcc89',
+          500: '#6dc26d',
           600: '#7fb169',
           700: '#629649',
           800: '#4a7238',
