@@ -13,7 +13,7 @@ interface DirectoryGridProps {
 
 function DirectoryGridContent({ items }: DirectoryGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = 12;
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -32,7 +32,7 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {currentItems.map((item) => (
           <DirectoryItemCard key={item.id} item={item} />
         ))}
