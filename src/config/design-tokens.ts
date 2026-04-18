@@ -60,10 +60,15 @@ export const typography = {
   headingWeight: '600',
   headingTracking: '-0.5px',
 
-  /** Section heading */
-  sectionSize: '24px',
-  sectionWeight: '600',
-  sectionTracking: '-0.3px',
+  /** Section heading — openalternative-calibrated: bigger, lighter weight */
+  sectionSize: '32px',
+  sectionWeight: '500',
+  sectionTracking: '-0.32px',
+
+  /** Eyebrow label — small uppercase tracking, sits above a section head */
+  eyebrowSize: '11px',
+  eyebrowWeight: '600',
+  eyebrowTracking: '0.12em',
 
   /** Body */
   bodySize: '16px',

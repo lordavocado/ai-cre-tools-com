@@ -220,10 +220,11 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-[#1f1f1f]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">Directory</p>
+              <h2 className="mt-1 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-[#1f1f1f] sm:text-[32px]">
                 All tools
               </h2>
-              <p className="mt-0.5 text-sm text-[#737373]">{initialItems.length} AI tools</p>
+              <p className="mt-2 text-sm text-[#737373]">{initialItems.length} AI tools, curated for CRE professionals.</p>
             </div>
           </div>
 
@@ -241,8 +242,9 @@ export default async function Home({ searchParams }: HomeProps) {
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-[#1f1f1f]">Browse by category</h2>
-              <p className="mt-1 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">Categories</p>
+              <h2 className="mt-1 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-[#1f1f1f] sm:text-[32px]">Browse by category</h2>
+              <p className="mt-2 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link
               href="/categories"
