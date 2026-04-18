@@ -98,11 +98,21 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  /** Cards, inputs */
+  /** sm: inputs, inner buttons, small chips (4px) */
+  sm: '4px',
+  /** md: cards, default buttons (8px) */
+  md: '8px',
+  /** lg: hero containers, large surfaces (12px) */
+  lg: '12px',
+  /** full: avatars, pills, filter chips (9999px) */
+  full: '9999px',
+
+  /**
+   * Legacy aliases — prefer sm/md/lg/full above for new code.
+   * Calibrated to openalternative.co's 4/6/8/full scale.
+   */
   card: '8px',
-  /** Buttons, chips */
   button: '6px',
-  /** Same as chip */
   chip: '6px',
 } as const;
 
