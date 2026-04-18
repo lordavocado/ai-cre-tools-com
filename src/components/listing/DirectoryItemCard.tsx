@@ -49,9 +49,9 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           />
         </div>
         <div className="min-w-0">
-          <p className="text-[15px] font-semibold leading-snug text-[#1f1f1f]">{item.name}</p>
+          <p className="text-[17px] font-semibold leading-tight tracking-[-0.005em] text-[#1f1f1f] truncate">{item.name}</p>
           {domainLabel && (
-            <p className="mt-0.5 text-xs text-[#a0a0a0] truncate">{domainLabel}</p>
+            <p className="mt-1 text-xs text-[#a0a0a0] truncate">{domainLabel}</p>
           )}
         </div>
       </div>
