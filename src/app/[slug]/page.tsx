@@ -299,7 +299,7 @@ export default async function DirectoryItemPage({
                     {item.features.slice(0, 5).map((f, i) => (
                       <span
                         key={i}
-                        className="rounded-[6px] bg-[#f0f9f0] px-2 py-0.5 text-[11px] font-medium text-[#629649]"
+                        className="rounded-[6px] border border-[#e8e8e8] bg-[#fafafa] px-2 py-0.5 text-[11px] font-medium text-[#737373]"
                       >
                         {f.name}
                       </span>
@@ -361,7 +361,7 @@ export default async function DirectoryItemPage({
                 <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {item.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#629649]" aria-hidden="true" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1f1f1f]" aria-hidden="true" />
                       <div>
                         <p className="text-sm font-medium text-[#1f1f1f]">{feature.name}</p>
                         {feature.description && (

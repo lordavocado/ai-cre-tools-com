@@ -257,9 +257,9 @@ export default async function Home({ searchParams }: HomeProps) {
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
-                className="group flex flex-col gap-3 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-4 transition-colors duration-100 hover:border-[rgba(98,150,73,0.4)] hover:bg-white"
+                className="group flex flex-col gap-3 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-4 transition-colors duration-100 hover:border-[#c8c8c8] hover:bg-white"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-[#f0f9f0] text-xs font-bold text-[#629649]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-white border border-[#e0e0e0] text-xs font-bold text-[#1f1f1f]">
                   {cat.name.charAt(0)}
                 </div>
                 <div>
@@ -412,7 +412,7 @@ export default async function Home({ searchParams }: HomeProps) {
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-5 py-2 text-sm font-medium text-[#629649] transition-colors hover:bg-[#f0f9f0] hover:text-[#4a7238]"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-5 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa] hover:border-[#c8c8c8]"
               >
                 View All Categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>
