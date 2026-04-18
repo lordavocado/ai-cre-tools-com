@@ -35,11 +35,11 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   return (
     <Link
       href={`/${item.slug}`}
-      className="flex flex-col bg-white border border-[#e0e0e0] rounded-[8px] p-6 gap-4 transition-all duration-100 hover:border-[#c8c8c8] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
+      className="flex flex-col bg-white border border-[#e0e0e0] rounded-[8px] p-5 gap-3 transition-all duration-100 hover:border-[#c8c8c8] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
     >
       {/* Header row: favicon + name + domain */}
-      <div className="flex items-start gap-3.5">
-        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-[8px] border border-[#f0f0f0]">
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[8px] border border-[#f0f0f0]">
           <SafeImage
             src={item.imageUrl}
             alt={item.name}
@@ -56,9 +56,9 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
         </div>
       </div>
 
-      {/* One-liner tagline — 3 lines so cards have consistent height */}
+      {/* One-liner tagline — 2 lines for tighter card rhythm */}
       {item.tagline && (
-        <p className="flex-1 text-sm leading-relaxed text-[#737373] line-clamp-3">
+        <p className="flex-1 text-sm leading-relaxed text-[#737373] line-clamp-2">
           {item.tagline}
         </p>
       )}
