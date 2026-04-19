@@ -2,23 +2,13 @@ import type { Category } from "@/types";
 import { Hero } from "@/components/landing/Hero";
 import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
 import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
-import { IntersectionLoader } from "@/components/performance/intersection-loader";
 import { getDirectoryItems, getCategories } from "@/lib/supabase";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
 import { FeaturedOn } from '@/components/sections/FeaturedOn';
-
-// Create a client component wrapper for FAQ
-const FAQSection = dynamic(
-  () => import('@/components/sections/FAQ').then(mod => ({ default: mod.FAQ })),
-  { 
-    loading: () => <div className="h-64 flex items-center justify-center">Loading FAQ...</div>
-  }
-);
+import { FAQ } from '@/components/sections/FAQ';
 
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
@@ -279,12 +269,8 @@ export default async function Home({ searchParams }: HomeProps) {
       {/* Featured On Section */}
       <FeaturedOn />
 
-              {/* FAQ Section */}
-        <Suspense fallback={<div>Loading...</div>}>
-          <IntersectionLoader>
-            <FAQSection />
-          </IntersectionLoader>
-        </Suspense>
+        {/* FAQ Section */}
+        <FAQ />
 
         {/* FAQ Structured Data */}
         <script
@@ -426,11 +412,7 @@ export default async function Home({ searchParams }: HomeProps) {
         <FeaturedOn />
 
         {/* FAQ Section */}
-        <Suspense fallback={<div>Loading...</div>}>
-          <IntersectionLoader>
-            <FAQSection />
-          </IntersectionLoader>
-        </Suspense>
+        <FAQ />
       </>
     );
   }
