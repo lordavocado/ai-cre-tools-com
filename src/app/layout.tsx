@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, DM_Serif_Display } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -17,7 +17,6 @@ import { PerformanceMonitor } from '@/components/performance/performance-monitor
 import { HydrationTracker } from '@/components/performance/hydration-tracker';
 
 const GOOGLE_TAG_MANAGER_ID = 'GTM-K9T6242L';
-const AHREFS_ANALYTICS_KEY = 'U2yhP/o27yj/thHEpDz3zw';
 
 
 export const metadata: Metadata = {
@@ -120,14 +119,6 @@ const inter = Inter({
   variable: '--font-inter'
 })
 
-const dmSerifDisplay = DM_Serif_Display({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-  variable: '--font-display',
-  style: ['normal', 'italic'],
-})
-
 export default function RootLayout({
   children,
 }: {
@@ -154,21 +145,6 @@ export default function RootLayout({
           }}
         />
         {/* End Google Tag Manager */}
-
-        {/* Ahrefs Analytics trigger for GTM */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(w){
-                w.dataLayer = w.dataLayer || [];
-                w.dataLayer.push({
-                  event: 'ahrefs.analytics.init',
-                  ahrefsAnalyticsKey: '${AHREFS_ANALYTICS_KEY}'
-                });
-              })(window);
-            `,
-          }}
-        />
 
         {/* Critical inline styles for immediate rendering */}
         <style dangerouslySetInnerHTML={{
@@ -310,8 +286,7 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-white font-sans antialiased',
-          inter.variable,
-          dmSerifDisplay.variable
+          inter.variable
         )}
       >
         <noscript
@@ -352,38 +327,6 @@ export default function RootLayout({
             <Toaster />
           </FavoritesProvider>
         </PostHogProvider>
-
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                var injected = false;
-                function loadAhrefsAnalytics(){
-                  if (injected) { return; }
-                  injected = true;
-                  var ahrefs_analytics_script = document.createElement('script');
-                  ahrefs_analytics_script.id = 'ahrefs-analytics-script';
-                  ahrefs_analytics_script.async = true;
-                  ahrefs_analytics_script.src = 'https://analytics.ahrefs.com/analytics.js';
-                  ahrefs_analytics_script.setAttribute('data-key', '${AHREFS_ANALYTICS_KEY}');
-                  var head = document.getElementsByTagName('head')[0];
-                  if (head) {
-                    head.appendChild(ahrefs_analytics_script);
-                  }
-                }
-
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({ event: 'ahrefs.analytics.load' });
-
-                if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                  loadAhrefsAnalytics();
-                } else {
-                  document.addEventListener('DOMContentLoaded', loadAhrefsAnalytics);
-                }
-              })();
-            `,
-          }}
-        />
 
         {/* Enhanced Structured Data for Better SEO */}
         <script
