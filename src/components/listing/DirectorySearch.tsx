@@ -142,7 +142,7 @@ function DirectorySearchContent({
             type="button"
             onClick={() => setSelectedCategories([])}
             aria-pressed={selectedCategories.length === 0}
-            className={`shrink-0 rounded-[6px] px-3 py-1.5 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-[6px] px-3 py-3 md:py-1.5 text-sm font-medium transition-colors ${
               selectedCategories.length === 0
                 ? "bg-[#1f1f1f] text-white"
                 : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#efefef] hover:border-[#c8c8c8]"
@@ -158,7 +158,7 @@ function DirectorySearchContent({
                 type="button"
                 onClick={() => toggleCategory(category.slug)}
                 aria-pressed={isActive}
-                className={`shrink-0 rounded-[6px] px-3 py-1.5 text-sm font-medium transition-colors ${
+                className={`shrink-0 rounded-[6px] px-3 py-3 md:py-1.5 text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-[#1f1f1f] text-white border-transparent"
                     : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#efefef] hover:border-[#c8c8c8]"

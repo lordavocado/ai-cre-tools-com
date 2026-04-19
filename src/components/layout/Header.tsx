@@ -69,7 +69,7 @@ export function Header() {
               <Sheet>
                 <SheetTrigger asChild>
                   <button
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#e0e0e0] bg-white text-[#737373] transition-colors hover:bg-[#fafafa]"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-[#e0e0e0] bg-white text-[#737373] transition-colors hover:bg-[#fafafa]"
                     aria-label="Open navigation menu"
                     aria-haspopup="dialog"
                   >
@@ -78,13 +78,13 @@ export function Header() {
                 </SheetTrigger>
                 <SheetContent side="right" className="border-l border-[#e0e0e0] bg-white">
                   <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                  <nav className="mt-8 grid gap-5 text-base font-medium" aria-label="Mobile navigation">
-                    <Logo className="mb-2" />
+                  <nav className="mt-8 grid gap-1 text-base font-medium" aria-label="Mobile navigation">
+                    <Logo className="mb-4" />
                     {siteConfig.nav.items.map((item) => (
                       <Link
                         key={item.label}
                         href={item.href}
-                        className="text-[#737373] transition-colors hover:text-[#1f1f1f]"
+                        className="flex min-h-[44px] items-center text-[#737373] transition-colors hover:text-[#1f1f1f]"
                       >
                         {item.label}
                       </Link>
