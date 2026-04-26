@@ -252,25 +252,25 @@ export default async function DirectoryItemPage({
       )}
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-border bg-background">
+      <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[#737373]">
+            <Link href="/" className="transition-colors hover:text-[#1f1f1f]">Home</Link>
             <span>/</span>
-            <Link href="/#directory" className="transition-colors hover:text-foreground">Tools</Link>
+            <Link href="/#directory" className="transition-colors hover:text-[#1f1f1f]">Tools</Link>
             <span>/</span>
-            <span className="text-foreground">{item.name}</span>
+            <span className="text-[#1f1f1f]">{item.name}</span>
           </nav>
         </div>
       </div>
 
-      <div className="border-b border-border bg-background">
+      <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-8">
           {/* Top row: favicon + identity + action buttons */}
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
               {/* Favicon */}
-              <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted/60">
+              <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white">
                 {item.website ? (
                   <ToolFavicon
                     website={item.website}
@@ -279,24 +279,24 @@ export default async function DirectoryItemPage({
                     className="h-9 w-9"
                   />
                 ) : (
-                  <span className="text-xl font-bold text-muted-foreground">{item.name.charAt(0)}</span>
+                  <span className="text-xl font-bold text-[#a0a0a0]">{item.name.charAt(0)}</span>
                 )}
               </div>
 
               {/* Name + tagline + chips */}
               <div className="min-w-0">
-                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-[32px]">
+                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#1f1f1f] sm:text-[32px]">
                   {item.name}
                 </h1>
                 {item.tagline && (
-                  <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">{item.tagline}</p>
+                  <p className="mt-2 text-[16px] leading-relaxed text-[#737373]">{item.tagline}</p>
                 )}
                 {item.features && item.features.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {item.features.slice(0, 5).map((f, i) => (
                       <span
                         key={i}
-                        className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+                        className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f]"
                       >
                         {f.name}
                       </span>
@@ -311,7 +311,7 @@ export default async function DirectoryItemPage({
               <FavoriteButton
                 toolId={item.id}
                 variant="icon"
-                className="rounded-md border border-border bg-background p-2 text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
+                className="rounded-[8px] border border-[#e0e0e0] bg-white p-2 text-[#737373] shadow-none transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
               />
               {item.website && (
                 <Link
@@ -330,8 +330,9 @@ export default async function DirectoryItemPage({
       </div>
 
       {/* ── Body ──────────────────────────────────────────────────────── */}
-      <div className="container px-6 py-10">
-        <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-10">
+      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-10">
+        <div className="container px-6">
+          <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-10">
 
           {/* ── Left: content sections, separated by dividers — no boxes ── */}
           <div>
@@ -339,7 +340,7 @@ export default async function DirectoryItemPage({
             {/* Screenshot Hero */}
             {item.heroScreenshotUrl && (
               <section className="pb-8">
-                <div className="overflow-hidden rounded-lg border border-border bg-muted/30">
+                <div className="overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
                   <img
                     src={item.heroScreenshotUrl}
                     alt={`${item.name} screenshot`}
@@ -353,11 +354,11 @@ export default async function DirectoryItemPage({
             {/* About */}
             {item.description && (
               <section className="pb-8">
-                <h2 className="mb-4 text-sm font-semibold text-foreground">
+                <h2 className="mb-4 text-sm font-semibold text-[#1f1f1f]">
                   About {item.name}
                 </h2>
                 <div
-                  className="prose prose-neutral max-w-none text-sm leading-7 text-foreground prose-headings:font-sans prose-p:font-sans prose-li:font-sans prose-strong:font-sans prose-a:font-sans prose-a:text-foreground prose-a:underline prose-a:decoration-muted-foreground prose-a:underline-offset-2 hover:prose-a:decoration-primary"
+                  className="prose prose-neutral max-w-none text-sm leading-7 text-[#1f1f1f] prose-headings:font-sans prose-p:font-sans prose-li:font-sans prose-strong:font-sans prose-a:font-sans prose-a:text-[#1f1f1f] prose-a:underline prose-a:decoration-[#a0a0a0] prose-a:underline-offset-2 hover:prose-a:decoration-primary"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
               </section>
@@ -365,18 +366,18 @@ export default async function DirectoryItemPage({
 
             {/* Key Features */}
             {item.features && item.features.length > 0 && (
-              <section className="border-t border-border py-8">
-                <h2 className="mb-5 text-sm font-semibold text-foreground">
+              <section className="border-t border-[#e0e0e0] py-8">
+                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
                   Key features
                 </h2>
                 <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {item.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" aria-hidden="true" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]" aria-hidden="true" />
                       <div>
-                        <p className="text-sm font-medium text-foreground">{feature.name}</p>
+                        <p className="text-sm font-medium text-[#1f1f1f]">{feature.name}</p>
                         {feature.description && (
-                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{feature.description}</p>
+                          <p className="mt-0.5 text-xs leading-5 text-[#737373]">{feature.description}</p>
                         )}
                       </div>
                     </li>
@@ -387,18 +388,18 @@ export default async function DirectoryItemPage({
 
             {/* Pros & Cons */}
             {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
-              <section className="border-t border-border py-8">
-                <h2 className="mb-5 text-sm font-semibold text-foreground">
+              <section className="border-t border-[#e0e0e0] py-8">
+                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
                   Pros and cons
                 </h2>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {item.pros && item.pros.length > 0 && (
                     <div>
-                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pros</p>
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#a0a0a0]">Pros</p>
                       <ul className="space-y-2">
                         {item.pros.map((pro: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]" />
                             {pro}
                           </li>
                         ))}
@@ -407,11 +408,11 @@ export default async function DirectoryItemPage({
                   )}
                   {item.cons && item.cons.length > 0 && (
                     <div>
-                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cons</p>
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#a0a0a0]">Cons</p>
                       <ul className="space-y-2">
                         {item.cons.map((con: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]" />
                             {con}
                           </li>
                         ))}
@@ -424,8 +425,8 @@ export default async function DirectoryItemPage({
 
             {/* Similar Tools */}
             {relatedItems.length > 0 && (
-              <section className="border-t border-border pt-8">
-                <h2 className="mb-5 text-sm font-semibold text-foreground">
+              <section className="border-t border-[#e0e0e0] pt-8">
+                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
                   Similar tools
                 </h2>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -439,17 +440,17 @@ export default async function DirectoryItemPage({
 
           {/* ── Right: single unified info card ─────────────────────────── */}
           <aside className="mt-8 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start">
-            <div className="overflow-hidden rounded-md border border-border bg-card shadow-sm">
+            <div className="overflow-hidden rounded-[8px] border border-[#e0e0e0] bg-white">
 
               {/* Info rows */}
-              <dl className="divide-y divide-border">
+              <dl className="divide-y divide-[#e0e0e0]">
                 {primaryCategory && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-muted-foreground">Category</dt>
+                    <dt className="text-xs text-[#737373]">Category</dt>
                     <dd>
                       <Link
                         href={`/categories/${primaryCategory}`}
-                        className="text-xs font-medium text-foreground underline-offset-2 transition-colors hover:underline"
+                        className="text-xs font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
                       >
                         {getCategoryLabel(primaryCategory)}
                       </Link>
@@ -458,13 +459,13 @@ export default async function DirectoryItemPage({
                 )}
                 {item.website && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-muted-foreground">Website</dt>
+                    <dt className="text-xs text-[#737373]">Website</dt>
                     <dd>
                       <Link
                         href={item.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-medium text-foreground underline-offset-2 transition-colors hover:underline"
+                        className="text-xs font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
                       >
                         {new URL(item.website).hostname.replace(/^www\./, "")}
                       </Link>
@@ -473,20 +474,20 @@ export default async function DirectoryItemPage({
                 )}
                 {item.pricing && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-muted-foreground">Pricing</dt>
-                    <dd className="text-xs font-medium text-foreground">{item.pricing}</dd>
+                    <dt className="text-xs text-[#737373]">Pricing</dt>
+                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.pricing}</dd>
                   </div>
                 )}
                 {item.foundedYear && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-muted-foreground">Founded</dt>
-                    <dd className="text-xs font-medium text-foreground">{item.foundedYear}</dd>
+                    <dt className="text-xs text-[#737373]">Founded</dt>
+                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.foundedYear}</dd>
                   </div>
                 )}
                 {(item.city || item.country) && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-muted-foreground">Location</dt>
-                    <dd className="text-xs font-medium text-foreground">
+                    <dt className="text-xs text-[#737373]">Location</dt>
+                    <dd className="text-xs font-medium text-[#1f1f1f]">
                       {[item.city, item.country].filter(Boolean).join(", ")}
                     </dd>
                   </div>
@@ -495,14 +496,14 @@ export default async function DirectoryItemPage({
 
               {/* Social links */}
               {hasSocials && (
-                <div className="flex items-center gap-1.5 border-t border-border px-4 py-3">
+                <div className="flex items-center gap-1.5 border-t border-[#e0e0e0] px-4 py-3">
                   {item.socials?.twitter && (
                     <Link
                       href={`https://twitter.com/${item.socials.twitter}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Twitter"
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                      className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
                     >
                       <Twitter size={12} aria-hidden="true" />
                     </Link>
@@ -513,7 +514,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="LinkedIn"
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                      className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
                     >
                       <Linkedin size={12} aria-hidden="true" />
                     </Link>
@@ -524,7 +525,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                      className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
                     >
                       <Facebook size={12} aria-hidden="true" />
                     </Link>
@@ -534,8 +535,9 @@ export default async function DirectoryItemPage({
             </div>
           </aside>
 
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }
