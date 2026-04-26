@@ -1,8 +1,23 @@
 # Cursor Rules for AI CRE Tools Directory
 
+These rules are **still used by Cursor**. Keep `.cursorrules` for **Cursor-specific** guidance, and use:
+
+- `AGENTS.md` for **tool-agnostic** onboarding (Cursor / Claude Code / Copilot / etc.)
+- `CLAUDE.md` for the **full project reference** (architecture, commands, cleanup expectations)
+- `.cursor/rules/*` for **narrow, feature-specific** rules (e.g. PostHog, favourites)
+
 This project is a Next.js 15 directory application for AI Commercial Real Estate tools, using Supabase as the database backend.
 
-## Project Overview
+## What matters most (follow these)
+
+1. **Server-first data**: Directory pages fetch data on the server (avoid `"use client"` for route pages unless necessary).
+2. **Canonical data source**: For directory listings/details/categories, use `src/lib/supabase.ts` (Google Sheets is legacy/secondary).
+3. **Ordering**: Always sort tools by `display_order` ASC, then `name` ASC.
+4. **Categories**: Category slugs are **hardcoded** (not a DB table). Don’t invent new slugs without updating the source list.
+5. **Design reference**: UI polish should match **openalternative.co** (see `CLAUDE.md`) and local tokens (`DESIGN.md`, `globals.css`).
+6. **Verify** after substantive edits: `npm run typecheck` and `npm run lint`.
+
+## Project Overview (context)
 
 - **Framework**: Next.js 15 with App Router
 - **Database**: Supabase (PostgreSQL)
@@ -10,51 +25,10 @@ This project is a Next.js 15 directory application for AI Commercial Real Estate
 - **TypeScript**: Strict mode enabled
 - **Architecture**: Server-side rendering with static generation
 
-## Database Schema (Supabase)
+## Data + types (don’t duplicate docs)
 
-### Primary Table: `ecosystem_apps`
-```sql
-create table public.ecosystem_apps (
-  slug         text primary key,        -- unique identifier
-  website_url  text,                    -- app website
-  name         text not null,           -- display name
-  category     text,                    -- category slug
-  features     text[] default '{}',     -- array of features
-  one_liner    text,                    -- short tagline
-  description  text,                    -- longer description
-  country      text,
-  city         text,
-  icon_url     text,                    -- link to favicon/logo
-  display_order integer default 999,   -- ordering (lower = first)
-  created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now()
-);
-```
-
-### Key Points:
-- `display_order` controls sort order (1-9 for featured tools, 999 for others)
-- All queries should use: `ORDER BY display_order ASC, name ASC`
-- Categories are hardcoded in code, not in database
-- RLS enabled with read-only access for public
-
-## TypeScript Interfaces
-
-### Primary Interface: `DirectoryItem`
-```typescript
-interface DirectoryItem {
-  id: string;              // maps to slug
-  slug: string;            // maps to slug
-  name: string;            // maps to name
-  tagline: string;         // maps to one_liner
-  description: string;     // maps to description
-  category: string;        // maps to category
-  website: string;         // maps to website_url
-  imageUrl?: string;       // maps to icon_url
-  features?: Array<{name: string; description?: string}>; // transformed from features array
-  country?: string;        // maps to country
-  city?: string;          // maps to city
-}
-```
+- **Schema reference**: `docs/supabase-schema.md` and `CLAUDE.md` (keeps the full SQL in one place).
+- **Types**: `src/types/index.ts` (use the repo’s real interfaces; don’t copy/paste a stale `DirectoryItem` snippet here).
 
 ## Data Layer (`src/lib/supabase.ts`)
 
@@ -90,14 +64,8 @@ Categories are defined in `src/lib/supabase.ts`:
 src/
 ├── lib/supabase.ts           # Database layer (SERVER-SIDE ONLY)
 ├── types/index.ts            # TypeScript interfaces
-├── components/
-│   ├── listing/              # Directory grid and search
-│   └── category/             # Category-specific components
-└── app/
-    ├── page.tsx              # Homepage (SSR)
-    ├── [slug]/page.tsx       # Tool detail pages (SSG)
-    ├── categories/           # Category pages (SSR)
-    └── api/sheets/route.ts   # API endpoints
+├── app/                      # Next.js App Router (categories/, [slug]/, guides/, blog/, favorites/, admin/, submit-tool/)
+└── components/               # UI + features (ui/, listing/, category/, performance/, layout/)
 ```
 
 ## Development Guidelines
@@ -134,7 +102,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key (optional)
 ```
 
-## Code Quality Standards
+## Code Quality Standards (Cursor emphasis)
 
 ### TypeScript:
 - Strict mode enabled
@@ -154,18 +122,9 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key (optional)
 - User-friendly error messages
 - Proper fallback mechanisms
 
-## Migration Notes
+## Legacy note (Sheets)
 
-**Migrated from Google Sheets to Supabase for:**
-- Better performance and reliability
-- Advanced querying with SQL
-- Full-text search capabilities
-- No API rate limiting
-- Real-time capabilities (future)
-
-**Remaining Google Sheets dependencies:**
-- Tool submissions (requires additional Supabase table)
-- Admin functionality (planned migration)
+Google Sheets appears in the repo for legacy flows. For directory pages, prefer Supabase (`src/lib/supabase.ts`) unless a feature explicitly depends on Sheets.
 
 ## Common Patterns
 

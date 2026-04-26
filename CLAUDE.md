@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+For a shorter, agent-agnostic entry point (any AI coding tool), see **[AGENTS.md](./AGENTS.md)**.
+
 ## UI, Design & SEO Reference
 
 **Primary design reference: https://openalternative.co/**
@@ -97,19 +99,24 @@ This is a **Next.js 15 directory/marketplace application** built for showcasing 
 
 ```
 src/
-├── app/                # Next.js App Router
-│   ├── [slug]/        # Dynamic tool detail pages
-│   ├── categories/    # Category browsing and detail pages
-│   └── api/          # Server-side API routes
-├── components/        # React components
-│   ├── ui/           # shadcn/ui component library
-│   ├── listing/      # Directory grid and search functionality
-│   ├── category/     # Category-specific components
-│   └── performance/  # Optimization components
-├── config/           # Site configuration and constants
-├── lib/              # Utilities, data fetching, and integrations
-├── types/            # TypeScript type definitions
-└── hooks/            # Custom React hooks
+├── app/                    # Next.js App Router
+│   ├── [slug]/             # Dynamic tool detail pages
+│   ├── categories/         # Category index + categories/[category]/
+│   ├── blog/               # Blog index + blog/[slug]/
+│   ├── guides/             # Guides index + guides/[slug]/
+│   ├── favorites/          # Saved tools (client-backed)
+│   ├── submit-tool/        # Tool submission flow
+│   ├── admin/              # Admin areas (newsletter, tools, submissions)
+│   └── api/                # Server-side API routes
+├── components/             # React components
+│   ├── ui/                 # shadcn/ui component library
+│   ├── listing/            # Directory grid and search functionality
+│   ├── category/           # Category-specific components
+│   └── performance/        # Optimization components
+├── config/                 # Site configuration and constants
+├── lib/                    # Utilities, data fetching, and integrations
+├── types/                  # TypeScript type definitions
+└── hooks/                  # Custom React hooks
 ```
 
 ## Development Guidelines
@@ -145,25 +152,35 @@ src/
 - `src/lib/supabase.ts` - Supabase database integration and data fetching logic
 - `src/types/index.ts` - Core TypeScript interfaces  
 - `tailwind.config.ts` - Tailwind CSS configuration with shadcn/ui theme
-- `next.config.js` - Next.js configuration (minimal, relies on defaults)
+- `next.config.mjs` - Next.js configuration (performance, security headers, bundle analyzer wrapper, PostHog-related settings)
 
 ## Additional Documentation Files
 
-All project docs live in `docs/` (not the repo root):
+**Repo root (agent onboarding):** [AGENTS.md](./AGENTS.md) — short guide for any AI coding agent; this file (CLAUDE.md) is the deeper reference.
+
+All other long-form project docs live in `docs/` (not the repo root):
 - **docs/CONFIG_GUIDE.md** - Complete configuration reference
 - **docs/ENVIRONMENT_SETUP.md** - Detailed environment setup instructions
+- **docs/ENVIRONMENT_VARIABLES.md** - Environment variable reference
 - **docs/SECURITY.md** - Security best practices and guidelines
 - **docs/SEO-GUIDE.md** - SEO optimization strategies
+- **docs/SEO-KEYWORDS.md** / **docs/SEO-RANKING-TRACKER.md** - Keyword and ranking notes
 - **docs/ARCHITECTURE-GUIDE.md** - Architecture overview and patterns
 - **docs/CODEBASE-STRUCTURE-GUIDE.md** - File and folder map
+- **docs/CATEGORIES-GUIDE.md** - Category content and structure
+- **docs/TOOLS-PAGES-GUIDE.md** - Tool detail page patterns
+- **docs/AI-COMMERCIAL-REAL-ESTATE-GUIDE.md** - Domain context for CRE + AI
+- **docs/CONTENT-STYLE-GUIDE.md** - Editorial tone and content rules
 - **docs/supabase-schema.md** - Database schema reference
 - **docs/superpowers/specs/** - Design specs and planning documents
 
 ## Important Development Notes
 
-**No Cursor Rules Found**: The project doesn't have .cursor/ or .cursorrules configuration files. The CLAUDE.md reference to Cursor rules appears outdated.
+**Cursor / IDE rules**:
+- **`.cursorrules`** (repo root) — project-wide Cursor guidance (Supabase patterns, categories, data-layer conventions).
+- **`.cursor/rules/`** — optional focused rules (for example `favourites-feature.mdc`, `posthog-integration.mdc`) when editing those areas.
 
-**Next.js Configuration**: Uses minimal configuration in `next.config.js` (empty file) - relies on Next.js 15 defaults with Turbopack enabled via package.json scripts.
+**Next.js configuration**: `next.config.mjs` (not `next.config.js`) — includes package import optimization, production `removeConsole`, security headers, compression, PostHog-related `transpilePackages`, and `@next/bundle-analyzer` when enabled. **Turbopack** is used in development via `npm run dev` in `package.json`.
 
 **Testing**: No dedicated test framework is configured. Manual testing is done via the development server.
 
