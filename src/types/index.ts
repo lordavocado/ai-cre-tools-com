@@ -14,6 +14,10 @@ export interface DirectoryItem {
   screenshotUrl?: string;
   /** Supabase Storage object path, e.g. `tool-screenshots/<slug>.webp` */
   screenshotPath?: string;
+  /** Hero screenshot for cards and detail pages (above the fold view) */
+  heroScreenshotUrl?: string;
+  /** Supabase Storage object path for hero screenshot */
+  heroScreenshotPath?: string;
   features?: { name: string; description?: string }[];
   pricing?: string;
   bestFor?: string;
@@ -75,6 +79,8 @@ export interface AdminTool {
   iconUrl: string;
   screenshotUrl: string;
   screenshotPath: string;
+  heroScreenshotUrl?: string;
+  heroScreenshotPath?: string;
   displayOrder: number;
   createdAt: string;
   updatedAt: string;
