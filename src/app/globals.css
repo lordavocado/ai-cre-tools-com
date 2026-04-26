@@ -157,8 +157,7 @@
   }
 
   .search-input-enhanced:focus {
-    transform: translateY(-1px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 6px 14px -6px rgba(15, 23, 42, 0.18);
     border-color: hsl(var(--ring) / 0.45) !important;
   }
 
@@ -330,15 +329,6 @@
   }
 }
 
-
-/* Hero architectural grid texture */
-.hero-grid-texture {
-  background-image:
-    linear-gradient(hsl(var(--border) / 0.85) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--border) / 0.85) 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: 0.45;
-}
 
 /* Nav fade mask */
 .nav-fade-mask {

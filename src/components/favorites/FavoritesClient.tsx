@@ -60,7 +60,7 @@ export function FavoritesClient() {
 
   if (loading || isLoading) {
     return (
-      <div className="container mx-auto px-6 py-12 md:py-16">
+      <div className="container px-6 py-12 md:py-16">
         <div className="flex items-center gap-4 mb-8">
           <Link
             href="/"
@@ -79,7 +79,7 @@ export function FavoritesClient() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-12 md:py-16">
+    <div className="container px-6 py-12 md:py-16">
       {/* Header with back button */}
       <div className="flex items-center gap-4 mb-10">
         <Link
@@ -107,7 +107,7 @@ export function FavoritesClient() {
 
       {/* Empty State */}
       {favorites.length === 0 ? (
-        <div className="max-w-lg mx-auto rounded-xl border border-gray-200 bg-white p-12 text-center">
+        <div className="max-w-2xl rounded-xl border border-gray-200 bg-white p-12 text-center">
           <Heart className="h-10 w-10 text-gray-300 mx-auto mb-4" />
           <h2 className="text-lg font-semibold text-gray-900 mb-2">No Favorites Yet</h2>
           <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto leading-6">

@@ -285,18 +285,18 @@ export default async function DirectoryItemPage({
 
               {/* Name + tagline + chips */}
               <div className="min-w-0">
-                <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.02em] text-foreground">
+                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-[32px]">
                   {item.name}
                 </h1>
                 {item.tagline && (
-                  <p className="mt-1 text-sm text-muted-foreground">{item.tagline}</p>
+                  <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">{item.tagline}</p>
                 )}
                 {item.features && item.features.length > 0 && (
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {item.features.slice(0, 5).map((f, i) => (
                       <span
                         key={i}
-                        className="rounded-md border border-border bg-muted/70 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                        className="rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
                       >
                         {f.name}
                       </span>
@@ -343,7 +343,7 @@ export default async function DirectoryItemPage({
                   About {item.name}
                 </h2>
                 <div
-                  className="prose prose-neutral max-w-none text-sm leading-7 text-foreground prose-a:text-foreground prose-a:underline prose-a:decoration-muted-foreground prose-a:underline-offset-2 hover:prose-a:decoration-primary"
+                  className="prose prose-neutral max-w-none text-sm leading-7 text-foreground prose-headings:font-sans prose-p:font-sans prose-li:font-sans prose-strong:font-sans prose-a:font-sans prose-a:text-foreground prose-a:underline prose-a:decoration-muted-foreground prose-a:underline-offset-2 hover:prose-a:decoration-primary"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
               </section>
@@ -358,7 +358,7 @@ export default async function DirectoryItemPage({
                 <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {item.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" aria-hidden="true" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" aria-hidden="true" />
                       <div>
                         <p className="text-sm font-medium text-foreground">{feature.name}</p>
                         {feature.description && (
@@ -384,7 +384,7 @@ export default async function DirectoryItemPage({
                       <ul className="space-y-2">
                         {item.pros.map((pro: string, i: number) => (
                           <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                             {pro}
                           </li>
                         ))}
@@ -397,7 +397,7 @@ export default async function DirectoryItemPage({
                       <ul className="space-y-2">
                         {item.cons.map((con: string, i: number) => (
                           <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                             {con}
                           </li>
                         ))}
@@ -425,7 +425,7 @@ export default async function DirectoryItemPage({
 
           {/* ── Right: single unified info card ─────────────────────────── */}
           <aside className="mt-8 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start">
-            <div className="overflow-hidden rounded-md border border-border bg-muted/40 shadow-sm">
+            <div className="overflow-hidden rounded-md border border-border bg-card shadow-sm">
 
               {/* Info rows */}
               <dl className="divide-y divide-border">

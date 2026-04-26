@@ -39,26 +39,9 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
   }, [state]);
 
   return (
-    <section className="relative overflow-hidden bg-background py-[100px]">
-      {/* Architectural grid texture */}
-      <div className="hero-grid-texture absolute inset-0" aria-hidden="true" />
-      {/* Radial gradient — light centre to focus attention on content */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.96) 0%, hsl(0 0% 100% / 0.55) 60%, transparent 100%)",
-        }}
-        aria-hidden="true"
-      />
-      {/* Bottom fade into page background */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-background to-transparent"
-        aria-hidden="true"
-      />
-
-      {/* Content — max width matches DESIGN spacing.containerMax (1088px) */}
-      <div className="relative z-10 mx-auto max-w-[1088px] px-8 text-center">
+    <section className="border-b border-border bg-background py-24 md:py-28">
+      <div className="container px-6">
+        <div className="mx-auto max-w-[70ch] text-center">
         <h1 className="text-balance text-[48px] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">
           Find the Best AI Tools for{" "}
           <br className="hidden sm:block" />
@@ -103,7 +86,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
           <div className="mt-8 flex flex-wrap justify-center gap-2">
             <Link
               href="/#directory"
-              className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="rounded-full border border-border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-muted"
             >
               All tools
             </Link>
@@ -118,6 +101,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
             ))}
           </div>
         )}
+        </div>
       </div>
     </section>
   );
