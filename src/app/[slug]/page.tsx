@@ -337,11 +337,11 @@ export default async function DirectoryItemPage({
           <div>
 
             {/* Screenshot Hero */}
-            {(item.heroScreenshotUrl || item.screenshotUrl) && (
+            {item.heroScreenshotUrl && (
               <section className="pb-8">
                 <div className="overflow-hidden rounded-lg border border-border bg-muted/30">
                   <img
-                    src={item.heroScreenshotUrl || item.screenshotUrl}
+                    src={item.heroScreenshotUrl}
                     alt={`${item.name} screenshot`}
                     className="w-full object-cover"
                     loading="lazy"

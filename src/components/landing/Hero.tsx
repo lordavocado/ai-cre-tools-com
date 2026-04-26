@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { subscribeToNewsletter } from "@/app/actions";
 import { useActionState } from "react";
-import { useEffect } from "react";
 
 /** Minimal category shape needed for the hero chip row */
 export interface HeroCategory {
@@ -32,25 +31,21 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
   const count = totalItems > 0 ? `${totalItems}+` : "200+";
   const [state, formAction] = useActionState(subscribeToNewsletter, { message: "", success: false });
 
-  useEffect(() => {
-    if (state.success) {
-      // Form submission feedback handled by state.success/message render below
-    }
-  }, [state]);
-
   return (
-    <section className="border-b border-border bg-background py-24 md:py-28">
+    <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-16 md:py-20">
       <div className="container px-6">
         <div className="mx-auto max-w-[70ch] text-center">
-        <h1 className="text-balance text-[48px] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">
-          Find the Best AI Tools for{" "}
-          <br className="hidden sm:block" />
-          Commercial Real Estate
-        </h1>
-        <p className="mx-auto mt-4 max-w-lg text-pretty text-[16px] leading-relaxed text-muted-foreground">
-          {count} AI tools for CRE professionals — curated, categorised, and updated weekly.
-          Get new tools in your inbox.
-        </p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+            AI CRE Tools Directory
+          </p>
+          <h1 className="mt-3 text-balance text-[40px] font-semibold leading-[1.1] tracking-[-0.02em] text-[#0f172a] sm:text-[48px]">
+            Find the Best AI Tools for{" "}
+            <br className="hidden sm:block" />
+            Commercial Real Estate
+          </h1>
+          <p className="mx-auto mt-4 max-w-lg text-pretty text-[16px] leading-relaxed text-[#737373]">
+            {count} AI tools for CRE professionals — curated, categorised, and updated weekly. Get new tools in your inbox.
+          </p>
 
         {/* Newsletter sign-up — 44px touch targets per DESIGN */}
         <div className="mx-auto mt-8 max-w-md">
@@ -66,7 +61,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
                 name="email"
                 required
                 placeholder="Enter your email"
-                className="search-input-enhanced h-11 min-w-0 flex-1 rounded-md border border-input bg-background px-4 text-sm text-foreground shadow-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="search-input-enhanced h-11 min-w-0 flex-1 rounded-md border border-[#e0e0e0] bg-white px-4 text-sm text-[#1f1f1f] shadow-sm outline-none ring-offset-background placeholder:text-[#737373] focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
               />
               <button
                 type="submit"
@@ -86,7 +81,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
           <div className="mt-8 flex flex-wrap justify-center gap-2">
             <Link
               href="/#directory"
-              className="rounded-full border border-border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-muted"
+              className="rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa]"
             >
               All tools
             </Link>
@@ -94,7 +89,7 @@ export function Hero({ totalItems, categories = [] }: HeroProps) {
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
-                className="rounded-full border border-border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-muted"
+                className="rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa]"
               >
                 {cat.name}
               </Link>
