@@ -46,8 +46,8 @@ export const colors = {
 // ---------------------------------------------------------------------------
 
 export const typography = {
-  /** Font family — Inter only via --font-inter CSS var */
-  fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+  /** Font family — Space Grotesk via `next/font` as `--font-sans` on `html` */
+  fontFamily: "var(--font-sans), ui-sans-serif, system-ui, sans-serif",
 
   /** Hero headline */
   heroSize: '48px',

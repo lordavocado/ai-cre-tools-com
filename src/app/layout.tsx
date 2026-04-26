@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -108,16 +108,16 @@ export const viewport: Viewport = {
   userScalable: true,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f8f7f5' },
-    { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f1410' },
   ],
 };
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter'
-})
+  variable: '--font-sans',
+});
 
 export default function RootLayout({
   children,
@@ -150,27 +150,27 @@ export default function RootLayout({
         <style dangerouslySetInnerHTML={{
           __html: `
             :root {
-              --background: 30 14% 97%;
-              --foreground: 224 71% 4%;
-              --primary: 239 84% 67%;
+              --background: 0 0% 100%;
+              --foreground: 222.2 47.4% 11.2%;
+              --primary: 142 42% 32%;
               --primary-foreground: 0 0% 100%;
-              --secondary: 30 10% 94%;
-              --secondary-foreground: 224 71% 4%;
-              --muted: 30 10% 94%;
-              --muted-foreground: 220 9% 46%;
-              --border: 30 10% 88%;
-              --ring: 239 84% 67%;
-              --radius: 0.625rem;
+              --secondary: 210 40% 98%;
+              --secondary-foreground: 222.2 47.4% 11.2%;
+              --muted: 210 40% 97%;
+              --muted-foreground: 215.4 16.3% 46.9%;
+              --border: 214.3 31.8% 91.4%;
+              --ring: 142 42% 32%;
+              --radius: 0.5rem;
             }
             * { box-sizing: border-box; }
             html { height: 100%; scroll-behavior: smooth; }
             body { 
               margin: 0; 
               padding: 0; 
-              font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+              font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; 
               line-height: 1.6; 
-              color: hsl(224 71% 4%);
-              background-color: hsl(30 14% 97%);
+              color: hsl(222.2 47.4% 11.2%);
+              background-color: hsl(0 0% 100%);
               min-height: 100vh;
               font-feature-settings: "rlig" 1, "calt" 1;
               -webkit-font-smoothing: antialiased;
@@ -285,8 +285,8 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          'min-h-screen bg-white font-sans antialiased',
-          inter.variable
+          'min-h-screen bg-background font-sans antialiased',
+          spaceGrotesk.variable
         )}
       >
         <noscript

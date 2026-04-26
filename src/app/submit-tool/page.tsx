@@ -85,18 +85,20 @@ export default function SubmitToolPage() {
   };
 
   return (
-    <div className="container mx-auto px-6 py-14 md:py-20 max-w-2xl">
-      <div className="mb-10 border-b border-[#e0e0e0] pb-10">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#737373]">Submit a Tool</p>
-        <h1 className="text-[32px] font-semibold tracking-[-0.5px] text-[#1f1f1f] mb-3">
-          Add an AI CRE Tool to the directory
+    <div className="container mx-auto max-w-2xl px-6 py-14 md:py-20">
+      <div className="mb-10 border-b border-border pb-10">
+        <p className="mb-3 text-xs font-medium tracking-wide text-muted-foreground">
+          Submit a tool
+        </p>
+        <h1 className="mb-3 text-[32px] font-semibold tracking-[-0.01em] text-foreground">
+          Add an AI CRE tool to the directory
         </h1>
-        <p className="text-sm text-[#737373] leading-6">
+        <p className="text-sm leading-6 text-muted-foreground">
           Help us expand our directory by submitting AI tools for commercial real estate professionals.
         </p>
       </div>
 
-      <Card>
+      <Card className="border-border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Send className="h-5 w-5" />
@@ -170,7 +172,7 @@ export default function SubmitToolPage() {
                       />
                     </FormControl>
                     <FormMessage />
-                    <p className="text-sm text-[#737373] mt-1">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {field.value?.length || 0}/500 characters
                     </p>
                   </FormItem>
@@ -198,13 +200,13 @@ export default function SubmitToolPage() {
             </form>
           </Form>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="font-medium text-blue-900 mb-2">What happens next?</h3>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• We&apos;ll review your submission for relevance and quality</li>
-              <li>• If we accept it, we&apos;ll run our research flow and prepare it for publishing</li>
-              <li>• We may reach out if we need clarification during review</li>
-              <li>• Approved tools will be added to our directory within 2-3 business days</li>
+          <div className="mt-6 rounded-lg border border-border bg-muted/50 p-4">
+            <h3 className="mb-2 text-sm font-semibold text-foreground">What happens next?</h3>
+            <ul className="space-y-1.5 text-sm text-muted-foreground">
+              <li>We&apos;ll review your submission for relevance and quality.</li>
+              <li>If we accept it, we&apos;ll run our research flow and prepare it for publishing.</li>
+              <li>We may reach out if we need clarification during review.</li>
+              <li>Approved tools are usually added within 2–3 business days.</li>
             </ul>
           </div>
         </CardContent>

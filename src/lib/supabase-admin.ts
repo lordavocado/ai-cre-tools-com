@@ -23,6 +23,8 @@ type AdminToolRow = {
   country: string | null;
   city: string | null;
   icon_url: string | null;
+  screenshot_url: string | null;
+  screenshot_path: string | null;
   display_order: number | null;
   created_at: string;
   updated_at: string;
@@ -131,6 +133,8 @@ function mapAdminToolRow(row: AdminToolRow): AdminTool {
     country: row.country ?? '',
     city: row.city ?? '',
     iconUrl: row.icon_url ?? '',
+    screenshotUrl: row.screenshot_url ?? '',
+    screenshotPath: row.screenshot_path ?? '',
     displayOrder: row.display_order ?? 999,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

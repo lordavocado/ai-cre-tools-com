@@ -1,34 +1,35 @@
 @import "tailwindcss";
 
 @theme {
+  /* Aligned with DESIGN.md — keep in sync when tokens change */
   --color-background: 0 0% 100%;
-  --color-foreground: 0 0% 12%;
+  --color-foreground: 222.2 47.4% 11.2%;
 
-  --color-card: 0 0% 98%;
-  --color-card-foreground: 0 0% 12%;
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 222.2 47.4% 11.2%;
 
   --color-popover: 0 0% 100%;
-  --color-popover-foreground: 0 0% 12%;
+  --color-popover-foreground: 222.2 47.4% 11.2%;
 
-  --color-primary: 100 34% 43%;
+  --color-primary: 142 42% 32%;
   --color-primary-foreground: 0 0% 100%;
 
-  --color-secondary: 0 0% 98%;
-  --color-secondary-foreground: 0 0% 12%;
+  --color-secondary: 210 40% 98%;
+  --color-secondary-foreground: 222.2 47.4% 11.2%;
 
-  --color-muted: 0 0% 98%;
-  --color-muted-foreground: 0 0% 45%;
+  --color-muted: 210 40% 97%;
+  --color-muted-foreground: 215.4 16.3% 46.9%;
 
-  --color-accent: 120 53% 96%;
-  --color-accent-foreground: 100 34% 43%;
+  --color-accent: 210 40% 96%;
+  --color-accent-foreground: 222.2 47.4% 11.2%;
 
-  --color-destructive: 0 84% 60%;
-  --color-destructive-foreground: 0 0% 100%;
+  --color-destructive: 0 84.2% 60.2%;
+  --color-destructive-foreground: 210 40% 98%;
 
-  --color-border: 0 0% 88%;
-  --color-input: 0 0% 88%;
+  --color-border: 214.3 31.8% 91.4%;
+  --color-input: 214.3 31.8% 91.4%;
 
-  --color-ring: 100 34% 43%;
+  --color-ring: 142 42% 32%;
 
   --radius: 0.5rem;
 }
@@ -36,57 +37,57 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 12%;
+    --foreground: 222.2 47.4% 11.2%;
 
-    --card: 0 0% 98%;
-    --card-foreground: 0 0% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 12%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 100 34% 43%;
+    --primary: 142 42% 32%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 98%;
-    --secondary-foreground: 0 0% 12%;
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 0 0% 98%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 210 40% 97%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 120 53% 96%;
-    --accent-foreground: 100 34% 43%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 88%;
-    --input: 0 0% 88%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
 
-    --ring: 100 34% 43%;
+    --ring: 142 42% 32%;
 
     --radius: 0.5rem;
 
     /* Sidebar specific colors - light theme */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 12%;
-    --sidebar-primary: 100 34% 43%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-primary: 142 42% 32%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 120 53% 96%;
-    --sidebar-accent-foreground: 100 34% 43%;
-    --sidebar-border: 0 0% 88%;
-    --sidebar-ring: 100 34% 43%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 142 42% 32%;
 
-    --chart-1: 100 34% 43%;
-    --chart-2: 100 27% 55%;
-    --chart-3: 100 20% 65%;
-    --chart-4: 100 15% 75%;
-    --chart-5: 100 10% 85%;
+    --chart-1: 142 42% 32%;
+    --chart-2: 142 30% 40%;
+    --chart-3: 215.4 16.3% 46.9%;
+    --chart-4: 210 40% 80%;
+    --chart-5: 210 40% 90%;
   }
 
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -100,7 +101,7 @@
     --popover: 114 20% 8%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 100 27% 55%;
+    --primary: 142 35% 48%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 114 15% 13%;
@@ -109,8 +110,8 @@
     --muted: 114 15% 13%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 114 20% 15%;
-    --accent-foreground: 100 27% 65%;
+    --accent: 114 18% 16%;
+    --accent-foreground: 0 0% 95%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
@@ -118,23 +119,23 @@
     --border: 114 15% 18%;
     --input: 114 15% 18%;
 
-    --ring: 100 27% 55%;
+    --ring: 142 35% 48%;
 
     /* Sidebar specific colors - dark theme */
     --sidebar-background: 114 20% 7%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 100 27% 55%;
+    --sidebar-primary: 142 35% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 114 15% 13%;
-    --sidebar-accent-foreground: 100 27% 65%;
+    --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 114 15% 18%;
-    --sidebar-ring: 100 27% 55%;
+    --sidebar-ring: 142 35% 48%;
 
-    --chart-1: 100 27% 65%;
-    --chart-2: 100 27% 50%;
-    --chart-3: 100 20% 35%;
-    --chart-4: 120 30% 60%;
-    --chart-5: 120 20% 45%;
+    --chart-1: 142 35% 48%;
+    --chart-2: 142 28% 40%;
+    --chart-3: 0 0% 60%;
+    --chart-4: 114 15% 25%;
+    --chart-5: 114 12% 35%;
   }
 }
 
@@ -158,7 +159,7 @@
   .search-input-enhanced:focus {
     transform: translateY(-1px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border-color: rgba(98, 150, 73, 0.5) !important;
+    border-color: hsl(var(--ring) / 0.45) !important;
   }
 
   .search-dropdown-enhanced {
@@ -333,14 +334,14 @@
 /* Hero architectural grid texture */
 .hero-grid-texture {
   background-image:
-    linear-gradient(#d4d4d4 1px, transparent 1px),
-    linear-gradient(90deg, #d4d4d4 1px, transparent 1px);
+    linear-gradient(hsl(var(--border) / 0.85) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.85) 1px, transparent 1px);
   background-size: 28px 28px;
   opacity: 0.45;
 }
 
 /* Nav fade mask */
 .nav-fade-mask {
-  background: linear-gradient(to bottom, #ffffff, transparent);
+  background: linear-gradient(to bottom, hsl(var(--background)), transparent);
   pointer-events: none;
 }

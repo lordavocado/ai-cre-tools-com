@@ -116,9 +116,6 @@ export default async function DirectoryItemPage({
     item.socials &&
     (item.socials.twitter || item.socials.linkedin || item.socials.facebook);
 
-  const hasQuickFacts =
-    item.pricing || item.foundedYear || item.country || item.city || item.rating;
-
   const toolPageUrl = `${siteConfig.url}/${slug}`;
 
   return (
@@ -255,25 +252,25 @@ export default async function DirectoryItemPage({
       )}
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-[#e0e0e0] bg-white">
+      <div className="border-b border-border bg-background">
         <div className="container px-6 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[#737373]">
-            <Link href="/" className="hover:text-[#1f1f1f] transition-colors">Home</Link>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
             <span>/</span>
-            <Link href="/#directory" className="hover:text-[#1f1f1f] transition-colors">Tools</Link>
+            <Link href="/#directory" className="transition-colors hover:text-foreground">Tools</Link>
             <span>/</span>
-            <span className="text-[#1f1f1f]">{item.name}</span>
+            <span className="text-foreground">{item.name}</span>
           </nav>
         </div>
       </div>
 
-      <div className="border-b border-[#e0e0e0] bg-white">
+      <div className="border-b border-border bg-background">
         <div className="container px-6 py-8">
           {/* Top row: favicon + identity + action buttons */}
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
               {/* Favicon */}
-              <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-[#fafafa]">
+              <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted/60">
                 {item.website ? (
                   <ToolFavicon
                     website={item.website}
@@ -282,24 +279,24 @@ export default async function DirectoryItemPage({
                     className="h-9 w-9"
                   />
                 ) : (
-                  <span className="text-xl font-bold text-[#737373]">{item.name.charAt(0)}</span>
+                  <span className="text-xl font-bold text-muted-foreground">{item.name.charAt(0)}</span>
                 )}
               </div>
 
               {/* Name + tagline + chips */}
               <div className="min-w-0">
-                <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.4px] text-[#1f1f1f]">
+                <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.02em] text-foreground">
                   {item.name}
                 </h1>
                 {item.tagline && (
-                  <p className="mt-1 text-sm text-[#737373]">{item.tagline}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{item.tagline}</p>
                 )}
                 {item.features && item.features.length > 0 && (
                   <div className="mt-2.5 flex flex-wrap gap-1.5">
                     {item.features.slice(0, 5).map((f, i) => (
                       <span
                         key={i}
-                        className="rounded-[6px] border border-[#e8e8e8] bg-[#fafafa] px-2 py-0.5 text-[11px] font-medium text-[#737373]"
+                        className="rounded-md border border-border bg-muted/70 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
                       >
                         {f.name}
                       </span>
@@ -309,19 +306,19 @@ export default async function DirectoryItemPage({
               </div>
             </div>
 
-            {/* Action buttons — live in the header, always visible */}
+            {/* Action buttons — primary CTA uses accent green per DESIGN */}
             <div className="flex shrink-0 items-center gap-2">
               <FavoriteButton
                 toolId={item.id}
                 variant="icon"
-                className="rounded-[6px] border border-[#e0e0e0] bg-white p-2 text-[#737373] shadow-none hover:bg-[#fafafa] hover:text-[#629649]"
+                className="rounded-md border border-border bg-background p-2 text-muted-foreground shadow-none hover:bg-muted hover:text-foreground"
               />
               {item.website && (
                 <Link
                   href={item.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#629649] px-4 py-2 text-sm font-medium text-white transition-colors duration-100 hover:bg-[#4a7238]"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-100 hover:bg-primary/90"
                 >
                   Visit Website
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -342,11 +339,11 @@ export default async function DirectoryItemPage({
             {/* About */}
             {item.description && (
               <section className="pb-8">
-                <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-[#737373]">
+                <h2 className="mb-4 text-sm font-semibold text-foreground">
                   About {item.name}
                 </h2>
                 <div
-                  className="prose prose-neutral max-w-none text-sm leading-7 text-[#1f1f1f] [&_a]:text-[#629649] [&_a:hover]:text-[#4a7238]"
+                  className="prose prose-neutral max-w-none text-sm leading-7 text-foreground prose-a:text-foreground prose-a:underline prose-a:decoration-muted-foreground prose-a:underline-offset-2 hover:prose-a:decoration-primary"
                   dangerouslySetInnerHTML={{ __html: item.description }}
                 />
               </section>
@@ -354,18 +351,18 @@ export default async function DirectoryItemPage({
 
             {/* Key Features */}
             {item.features && item.features.length > 0 && (
-              <section className="border-t border-[#e0e0e0] py-8">
-                <h2 className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
-                  Key Features
+              <section className="border-t border-border py-8">
+                <h2 className="mb-5 text-sm font-semibold text-foreground">
+                  Key features
                 </h2>
                 <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {item.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1f1f1f]" aria-hidden="true" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" aria-hidden="true" />
                       <div>
-                        <p className="text-sm font-medium text-[#1f1f1f]">{feature.name}</p>
+                        <p className="text-sm font-medium text-foreground">{feature.name}</p>
                         {feature.description && (
-                          <p className="mt-0.5 text-xs leading-5 text-[#737373]">{feature.description}</p>
+                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{feature.description}</p>
                         )}
                       </div>
                     </li>
@@ -376,18 +373,18 @@ export default async function DirectoryItemPage({
 
             {/* Pros & Cons */}
             {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
-              <section className="border-t border-[#e0e0e0] py-8">
-                <h2 className="mb-5 text-xs font-semibold uppercase tracking-wider text-[#737373]">
-                  Pros &amp; Cons
+              <section className="border-t border-border py-8">
+                <h2 className="mb-5 text-sm font-semibold text-foreground">
+                  Pros and cons
                 </h2>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   {item.pros && item.pros.length > 0 && (
                     <div>
-                      <p className="mb-3 text-xs font-semibold text-[#629649]">Pros</p>
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Pros</p>
                       <ul className="space-y-2">
                         {item.pros.map((pro: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#629649]" />
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" />
                             {pro}
                           </li>
                         ))}
@@ -396,11 +393,11 @@ export default async function DirectoryItemPage({
                   )}
                   {item.cons && item.cons.length > 0 && (
                     <div>
-                      <p className="mb-3 text-xs font-semibold text-[#737373]">Cons</p>
+                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cons</p>
                       <ul className="space-y-2">
                         {item.cons.map((con: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#e0e0e0]" />
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-foreground">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
                             {con}
                           </li>
                         ))}
@@ -413,8 +410,8 @@ export default async function DirectoryItemPage({
 
             {/* Similar Tools */}
             {relatedItems.length > 0 && (
-              <section className="border-t border-[#e0e0e0] pt-8">
-                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
+              <section className="border-t border-border pt-8">
+                <h2 className="mb-5 text-sm font-semibold text-foreground">
                   Similar tools
                 </h2>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -428,17 +425,17 @@ export default async function DirectoryItemPage({
 
           {/* ── Right: single unified info card ─────────────────────────── */}
           <aside className="mt-8 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start">
-            <div className="rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] overflow-hidden">
+            <div className="overflow-hidden rounded-md border border-border bg-muted/40 shadow-sm">
 
               {/* Info rows */}
-              <dl className="divide-y divide-[#e0e0e0]">
+              <dl className="divide-y divide-border">
                 {primaryCategory && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Category</dt>
+                    <dt className="text-xs text-muted-foreground">Category</dt>
                     <dd>
                       <Link
                         href={`/categories/${primaryCategory}`}
-                        className="text-xs font-medium text-[#629649] hover:text-[#4a7238] transition-colors"
+                        className="text-xs font-medium text-foreground underline-offset-2 transition-colors hover:underline"
                       >
                         {getCategoryLabel(primaryCategory)}
                       </Link>
@@ -447,13 +444,13 @@ export default async function DirectoryItemPage({
                 )}
                 {item.website && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Website</dt>
+                    <dt className="text-xs text-muted-foreground">Website</dt>
                     <dd>
                       <Link
                         href={item.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-medium text-[#1f1f1f] hover:text-[#629649] transition-colors"
+                        className="text-xs font-medium text-foreground underline-offset-2 transition-colors hover:underline"
                       >
                         {new URL(item.website).hostname.replace(/^www\./, "")}
                       </Link>
@@ -462,20 +459,20 @@ export default async function DirectoryItemPage({
                 )}
                 {item.pricing && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Pricing</dt>
-                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.pricing}</dd>
+                    <dt className="text-xs text-muted-foreground">Pricing</dt>
+                    <dd className="text-xs font-medium text-foreground">{item.pricing}</dd>
                   </div>
                 )}
                 {item.foundedYear && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Founded</dt>
-                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.foundedYear}</dd>
+                    <dt className="text-xs text-muted-foreground">Founded</dt>
+                    <dd className="text-xs font-medium text-foreground">{item.foundedYear}</dd>
                   </div>
                 )}
                 {(item.city || item.country) && (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Location</dt>
-                    <dd className="text-xs font-medium text-[#1f1f1f]">
+                    <dt className="text-xs text-muted-foreground">Location</dt>
+                    <dd className="text-xs font-medium text-foreground">
                       {[item.city, item.country].filter(Boolean).join(", ")}
                     </dd>
                   </div>
@@ -484,14 +481,14 @@ export default async function DirectoryItemPage({
 
               {/* Social links */}
               {hasSocials && (
-                <div className="border-t border-[#e0e0e0] flex items-center gap-1.5 px-4 py-3">
+                <div className="flex items-center gap-1.5 border-t border-border px-4 py-3">
                   {item.socials?.twitter && (
                     <Link
                       href={`https://twitter.com/${item.socials.twitter}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Twitter"
-                      className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e0e0e0] text-[#737373] hover:bg-white hover:text-[#629649] transition-colors"
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
                     >
                       <Twitter size={12} aria-hidden="true" />
                     </Link>
@@ -502,7 +499,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="LinkedIn"
-                      className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e0e0e0] text-[#737373] hover:bg-white hover:text-[#629649] transition-colors"
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
                     >
                       <Linkedin size={12} aria-hidden="true" />
                     </Link>
@@ -513,7 +510,7 @@ export default async function DirectoryItemPage({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"
-                      className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[#e0e0e0] text-[#737373] hover:bg-white hover:text-[#629649] transition-colors"
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
                     >
                       <Facebook size={12} aria-hidden="true" />
                     </Link>

@@ -7,6 +7,13 @@ export interface DirectoryItem {
   category: string;
   website: string;
   imageUrl?: string;
+  /**
+   * Optional screenshot image for this tool (typically stored in Supabase Storage).
+   * Prefer `screenshotPath` for storage portability; `screenshotUrl` can be derived.
+   */
+  screenshotUrl?: string;
+  /** Supabase Storage object path, e.g. `tool-screenshots/<slug>.webp` */
+  screenshotPath?: string;
   features?: { name: string; description?: string }[];
   pricing?: string;
   bestFor?: string;
@@ -66,6 +73,8 @@ export interface AdminTool {
   country: string;
   city: string;
   iconUrl: string;
+  screenshotUrl: string;
+  screenshotPath: string;
   displayOrder: number;
   createdAt: string;
   updatedAt: string;
