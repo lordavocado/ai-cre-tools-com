@@ -86,15 +86,14 @@ export const metadata: Metadata = {
   // Enhanced favicon and app icons for mobile optimization
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/ai-cre-tools-logo.jpg', sizes: '32x32', type: 'image/jpeg' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     apple: [
       { url: '/ai-cre-tools-logo.jpg', sizes: '180x180', type: 'image/jpeg' },
       { url: '/ai-cre-tools-logo.jpg', sizes: '152x152', type: 'image/jpeg' },
       { url: '/ai-cre-tools-logo.jpg', sizes: '120x120', type: 'image/jpeg' },
     ],
-    shortcut: '/favicon.ico',
+    shortcut: '/favicon.svg',
   },
   
   // Web app manifest
