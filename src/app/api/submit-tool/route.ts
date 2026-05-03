@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { storeToolSubmission } from '@/lib/supabase';
 import { isSupabaseStorageConfigured } from '@/lib/tool-submissions-config';
+import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 
 const submitToolSchema = z.object({
   website: z.string()
@@ -25,6 +26,19 @@ const submitToolSchema = z.object({
   comment: z.string()
     .min(10, { message: "Please provide at least 10 characters explaining why this tool is relevant" })
     .max(500, { message: "Comment must be less than 500 characters" }),
+  /** Optional; helps the queue when automated research is off or weak */
+  name: z.string().max(200).optional(),
+  /** Optional; must be a directory display label when set */
+  category: z.string().max(120).optional(),
+}).superRefine((data, ctx) => {
+  const category = data.category?.trim();
+  if (category && !(TOOL_SUBMISSION_CATEGORIES as readonly string[]).includes(category)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please choose a category from the list or leave it blank.',
+      path: ['category'],
+    });
+  }
 });
 
 export async function POST(request: NextRequest) {
@@ -53,15 +67,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { website, email, comment } = validatedData.data;
+    const { website, email, comment, name, category } = validatedData.data;
+    const trimmedName = name?.trim() ?? '';
+    const trimmedCategory = category?.trim() ?? '';
 
     const submissionId = await storeToolSubmission({
       website,
       email,
       comment,
       slug: '',
-      name: '',
-      category: '',
+      name: trimmedName,
+      category: trimmedCategory,
       features: '',
       oneLiner: '',
       description: '',

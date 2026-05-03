@@ -23,7 +23,10 @@ const TavilyToolContentSchema = z.object({
   slug: z.string().optional().default(''),
   website: z.string().optional().default(''),
   name: z.string().optional().default(''),
-  category: z.enum(TOOL_SUBMISSION_CATEGORIES).optional().default('Development & Construction'),
+  category: z
+    .enum(TOOL_SUBMISSION_CATEGORIES as unknown as [string, ...string[]])
+    .optional()
+    .default('Development & Construction'),
   features: z.union([z.string(), z.array(z.string())]).optional().default(''),
   one_liner: z.string().optional().default(''),
   description: z.string().optional().default(''),

@@ -27,8 +27,17 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AdminContent,
+  AdminHero,
+  AdminSignOutButton,
+  adminCardClass,
+  adminInputClass,
+  adminSelectTriggerClass,
+  adminTextareaClass,
+} from '@/components/admin/AdminChrome';
 import { isValidSlug, isValidSlugFormat } from '@/lib/routing-utils-client';
-import { resolveCategoryInfo } from '@/lib/utils';
+import { cn, resolveCategoryInfo } from '@/lib/utils';
 import type { AdminTool } from '@/types';
 
 type CategoryOption = {
@@ -274,108 +283,112 @@ export default function ToolsDashboard({
 
   if (loading) {
     return (
-      <div className="container mx-auto flex items-center justify-center px-4 py-8">
+      <div className="flex min-h-[40vh] items-center justify-center px-6 py-16">
         <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p>Loading live tools...</p>
+          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-[#629649]" />
+          <p className="text-sm text-[#737373]">Loading live tools…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">Live Tools</h1>
-          <p className="text-gray-600">
-            These are the actual records in the live directory. Edit them here after a submission has been accepted and published.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline">
-            <Link href="/admin/submissions">Back to Submissions</Link>
-          </Button>
-          <form action="/api/admin/logout" method="post">
-            <Button type="submit" variant="outline">Sign Out</Button>
-          </form>
-        </div>
-      </div>
+    <>
+      <AdminHero
+        kicker="Directory"
+        title="Live tools"
+        description="Rows in the public directory (ecosystem_apps). Edits apply to production immediately after save."
+        actions={(
+          <>
+            <Button asChild variant="outline" className="rounded-[8px] border-[#e0e0e0]">
+              <Link href="/admin/submissions">Submissions</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-[8px] border-[#e0e0e0]">
+              <Link href="/admin">Admin home</Link>
+            </Button>
+            <AdminSignOutButton />
+          </>
+        )}
+      />
 
-      {errorMessage && (
-        <Card className="mb-6 border-amber-200 bg-amber-50">
+      <AdminContent>
+        {errorMessage && (
+          <Card className={cn(adminCardClass, 'mb-6 border-amber-200 bg-amber-50')}>
+            <CardHeader>
+              <CardTitle className="text-lg text-amber-900">Live editor unavailable</CardTitle>
+              <CardDescription className="text-amber-800">{errorMessage}</CardDescription>
+            </CardHeader>
+          </Card>
+        )}
+
+        <Card className={cn(adminCardClass, 'mb-6')}>
           <CardHeader>
-            <CardTitle className="text-amber-900">Live editor unavailable</CardTitle>
-            <CardDescription className="text-amber-800">{errorMessage}</CardDescription>
+            <CardTitle className="text-lg font-semibold text-[#0f172a]">Published records</CardTitle>
+            <CardDescription className="text-[#737373]">
+              Search by name, slug, or website, then open a row to edit.
+            </CardDescription>
           </CardHeader>
+          <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="relative w-full md:max-w-md">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999999]" />
+              <Input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search live tools"
+                className={cn(adminInputClass, 'pl-9')}
+              />
+            </div>
+            <Button
+              onClick={() => loadTools({ background: true })}
+              variant="outline"
+              disabled={refreshing}
+              className="rounded-[8px] border-[#e0e0e0]"
+            >
+              {refreshing ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              Refresh
+            </Button>
+          </CardContent>
         </Card>
-      )}
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Published Directory Records</CardTitle>
-          <CardDescription>
-            Search by name, slug, or website, then open a record to edit the live content.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="relative w-full md:max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search live tools"
-              className="pl-9"
-            />
-          </div>
-          <Button
-            onClick={() => loadTools({ background: true })}
-            variant="outline"
-            disabled={refreshing}
-          >
-            {refreshing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            Refresh
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-0">
-          <Table>
+        <Card className={cn(adminCardClass, 'overflow-hidden p-0')}>
+          <CardContent className="p-0">
+            <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Website</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Display Order</TableHead>
-                <TableHead>Updated</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="border-[#e0e0e0] bg-[#fafafa] hover:bg-[#fafafa]">
+                <TableHead className="text-[#737373]">Name</TableHead>
+                <TableHead className="text-[#737373]">Slug</TableHead>
+                <TableHead className="text-[#737373]">Website</TableHead>
+                <TableHead className="text-[#737373]">Category</TableHead>
+                <TableHead className="text-[#737373]">Display order</TableHead>
+                <TableHead className="text-[#737373]">Updated</TableHead>
+                <TableHead className="text-right text-[#737373]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredTools.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                  <TableCell colSpan={7} className="py-8 text-center text-[#737373]">
                     No live tools found.
                   </TableCell>
                 </TableRow>
               ) : filteredTools.map((tool) => (
-                <TableRow key={tool.slug}>
-                  <TableCell className="font-medium">{tool.name}</TableCell>
+                <TableRow key={tool.slug} className="border-[#f0f0f0]">
+                  <TableCell className="font-medium text-[#0f172a]">{tool.name}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{tool.slug}</Badge>
+                    <Badge variant="outline" className="rounded-[6px] border-[#e0e0e0] font-normal">
+                      {tool.slug}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <a
                       href={tool.websiteUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex max-w-[260px] items-center gap-2 truncate text-blue-600 hover:underline"
+                      className="inline-flex max-w-[260px] items-center gap-2 truncate text-[#2563eb] hover:underline"
                     >
                       <ExternalLink className="h-4 w-4 shrink-0" />
                       <span className="truncate">{tool.websiteUrl}</span>
@@ -385,7 +398,12 @@ export default function ToolsDashboard({
                   <TableCell>{tool.displayOrder}</TableCell>
                   <TableCell>{new Date(tool.updatedAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
-                    <Button onClick={() => openToolEditor(tool)} variant="outline" size="sm">
+                    <Button
+                      onClick={() => openToolEditor(tool)}
+                      variant="outline"
+                      size="sm"
+                      className="rounded-[8px] border-[#e0e0e0]"
+                    >
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </Button>
@@ -403,32 +421,34 @@ export default function ToolsDashboard({
           setToolEditor(null);
         }
       }}>
-        <DialogContent className="max-h-[85vh] max-w-4xl overflow-y-auto">
+        <DialogContent className="max-h-[85vh] max-w-4xl overflow-y-auto rounded-[8px] border-[#e0e0e0]">
           {selectedTool && toolEditor && (
             <>
               <DialogHeader>
-                <DialogTitle>Edit Live Tool</DialogTitle>
-                <DialogDescription>
-                  Changes here update the live directory record immediately.
+                <DialogTitle className="text-xl font-semibold text-[#0f172a]">Edit live tool</DialogTitle>
+                <DialogDescription className="text-[#737373]">
+                  Saves apply to the live directory immediately.
                 </DialogDescription>
               </DialogHeader>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="tool-name">Name</Label>
+                  <Label htmlFor="tool-name" className="text-[#1f1f1f]">Name</Label>
                   <Input
                     id="tool-name"
                     value={toolEditor.name}
                     onChange={(event) => setToolEditor({ ...toolEditor, name: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tool-slug">Slug</Label>
+                  <Label htmlFor="tool-slug" className="text-[#1f1f1f]">Slug</Label>
                   <Input
                     id="tool-slug"
                     value={toolEditor.slug}
                     onChange={(event) => setToolEditor({ ...toolEditor, slug: event.target.value })}
+                    className={adminInputClass}
                   />
                   {toolSlugValidationError && (
                     <p className="text-sm text-red-600">{toolSlugValidationError}</p>
@@ -436,22 +456,23 @@ export default function ToolsDashboard({
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="tool-website">Website</Label>
+                  <Label htmlFor="tool-website" className="text-[#1f1f1f]">Website</Label>
                   <Input
                     id="tool-website"
                     type="url"
                     value={toolEditor.websiteUrl}
                     onChange={(event) => setToolEditor({ ...toolEditor, websiteUrl: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tool-category">Category</Label>
+                  <Label htmlFor="tool-category" className="text-[#1f1f1f]">Category</Label>
                   <Select
                     value={toolEditor.category}
                     onValueChange={(value) => setToolEditor({ ...toolEditor, category: value })}
                   >
-                    <SelectTrigger id="tool-category">
+                    <SelectTrigger id="tool-category" className={adminSelectTriggerClass}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -465,82 +486,93 @@ export default function ToolsDashboard({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tool-display-order">Display Order</Label>
+                  <Label htmlFor="tool-display-order" className="text-[#1f1f1f]">Display order</Label>
                   <Input
                     id="tool-display-order"
                     inputMode="numeric"
                     value={toolEditor.displayOrder}
                     onChange={(event) => setToolEditor({ ...toolEditor, displayOrder: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="tool-tagline">Tagline</Label>
+                  <Label htmlFor="tool-tagline" className="text-[#1f1f1f]">Tagline</Label>
                   <Input
                     id="tool-tagline"
                     value={toolEditor.oneLiner}
                     onChange={(event) => setToolEditor({ ...toolEditor, oneLiner: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="tool-features">Features</Label>
+                  <Label htmlFor="tool-features" className="text-[#1f1f1f]">Features</Label>
                   <Textarea
                     id="tool-features"
                     rows={5}
                     value={toolEditor.featuresText}
                     onChange={(event) => setToolEditor({ ...toolEditor, featuresText: event.target.value })}
                     placeholder="One feature per line"
+                    className={adminTextareaClass}
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="tool-description">Description</Label>
+                  <Label htmlFor="tool-description" className="text-[#1f1f1f]">Description</Label>
                   <Textarea
                     id="tool-description"
                     rows={8}
                     value={toolEditor.description}
                     onChange={(event) => setToolEditor({ ...toolEditor, description: event.target.value })}
+                    className={adminTextareaClass}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tool-country">Country</Label>
+                  <Label htmlFor="tool-country" className="text-[#1f1f1f]">Country</Label>
                   <Input
                     id="tool-country"
                     value={toolEditor.country}
                     onChange={(event) => setToolEditor({ ...toolEditor, country: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tool-city">City</Label>
+                  <Label htmlFor="tool-city" className="text-[#1f1f1f]">City</Label>
                   <Input
                     id="tool-city"
                     value={toolEditor.city}
                     onChange={(event) => setToolEditor({ ...toolEditor, city: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="tool-icon">Icon URL</Label>
+                  <Label htmlFor="tool-icon" className="text-[#1f1f1f]">Icon URL</Label>
                   <Input
                     id="tool-icon"
                     type="url"
                     value={toolEditor.iconUrl}
                     onChange={(event) => setToolEditor({ ...toolEditor, iconUrl: event.target.value })}
+                    className={adminInputClass}
                   />
                 </div>
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => {
+                <Button
+                  variant="outline"
+                  className="rounded-[8px] border-[#e0e0e0]"
+                  onClick={() => {
                   setSelectedTool(null);
                   setToolEditor(null);
-                }}>
+                }}
+                >
                   Close
                 </Button>
-                <Button onClick={handleSaveTool} disabled={savingTool}>
+                <Button onClick={handleSaveTool} disabled={savingTool} className="rounded-[8px]">
                   {savingTool ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
@@ -553,6 +585,7 @@ export default function ToolsDashboard({
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </AdminContent>
+    </>
   );
 }

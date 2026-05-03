@@ -132,14 +132,9 @@ export function Footer() {
         </div>
 
         {/* Newsletter row */}
-        <div className="border-t border-[#e0e0e0] py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-[#737373]">Stay updated on new CRE AI tools</p>
-          <NewsletterForm
-            source="footer"
-            fieldsClassName="gap-2"
-            inputClassName="rounded-[6px] border border-[#e0e0e0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#629649] w-48 h-auto"
-            buttonClassName="rounded-[6px] bg-[#629649] px-3 py-1.5 text-sm text-white hover:bg-[#4a7238] transition-colors duration-100 w-auto border-0"
-          />
+        <div className="border-t border-[#e0e0e0] py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-[#737373] sm:text-sm">Stay updated on new CRE AI tools</p>
+          <NewsletterForm source="footer" variant="brand" size="sm" />
         </div>
 
         {/* Copyright bar */}

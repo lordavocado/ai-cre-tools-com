@@ -14,7 +14,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 import type { ToolSubmission, ToolSubmissionStatus } from '@/lib/supabase';
-import { getCategoryDisplayName } from '@/lib/utils';
+import {
+  AdminContent,
+  AdminHero,
+  AdminSignOutButton,
+  adminCardClass,
+  adminInputClass,
+  adminSelectTriggerClass,
+  adminTextareaClass,
+} from '@/components/admin/AdminChrome';
+import { cn, getCategoryDisplayName } from '@/lib/utils';
 import {
   CheckCircle,
   XCircle,
@@ -29,6 +38,8 @@ import {
   RefreshCw,
   Save,
   Sparkles,
+  AlertCircle,
+  Rocket,
 } from 'lucide-react';
 
 type SubmissionFormState = {
@@ -45,7 +56,7 @@ type SubmissionFormState = {
   researchStatus: 'pending' | 'completed' | 'failed';
 };
 
-type PendingAction = 'approve' | 'reject' | 'retry' | 'save' | null;
+type PendingAction = 'approveAuto' | 'approveManual' | 'reject' | 'retry' | 'save' | null;
 
 const STATUS_TABS: ToolSubmissionStatus[] = ['pending', 'approved', 'rejected'];
 
@@ -81,14 +92,26 @@ function formatSubmissionCategory(category: string) {
   return getCategoryDisplayName(category);
 }
 
+type SubmissionSystemStatus = {
+  adminBasicAuthConfigured: boolean;
+  supabaseStorageConfigured: boolean;
+  supabaseAdminConfigured: boolean;
+  researchProviderConfigured: boolean;
+  researchProvider: 'tavily' | 'perplexity' | null;
+  tavilyConfigured: boolean;
+  perplexityConfigured: boolean;
+};
+
 export default function SubmissionsDashboard() {
   const [submissions, setSubmissions] = useState<ToolSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [systemStatus, setSystemStatus] = useState<SubmissionSystemStatus | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<ToolSubmission | null>(null);
   const [formState, setFormState] = useState<SubmissionFormState | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+  const [autoPublishingId, setAutoPublishingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ToolSubmissionStatus>('pending');
   const { toast } = useToast();
 
@@ -162,6 +185,26 @@ export default function SubmissionsDashboard() {
   }, [fetchSubmissions]);
 
   useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await fetch('/api/admin/submission-system-status');
+        const data = (await response.json().catch(() => null)) as SubmissionSystemStatus | null;
+        if (!cancelled && response.ok && data && typeof data.supabaseStorageConfigured === 'boolean') {
+          setSystemStatus(data);
+        }
+      } catch {
+        /* non-blocking */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!selectedSubmission) {
       setFormState(null);
       return;
@@ -233,56 +276,156 @@ export default function SubmissionsDashboard() {
     }
   }, [formState, redirectToLogin, replaceSubmissionInState, selectedSubmission, toast]);
 
-  const handleStatusUpdate = async (status: 'approved' | 'rejected') => {
-    if (!selectedSubmission || (status === 'approved' && !formState)) {
+  const handleAcceptAutoPublish = useCallback(async (submissionOverride?: ToolSubmission) => {
+    const target = submissionOverride ?? selectedSubmission;
+    if (!target) {
       return;
     }
 
-    setPendingAction(status === 'approved' ? 'approve' : 'reject');
+    setPendingAction('approveAuto');
+    setAutoPublishingId(target.submissionId);
 
     try {
-      let response: Response;
-
-      if (status === 'approved') {
-        response = await fetch('/api/admin/submissions', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'publishSubmission',
-            submissionId: selectedSubmission.submissionId,
-            updates: formState,
-          }),
-        });
-      } else {
-        const saveResult = await persistSubmissionUpdates({ silent: true });
-
-        if (!saveResult.success) {
-          return;
-        }
-
-        response = await fetch('/api/admin/submissions', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'updateStatus',
-            submissionId: selectedSubmission.submissionId,
-            status,
-          }),
-        });
-      }
+      const response = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'acceptAutoPublish',
+          submissionId: target.submissionId,
+        }),
+      });
 
       const data = await response.json().catch(() => null);
 
       if (response.ok) {
         toast({
-          title: status === 'approved' ? 'Published' : 'Rejected',
-          description: data?.message || (status === 'approved'
-            ? 'Submission accepted and published to the live directory.'
-            : 'Submission rejected successfully.'),
+          title: 'Published',
+          description: data?.message || 'Researched, verified, and pushed live.',
+        });
+        setSelectedSubmission(null);
+        await fetchSubmissions({ background: true });
+        return;
+      }
+
+      if (response.status === 401) {
+        redirectToLogin();
+        return;
+      }
+
+      if ((response.status === 422 || response.status === 500) && data?.submission) {
+        replaceSubmissionInState(data.submission);
+      }
+
+      toast({
+        title: 'Could not auto-publish',
+        description: data?.error || 'Automatic accept failed.',
+        variant: 'destructive',
+      });
+    } catch (error) {
+      console.error('Error in acceptAutoPublish:', error);
+      toast({
+        title: 'Error',
+        description: 'Automatic accept failed.',
+        variant: 'destructive',
+      });
+    } finally {
+      setPendingAction(null);
+      setAutoPublishingId(null);
+    }
+  }, [fetchSubmissions, redirectToLogin, replaceSubmissionInState, selectedSubmission, toast]);
+
+  const handlePublishFromForm = useCallback(async () => {
+    if (!selectedSubmission || !formState) {
+      return;
+    }
+
+    setPendingAction('approveManual');
+
+    try {
+      const response = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'publishSubmission',
+          submissionId: selectedSubmission.submissionId,
+          updates: formState,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (response.ok) {
+        toast({
+          title: 'Published',
+          description: data?.message || 'Submission published using the form fields.',
+        });
+        setSelectedSubmission(null);
+        await fetchSubmissions({ background: true });
+        return;
+      }
+
+      if (response.status === 401) {
+        redirectToLogin();
+        return;
+      }
+
+      if (response.status === 422 && data?.submission) {
+        replaceSubmissionInState(data.submission);
+      }
+
+      toast({
+        title: 'Error',
+        description: data?.error || 'Failed to publish from form',
+        variant: 'destructive',
+      });
+    } catch (error) {
+      console.error('Error publishing from form:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to publish from form',
+        variant: 'destructive',
+      });
+    } finally {
+      setPendingAction(null);
+    }
+  }, [fetchSubmissions, formState, redirectToLogin, replaceSubmissionInState, selectedSubmission, toast]);
+
+  const handleReject = useCallback(async () => {
+    if (!selectedSubmission) {
+      return;
+    }
+
+    setPendingAction('reject');
+
+    try {
+      const saveResult = await persistSubmissionUpdates({ silent: true });
+
+      if (!saveResult.success) {
+        return;
+      }
+
+      const response = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'updateStatus',
+          submissionId: selectedSubmission.submissionId,
+          status: 'rejected',
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (response.ok) {
+        toast({
+          title: 'Rejected',
+          description: data?.message || 'Submission rejected successfully.',
         });
         setSelectedSubmission(null);
         await fetchSubmissions({ background: true });
@@ -296,24 +439,20 @@ export default function SubmissionsDashboard() {
 
       toast({
         title: 'Error',
-        description: data?.error || (status === 'approved'
-          ? 'Failed to accept and publish submission'
-          : 'Failed to reject submission'),
+        description: data?.error || 'Failed to reject submission',
         variant: 'destructive',
       });
     } catch (error) {
-      console.error('Error updating submission status:', error);
+      console.error('Error rejecting submission:', error);
       toast({
         title: 'Error',
-        description: status === 'approved'
-          ? 'Failed to accept and publish submission'
-          : 'Failed to reject submission',
+        description: 'Failed to reject submission',
         variant: 'destructive',
       });
     } finally {
       setPendingAction(null);
     }
-  };
+  }, [fetchSubmissions, persistSubmissionUpdates, redirectToLogin, selectedSubmission, toast]);
 
   const handleSaveChanges = async () => {
     if (!selectedSubmission || !formState) {
@@ -391,57 +530,87 @@ export default function SubmissionsDashboard() {
 
   if (loading) {
     return (
-      <div className="container mx-auto flex items-center justify-center px-4 py-8">
-        <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin" />
-          <p>Loading submissions...</p>
-        </div>
+      <div className="flex min-h-[40vh] flex-col items-center justify-center border-b border-[#e0e0e0] bg-[#fafafa] px-6 py-16">
+        <Loader2 className="mb-4 h-8 w-8 animate-spin text-[#629649]" aria-hidden />
+        <p className="text-sm text-[#737373]">Loading submissions…</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">Tool Submissions Dashboard</h1>
-          <p className="text-gray-600">Review pending submissions, accept them into the live directory, and open the published record for edits afterward.</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline">
-            <Link href="/admin">Back to Admin</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/admin/tools">Open Live Tools</Link>
-          </Button>
-          <form action="/api/admin/logout" method="post">
-            <Button type="submit" variant="outline">Sign Out</Button>
-          </form>
-        </div>
-      </div>
+    <>
+      <AdminHero
+        kicker="Review queue"
+        title="Tool submissions"
+        description={
+          <>
+            Use <span className="font-semibold text-[#1f1f1f]">Accept</span> for one-step AI research, auto-fill, verification, and live publish (Tavily or Perplexity + Supabase service role). Open a row to edit copy, or use{' '}
+            <span className="font-semibold text-[#1f1f1f]">Publish using form fields</span> for full manual control.
+          </>
+        }
+        actions={
+          <>
+            <Button asChild variant="outline" className="rounded-[8px] border-[#e0e0e0]">
+              <Link href="/admin">Admin home</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-[8px] border-[#e0e0e0]">
+              <Link href="/admin/tools">Live tools</Link>
+            </Button>
+            <AdminSignOutButton />
+          </>
+        }
+      />
+      <AdminContent>
+      {systemStatus && (
+        <Card className={cn(adminCardClass, 'mb-6')}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-[#0f172a]">Submission pipeline status</CardTitle>
+            <CardDescription className="text-[#737373]">
+              What must be configured for the queue, automated research, and live publishing.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-2 text-sm text-[#737373] sm:grid-cols-2">
+            <StatusLine ok={systemStatus.supabaseStorageConfigured} label="Supabase URL + anon key (queue storage)" />
+            <StatusLine ok={systemStatus.supabaseAdminConfigured} label="Service role key (Accept & publish to live directory)" />
+            <StatusLine ok={systemStatus.researchProviderConfigured} label="Tavily or Perplexity API (required for one-click Accept)" />
+            {systemStatus.researchProviderConfigured && (
+              <p className="sm:col-span-2 text-xs text-[#737373]">
+                Active provider: <span className="font-medium text-[#0f172a]">{systemStatus.researchProvider}</span>
+                {systemStatus.tavilyConfigured && systemStatus.perplexityConfigured ? (
+                  <span> (Tavily takes precedence when both are set.)</span>
+                ) : null}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {errorMessage && (
-        <Card className="mb-6 border-amber-200 bg-amber-50">
+        <Card className="mb-6 rounded-[8px] border border-amber-200 bg-amber-50 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
           <CardHeader>
             <CardTitle className="text-amber-900">Admin queue unavailable</CardTitle>
             <CardDescription className="text-amber-800">{errorMessage}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-3">
-            <Button onClick={() => fetchSubmissions()} variant="outline" size="sm">
+            <Button onClick={() => fetchSubmissions()} variant="outline" size="sm" className="rounded-[8px] border-[#e0e0e0]">
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry
             </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/admin">Back to Admin Overview</Link>
+            <Button asChild variant="ghost" size="sm" className="text-[#1f1f1f] hover:bg-[#fafafa] hover:text-[#629649]">
+              <Link href="/admin">Admin overview</Link>
             </Button>
           </CardContent>
         </Card>
       )}
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as ToolSubmissionStatus)} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid h-auto w-full grid-cols-3 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-1">
           {STATUS_TABS.map((status) => (
-            <TabsTrigger key={status} value={status}>
+            <TabsTrigger
+              key={status}
+              value={status}
+              className="rounded-[6px] data-[state=active]:bg-white data-[state=active]:text-[#0f172a] data-[state=active]:shadow-sm"
+            >
               {formatTabLabel(status)} ({submissionCounts[status]})
             </TabsTrigger>
           ))}
@@ -450,8 +619,14 @@ export default function SubmissionsDashboard() {
         {STATUS_TABS.map((status) => (
           <TabsContent key={status} value={status} className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">{formatSectionHeading(status)}</h2>
-              <Button onClick={() => fetchSubmissions({ background: true })} variant="outline" size="sm" disabled={refreshing}>
+              <h2 className="text-xl font-semibold tracking-tight text-[#0f172a]">{formatSectionHeading(status)}</h2>
+              <Button
+                onClick={() => fetchSubmissions({ background: true })}
+                variant="outline"
+                size="sm"
+                disabled={refreshing}
+                className="rounded-[8px] border-[#e0e0e0]"
+              >
                 {refreshing ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -463,22 +638,36 @@ export default function SubmissionsDashboard() {
             <SubmissionsList
               submissions={status === activeTab ? activeSubmissions : submissions.filter((submission) => submission.status === status)}
               onViewDetails={setSelectedSubmission}
+              onAcceptAuto={
+                systemStatus?.researchProviderConfigured && systemStatus?.supabaseAdminConfigured
+                  ? handleAcceptAutoPublish
+                  : undefined
+              }
+              autoPublishingId={autoPublishingId}
+              acceptAutoUnavailableReason={
+                !systemStatus?.supabaseAdminConfigured
+                  ? 'Configure SUPABASE_SERVICE_ROLE_KEY'
+                  : !systemStatus?.researchProviderConfigured
+                    ? 'Configure TAVILY_API_KEY or PERPLEXITY_API_KEY'
+                    : undefined
+              }
             />
           </TabsContent>
         ))}
       </Tabs>
+      </AdminContent>
 
       <Dialog open={!!selectedSubmission} onOpenChange={(open) => !open && setSelectedSubmission(null)}>
-        <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto">
+        <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto rounded-[8px] border-[#e0e0e0] shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
           {selectedSubmission && formState && (
             <>
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <Eye className="h-5 w-5" />
+                  <DialogTitle className="flex items-center gap-2 text-[#0f172a]">
+                    <Eye className="h-5 w-5 text-[#629649]" aria-hidden />
                     Submission Details
                   </DialogTitle>
-                <DialogDescription>
-                  Review the queued submission, then accept it to run the full scrape and publish flow.
+                <DialogDescription className="text-[#737373]">
+                  <span className="font-semibold text-[#1f1f1f]">Accept</span> runs full AI research, normalizes the listing, checks required fields, and publishes live — no manual pass required. Use the fields below only if you want to tweak copy first, then choose &quot;Publish using form fields&quot;. One-click Accept needs Tavily or Perplexity plus the Supabase service role key.
                 </DialogDescription>
                 </DialogHeader>
 
@@ -486,27 +675,27 @@ export default function SubmissionsDashboard() {
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                      <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
                         Submission Info
                       </h3>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-gray-400" />
+                          <Calendar className="h-4 w-4 text-[#999999]" />
                           <span className="text-sm">
                             Submitted: {new Date(selectedSubmission.submittedAt).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-gray-400" />
+                          <Mail className="h-4 w-4 text-[#999999]" />
                           <span className="text-sm">{selectedSubmission.email}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Globe className="h-4 w-4 text-gray-400" />
+                          <Globe className="h-4 w-4 text-[#999999]" />
                           <a
                             href={selectedSubmission.website}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center text-sm text-blue-600 hover:underline"
+                            className="flex items-center text-sm text-[#2563eb] hover:underline"
                           >
                             {selectedSubmission.website}
                             <ExternalLink className="ml-1 h-3 w-3" />
@@ -516,19 +705,19 @@ export default function SubmissionsDashboard() {
                     </div>
 
                     <div>
-                      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                      <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
                         User Comment
                       </h3>
                       <div className="flex items-start gap-2">
-                        <MessageSquare className="mt-1 h-4 w-4 flex-shrink-0 text-gray-400" />
-                        <p className="rounded-lg bg-gray-50 p-3 text-sm">{selectedSubmission.comment}</p>
+                        <MessageSquare className="mt-1 h-4 w-4 shrink-0 text-[#999999]" />
+                        <p className="rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-3 text-sm text-[#1f1f1f]">{selectedSubmission.comment}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                      <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
                         Status
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -539,10 +728,10 @@ export default function SubmissionsDashboard() {
 
                     {(selectedSubmission.name || selectedSubmission.category || selectedSubmission.oneLiner) && (
                       <div>
-                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
                           Current Tool Snapshot
                         </h3>
-                        <div className="space-y-2 rounded-lg bg-gray-50 p-3 text-sm">
+                        <div className="space-y-2 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-3 text-sm text-[#1f1f1f]">
                           {selectedSubmission.name && <p><strong>Name:</strong> {selectedSubmission.name}</p>}
                           {selectedSubmission.category && <p><strong>Category:</strong> {formatSubmissionCategory(selectedSubmission.category)}</p>}
                           {selectedSubmission.oneLiner && <p><strong>Tagline:</strong> {selectedSubmission.oneLiner}</p>}
@@ -552,10 +741,10 @@ export default function SubmissionsDashboard() {
 
                     {selectedSubmission.description && (
                       <div>
-                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+                        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
                           Current Description
                         </h3>
-                        <div className="max-h-32 overflow-y-auto rounded-lg bg-gray-50 p-3 text-sm">
+                        <div className="max-h-32 overflow-y-auto rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-3 text-sm text-[#1f1f1f]">
                           {selectedSubmission.description}
                         </div>
                       </div>
@@ -563,13 +752,13 @@ export default function SubmissionsDashboard() {
                   </div>
                 </div>
 
-                <div className="space-y-4 rounded-xl border border-gray-200 p-4">
+                <div className="space-y-4 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa]/40 p-4 md:p-5">
                   <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
                       Manual Review Fields
                     </h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Anything you set here is saved first, then used as the preferred value when the accept-and-publish flow runs.
+                    <p className="mt-1 text-sm text-[#737373]">
+                      For manual publish only: values here override research output. The primary Accept button does not require editing this form.
                     </p>
                   </div>
 
@@ -581,6 +770,7 @@ export default function SubmissionsDashboard() {
                         value={formState.name}
                         onChange={(event) => setFormState({ ...formState, name: event.target.value })}
                         placeholder="Tool name"
+                        className={adminInputClass}
                       />
                     </div>
 
@@ -591,6 +781,7 @@ export default function SubmissionsDashboard() {
                         value={formState.slug}
                         onChange={(event) => setFormState({ ...formState, slug: event.target.value })}
                         placeholder="tool-slug"
+                        className={adminInputClass}
                       />
                     </div>
 
@@ -602,6 +793,7 @@ export default function SubmissionsDashboard() {
                         value={formState.website}
                         onChange={(event) => setFormState({ ...formState, website: event.target.value })}
                         placeholder="https://example.com"
+                        className={adminInputClass}
                       />
                     </div>
 
@@ -611,10 +803,10 @@ export default function SubmissionsDashboard() {
                         value={formState.category || undefined}
                         onValueChange={(value) => setFormState({ ...formState, category: value })}
                       >
-                        <SelectTrigger id="submission-category">
+                        <SelectTrigger id="submission-category" className={adminSelectTriggerClass}>
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-[8px] border-[#e0e0e0]">
                           {formState.category && !TOOL_SUBMISSION_CATEGORIES.includes(formState.category as (typeof TOOL_SUBMISSION_CATEGORIES)[number]) && (
                             <SelectItem value={formState.category}>{formState.category}</SelectItem>
                           )}
@@ -636,10 +828,10 @@ export default function SubmissionsDashboard() {
                           researchStatus: value as SubmissionFormState['researchStatus'],
                         })}
                       >
-                        <SelectTrigger id="submission-research-status">
+                        <SelectTrigger id="submission-research-status" className={adminSelectTriggerClass}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-[8px] border-[#e0e0e0]">
                           <SelectItem value="pending">Pending</SelectItem>
                           <SelectItem value="completed">Completed</SelectItem>
                           <SelectItem value="failed">Failed</SelectItem>
@@ -654,6 +846,7 @@ export default function SubmissionsDashboard() {
                         value={formState.oneLiner}
                         onChange={(event) => setFormState({ ...formState, oneLiner: event.target.value })}
                         placeholder="Short one-line summary"
+                        className={adminInputClass}
                       />
                     </div>
 
@@ -665,6 +858,7 @@ export default function SubmissionsDashboard() {
                         onChange={(event) => setFormState({ ...formState, features: event.target.value })}
                         placeholder="Comma-separated features"
                         rows={3}
+                        className={adminTextareaClass}
                       />
                     </div>
 
@@ -676,6 +870,7 @@ export default function SubmissionsDashboard() {
                         onChange={(event) => setFormState({ ...formState, description: event.target.value })}
                         placeholder="Longer product description"
                         rows={6}
+                        className={adminTextareaClass}
                       />
                     </div>
 
@@ -686,6 +881,7 @@ export default function SubmissionsDashboard() {
                         value={formState.country}
                         onChange={(event) => setFormState({ ...formState, country: event.target.value })}
                         placeholder="Country"
+                        className={adminInputClass}
                       />
                     </div>
 
@@ -696,6 +892,7 @@ export default function SubmissionsDashboard() {
                         value={formState.city}
                         onChange={(event) => setFormState({ ...formState, city: event.target.value })}
                         placeholder="City"
+                        className={adminInputClass}
                       />
                     </div>
 
@@ -707,6 +904,7 @@ export default function SubmissionsDashboard() {
                         value={formState.iconLink}
                         onChange={(event) => setFormState({ ...formState, iconLink: event.target.value })}
                         placeholder="https://example.com/logo.svg"
+                        className={adminInputClass}
                       />
                     </div>
                   </div>
@@ -717,8 +915,17 @@ export default function SubmissionsDashboard() {
                 <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={handleRetryResearch}
-                    disabled={pendingAction !== null}
+                    disabled={
+                      pendingAction !== null
+                      || (systemStatus !== null && !systemStatus.researchProviderConfigured)
+                    }
                     variant="outline"
+                    className="rounded-[8px] border-[#e0e0e0]"
+                    title={
+                      systemStatus && !systemStatus.researchProviderConfigured
+                        ? 'Set TAVILY_API_KEY or PERPLEXITY_API_KEY to run automated research'
+                        : undefined
+                    }
                   >
                     {pendingAction === 'retry' ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -732,6 +939,7 @@ export default function SubmissionsDashboard() {
                     onClick={handleSaveChanges}
                     disabled={pendingAction !== null}
                     variant="outline"
+                    className="rounded-[8px] border-[#e0e0e0]"
                   >
                     {pendingAction === 'save' ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -745,7 +953,7 @@ export default function SubmissionsDashboard() {
                 {selectedSubmission.status === 'pending' && (
                   <div className="flex flex-wrap gap-2">
                     <Button
-                      onClick={() => handleStatusUpdate('rejected')}
+                      onClick={handleReject}
                       disabled={pendingAction !== null}
                       variant="destructive"
                     >
@@ -757,23 +965,47 @@ export default function SubmissionsDashboard() {
                       Reject
                     </Button>
                     <Button
-                      onClick={() => handleStatusUpdate('approved')}
+                      onClick={handlePublishFromForm}
                       disabled={pendingAction !== null}
-                      className="bg-green-600 hover:bg-green-700"
+                      variant="outline"
+                      className="rounded-[8px] border-[#e0e0e0]"
                     >
-                      {pendingAction === 'approve' ? (
+                      {pendingAction === 'approveManual' ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : (
                         <CheckCircle className="mr-2 h-4 w-4" />
                       )}
-                      Accept & Publish
+                      Publish using form fields
+                    </Button>
+                    <Button
+                      onClick={() => void handleAcceptAutoPublish()}
+                      disabled={
+                        pendingAction !== null
+                        || !systemStatus?.researchProviderConfigured
+                        || !systemStatus?.supabaseAdminConfigured
+                      }
+                      className="rounded-[8px] bg-[#629649] hover:bg-[#548040]"
+                      title={
+                        !systemStatus?.supabaseAdminConfigured
+                          ? 'Set SUPABASE_SERVICE_ROLE_KEY'
+                          : !systemStatus?.researchProviderConfigured
+                            ? 'Set TAVILY_API_KEY or PERPLEXITY_API_KEY for one-click accept'
+                            : undefined
+                      }
+                    >
+                      {pendingAction === 'approveAuto' ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Rocket className="mr-2 h-4 w-4" />
+                      )}
+                      Accept
                     </Button>
                   </div>
                 )}
 
                 {selectedSubmission.status === 'approved' && selectedSubmission.slug && (
                   <div className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" className="rounded-[8px] border-[#e0e0e0]">
                       <Link href={`/admin/tools?slug=${encodeURIComponent(selectedSubmission.slug)}`}>
                         Edit Live Tool
                       </Link>
@@ -785,6 +1017,19 @@ export default function SubmissionsDashboard() {
           )}
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
+
+function StatusLine({ ok, label }: { ok: boolean; label: string }) {
+  return (
+    <div className="flex items-center gap-2 text-[#0f172a]">
+      {ok ? (
+        <CheckCircle className="h-4 w-4 shrink-0 text-[#629649]" aria-hidden />
+      ) : (
+        <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" aria-hidden />
+      )}
+      <span>{label}</span>
     </div>
   );
 }
@@ -792,14 +1037,23 @@ export default function SubmissionsDashboard() {
 interface SubmissionsListProps {
   submissions: ToolSubmission[];
   onViewDetails: (submission: ToolSubmission) => void;
+  onAcceptAuto?: (submission: ToolSubmission) => void;
+  autoPublishingId: string | null;
+  acceptAutoUnavailableReason?: string;
 }
 
-function SubmissionsList({ submissions, onViewDetails }: SubmissionsListProps) {
+function SubmissionsList({
+  submissions,
+  onViewDetails,
+  onAcceptAuto,
+  autoPublishingId,
+  acceptAutoUnavailableReason,
+}: SubmissionsListProps) {
   if (submissions.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <p className="text-gray-500">No submissions found</p>
+      <Card className={adminCardClass}>
+        <CardContent className="flex items-center justify-center py-10">
+          <p className="text-sm text-[#737373]">No submissions in this tab.</p>
         </CardContent>
       </Card>
     );
@@ -808,45 +1062,51 @@ function SubmissionsList({ submissions, onViewDetails }: SubmissionsListProps) {
   return (
     <div className="space-y-4">
       {submissions.map((submission) => (
-        <Card key={submission.submissionId} className="transition-shadow hover:shadow-md">
+        <Card
+          key={submission.submissionId}
+          className={cn(
+            adminCardClass,
+            'transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]',
+          )}
+        >
           <CardContent className="p-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <h3 className="text-lg font-semibold">{submission.name || 'Research in Progress'}</h3>
+                  <h3 className="text-lg font-semibold tracking-tight text-[#0f172a]">{submission.name || 'Research in Progress'}</h3>
                   <div className="flex flex-wrap gap-2">
                     {getStatusBadge(submission.status)}
                     {getResearchStatusBadge(submission.researchStatus)}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 text-sm text-gray-600 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 text-sm text-[#737373] md:grid-cols-2 lg:grid-cols-3">
                   <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4" />
+                    <Globe className="h-4 w-4 shrink-0 text-[#999999]" aria-hidden />
                     <a
                       href={submission.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="truncate text-blue-600 hover:underline"
+                      className="truncate text-[#2563eb] hover:underline"
                     >
                       {submission.website}
                     </a>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
+                    <Mail className="h-4 w-4 shrink-0 text-[#999999]" aria-hidden />
                     <span className="truncate">{submission.email}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
+                    <Calendar className="h-4 w-4 shrink-0 text-[#999999]" aria-hidden />
                     <span>{new Date(submission.submittedAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 
                 {submission.comment && (
                   <div className="mt-3">
-                    <p className="line-clamp-2 text-sm text-gray-600">
+                    <p className="line-clamp-2 text-sm text-[#737373]">
                       <strong>Comment:</strong> {submission.comment}
                     </p>
                   </div>
@@ -860,10 +1120,34 @@ function SubmissionsList({ submissions, onViewDetails }: SubmissionsListProps) {
                 )}
               </div>
 
-              <Button onClick={() => onViewDetails(submission)} variant="outline" size="sm">
-                <Eye className="mr-2 h-4 w-4" />
-                View Details
-              </Button>
+              <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-start">
+                {submission.status === 'pending' && onAcceptAuto && (
+                  <Button
+                    type="button"
+                    onClick={() => onAcceptAuto(submission)}
+                    disabled={Boolean(autoPublishingId)}
+                    size="sm"
+                    className="rounded-[8px] bg-[#629649] hover:bg-[#548040]"
+                    title={acceptAutoUnavailableReason}
+                  >
+                    {autoPublishingId === submission.submissionId ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Rocket className="mr-2 h-4 w-4" />
+                    )}
+                    Accept
+                  </Button>
+                )}
+                <Button
+                  onClick={() => onViewDetails(submission)}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-[8px] border-[#e0e0e0]"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

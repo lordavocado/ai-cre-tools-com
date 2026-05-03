@@ -60,15 +60,25 @@ export type AdminToolUpdateInput = {
 
 let supabaseAdminClient: ReturnType<typeof createClient> | null = null;
 
+/**
+ * Legacy labels from older prompts/forms + common AI drift.
+ * Prefer matching directory display names or slugs via `resolveCategoryInfo`.
+ */
 const SUBMISSION_CATEGORY_TO_DIRECTORY_CATEGORY: Record<string, string> = {
   'development & construction': 'development-construction',
   'efficiency & general tools': 'productivity-copilots',
   'investment & portfolio management': 'asset-portfolio-management',
   'legal & compliance': 'legal-compliance-due-diligence',
+  'legal & compliance & due diligence': 'legal-compliance-due-diligence',
   'market analysis & valuation': 'property-analysis-valuation',
   'property management & operations': 'property-management-operations',
   'transaction & brokerage': 'transactions-brokerage',
   'transactions & brokerage': 'transactions-brokerage',
+  'property search & acquisition': 'property-search-acquisition',
+  'property analysis & valuation': 'property-analysis-valuation',
+  'marketing & leasing enablement': 'marketing-leasing-enablement',
+  'data & workflow infrastructure': 'data-workflow-infrastructure',
+  'productivity & copilots': 'productivity-copilots',
 };
 
 function getSupabaseAdminClient() {

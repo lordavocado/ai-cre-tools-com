@@ -21,6 +21,11 @@ import { researchTool } from '@/lib/tool-research';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 import { publishToolFromSubmission } from '@/lib/supabase-admin';
 import { getCategoryDisplayName } from '@/lib/utils';
+import {
+  finalizeAutoPublishDraft,
+  verifyAutoPublishDraft,
+  type MergedPublishDraft,
+} from '@/lib/submission-auto-publish';
 
 const editableSubmissionFieldsSchema = z.object({
   website: z.string().url().optional(),
@@ -28,8 +33,8 @@ const editableSubmissionFieldsSchema = z.object({
   name: z.string().max(200).optional(),
   category: z.string()
     .refine(
-      (value) => value.length === 0 || TOOL_SUBMISSION_CATEGORIES.includes(value as (typeof TOOL_SUBMISSION_CATEGORIES)[number]),
-      { message: 'Category must be one of the supported submission categories' }
+      (value) => value.length === 0 || (TOOL_SUBMISSION_CATEGORIES as readonly string[]).includes(value),
+      { message: 'Category must be one of the supported directory categories' }
     )
     .optional(),
   features: z.string().max(3000).optional(),
@@ -64,7 +69,13 @@ const publishSubmissionSchema = z.object({
   updates: editableSubmissionFieldsSchema,
 });
 
+const acceptAutoPublishSchema = z.object({
+  action: z.literal('acceptAutoPublish'),
+  submissionId: z.string(),
+});
+
 const submissionPatchSchema = z.discriminatedUnion('action', [
+  acceptAutoPublishSchema,
   updateStatusSchema,
   updateDetailsSchema,
   retryResearchSchema,
@@ -268,6 +279,158 @@ export async function PATCH(request: NextRequest) {
 
     const action = validatedData.data;
 
+    if (action.action === 'acceptAutoPublish') {
+      if (!isSupabaseAdminConfigured()) {
+        return NextResponse.json(
+          { error: 'Live publishing is unavailable because the Supabase service role key is not configured.' },
+          { status: 503 }
+        );
+      }
+
+      if (!isResearchProviderConfigured()) {
+        return NextResponse.json(
+          {
+            error:
+              'Automatic accept requires an AI research provider. Set TAVILY_API_KEY or PERPLEXITY_API_KEY, or use “Publish using form fields” instead.',
+          },
+          { status: 503 }
+        );
+      }
+
+      const submission = await getToolSubmissionById(action.submissionId);
+
+      if (!submission) {
+        return NextResponse.json(
+          { error: 'Submission not found.' },
+          { status: 404 }
+        );
+      }
+
+      const researchResult = await researchTool(submission.website, submission.comment);
+      const researchStatus = researchResult.research_status as ToolResearchStatus;
+
+      const merged = buildPublishDraft({
+        submission,
+        researchResult,
+        manualOverrides: {},
+      });
+
+      if (!merged) {
+        return NextResponse.json(
+          { error: 'Could not build a publish draft from this submission.' },
+          { status: 500 }
+        );
+      }
+
+      const draft = finalizeAutoPublishDraft(merged as MergedPublishDraft, {
+        website: submission.website,
+        comment: submission.comment,
+      });
+
+      const verifyError = verifyAutoPublishDraft(draft);
+      if (verifyError) {
+        const partial = await updateToolSubmission(action.submissionId, {
+          researchStatus,
+          name: draft.name,
+          category: draft.category,
+          oneLiner: draft.oneLiner,
+          description: draft.description,
+          features: draft.features,
+          slug: draft.slug,
+        });
+
+        return NextResponse.json(
+          {
+            error: `Auto-publish verification failed: ${verifyError}`,
+            submission: partial,
+          },
+          { status: 422 }
+        );
+      }
+
+      const publishValidationError = validatePublishDraft(draft);
+
+      if (publishValidationError) {
+        const partial = await updateToolSubmission(action.submissionId, {
+          researchStatus,
+          name: draft.name,
+          category: draft.category,
+          oneLiner: draft.oneLiner,
+          description: draft.description,
+          features: draft.features,
+          slug: draft.slug,
+        });
+
+        return NextResponse.json(
+          {
+            error: publishValidationError,
+            submission: partial,
+          },
+          { status: 422 }
+        );
+      }
+
+      try {
+        const publishedTool = await publishToolFromSubmission({ draft });
+        const finalizedSubmission = await updateToolSubmission(action.submissionId, {
+          website: publishedTool.websiteUrl,
+          slug: publishedTool.slug,
+          name: publishedTool.name,
+          category: getCategoryDisplayName(publishedTool.category),
+          features: publishedTool.features.join(', '),
+          oneLiner: publishedTool.oneLiner,
+          description: publishedTool.description,
+          country: publishedTool.country,
+          city: publishedTool.city,
+          iconLink: publishedTool.iconUrl,
+          researchStatus,
+        });
+
+        if (!finalizedSubmission) {
+          return NextResponse.json(
+            { error: 'The tool was published, but the submission record could not be updated afterward.' },
+            { status: 500 }
+          );
+        }
+
+        const statusUpdated = await updateSubmissionStatus(action.submissionId, 'approved');
+
+        if (!statusUpdated) {
+          return NextResponse.json(
+            { error: 'The tool was published, but the submission status could not be marked as approved.' },
+            { status: 500 }
+          );
+        }
+
+        const approvedSubmission = await getToolSubmissionById(action.submissionId);
+
+        return NextResponse.json({
+          success: true,
+          message:
+            'Researched, auto-verified, and published to the live directory.',
+          submission: approvedSubmission ?? finalizedSubmission,
+          tool: publishedTool,
+        });
+      } catch (publishError) {
+        const message =
+          publishError instanceof Error ? publishError.message : 'Publish failed';
+        await updateToolSubmission(action.submissionId, {
+          researchStatus,
+          name: draft.name,
+          category: draft.category,
+          oneLiner: draft.oneLiner,
+          description: draft.description,
+          features: draft.features,
+          slug: draft.slug,
+        });
+
+        return NextResponse.json(
+          { error: message },
+          { status: 500 }
+        );
+      }
+    }
+
     if (action.action === 'updateStatus') {
       const success = await updateSubmissionStatus(action.submissionId, action.status);
 
@@ -309,13 +472,6 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      if (!isResearchProviderConfigured()) {
-        return NextResponse.json(
-          { error: 'Accept and publish is unavailable because no automated research provider is configured.' },
-          { status: 503 }
-        );
-      }
-
       const preparedSubmission = Object.keys(action.updates).length > 0
         ? await updateToolSubmission(action.submissionId, action.updates)
         : await getToolSubmissionById(action.submissionId);
@@ -327,10 +483,25 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      const researchResult = await researchTool(
-        preparedSubmission.website,
-        preparedSubmission.comment
-      );
+      /** When no Tavily/Perplexity key is set, admins publish using only saved submission + form fields. */
+      const researchResult = isResearchProviderConfigured()
+        ? await researchTool(
+          preparedSubmission.website,
+          preparedSubmission.comment
+        )
+        : {
+            slug: '',
+            website: preparedSubmission.website,
+            name: '',
+            category: '',
+            features: '',
+            one_liner: '',
+            description: '',
+            country: '',
+            city: '',
+            icon_link: '',
+            research_status: 'completed' as const,
+          };
       const researchStatus = researchResult.research_status as ToolResearchStatus;
       const publishDraft = buildPublishDraft({
         submission: preparedSubmission,
