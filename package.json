@@ -11,7 +11,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
     "generate-social-images": "node scripts/generate-social-images.js",
-    "generate-tag-taxonomy": "node scripts/generate-tag-taxonomy.mjs"
+    "generate-tag-taxonomy": "node scripts/generate-tag-taxonomy.mjs",
+    "add-tool": "npx tsx scripts/add-tool-from-research.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

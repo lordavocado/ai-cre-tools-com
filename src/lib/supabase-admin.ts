@@ -1,5 +1,7 @@
-import 'server-only';
-
+/**
+ * Service-role Supabase helpers for the live directory (`ecosystem_apps`).
+ * Import only from server contexts (App Router routes, server actions, CLI scripts).
+ */
 if (typeof window !== 'undefined') {
   throw new Error('supabase-admin can only be used on the server side');
 }
