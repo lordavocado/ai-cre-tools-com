@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
@@ -22,7 +22,7 @@ export function SEOAudit({ enableConsoleLogging = true, showInUI = false }: SEOA
   const [issues, setIssues] = useState<SEOIssue[]>([]);
   const [isAuditing, setIsAuditing] = useState(false);
 
-  const runSEOAudit = async () => {
+  const runSEOAudit = useCallback(async () => {
     setIsAuditing(true);
     const auditIssues: SEOIssue[] = [];
 
@@ -292,12 +292,12 @@ export function SEOAudit({ enableConsoleLogging = true, showInUI = false }: SEOA
       })));
       console.groupEnd();
     }
-  };
+  }, [enableConsoleLogging]);
 
   useEffect(() => {
     // Run audit when component mounts
     runSEOAudit();
-  }, []);
+  }, [runSEOAudit]);
 
   const getIssueIcon = (type: string) => {
     switch (type) {

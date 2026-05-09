@@ -252,13 +252,13 @@ export default async function DirectoryItemPage({
       )}
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="border-b border-[#e0e0e0] bg-white">
-        <div className="container px-6 py-3">
+        <div className="container px-6 py-4">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[#737373]">
             <Link href="/" className="transition-colors hover:text-[#1f1f1f]">Home</Link>
-            <span>/</span>
+            <span aria-hidden="true">/</span>
             <Link href="/#directory" className="transition-colors hover:text-[#1f1f1f]">Tools</Link>
-            <span>/</span>
-            <span className="text-[#1f1f1f]">{item.name}</span>
+            <span aria-hidden="true">/</span>
+            <span className="truncate text-[#1f1f1f]">{item.name}</span>
           </nav>
         </div>
       </div>
@@ -266,16 +266,16 @@ export default async function DirectoryItemPage({
       <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-8">
           {/* Top row: favicon + identity + action buttons */}
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-4">
-              {/* Favicon */}
-              <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <div className="flex min-w-0 items-start gap-4">
+              {/* Favicon — sized to sit naturally beside the title */}
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white sm:h-[52px] sm:w-[52px]">
                 {item.website ? (
                   <ToolFavicon
                     website={item.website}
                     name={item.name}
                     apiSize={64}
-                    className="h-9 w-9"
+                    className="h-8 w-8 sm:h-9 sm:w-9"
                   />
                 ) : (
                   <span className="text-xl font-bold text-[#a0a0a0]">{item.name.charAt(0)}</span>
@@ -283,19 +283,21 @@ export default async function DirectoryItemPage({
               </div>
 
               {/* Name + tagline + chips */}
-              <div className="min-w-0">
-                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#1f1f1f] sm:text-[32px]">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-balance text-[26px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#1f1f1f] sm:text-[32px]">
                   {item.name}
                 </h1>
                 {item.tagline && (
-                  <p className="mt-2 text-[16px] leading-relaxed text-[#737373]">{item.tagline}</p>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-[#737373] sm:mt-2 sm:text-[16px]">
+                    {item.tagline}
+                  </p>
                 )}
                 {item.features && item.features.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
                     {item.features.slice(0, 5).map((f, i) => (
                       <span
                         key={i}
-                        className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f]"
+                        className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-2.5 py-1 text-xs font-medium text-[#1f1f1f]"
                       >
                         {f.name}
                       </span>
@@ -306,18 +308,18 @@ export default async function DirectoryItemPage({
             </div>
 
             {/* Action buttons — primary CTA uses accent green per DESIGN */}
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2 sm:self-start">
               <FavoriteButton
                 toolId={item.id}
                 variant="icon"
-                className="rounded-[8px] border border-[#e0e0e0] bg-white p-2 text-[#737373] shadow-none transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                className="h-9 w-9 rounded-[8px] border border-[#e0e0e0] bg-white p-0 text-[#737373] shadow-none transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
               />
               {item.website && (
                 <Link
                   href={item.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-100 hover:bg-primary/90"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-100 hover:bg-primary/90"
                 >
                   Visit Website
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

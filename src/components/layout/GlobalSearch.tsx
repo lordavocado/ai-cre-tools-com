@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Loader2, FileText, Folder, Wrench, Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,29 @@ interface SearchableItem {
   category?: string;
   tags?: string[];
   [key: string]: unknown;
+}
+
+function calculateRelevanceScore(item: DirectoryItem | Category | SearchableItem, searchTerm: string): number {
+  const i = item as SearchableItem;
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  const searchTerms = lowerSearchTerm.split(/\s+/).filter(term => term.length > 0);
+
+  let score = 0;
+
+  if (i.name?.toLowerCase().includes(lowerSearchTerm)) score += 100;
+  if (i.title?.toLowerCase().includes(lowerSearchTerm)) score += 100;
+
+  searchTerms.forEach(term => {
+    if (i.name?.toLowerCase().includes(term)) score += 50;
+    if (i.title?.toLowerCase().includes(term)) score += 50;
+    if (i.tagline?.toLowerCase().includes(term)) score += 30;
+    if (i.excerpt?.toLowerCase().includes(term)) score += 30;
+    if (i.description?.toLowerCase().includes(term)) score += 20;
+    if (i.category?.toLowerCase().includes(term)) score += 40;
+    if (i.tags?.some((tag: string) => tag.toLowerCase().includes(term))) score += 25;
+  });
+
+  return score;
 }
 
 /** Shape of a single search result */
@@ -70,100 +93,10 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
   const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recentSearchesRef = useRef(recentSearches);
+  recentSearchesRef.current = recentSearches;
 
-  /** Close overlay when clicking the backdrop (outside the search container) */
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSelectedIndex(-1);
-        onClose?.();
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
-  /** Global keyboard shortcuts: ⌘K to open, arrow keys / Enter / Escape inside overlay */
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      // Global shortcut to open search (Cmd+K or Ctrl+K)
-      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
-        event.preventDefault();
-        inputRef.current?.focus();
-        return;
-      }
-
-      if (!isOpen || results.length === 0) return;
-
-      switch (event.key) {
-        case "ArrowDown":
-          event.preventDefault();
-          setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : 0));
-          break;
-        case "ArrowUp":
-          event.preventDefault();
-          setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
-          break;
-        case "Enter":
-          event.preventDefault();
-          if (selectedIndex >= 0 && selectedIndex < results.length) {
-            handleResultClick(results[selectedIndex]);
-          }
-          break;
-        case "Escape":
-          setIsOpen(false);
-          setSelectedIndex(-1);
-          inputRef.current?.blur();
-          onClose?.();
-          break;
-      }
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, results, selectedIndex, onClose]);
-
-  /** Load recent searches from localStorage on mount */
-  useEffect(() => {
-    const saved = localStorage.getItem('recent-searches');
-    if (saved) {
-      setRecentSearches(JSON.parse(saved).slice(0, 5));
-    }
-  }, []);
-
-  /** Sync controlled open prop — focus the input when the parent opens the overlay */
-  useEffect(() => {
-    if (isOpenProp) {
-      setIsOpen(true);
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [isOpenProp]);
-
-  /** Debounced search — fires 300ms after the user stops typing */
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (query.trim().length >= 2) {
-        performSearch(query.trim());
-        setShowRecentSearches(false);
-      } else {
-        setResults([]);
-        if (query.trim().length === 0) {
-          setShowRecentSearches(false);
-        }
-      }
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [query]);
-
-  /**
-   * Fetches tools, categories, and blog posts in parallel then merges and
-   * ranks them by relevance score.
-   * @param searchTerm - The trimmed search string
-   */
-  const performSearch = async (searchTerm: string) => {
+  const performSearch = useCallback(async (searchTerm: string) => {
     setIsLoading(true);
     try {
       const [toolsResponse, categoriesResponse, blogResponse] = await Promise.all([
@@ -246,7 +179,8 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
 
       // Persist successful searches
       if (sortedResults.length > 0) {
-        const updatedRecent = [searchTerm, ...recentSearches.filter(s => s !== searchTerm)].slice(0, 5);
+        const prevRecent = recentSearchesRef.current;
+        const updatedRecent = [searchTerm, ...prevRecent.filter(s => s !== searchTerm)].slice(0, 5);
         setRecentSearches(updatedRecent);
         localStorage.setItem('recent-searches', JSON.stringify(updatedRecent));
       }
@@ -255,39 +189,9 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  /**
-   * Calculates how relevant an item is for a given search term.
-   * Higher scores = better matches.
-   * @param item - Any object with searchable string fields
-   * @param searchTerm - The user's query
-   * @returns Numeric relevance score (0 = no match)
-   */
-  const calculateRelevanceScore = (item: DirectoryItem | Category | SearchableItem, searchTerm: string): number => {
-    const i = item as SearchableItem;
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    const searchTerms = lowerSearchTerm.split(/\s+/).filter(term => term.length > 0);
-
-    let score = 0;
-
-    if (i.name?.toLowerCase().includes(lowerSearchTerm)) score += 100;
-    if (i.title?.toLowerCase().includes(lowerSearchTerm)) score += 100;
-
-    searchTerms.forEach(term => {
-      if (i.name?.toLowerCase().includes(term)) score += 50;
-      if (i.title?.toLowerCase().includes(term)) score += 50;
-      if (i.tagline?.toLowerCase().includes(term)) score += 30;
-      if (i.excerpt?.toLowerCase().includes(term)) score += 30;
-      if (i.description?.toLowerCase().includes(term)) score += 20;
-      if (i.category?.toLowerCase().includes(term)) score += 40;
-      if (i.tags?.some((tag: string) => tag.toLowerCase().includes(term))) score += 25;
-    });
-
-    return score;
-  };
-
-  const handleResultClick = (result: SearchResult) => {
+  const handleResultClick = useCallback((result: SearchResult) => {
     router.push(result.url);
     setQuery("");
     setResults([]);
@@ -295,7 +199,94 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
     setSelectedIndex(-1);
     inputRef.current?.blur();
     onClose?.();
-  };
+  }, [router, onClose]);
+
+  /** Close overlay when clicking the backdrop (outside the search container) */
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setSelectedIndex(-1);
+        onClose?.();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose]);
+
+  /** Global keyboard shortcuts: ⌘K to open, arrow keys / Enter / Escape inside overlay */
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      // Global shortcut to open search (Cmd+K or Ctrl+K)
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        inputRef.current?.focus();
+        return;
+      }
+
+      if (!isOpen || results.length === 0) return;
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault();
+          setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : 0));
+          break;
+        case "ArrowUp":
+          event.preventDefault();
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
+          break;
+        case "Enter":
+          event.preventDefault();
+          if (selectedIndex >= 0 && selectedIndex < results.length) {
+            handleResultClick(results[selectedIndex]);
+          }
+          break;
+        case "Escape":
+          setIsOpen(false);
+          setSelectedIndex(-1);
+          inputRef.current?.blur();
+          onClose?.();
+          break;
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, results, selectedIndex, onClose, handleResultClick]);
+
+  /** Load recent searches from localStorage on mount */
+  useEffect(() => {
+    const saved = localStorage.getItem('recent-searches');
+    if (saved) {
+      setRecentSearches(JSON.parse(saved).slice(0, 5));
+    }
+  }, []);
+
+  /** Sync controlled open prop — focus the input when the parent opens the overlay */
+  useEffect(() => {
+    if (isOpenProp) {
+      setIsOpen(true);
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [isOpenProp]);
+
+  /** Debounced search — fires 300ms after the user stops typing */
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (query.trim().length >= 2) {
+        performSearch(query.trim());
+        setShowRecentSearches(false);
+      } else {
+        setResults([]);
+        if (query.trim().length === 0) {
+          setShowRecentSearches(false);
+        }
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [query, performSearch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -433,9 +424,8 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
                 onChange={handleInputChange}
                 className="flex-1 text-[18px] text-[#1f1f1f] placeholder:text-[#a0a0a0] bg-transparent border-none outline-none"
                 aria-label="Search"
-                aria-expanded={isOpen}
+                aria-autocomplete="list"
                 aria-haspopup="listbox"
-                role="combobox"
                 autoComplete="off"
               />
               {isLoading && (

@@ -212,43 +212,6 @@ export function JSExecutionOptimizer() {
     }
   }, []);
 
-  // Main optimization effect
-  useEffect(() => {
-    if (optimizationComplete) return;
-
-    const optimize = async () => {
-      performance.mark('js-optimization-start');
-
-      // 1. Monitor execution time
-      const cleanup = monitorExecutionTime();
-
-      // 2. Apply progressive enhancement in chunks
-      const enhancementTasks = [
-        () => progressiveEnhancement(),
-        () => optimizeEventListeners(),
-        () => optimizeComponentUpdates(),
-        () => enableAdvancedFeatures(),
-      ];
-
-      await executeInChunks(enhancementTasks, 1, 16); // One task per frame
-
-      // 3. Mark optimization complete
-      performance.mark('js-optimization-complete');
-      performance.measure('js-optimization-duration', 'js-optimization-start', 'js-optimization-complete');
-
-      setOptimizationComplete(true);
-
-      // Cleanup
-      return cleanup;
-    };
-
-    const cleanup = optimize();
-
-    return () => {
-      cleanup.then(fn => fn && fn());
-    };
-  }, [optimizationComplete, progressiveEnhancement, monitorExecutionTime, executeInChunks]);
-
   // Optimize event listeners to prevent main-thread blocking
   const optimizeEventListeners = useCallback(() => {
     // Use passive event listeners where possible
@@ -319,6 +282,51 @@ export function JSExecutionOptimizer() {
       });
     }, 'low');
   }, [scheduleTask]);
+
+  // Main optimization effect
+  useEffect(() => {
+    if (optimizationComplete) return;
+
+    const optimize = async () => {
+      performance.mark('js-optimization-start');
+
+      // 1. Monitor execution time
+      const cleanup = monitorExecutionTime();
+
+      // 2. Apply progressive enhancement in chunks
+      const enhancementTasks = [
+        () => progressiveEnhancement(),
+        () => optimizeEventListeners(),
+        () => optimizeComponentUpdates(),
+        () => enableAdvancedFeatures(),
+      ];
+
+      await executeInChunks(enhancementTasks, 1, 16); // One task per frame
+
+      // 3. Mark optimization complete
+      performance.mark('js-optimization-complete');
+      performance.measure('js-optimization-duration', 'js-optimization-start', 'js-optimization-complete');
+
+      setOptimizationComplete(true);
+
+      // Cleanup
+      return cleanup;
+    };
+
+    const cleanup = optimize();
+
+    return () => {
+      cleanup.then(fn => fn && fn());
+    };
+  }, [
+    optimizationComplete,
+    progressiveEnhancement,
+    monitorExecutionTime,
+    executeInChunks,
+    optimizeEventListeners,
+    optimizeComponentUpdates,
+    enableAdvancedFeatures,
+  ]);
 
   return null;
 }

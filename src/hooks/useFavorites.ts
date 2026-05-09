@@ -18,6 +18,22 @@ export function useFavorites() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Save favorites to localStorage (only in browser)
+  const saveFavorites = useCallback((newFavorites: string[]) => {
+    if (!isBrowser) return;
+
+    try {
+      const data: FavoritesStorage = {
+        favorites: newFavorites,
+        lastUpdated: new Date().toISOString(),
+        version: STORAGE_VERSION,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      console.warn('Failed to save favorites to localStorage:', error);
+    }
+  }, []);
+
   // Load favorites from localStorage on mount (only in browser)
   useEffect(() => {
     if (!isBrowser) {
@@ -49,23 +65,7 @@ export function useFavorites() {
     };
 
     loadFavorites();
-  }, []);
-
-  // Save favorites to localStorage (only in browser)
-  const saveFavorites = useCallback((newFavorites: string[]) => {
-    if (!isBrowser) return;
-
-    try {
-      const data: FavoritesStorage = {
-        favorites: newFavorites,
-        lastUpdated: new Date().toISOString(),
-        version: STORAGE_VERSION,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (error) {
-      console.warn('Failed to save favorites to localStorage:', error);
-    }
-  }, []);
+  }, [saveFavorites]);
 
   // Add a tool to favorites
   const addFavorite = useCallback((toolId: string) => {
