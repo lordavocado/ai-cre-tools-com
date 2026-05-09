@@ -250,7 +250,6 @@ export default async function DirectoryItemPage({
           }}
         />
       )}
-
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="border-b border-[#e0e0e0] bg-white">
         <div className="container px-6 py-3">

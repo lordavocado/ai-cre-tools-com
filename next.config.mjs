@@ -116,8 +116,9 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'],
     
     // Add quality and size optimizations
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Keep this set small to avoid generating lots of variants for tiny logos/icons.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
     
     // Optimize images more aggressively
     minimumCacheTTL: 31536000, // 1 year cache
@@ -158,56 +159,30 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      // Wildcard patterns for common TLDs (covers most tool domains)
       {
         protocol: 'https',
-        hostname: '*.com',
+        hostname: 'images.unsplash.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: '*.io',
+        hostname: 'via.placeholder.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: '*.org',
+        hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: '*.dev',
+        hostname: 'api.producthunt.com',
         port: '',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: '*.net',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.so',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.pro',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.st',
-        port: '',
-        pathname: '/**',
-      }
-      ,
       // Supabase storage (signed URLs) for hero background and assets
       {
         protocol: 'https',
