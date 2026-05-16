@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
 import { FeaturedOn } from '@/components/sections/FeaturedOn';
 import { FAQ } from '@/components/sections/FAQ';
+import { parseDirectoryPage } from '@/lib/directory-pagination';
 
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
@@ -74,14 +75,20 @@ interface HomeProps {
   searchParams: Promise<{
     search?: string;
     category?: string;
+    page?: string;
   }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
   const resolvedSearchParams = await searchParams;
-  const { search, category } = resolvedSearchParams;
+  const { search, category, page } = resolvedSearchParams;
   const searchTerm = search || "";
   const categoryFilter = category || "";
+  const currentPage = parseDirectoryPage(page);
+  const directoryQuery = {
+    search: searchTerm || undefined,
+    category: categoryFilter || undefined,
+  };
 
   try {
     // Items fetched first so the module-level cache is warm when getCategories runs
@@ -216,6 +223,13 @@ export default async function Home({ searchParams }: HomeProps) {
               </h2>
               <p className="mt-2 text-sm text-[#737373]">{initialItems.length} AI tools, curated for CRE professionals.</p>
             </div>
+            <Link
+              href="/all-tools"
+              className="inline-flex w-fit items-center gap-1.5 rounded-[6px] border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa]"
+            >
+              Browse A–Z index
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
 
           <DirectorySearch
@@ -224,7 +238,12 @@ export default async function Home({ searchParams }: HomeProps) {
             initialCategoryFilter={categoryFilter}
             totalItems={initialItems.length}
           />
-          <DirectoryGrid items={initialItems} />
+          <DirectoryGrid
+            items={initialItems}
+            currentPage={currentPage}
+            basePath="/"
+            query={directoryQuery}
+          />
         </div>
       </section>
 

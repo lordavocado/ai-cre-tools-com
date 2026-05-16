@@ -107,10 +107,15 @@ export default async function DirectoryItemPage({
   const categories = item.category.split(",").map((cat) => cat.trim()).filter(Boolean);
   const primaryCategory = categories[0];
 
-  const allItemsInCategory = await getDirectoryItems(undefined, primaryCategory);
+  const allItemsInCategory = primaryCategory
+    ? await getDirectoryItems(undefined, primaryCategory)
+    : [];
   const relatedItems = allItemsInCategory
     .filter((related) => related.id !== item.id)
-    .slice(0, 3);
+    .slice(0, 6);
+  const moreToolsInCategory = allItemsInCategory
+    .filter((related) => related.id !== item.id)
+    .slice(0, 12);
 
   const hasSocials =
     item.socials &&
@@ -427,14 +432,47 @@ export default async function DirectoryItemPage({
             {/* Similar Tools */}
             {relatedItems.length > 0 && (
               <section className="border-t border-[#e0e0e0] pt-8">
-                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
-                  Similar tools
-                </h2>
+                <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <h2 className="text-sm font-semibold text-[#1f1f1f]">Similar tools</h2>
+                  {primaryCategory && (
+                    <Link
+                      href={`/categories/${primaryCategory}`}
+                      className="text-sm font-medium text-[#629649] underline-offset-2 hover:underline"
+                    >
+                      View all {getCategoryLabel(primaryCategory)} tools
+                    </Link>
+                  )}
+                </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {relatedItems.map((relatedItem) => (
                     <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
                   ))}
                 </div>
+              </section>
+            )}
+
+            {moreToolsInCategory.length > 0 && primaryCategory && (
+              <section className="border-t border-[#e0e0e0] pt-8">
+                <h2 className="mb-4 text-sm font-semibold text-[#1f1f1f]">
+                  More {getCategoryLabel(primaryCategory)} tools
+                </h2>
+                <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {moreToolsInCategory.map((relatedItem) => (
+                    <li key={relatedItem.id}>
+                      <Link
+                        href={`/${relatedItem.slug}`}
+                        className="text-sm text-[#1f1f1f] underline-offset-2 transition-colors hover:text-[#629649] hover:underline"
+                      >
+                        {relatedItem.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-sm text-[#737373]">
+                  <Link href="/all-tools" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                    Browse the full A–Z tool index
+                  </Link>
+                </p>
               </section>
             )}
           </div>

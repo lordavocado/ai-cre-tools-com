@@ -70,6 +70,7 @@ export function Footer() {
             </h3>
             <nav className="flex flex-col gap-2.5">
               {[
+                { href: '/all-tools', label: 'All Tools (A–Z)' },
                 { href: '/categories', label: 'All Categories' },
                 { href: '/categories/property-analysis-valuation', label: 'Property Analysis' },
                 { href: '/categories/marketing-leasing-enablement', label: 'Marketing & Leasing' },

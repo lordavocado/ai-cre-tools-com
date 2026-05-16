@@ -4,6 +4,7 @@ import { getCategories, getDirectoryItems } from '@/lib/supabase';
 import type { DirectoryItem } from '@/types';
 import { siteConfig } from '@/config/site';
 import { CategoryPageClient } from '@/components/category/CategoryPageClient';
+import { parseDirectoryPage } from '@/lib/directory-pagination';
 
 // Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
 // If you need fresh data, consider using revalidate instead
@@ -68,6 +69,8 @@ export default async function CategoryPage({
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { category: slug } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const currentPage = parseDirectoryPage(resolvedSearchParams.page);
   const categories = await getCategories();
   const category = categories.find((cat) => cat.slug === slug);
 
@@ -99,6 +102,7 @@ export default async function CategoryPage({
       itemsInCategory={itemsInCategory}
       itemsLoadError={itemsLoadError}
       slug={slug}
+      currentPage={currentPage}
     />
   );
 }

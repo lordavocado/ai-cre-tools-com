@@ -18,6 +18,7 @@ interface CategoryPageClientProps {
   itemsInCategory: DirectoryItem[];
   itemsLoadError: boolean;
   slug: string;
+  currentPage?: number;
 }
 
 export function CategoryPageClient({
@@ -26,6 +27,7 @@ export function CategoryPageClient({
   itemsInCategory,
   itemsLoadError,
   slug,
+  currentPage = 1,
 }: CategoryPageClientProps) {
   const topTools = itemsInCategory
     .filter(item => item.rating && item.rating >= 4.0)
@@ -171,7 +173,11 @@ export function CategoryPageClient({
           </div>
 
           {itemsInCategory.length > 0 ? (
-            <DirectoryGrid items={itemsInCategory} />
+            <DirectoryGrid
+              items={itemsInCategory}
+              currentPage={currentPage}
+              basePath={`/categories/${slug}`}
+            />
           ) : (
             <div className="rounded-xl border border-[#e0e0e0] bg-white p-10 text-center">
               {itemsLoadError ? (

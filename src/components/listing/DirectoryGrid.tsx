@@ -1,24 +1,27 @@
-"use client";
-
 import type { DirectoryItem } from "@/types";
 import { DirectoryItemCard } from "./DirectoryItemCard";
+import { DirectoryPagination } from "./DirectoryPagination";
 import { AlertCircle } from "lucide-react";
-import { Pagination } from "@/components/ui/pagination";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { useState } from "react";
+import { getDirectoryPageSlice } from "@/lib/directory-pagination";
 
 interface DirectoryGridProps {
   items: DirectoryItem[];
+  currentPage?: number;
+  basePath?: string;
+  query?: Record<string, string | undefined>;
 }
 
-function DirectoryGridContent({ items }: DirectoryGridProps) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
-  const totalPages = Math.ceil(items.length / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentItems = items.slice(startIndex, endIndex);
+function DirectoryGridContent({
+  items,
+  currentPage = 1,
+  basePath = "/",
+  query,
+}: DirectoryGridProps) {
+  const { currentItems, totalPages, currentPage: safePage } = getDirectoryPageSlice(
+    items,
+    currentPage
+  );
 
   if (items.length === 0) {
     return (
@@ -38,33 +41,29 @@ function DirectoryGridContent({ items }: DirectoryGridProps) {
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center py-4">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
+      <DirectoryPagination
+        currentPage={safePage}
+        totalPages={totalPages}
+        basePath={basePath}
+        query={query}
+      />
     </div>
   );
 }
 
-export function DirectoryGrid({ items }: DirectoryGridProps) {
+export function DirectoryGrid(props: DirectoryGridProps) {
   return (
     <ErrorBoundary
       componentName="DirectoryGrid"
       onError={(error, errorInfo) => {
-        // Log specific DirectoryGrid errors for monitoring
-        console.error('DirectoryGrid Error:', {
+        console.error("DirectoryGrid Error:", {
           error: error.message,
           componentStack: errorInfo.componentStack,
-          itemsCount: items?.length
+          itemsCount: props.items?.length,
         });
       }}
     >
-      <DirectoryGridContent items={items} />
+      <DirectoryGridContent {...props} />
     </ErrorBoundary>
   );
 }
