@@ -10,11 +10,12 @@ import type { Metadata } from 'next';
 import { FeaturedOn } from '@/components/sections/FeaturedOn';
 import { FAQ } from '@/components/sections/FAQ';
 import { parseDirectoryPage } from '@/lib/directory-pagination';
+import { getAllSeoPersonas } from '@/config/seo-personas';
 
 // Enhanced SEO metadata for homepage
 export const metadata: Metadata = {
-  title: `Best AI Real Estate Tools 2026 | AI CRE Tools Directory`,
-  description: `Discover and compare the best AI real estate tools for commercial property. Software for investors, brokers, asset managers, and operators — one focused directory.`,
+  title: `Best Commercial Real Estate AI Tools (2026) | AI CRE Tools`,
+  description: `Discover and compare the best commercial real estate AI tools. Software for investors, brokers, asset managers, and operators — one focused CRE directory.`,
   keywords: [
     ...siteConfig.seo.primaryKeywords,
     ...siteConfig.seo.secondaryKeywords,
@@ -25,8 +26,8 @@ export const metadata: Metadata = {
   ],
   
   openGraph: {
-    title: `Best AI Real Estate Tools 2026 | AI CRE Tools`,
-    description: `Find and compare the best AI real estate tools for commercial property. Detailed comparisons to help you choose the right software for your team.`,
+    title: `Best Commercial Real Estate AI Tools (2026) | AI CRE Tools`,
+    description: `Find and compare the best commercial real estate AI tools. Detailed comparisons for investors, brokers, and asset managers.`,
     url: siteConfig.url,
     siteName: siteConfig.seo.openGraph.siteName,
     images: [
@@ -43,8 +44,8 @@ export const metadata: Metadata = {
   
   twitter: {
     card: siteConfig.seo.twitter.card,
-    title: `Best AI Real Estate Tools 2026 | AI CRE Tools`,
-    description: `Find and compare the best ${siteConfig.categoryName.toLowerCase()}. Detailed information and comparisons to help you choose the perfect AI solution for commercial real estate.`,
+    title: `Best Commercial Real Estate AI Tools (2026) | AI CRE Tools`,
+    description: `Find and compare the best commercial real estate AI tools for investors, brokers, and operators.`,
     site: siteConfig.seo.twitter.site,
     creator: siteConfig.seo.twitter.creator,
     images: [
@@ -279,6 +280,27 @@ export default async function Home({ searchParams }: HomeProps) {
                     <p className="mt-0.5 text-xs text-[#737373]">{cat.itemCount} tools</p>
                   )}
                 </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-12 md:py-16">
+        <div className="container px-6">
+          <div className="mb-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">By role</p>
+            <h2 className="mt-1 text-xl font-medium text-[#1f1f1f] sm:text-2xl">Tools for your team</h2>
+            <p className="mt-2 text-sm text-[#737373]">Curated directories for common CRE roles.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {getAllSeoPersonas().map((persona) => (
+              <Link
+                key={persona.slug}
+                href={`/for/${persona.slug}`}
+                className="inline-flex items-center rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[#c8c8c8] hover:bg-[#fafafa]"
+              >
+                {persona.shortLabel}
               </Link>
             ))}
           </div>

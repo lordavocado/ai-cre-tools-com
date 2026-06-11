@@ -9,7 +9,8 @@ import { siteConfig } from '@/config/site';
 const RESERVED_SLUGS = [
   'about',
   'blog',
-  'categories', 
+  'categories',
+  'for',
   'favorites',
   'privacy-policy',
   'terms-of-service',
@@ -33,6 +34,7 @@ const RESERVED_PATTERNS = [
   /^_next\/.*/,
   /^blog\/.*/,
   /^categories\/.*/,
+  /^for\/.*/,
 ] as const;
 
 /**

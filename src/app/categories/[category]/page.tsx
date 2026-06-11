@@ -5,9 +5,11 @@ import type { DirectoryItem } from '@/types';
 import { siteConfig } from '@/config/site';
 import { CategoryPageClient } from '@/components/category/CategoryPageClient';
 import { parseDirectoryPage } from '@/lib/directory-pagination';
-
-// Removed dynamic = 'force-dynamic' to allow static generation since categories are hardcoded
-// If you need fresh data, consider using revalidate instead
+import { getSeoCluster, interpolateSeoText } from '@/config/seo-clusters';
+import {
+  filterItemsByCategorySlug,
+  getFeaturedTools,
+} from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -18,42 +20,55 @@ export async function generateStaticParams() {
   }));
 }
 
+async function getCategoryToolCount(slug: string): Promise<number> {
+  try {
+    const items = await getDirectoryItems();
+    return filterItemsByCategorySlug(items, slug).length;
+  } catch {
+    return 0;
+  }
+}
+
 export async function generateMetadata(
   { params }: { params: Promise<{ category: string }> }
 ): Promise<Metadata> {
   const { category: slug } = await params;
   const categories = await getCategories(false);
   const category = categories.find((cat) => cat.slug === slug);
+  const seoCluster = getSeoCluster(slug);
 
-  if (!category) {
+  if (!category || !seoCluster) {
     return {
       title: 'Category Not Found',
       description: 'The requested category could not be found.',
     };
   }
 
+  const toolCount = await getCategoryToolCount(slug);
+  const title = interpolateSeoText(seoCluster.metaTitle, { toolCount });
+  const description = interpolateSeoText(seoCluster.metaDescription, { toolCount });
+  const keywords = [
+    seoCluster.primaryKeyword,
+    ...seoCluster.secondaryKeywords,
+    'commercial real estate',
+    'CRE AI tools',
+    'software comparison',
+  ];
+
   return {
-    title: `${category.name} AI Tools for Commercial Real Estate | ${siteConfig.name}`,
-    description: category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`,
-    keywords: [
-      'commercial real estate',
-      'CRE',
-      'AI tools',
-      category.name.toLowerCase(),
-      'software solutions',
-      'automation',
-      'productivity',
-    ],
+    title,
+    description,
+    keywords,
     openGraph: {
-      title: `${category.name} AI Tools for Commercial Real Estate`,
-      description: category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`,
+      title,
+      description,
       url: `${siteConfig.url}/categories/${slug}`,
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${category.name} AI Tools for Commercial Real Estate`,
-      description: category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`,
+      title,
+      description,
     },
     alternates: {
       canonical: `${siteConfig.url}/categories/${slug}`,
@@ -61,9 +76,9 @@ export async function generateMetadata(
   };
 }
 
-export default async function CategoryPage({ 
+export default async function CategoryPage({
   params,
-  searchParams
+  searchParams,
 }: {
   params: Promise<{ category: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -71,6 +86,12 @@ export default async function CategoryPage({
   const { category: slug } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const currentPage = parseDirectoryPage(resolvedSearchParams.page);
+  const seoCluster = getSeoCluster(slug);
+
+  if (!seoCluster) {
+    notFound();
+  }
+
   const categories = await getCategories();
   const category = categories.find((cat) => cat.slug === slug);
 
@@ -78,22 +99,18 @@ export default async function CategoryPage({
     notFound();
   }
 
-  // Try to load directory items with proper error handling
   let allItems: DirectoryItem[] = [];
   let itemsLoadError = false;
-  
+
   try {
     allItems = await getDirectoryItems();
   } catch (error) {
     console.warn(`Failed to load directory items for category ${slug}:`, error);
     itemsLoadError = true;
   }
-  
-  const itemsInCategory = allItems.filter((item) => {
-    // Support comma-separated categories to match the logic in getCategories
-    const itemCategories = item.category.split(',').map(cat => cat.trim());
-    return itemCategories.includes(slug);
-  });
+
+  const itemsInCategory = filterItemsByCategorySlug(allItems, slug);
+  const featuredTools = getFeaturedTools(itemsInCategory);
 
   return (
     <CategoryPageClient
@@ -103,6 +120,8 @@ export default async function CategoryPage({
       itemsLoadError={itemsLoadError}
       slug={slug}
       currentPage={currentPage}
+      seoCluster={seoCluster}
+      featuredTools={featuredTools}
     />
   );
 }

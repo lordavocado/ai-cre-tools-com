@@ -5,12 +5,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import type { DirectoryItem, Category } from '@/types';
+import type { SeoCluster } from '@/config/seo-clusters';
+import { getPersonaShortLabel } from '@/config/seo-personas';
 import { siteConfig } from '@/config/site';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
+import { buildFaqStructuredData } from '@/lib/seo-pages';
 import {
-  CheckCircle, Zap, Users, Shield, ArrowRight, Star,
-  ChevronRight,
+  CheckCircle, Zap, Users, Shield, ArrowRight,
+  ChevronRight, Sparkles,
 } from 'lucide-react';
+
+const FAQ_ICONS = [CheckCircle, Zap, Users, Shield] as const;
 
 interface CategoryPageClientProps {
   category: Category;
@@ -19,6 +24,8 @@ interface CategoryPageClientProps {
   itemsLoadError: boolean;
   slug: string;
   currentPage?: number;
+  seoCluster: SeoCluster;
+  featuredTools: DirectoryItem[];
 }
 
 export function CategoryPageClient({
@@ -28,15 +35,12 @@ export function CategoryPageClient({
   itemsLoadError,
   slug,
   currentPage = 1,
+  seoCluster,
+  featuredTools,
 }: CategoryPageClientProps) {
-  const topTools = itemsInCategory
-    .filter(item => item.rating && item.rating >= 4.0)
-    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-    .slice(0, 3);
-
-  const relatedCategories = categories
-    .filter(cat => cat.slug !== slug)
-    .slice(0, 4);
+  const relatedCategories = seoCluster.relatedCategorySlugs
+    .map((relSlug) => categories.find((cat) => cat.slug === relSlug))
+    .filter((cat): cat is Category => cat !== undefined);
 
   const IconComponent = category.icon
     ? CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS]
@@ -44,15 +48,14 @@ export function CategoryPageClient({
 
   return (
     <>
-      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: `${category.name} Tools`,
-            description: category.description,
+            name: seoCluster.h1,
+            description: seoCluster.intro,
             url: `${siteConfig.url}/categories/${slug}`,
             isPartOf: {
               "@type": "WebSite",
@@ -86,10 +89,15 @@ export function CategoryPageClient({
         }}
       />
 
-      {/* Hero */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildFaqStructuredData(seoCluster.faqs)),
+        }}
+      />
+
       <section className="border-b border-[#e0e0e0] bg-white py-12 md:py-16">
         <div className="container px-6">
-          {/* Breadcrumb */}
           <nav className="mb-8 flex items-center gap-1.5 text-sm text-[#737373]">
             <Link href="/" className="transition-colors hover:text-[#1f1f1f]">Home</Link>
             <ChevronRight className="h-3.5 w-3.5" />
@@ -99,7 +107,6 @@ export function CategoryPageClient({
           </nav>
 
           <div className="mx-auto max-w-2xl text-center">
-            {/* Category icon */}
             {IconComponent && (
               <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f0f9f0] text-[#629649]">
                 <IconComponent className="h-6 w-6" />
@@ -107,25 +114,29 @@ export function CategoryPageClient({
             )}
 
             <h1 className="text-3xl font-bold tracking-tight text-[#1f1f1f] sm:text-4xl">
-              {category.name}
+              {seoCluster.h1}
             </h1>
 
             <p className="mt-4 text-base leading-7 text-[#737373]">
-              {category.description || `Discover the best ${category.name} tools and software solutions for your Commercial Real Estate AI needs.`}
+              {seoCluster.intro}
+            </p>
+            <p className="mt-3 text-sm text-[#737373]">
+              We index{' '}
+              <strong className="font-semibold text-[#1f1f1f]">{itemsInCategory.length}</strong>{' '}
+              {itemsInCategory.length === 1 ? 'tool' : 'tools'} in this category.
             </p>
 
-            {/* Stats row */}
             <div className="mt-8 flex items-center justify-center gap-6 text-sm text-[#737373]">
               <span>
                 <strong className="font-semibold text-[#1f1f1f]">{itemsInCategory.length}</strong>{' '}
                 {itemsInCategory.length === 1 ? 'tool' : 'tools'} indexed
               </span>
-              {topTools.length > 0 && (
+              {featuredTools.length > 0 && (
                 <>
                   <span className="h-4 w-px bg-[#e0e0e0]" />
                   <span className="flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 fill-[#629649] text-[#629649]" />
-                    <strong className="font-semibold text-[#1f1f1f]">{topTools.length}</strong> top rated
+                    <Sparkles className="h-3.5 w-3.5 text-[#629649]" />
+                    <strong className="font-semibold text-[#1f1f1f]">{featuredTools.length}</strong> featured
                   </span>
                 </>
               )}
@@ -133,21 +144,31 @@ export function CategoryPageClient({
               <span>Updated weekly</span>
             </div>
 
-            {/* Top rated pills */}
-            {topTools.length > 0 && (
+            {featuredTools.length > 0 && (
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                <span className="text-xs font-medium text-[#737373]">Top rated:</span>
-                {topTools.map(tool => (
+                <span className="text-xs font-medium text-[#737373]">Featured:</span>
+                {featuredTools.map((tool) => (
                   <Link
                     key={tool.slug}
                     href={`/${tool.slug}`}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-3 py-1 text-sm text-[#1f1f1f] transition hover:border-[rgba(98,150,73,0.4)] hover:bg-[#fafafa]"
                   >
-                    <Star className="h-3 w-3 fill-[#629649] text-[#629649]" />
                     {tool.name}
-                    <span className="ml-0.5 rounded-[4px] bg-[#f0f9f0] px-1.5 py-0 text-[10px] font-medium text-[#629649]">
-                      {tool.rating}
-                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {seoCluster.personaSlugs.length > 0 && (
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                <span className="text-xs font-medium text-[#737373]">Built for:</span>
+                {seoCluster.personaSlugs.map((personaSlug) => (
+                  <Link
+                    key={personaSlug}
+                    href={`/for/${personaSlug}`}
+                    className="inline-flex items-center rounded-full border border-[#e0e0e0] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f] transition hover:border-[rgba(98,150,73,0.4)] hover:bg-white"
+                  >
+                    {getPersonaShortLabel(personaSlug)}
                   </Link>
                 ))}
               </div>
@@ -156,7 +177,6 @@ export function CategoryPageClient({
         </div>
       </section>
 
-      {/* Tools grid — the main content */}
       <section id="tools-section" className="border-b border-[#e0e0e0] py-14 md:py-20">
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -207,7 +227,6 @@ export function CategoryPageClient({
         </div>
       </section>
 
-      {/* About this category */}
       {category.longDescription && (
         <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-16 md:py-24">
           <div className="container px-6">
@@ -224,7 +243,6 @@ export function CategoryPageClient({
         </section>
       )}
 
-      {/* FAQ */}
       <section className="border-b border-[#e0e0e0] py-16 md:py-24">
         <div className="container px-6">
           <div className="mx-auto max-w-3xl">
@@ -232,48 +250,29 @@ export function CategoryPageClient({
               Frequently asked questions
             </h2>
             <p className="mt-2 text-sm text-[#737373]">
-              Common questions about {category.name.toLowerCase()} tools
+              Common questions about {seoCluster.primaryKeyword}
             </p>
 
             <div className="mt-10 divide-y divide-[#e0e0e0]">
-              {[
-                {
-                  icon: <CheckCircle className="h-5 w-5 text-[#629649]" />,
-                  q: `What are ${category.name} tools?`,
-                  a: `${category.name} tools are specialized AI-powered software solutions designed to help commercial real estate professionals ${category.description?.toLowerCase() || 'improve their workflows'}. These tools leverage artificial intelligence and machine learning to automate processes, provide insights, and improve decision-making.`,
-                },
-                {
-                  icon: <Zap className="h-5 w-5 text-[#629649]" />,
-                  q: `How do I choose the right ${category.name} tool?`,
-                  a: `Consider your specific business needs, budget, team size, and existing technology stack. Look for tools that offer free trials, have strong customer support, and integrate well with your current workflow. Our directory provides detailed comparisons to help you make an informed decision.`,
-                },
-                {
-                  icon: <Users className="h-5 w-5 text-[#737373]" />,
-                  q: `Are these tools suitable for small businesses?`,
-                  a: `Many ${category.name} tools offer scalable pricing plans suitable for businesses of all sizes. We indicate pricing models and company size recommendations in our directory to help you find solutions that fit your budget and requirements.`,
-                },
-                {
-                  icon: <Shield className="h-5 w-5 text-[#737373]" />,
-                  q: `What should I expect for implementation time?`,
-                  a: `Implementation time varies by tool complexity and business requirements. Simple tools may be ready in days, while comprehensive platforms might take weeks. Most vendors provide implementation support and training to ensure successful adoption.`,
-                },
-              ].map((faq, i) => (
-                <div key={i} className="py-6 first:pt-0 last:pb-0">
-                  <h3 className="flex items-center gap-2.5 text-base font-semibold text-[#1f1f1f]">
-                    {faq.icon}
-                    {faq.q}
-                  </h3>
-                  <p className="mt-3 pl-[30px] text-sm leading-7 text-[#737373]">
-                    {faq.a}
-                  </p>
-                </div>
-              ))}
+              {seoCluster.faqs.map((faq, i) => {
+                const Icon = FAQ_ICONS[i % FAQ_ICONS.length];
+                return (
+                  <div key={faq.question} className="py-6 first:pt-0 last:pb-0">
+                    <h3 className="flex items-center gap-2.5 text-base font-semibold text-[#1f1f1f]">
+                      <Icon className="h-5 w-5 text-[#629649]" />
+                      {faq.question}
+                    </h3>
+                    <p className="mt-3 pl-[30px] text-sm leading-7 text-[#737373]">
+                      {faq.answer}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Related categories */}
       {relatedCategories.length > 0 && (
         <section className="bg-[#fafafa] py-16 md:py-24">
           <div className="container px-6">
@@ -295,7 +294,7 @@ export function CategoryPageClient({
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-              {relatedCategories.map(relCat => {
+              {relatedCategories.map((relCat) => {
                 const RelIcon = relCat.icon
                   ? CATEGORY_ICONS[relCat.icon as keyof typeof CATEGORY_ICONS]
                   : null;

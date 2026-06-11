@@ -11,6 +11,7 @@ import { getDirectoryItems, getCategories } from '@/lib/supabase';
 import { getAllBlogPosts } from '@/lib/blog';
 import { isValidSlug, isValidSlugFormat } from '@/lib/routing-utils-client';
 import { siteConfig } from '@/config/site';
+import { getAllSeoPersonaSlugs } from '@/config/seo-personas';
 import type { DirectoryItem } from '@/types';
 import type { MetadataRoute } from 'next';
 
@@ -137,6 +138,13 @@ export async function GET() {
         priority: 0.7, // Increased priority for category pages
       }));
 
+    const personaPages = getAllSeoPersonaSlugs().map((slug) => ({
+      url: `${baseUrl}/for/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    }));
+
     // Combine all pages
     const allPages = [
       ...staticPages,
@@ -144,6 +152,7 @@ export async function GET() {
       ...blogPages,
       ...directoryPages,
       ...categoryPages,
+      ...personaPages,
     ];
 
     // Sort pages by priority and last modified for better SEO

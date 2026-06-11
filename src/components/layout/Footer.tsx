@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Linkedin } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { getAllSeoPersonas } from '@/config/seo-personas';
 import { NewsletterForm } from '@/components/forms/SimpleNewsletterForm';
 
 /**
@@ -89,16 +90,35 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Col 3: Resources */}
+          {/* Col 3: By role */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
+              By Role
+            </h3>
+            <nav className="flex flex-col gap-2.5">
+              {getAllSeoPersonas().map((persona) => (
+                <Link
+                  key={persona.slug}
+                  href={`/for/${persona.slug}`}
+                  className="text-sm text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                >
+                  {persona.shortLabel}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Col 4: Resources — merged into grid; Submit stays separate below */}
+
+          {/* Col 4: Resources & Submit */}
           <div>
             <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
               Resources
             </h3>
-            <nav className="flex flex-col gap-2.5">
+            <nav className="mb-6 flex flex-col gap-2.5">
               {[
                 { href: '/about', label: 'About' },
                 { href: '/blog', label: 'Blog' },
-                { href: '/submit-tool', label: 'Submit a Tool' },
                 { href: '/favorites', label: 'Favorites' },
                 { href: '/privacy-policy', label: 'Privacy Policy' },
                 { href: '/terms-of-service', label: 'Terms of Service' },
@@ -112,10 +132,6 @@ export function Footer() {
                 </Link>
               ))}
             </nav>
-          </div>
-
-          {/* Col 4: Submit a Tool CTA */}
-          <div>
             <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
               Submit a Tool
             </h3>

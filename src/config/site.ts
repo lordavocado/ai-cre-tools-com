@@ -197,6 +197,7 @@ function truncateAtWord(text: string, maxLength: number): string {
 }
 
 // SEO helper functions
+// Note: Category pages use src/config/seo-clusters.ts as the source of truth.
 export function generateCategoryMeta(categoryName: string, categoryDescription?: string) {
   const { categoryMetaTemplates } = siteConfig.seo;
   
