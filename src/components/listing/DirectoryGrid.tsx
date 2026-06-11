@@ -53,16 +53,7 @@ function DirectoryGridContent({
 
 export function DirectoryGrid(props: DirectoryGridProps) {
   return (
-    <ErrorBoundary
-      componentName="DirectoryGrid"
-      onError={(error, errorInfo) => {
-        console.error("DirectoryGrid Error:", {
-          error: error.message,
-          componentStack: errorInfo.componentStack,
-          itemsCount: props.items?.length,
-        });
-      }}
-    >
+    <ErrorBoundary componentName="DirectoryGrid">
       <DirectoryGridContent {...props} />
     </ErrorBoundary>
   );

@@ -9,6 +9,34 @@ import { siteConfig, generateToolMeta } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { getCategoryLabel } from "@/config/design-tokens";
 import { ToolFavicon } from "@/components/ui/tool-favicon";
+import { normalizeToolDescription } from "@/lib/tool-content";
+
+function getWebsiteLabel(website: string): string {
+  try {
+    return new URL(website).hostname.replace(/^www\./, "");
+  } catch {
+    return website.replace(/^https?:\/\//, "").replace(/^www\./, "");
+  }
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+}: {
+  eyebrow: string;
+  title: string;
+}) {
+  return (
+    <div className="mb-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+        {eyebrow}
+      </p>
+      <h2 className="mt-1 text-xl font-semibold tracking-[-0.01em] text-[#1f1f1f] sm:text-2xl">
+        {title}
+      </h2>
+    </div>
+  );
+}
 
 export const revalidate = 3600;
 
@@ -122,6 +150,11 @@ export default async function DirectoryItemPage({
     (item.socials.twitter || item.socials.linkedin || item.socials.facebook);
 
   const toolPageUrl = `${siteConfig.url}/${slug}`;
+  const descriptionText = normalizeToolDescription(item.description);
+  const descriptionParagraphs = descriptionText
+    ? descriptionText.split("\n\n").filter(Boolean)
+    : [];
+  const websiteLabel = item.website ? getWebsiteLabel(item.website) : null;
 
   return (
     <>
@@ -255,56 +288,58 @@ export default async function DirectoryItemPage({
           }}
         />
       )}
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-[#e0e0e0] bg-white">
-        <div className="container px-6 py-4">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-[#737373]">
-            <Link href="/" className="transition-colors hover:text-[#1f1f1f]">Home</Link>
+      {/* ── Hero ──────────────────────────────────────────────────────── */}
+      <section className="border-b border-[#e0e0e0] bg-white py-6 md:py-8">
+        <div className="container px-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-6 flex items-center gap-1.5 text-sm text-[#737373]"
+          >
+            <Link href="/" className="transition-colors hover:text-[#1f1f1f]">
+              Home
+            </Link>
             <span aria-hidden="true">/</span>
-            <Link href="/#directory" className="transition-colors hover:text-[#1f1f1f]">Tools</Link>
+            <Link href="/#directory" className="transition-colors hover:text-[#1f1f1f]">
+              Tools
+            </Link>
             <span aria-hidden="true">/</span>
             <span className="truncate text-[#1f1f1f]">{item.name}</span>
           </nav>
-        </div>
-      </div>
 
-      <div className="border-b border-[#e0e0e0] bg-white">
-        <div className="container px-6 py-8">
-          {/* Top row: favicon + identity + action buttons */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex min-w-0 items-start gap-4">
-              {/* Favicon — sized to sit naturally beside the title */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#f0f0f0] bg-white sm:h-[52px] sm:w-[52px]">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-white sm:h-16 sm:w-16">
                 {item.website ? (
                   <ToolFavicon
                     website={item.website}
                     name={item.name}
                     apiSize={64}
-                    className="h-8 w-8 sm:h-9 sm:w-9"
+                    className="h-9 w-9 sm:h-10 sm:w-10"
                   />
                 ) : (
-                  <span className="text-xl font-bold text-[#a0a0a0]">{item.name.charAt(0)}</span>
+                  <span className="text-xl font-bold text-[#a0a0a0]">
+                    {item.name.charAt(0)}
+                  </span>
                 )}
               </div>
 
-              {/* Name + tagline + chips */}
               <div className="min-w-0 flex-1">
-                <h1 className="text-balance text-[26px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#1f1f1f] sm:text-[32px]">
+                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#1f1f1f] sm:text-[36px]">
                   {item.name}
                 </h1>
                 {item.tagline && (
-                  <p className="mt-1.5 text-[15px] leading-relaxed text-[#737373] sm:mt-2 sm:text-[16px]">
+                  <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#737373] sm:text-[17px]">
                     {item.tagline}
                   </p>
                 )}
                 {item.features && item.features.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5 sm:gap-2">
-                    {item.features.slice(0, 5).map((f, i) => (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {item.features.slice(0, 4).map((feature) => (
                       <span
-                        key={i}
-                        className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-2.5 py-1 text-xs font-medium text-[#1f1f1f]"
+                        key={feature.name}
+                        className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f]"
                       >
-                        {f.name}
+                        {feature.name}
                       </span>
                     ))}
                   </div>
@@ -312,19 +347,18 @@ export default async function DirectoryItemPage({
               </div>
             </div>
 
-            {/* Action buttons — primary CTA uses accent green per DESIGN */}
-            <div className="flex shrink-0 items-center gap-2 sm:self-start">
+            <div className="flex shrink-0 items-center gap-2 lg:pt-1">
               <FavoriteButton
                 toolId={item.id}
                 variant="icon"
-                className="h-9 w-9 rounded-[8px] border border-[#e0e0e0] bg-white p-0 text-[#737373] shadow-none transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                className="h-11 w-11 rounded-[8px] border border-[#e0e0e0] bg-white p-0 text-[#737373] shadow-none transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
               />
               {item.website && (
                 <Link
                   href={item.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-9 items-center gap-1.5 rounded-[8px] bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-100 hover:bg-primary/90"
+                  className="inline-flex h-11 items-center gap-1.5 rounded-[8px] bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-100 hover:bg-primary/90"
                 >
                   Visit Website
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -333,250 +367,279 @@ export default async function DirectoryItemPage({
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── Body ──────────────────────────────────────────────────────── */}
-      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-10">
-        <div className="container px-6">
-          <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-10">
-
-          {/* ── Left: content sections, separated by dividers — no boxes ── */}
-          <div>
-
-            {/* Screenshot Hero */}
-            {item.heroScreenshotUrl && (
-              <section className="pb-8">
-                <div className="overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
-                  <img
-                    src={item.heroScreenshotUrl}
-                    alt={`${item.name} screenshot`}
-                    className="w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              </section>
-            )}
-
-            {/* About */}
-            {item.description && (
-              <section className="pb-8">
-                <h2 className="mb-4 text-sm font-semibold text-[#1f1f1f]">
-                  About {item.name}
-                </h2>
-                <div
-                  className="prose prose-neutral max-w-none text-sm leading-7 text-[#1f1f1f] prose-headings:font-sans prose-p:font-sans prose-li:font-sans prose-strong:font-sans prose-a:font-sans prose-a:text-[#1f1f1f] prose-a:underline prose-a:decoration-[#a0a0a0] prose-a:underline-offset-2 hover:prose-a:decoration-primary"
-                  dangerouslySetInnerHTML={{ __html: item.description }}
-                />
-              </section>
-            )}
-
-            {/* Key Features */}
-            {item.features && item.features.length > 0 && (
-              <section className="border-t border-[#e0e0e0] py-8">
-                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
-                  Key features
-                </h2>
-                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {item.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]" aria-hidden="true" />
-                      <div>
-                        <p className="text-sm font-medium text-[#1f1f1f]">{feature.name}</p>
-                        {feature.description && (
-                          <p className="mt-0.5 text-xs leading-5 text-[#737373]">{feature.description}</p>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            {/* Pros & Cons */}
-            {((item.pros && item.pros.length > 0) || (item.cons && item.cons.length > 0)) && (
-              <section className="border-t border-[#e0e0e0] py-8">
-                <h2 className="mb-5 text-sm font-semibold text-[#1f1f1f]">
-                  Pros and cons
-                </h2>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  {item.pros && item.pros.length > 0 && (
-                    <div>
-                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#a0a0a0]">Pros</p>
-                      <ul className="space-y-2">
-                        {item.pros.map((pro: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]" />
-                            {pro}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {item.cons && item.cons.length > 0 && (
-                    <div>
-                      <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#a0a0a0]">Cons</p>
-                      <ul className="space-y-2">
-                        {item.cons.map((con: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#1f1f1f]">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]" />
-                            {con}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {/* Similar Tools */}
-            {relatedItems.length > 0 && (
-              <section className="border-t border-[#e0e0e0] pt-8">
-                <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <h2 className="text-sm font-semibold text-[#1f1f1f]">Similar tools</h2>
-                  {primaryCategory && (
-                    <Link
-                      href={`/categories/${primaryCategory}`}
-                      className="text-sm font-medium text-[#629649] underline-offset-2 hover:underline"
-                    >
-                      View all {getCategoryLabel(primaryCategory)} tools
-                    </Link>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {relatedItems.map((relatedItem) => (
-                    <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {moreToolsInCategory.length > 0 && primaryCategory && (
-              <section className="border-t border-[#e0e0e0] pt-8">
-                <h2 className="mb-4 text-sm font-semibold text-[#1f1f1f]">
-                  More {getCategoryLabel(primaryCategory)} tools
-                </h2>
-                <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {moreToolsInCategory.map((relatedItem) => (
-                    <li key={relatedItem.id}>
-                      <Link
-                        href={`/${relatedItem.slug}`}
-                        className="text-sm text-[#1f1f1f] underline-offset-2 transition-colors hover:text-[#629649] hover:underline"
-                      >
-                        {relatedItem.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 text-sm text-[#737373]">
-                  <Link href="/all-tools" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
-                    Browse the full A–Z tool index
-                  </Link>
-                </p>
-              </section>
-            )}
+      {/* ── Screenshot ────────────────────────────────────────────────── */}
+      {item.heroScreenshotUrl && (
+        <section className="border-b border-[#e0e0e0] bg-white py-8 md:py-10">
+          <div className="container px-6">
+            <div className="overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-[#fafafa] shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+              <img
+                src={item.heroScreenshotUrl}
+                alt={`${item.name} screenshot`}
+                className="w-full object-cover"
+                loading="lazy"
+              />
+            </div>
           </div>
+        </section>
+      )}
 
-          {/* ── Right: single unified info card ─────────────────────────── */}
-          <aside className="mt-8 lg:mt-0 lg:sticky lg:top-[66px] lg:self-start">
-            <div className="overflow-hidden rounded-[8px] border border-[#e0e0e0] bg-white">
-
-              {/* Info rows */}
-              <dl className="divide-y divide-[#e0e0e0]">
-                {primaryCategory && (
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Category</dt>
-                    <dd>
-                      <Link
-                        href={`/categories/${primaryCategory}`}
-                        className="text-xs font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
+      {/* ── Main content + sidebar ────────────────────────────────────── */}
+      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-10 md:py-14">
+        <div className="container px-6">
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-12">
+            <div className="min-w-0 space-y-10">
+              {descriptionParagraphs.length > 0 && (
+                <section>
+                  <SectionHeading eyebrow="Overview" title={`About ${item.name}`} />
+                  <div className="max-w-3xl space-y-4">
+                    {descriptionParagraphs.map((paragraph, index) => (
+                      <p
+                        key={index}
+                        className="text-base leading-[1.75] text-[#1f1f1f]"
                       >
-                        {getCategoryLabel(primaryCategory)}
-                      </Link>
-                    </dd>
+                        {paragraph}
+                      </p>
+                    ))}
                   </div>
-                )}
-                {item.website && (
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Website</dt>
-                    <dd>
-                      <Link
-                        href={item.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
-                      >
-                        {new URL(item.website).hostname.replace(/^www\./, "")}
-                      </Link>
-                    </dd>
-                  </div>
-                )}
-                {item.pricing && (
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Pricing</dt>
-                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.pricing}</dd>
-                  </div>
-                )}
-                {item.foundedYear && (
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Founded</dt>
-                    <dd className="text-xs font-medium text-[#1f1f1f]">{item.foundedYear}</dd>
-                  </div>
-                )}
-                {(item.city || item.country) && (
-                  <div className="flex items-center justify-between px-4 py-3">
-                    <dt className="text-xs text-[#737373]">Location</dt>
-                    <dd className="text-xs font-medium text-[#1f1f1f]">
-                      {[item.city, item.country].filter(Boolean).join(", ")}
-                    </dd>
-                  </div>
-                )}
-              </dl>
+                </section>
+              )}
 
-              {/* Social links */}
-              {hasSocials && (
-                <div className="flex items-center gap-1.5 border-t border-[#e0e0e0] px-4 py-3">
-                  {item.socials?.twitter && (
-                    <Link
-                      href={`https://twitter.com/${item.socials.twitter}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Twitter"
-                      className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
-                    >
-                      <Twitter size={12} aria-hidden="true" />
-                    </Link>
-                  )}
-                  {item.socials?.linkedin && (
-                    <Link
-                      href={`https://linkedin.com/${item.socials.linkedin}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="LinkedIn"
-                      className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
-                    >
-                      <Linkedin size={12} aria-hidden="true" />
-                    </Link>
-                  )}
-                  {item.socials?.facebook && (
-                    <Link
-                      href={`https://facebook.com/${item.socials.facebook}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Facebook"
-                      className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
-                    >
-                      <Facebook size={12} aria-hidden="true" />
-                    </Link>
-                  )}
-                </div>
+              {item.features && item.features.length > 0 && (
+                <section className="border-t border-[#e0e0e0] pt-10">
+                  <SectionHeading eyebrow="Capabilities" title="Key features" />
+                  <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {item.features.map((feature) => (
+                      <li
+                        key={feature.name}
+                        className="rounded-[8px] border border-[#e0e0e0] bg-white px-4 py-3.5"
+                      >
+                        <p className="text-sm font-medium text-[#1f1f1f]">
+                          {feature.name}
+                        </p>
+                        {feature.description && (
+                          <p className="mt-1 text-sm leading-relaxed text-[#737373]">
+                            {feature.description}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {((item.pros && item.pros.length > 0) ||
+                (item.cons && item.cons.length > 0)) && (
+                <section className="border-t border-[#e0e0e0] pt-10">
+                  <SectionHeading eyebrow="Evaluation" title="Pros and cons" />
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {item.pros && item.pros.length > 0 && (
+                      <div className="rounded-[8px] border border-[#e0e0e0] bg-white p-5">
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-[#999999]">
+                          Pros
+                        </p>
+                        <ul className="space-y-2.5">
+                          {item.pros.map((pro) => (
+                            <li
+                              key={pro}
+                              className="flex items-start gap-2.5 text-sm leading-relaxed text-[#1f1f1f]"
+                            >
+                              <span
+                                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]"
+                                aria-hidden="true"
+                              />
+                              {pro}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {item.cons && item.cons.length > 0 && (
+                      <div className="rounded-[8px] border border-[#e0e0e0] bg-white p-5">
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-[#999999]">
+                          Cons
+                        </p>
+                        <ul className="space-y-2.5">
+                          {item.cons.map((con) => (
+                            <li
+                              key={con}
+                              className="flex items-start gap-2.5 text-sm leading-relaxed text-[#1f1f1f]"
+                            >
+                              <span
+                                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#a0a0a0]"
+                                aria-hidden="true"
+                              />
+                              {con}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </section>
               )}
             </div>
-          </aside>
 
+            <aside className="mt-10 lg:sticky lg:top-[66px] lg:mt-0 lg:self-start">
+              <div className="overflow-hidden rounded-[8px] border border-[#e0e0e0] bg-white">
+                <div className="border-b border-[#e0e0e0] px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+                    Tool details
+                  </p>
+                </div>
+                <dl className="divide-y divide-[#e0e0e0]">
+                  {primaryCategory && (
+                    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+                      <dt className="text-sm text-[#737373]">Category</dt>
+                      <dd className="text-right">
+                        <Link
+                          href={`/categories/${primaryCategory}`}
+                          className="text-sm font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
+                        >
+                          {getCategoryLabel(primaryCategory)}
+                        </Link>
+                      </dd>
+                    </div>
+                  )}
+                  {websiteLabel && item.website && (
+                    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+                      <dt className="text-sm text-[#737373]">Website</dt>
+                      <dd className="text-right">
+                        <Link
+                          href={item.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
+                        >
+                          {websiteLabel}
+                        </Link>
+                      </dd>
+                    </div>
+                  )}
+                  {item.pricing && (
+                    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+                      <dt className="text-sm text-[#737373]">Pricing</dt>
+                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">
+                        {item.pricing}
+                      </dd>
+                    </div>
+                  )}
+                  {item.foundedYear && (
+                    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+                      <dt className="text-sm text-[#737373]">Founded</dt>
+                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">
+                        {item.foundedYear}
+                      </dd>
+                    </div>
+                  )}
+                  {(item.city || item.country) && (
+                    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+                      <dt className="text-sm text-[#737373]">Location</dt>
+                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">
+                        {[item.city, item.country].filter(Boolean).join(", ")}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+
+                {hasSocials && (
+                  <div className="flex items-center gap-1.5 border-t border-[#e0e0e0] px-4 py-3.5">
+                    {item.socials?.twitter && (
+                      <Link
+                        href={`https://twitter.com/${item.socials.twitter}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Twitter"
+                        className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                      >
+                        <Twitter size={14} aria-hidden="true" />
+                      </Link>
+                    )}
+                    {item.socials?.linkedin && (
+                      <Link
+                        href={`https://linkedin.com/${item.socials.linkedin}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="LinkedIn"
+                        className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                      >
+                        <Linkedin size={14} aria-hidden="true" />
+                      </Link>
+                    )}
+                    {item.socials?.facebook && (
+                      <Link
+                        href={`https://facebook.com/${item.socials.facebook}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Facebook"
+                        className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                      >
+                        <Facebook size={14} aria-hidden="true" />
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            </aside>
           </div>
         </div>
       </section>
+
+      {/* ── Related tools (full width) ────────────────────────────────── */}
+      {relatedItems.length > 0 && (
+        <section className="border-b border-[#e0e0e0] bg-white py-10 md:py-14">
+          <div className="container px-6">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <SectionHeading eyebrow="Directory" title="Similar tools" />
+              {primaryCategory && (
+                <Link
+                  href={`/categories/${primaryCategory}`}
+                  className="inline-flex w-fit items-center gap-1 text-sm font-medium text-[#1f1f1f] underline-offset-2 hover:underline"
+                >
+                  View all {getCategoryLabel(primaryCategory)} tools
+                </Link>
+              )}
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedItems.map((relatedItem) => (
+                <DirectoryItemCard key={relatedItem.id} item={relatedItem} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {moreToolsInCategory.length > 0 && primaryCategory && (
+        <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-10 md:py-12">
+          <div className="container px-6">
+            <SectionHeading
+              eyebrow="Explore"
+              title={`More ${getCategoryLabel(primaryCategory)} tools`}
+            />
+            <ul className="grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+              {moreToolsInCategory.map((relatedItem) => (
+                <li key={relatedItem.id}>
+                  <Link
+                    href={`/${relatedItem.slug}`}
+                    className="text-sm text-[#1f1f1f] underline-offset-2 transition-colors hover:text-[#629649] hover:underline"
+                  >
+                    {relatedItem.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-sm text-[#737373]">
+              <Link
+                href="/all-tools"
+                className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline"
+              >
+                Browse the full A–Z tool index
+              </Link>
+            </p>
+          </div>
+        </section>
+      )}
     </>
   );
 }

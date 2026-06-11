@@ -64,6 +64,15 @@ function DirectorySearchContent({
       }
     }
 
+    const currentParams = new URLSearchParams(window.location.search);
+    const currentPage = currentParams.get("page");
+    const filtersUnchanged =
+      searchTerm === initialSearchTerm &&
+      selectedCategories.join(",") === (initialCategoryFilter || "");
+    if (currentPage && currentPage !== "1" && filtersUnchanged) {
+      queryParams.set("page", currentPage);
+    }
+
     const queryString = queryParams.toString();
     const newUrl = queryString ? `${targetPathname}?${queryString}` : targetPathname;
     const currentUrl = window.location.pathname + (window.location.search || "");
