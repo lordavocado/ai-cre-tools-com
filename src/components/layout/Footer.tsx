@@ -73,6 +73,9 @@ export function Footer() {
               {[
                 { href: '/all-tools', label: 'All Tools (A–Z)' },
                 { href: '/categories', label: 'All Categories' },
+                { href: '/tags', label: 'Browse by Capability' },
+                { href: '/compare', label: 'Tool Comparisons' },
+                { href: '/glossary', label: 'CRE Glossary' },
                 { href: '/categories/property-analysis-valuation', label: 'Property Analysis' },
                 { href: '/categories/marketing-leasing-enablement', label: 'Marketing & Leasing' },
                 { href: '/categories/asset-portfolio-management', label: 'Asset Management' },

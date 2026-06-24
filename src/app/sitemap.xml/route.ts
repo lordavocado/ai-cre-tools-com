@@ -12,8 +12,11 @@ import { getAllBlogPosts } from '@/lib/blog';
 import { isValidSlug, isValidSlugFormat } from '@/lib/routing-utils-client';
 import { siteConfig } from '@/config/site';
 import { getAllSeoPersonaSlugs } from '@/config/seo-personas';
+import { getIndexableTagSlugs } from '@/lib/seo-pages';
+import { getEligibleAlternativeSlugs } from '@/config/seo-alternatives';
+import { getResolvedComparisons } from '@/config/seo-comparisons';
+import { getAllGlossarySlugs } from '@/config/seo-glossary';
 import type { DirectoryItem } from '@/types';
-import type { MetadataRoute } from 'next';
 
 /**
  * Generates and returns XML sitemap
@@ -145,6 +148,60 @@ export async function GET() {
       priority: 0.75,
     }));
 
+    const indexableTagSlugs = await getIndexableTagSlugs();
+    const tagHubPages = [
+      {
+        url: `${baseUrl}/tags`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      },
+    ];
+    const tagPages = indexableTagSlugs.map((slug) => ({
+      url: `${baseUrl}/tags/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+
+    const comparisonHubPages = [
+      {
+        url: `${baseUrl}/compare`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      },
+    ];
+    const comparisonPages = getResolvedComparisons(directoryItems).map((comparison) => ({
+      url: `${baseUrl}/compare/${comparison.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.65,
+    }));
+
+    const glossaryHubPages = [
+      {
+        url: `${baseUrl}/glossary`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.65,
+      },
+    ];
+    const glossaryPages = getAllGlossarySlugs().map((slug) => ({
+      url: `${baseUrl}/glossary/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+
+    const alternativeSlugs = await getEligibleAlternativeSlugs();
+    const alternativePages = alternativeSlugs.map((slug) => ({
+      url: `${baseUrl}/${slug}/alternatives`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    }));
+
     // Combine all pages
     const allPages = [
       ...staticPages,
@@ -153,6 +210,13 @@ export async function GET() {
       ...directoryPages,
       ...categoryPages,
       ...personaPages,
+      ...tagHubPages,
+      ...tagPages,
+      ...comparisonHubPages,
+      ...comparisonPages,
+      ...glossaryHubPages,
+      ...glossaryPages,
+      ...alternativePages,
     ];
 
     // Sort pages by priority and last modified for better SEO

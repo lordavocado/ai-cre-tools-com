@@ -10,6 +10,8 @@ import { FavoriteButton } from "@/components/ui/favorite-button";
 import { getCategoryLabel } from "@/config/design-tokens";
 import { ToolFavicon } from "@/components/ui/tool-favicon";
 import { normalizeToolDescription } from "@/lib/tool-content";
+import { hasEnoughAlternatives } from "@/config/seo-alternatives";
+import { findIndexableTagSlugForFeature } from "@/lib/seo-pages";
 
 function getWebsiteLabel(website: string): string {
   try {
@@ -138,6 +140,7 @@ export default async function DirectoryItemPage({
   const allItemsInCategory = primaryCategory
     ? await getDirectoryItems(undefined, primaryCategory)
     : [];
+  const allItems = await getDirectoryItems();
   const relatedItems = allItemsInCategory
     .filter((related) => related.id !== item.id)
     .slice(0, 6);
@@ -155,6 +158,7 @@ export default async function DirectoryItemPage({
     ? descriptionText.split("\n\n").filter(Boolean)
     : [];
   const websiteLabel = item.website ? getWebsiteLabel(item.website) : null;
+  const showAlternativesLink = hasEnoughAlternatives(item, allItems);
 
   return (
     <>
@@ -267,27 +271,6 @@ export default async function DirectoryItemPage({
         />
       )}
 
-      {item.features && item.features.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: item.features.slice(0, 5).map((feature) => ({
-                "@type": "Question",
-                name: `What is ${feature.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text:
-                    feature.description ||
-                    `${item.name} offers ${feature.name} as one of its key features.`,
-                },
-              })),
-            }),
-          }}
-        />
-      )}
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="border-b border-[#e0e0e0] bg-white py-6 md:py-8">
         <div className="container px-6">
@@ -334,14 +317,28 @@ export default async function DirectoryItemPage({
                 )}
                 {item.features && item.features.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {item.features.slice(0, 4).map((feature) => (
-                      <span
-                        key={feature.name}
-                        className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f]"
-                      >
-                        {feature.name}
-                      </span>
-                    ))}
+                    {item.features.slice(0, 4).map((feature) => {
+                      const tagSlug = findIndexableTagSlugForFeature(feature.name, allItems);
+                      if (tagSlug) {
+                        return (
+                          <Link
+                            key={feature.name}
+                            href={`/tags/${tagSlug}`}
+                            className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f] transition-colors hover:border-[rgba(98,150,73,0.4)] hover:text-[#629649]"
+                          >
+                            {feature.name}
+                          </Link>
+                        );
+                      }
+                      return (
+                        <span
+                          key={feature.name}
+                          className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f]"
+                        >
+                          {feature.name}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -592,14 +589,24 @@ export default async function DirectoryItemPage({
           <div className="container px-6">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <SectionHeading eyebrow="Directory" title="Similar tools" />
-              {primaryCategory && (
-                <Link
-                  href={`/categories/${primaryCategory}`}
-                  className="inline-flex w-fit items-center gap-1 text-sm font-medium text-[#1f1f1f] underline-offset-2 hover:underline"
-                >
-                  View all {getCategoryLabel(primaryCategory)} tools
-                </Link>
-              )}
+              <div className="flex flex-col gap-2 sm:items-end">
+                {showAlternativesLink && (
+                  <Link
+                    href={`/${slug}/alternatives`}
+                    className="inline-flex w-fit items-center gap-1 text-sm font-semibold text-[#629649] underline-offset-2 hover:underline"
+                  >
+                    View {item.name} alternatives
+                  </Link>
+                )}
+                {primaryCategory && (
+                  <Link
+                    href={`/categories/${primaryCategory}`}
+                    className="inline-flex w-fit items-center gap-1 text-sm font-medium text-[#1f1f1f] underline-offset-2 hover:underline"
+                  >
+                    View all {getCategoryLabel(primaryCategory)} tools
+                  </Link>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {relatedItems.map((relatedItem) => (

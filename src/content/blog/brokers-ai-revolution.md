@@ -14,6 +14,8 @@ Let's cut to the chase: in commercial real estate brokerage, **speed kills... th
 
 **The bad news?** You're probably already feeling the pressure. **The good news?** AI is here to be your secret weapon – the digital assistant that never sleeps, never takes breaks, and never misses an opportunity.
 
+See tools built for [CRE brokers](/for/brokers) and explore [leasing automation software](/tags/leasing-automation) in our directory.
+
 ## 🎯 Lead Generation: From Hope to Highly Qualified Prospects
 
 Remember the days when "lead generation" meant cold calling and hoping someone picked up? Those days are gone, my friend.

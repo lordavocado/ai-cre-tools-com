@@ -12,6 +12,9 @@ const RESERVED_SLUGS = [
   'categories',
   'for',
   'favorites',
+  'tags',
+  'compare',
+  'glossary',
   'privacy-policy',
   'terms-of-service',
   'submit-tool',
@@ -35,6 +38,9 @@ const RESERVED_PATTERNS = [
   /^blog\/.*/,
   /^categories\/.*/,
   /^for\/.*/,
+  /^tags\/.*/,
+  /^compare\/.*/,
+  /^glossary\/.*/,
 ] as const;
 
 /**

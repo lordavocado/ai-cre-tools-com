@@ -14,6 +14,8 @@ Let's face it: being a real estate investor these days feels like **trying to so
 
 **Welcome to the world of AI-powered investment tools** – your new secret weapon for making smarter, data-driven decisions without losing the human intuition that got you this far.
 
+Browse our curated hub for [commercial real estate investors](/for/investors), or jump straight to [AI underwriting tools](/tags/underwriting) in the directory.
+
 ## 🔍 The Deal-Finding Revolution: No More Needle in a Haystack
 
 Remember the days of driving around town, knocking on doors, and hoping to stumble upon the next great investment? Yeah, those are becoming as outdated as flip phones.

@@ -12,7 +12,9 @@ import { getSeoCluster } from '@/config/seo-clusters';
 import {
   filterItemsByCategories,
   buildFaqStructuredData,
+  getIndexableTags,
 } from '@/lib/seo-pages';
+import { getTagsForCategory } from '@/config/seo-tags';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import { ArrowRight, ChevronRight } from 'lucide-react';
@@ -89,6 +91,16 @@ export default async function PersonaPage({
   const personaCategories = seoPersona.categorySlugs
     .map((catSlug) => categories.find((c) => c.slug === catSlug))
     .filter((c) => c !== undefined);
+
+  const indexableTagSlugs = new Set(getIndexableTags(allItems).map((t) => t.slug));
+  const personaTags = [
+    ...new Map(
+      seoPersona.categorySlugs
+        .flatMap((catSlug) => getTagsForCategory(catSlug))
+        .filter((tag) => indexableTagSlugs.has(tag.slug))
+        .map((tag) => [tag.slug, tag])
+    ).values(),
+  ].slice(0, 6);
 
   const pageUrl = `${siteConfig.url}/for/${slug}`;
 
@@ -236,6 +248,27 @@ export default async function PersonaPage({
                   </Link>
                 );
               })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {personaTags.length > 0 && (
+        <section className="border-b border-[#e0e0e0] py-12 md:py-16">
+          <div className="container px-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#737373]">
+              Top capabilities for {seoPersona.name.toLowerCase()}
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {personaTags.map((tag) => (
+                <Link
+                  key={tag.slug}
+                  href={`/tags/${tag.slug}`}
+                  className="rounded-full border border-[#e0e0e0] bg-white px-4 py-1.5 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[rgba(98,150,73,0.4)] hover:text-[#629649]"
+                >
+                  {tag.label}
+                </Link>
+              ))}
             </div>
           </div>
         </section>

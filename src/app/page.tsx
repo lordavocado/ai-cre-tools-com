@@ -11,64 +11,75 @@ import { FeaturedOn } from '@/components/sections/FeaturedOn';
 import { FAQ } from '@/components/sections/FAQ';
 import { parseDirectoryPage } from '@/lib/directory-pagination';
 import { getAllSeoPersonas } from '@/config/seo-personas';
+import { getTopTagSlugs } from '@/config/seo-tags';
+import { buildPaginatedMetadata } from '@/lib/seo-pages';
 
-// Enhanced SEO metadata for homepage
-export const metadata: Metadata = {
-  title: `Best Commercial Real Estate AI Tools (2026) | AI CRE Tools`,
-  description: `Discover and compare the best commercial real estate AI tools. Software for investors, brokers, asset managers, and operators — one focused CRE directory.`,
-  keywords: [
-    ...siteConfig.seo.primaryKeywords,
-    ...siteConfig.seo.secondaryKeywords,
-    'directory',
-    'comparison',
-    'reviews',
-    'ratings'
-  ],
-  
-  openGraph: {
-    title: `Best Commercial Real Estate AI Tools (2026) | AI CRE Tools`,
-    description: `Find and compare the best commercial real estate AI tools. Detailed comparisons for investors, brokers, and asset managers.`,
-    url: siteConfig.url,
-    siteName: siteConfig.seo.openGraph.siteName,
-    images: [
-      {
-        url: siteConfig.seo.openGraph.images.default,
-        width: siteConfig.seo.openGraph.images.width,
-        height: siteConfig.seo.openGraph.images.height,
-        alt: siteConfig.seo.openGraph.images.alt,
-      },
+const HOME_TITLE = 'Best Commercial Real Estate AI Tools (2026) | AI CRE Tools';
+const HOME_DESCRIPTION =
+  'Discover and compare the best commercial real estate AI tools. Software for investors, brokers, asset managers, and operators — one focused CRE directory.';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string; category?: string; page?: string }>;
+}): Promise<Metadata> {
+  const resolved = await searchParams;
+  const hasFilters = Boolean(resolved.search?.trim() || resolved.category?.trim());
+  const pagination = buildPaginatedMetadata({
+    basePath: '/',
+    page: resolved.page,
+    hasFilters,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+  });
+
+  return {
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    keywords: [
+      ...siteConfig.seo.primaryKeywords,
+      ...siteConfig.seo.secondaryKeywords,
+      'directory',
+      'comparison',
+      'reviews',
     ],
-    locale: siteConfig.seo.openGraph.locale,
-    type: 'website',
-  },
-  
-  twitter: {
-    card: siteConfig.seo.twitter.card,
-    title: `Best Commercial Real Estate AI Tools (2026) | AI CRE Tools`,
-    description: `Find and compare the best commercial real estate AI tools for investors, brokers, and operators.`,
-    site: siteConfig.seo.twitter.site,
-    creator: siteConfig.seo.twitter.creator,
-    images: [
-      {
-        url: siteConfig.seo.twitter.images.default,
-        width: siteConfig.seo.twitter.images.width,
-        height: siteConfig.seo.twitter.images.height,
-        alt: siteConfig.seo.twitter.images.alt,
-      },
-    ],
-  },
-  
-  alternates: {
-    canonical: siteConfig.url,
-  },
-  
-  robots: {
-    index: true,
-    follow: true,
-    'max-image-preview': 'large',
-    'max-snippet': -1,
-  },
-};
+    openGraph: {
+      title: HOME_TITLE,
+      description:
+        'Find and compare the best commercial real estate AI tools. Detailed comparisons for investors, brokers, and asset managers.',
+      url: siteConfig.url,
+      siteName: siteConfig.seo.openGraph.siteName,
+      images: [
+        {
+          url: siteConfig.seo.openGraph.images.default,
+          width: siteConfig.seo.openGraph.images.width,
+          height: siteConfig.seo.openGraph.images.height,
+          alt: siteConfig.seo.openGraph.images.alt,
+        },
+      ],
+      locale: siteConfig.seo.openGraph.locale,
+      type: 'website',
+    },
+    twitter: {
+      card: siteConfig.seo.twitter.card,
+      title: HOME_TITLE,
+      description:
+        'Find and compare the best commercial real estate AI tools for investors, brokers, and operators.',
+      site: siteConfig.seo.twitter.site,
+      creator: siteConfig.seo.twitter.creator,
+      images: [
+        {
+          url: siteConfig.seo.twitter.images.default,
+          width: siteConfig.seo.twitter.images.width,
+          height: siteConfig.seo.twitter.images.height,
+          alt: siteConfig.seo.twitter.images.alt,
+        },
+      ],
+    },
+    alternates: pagination.alternates,
+    robots: pagination.robots,
+  };
+}
 
 export const revalidate = 3600;
 
@@ -282,6 +293,34 @@ export default async function Home({ searchParams }: HomeProps) {
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-12 md:py-16">
+        <div className="container px-6">
+          <div className="mb-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">By capability</p>
+            <h2 className="mt-1 text-xl font-medium text-[#1f1f1f] sm:text-2xl">Browse by workflow</h2>
+            <p className="mt-2 text-sm text-[#737373]">Long-tail CRE software topics matched to product features.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {getTopTagSlugs(6).map((tagSlug) => (
+              <Link
+                key={tagSlug}
+                href={`/tags/${tagSlug}`}
+                className="inline-flex items-center rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[#c8c8c8] hover:bg-[#fafafa]"
+              >
+                {tagSlug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+              </Link>
+            ))}
+            <Link
+              href="/tags"
+              className="inline-flex items-center gap-1 rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#737373] hover:text-[#1f1f1f]"
+            >
+              All capabilities
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </section>

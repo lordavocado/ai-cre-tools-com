@@ -26,6 +26,7 @@ interface CategoryPageClientProps {
   currentPage?: number;
   seoCluster: SeoCluster;
   featuredTools: DirectoryItem[];
+  relatedTags: { slug: string; label: string }[];
 }
 
 export function CategoryPageClient({
@@ -37,6 +38,7 @@ export function CategoryPageClient({
   currentPage = 1,
   seoCluster,
   featuredTools,
+  relatedTags,
 }: CategoryPageClientProps) {
   const relatedCategories = seoCluster.relatedCategorySlugs
     .map((relSlug) => categories.find((cat) => cat.slug === relSlug))
@@ -226,6 +228,27 @@ export function CategoryPageClient({
           )}
         </div>
       </section>
+
+      {relatedTags.length > 0 && (
+        <section className="border-b border-[#e0e0e0] py-12 md:py-16">
+          <div className="container px-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-[#737373]">
+              Browse by capability
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {relatedTags.map((tag) => (
+                <Link
+                  key={tag.slug}
+                  href={`/tags/${tag.slug}`}
+                  className="rounded-full border border-[#e0e0e0] bg-white px-4 py-1.5 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[rgba(98,150,73,0.4)] hover:text-[#629649]"
+                >
+                  {tag.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {category.longDescription && (
         <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-16 md:py-24">

@@ -16,6 +16,8 @@ As a property manager, you're the human face of real estate – the one tenants 
 
 **The good news? AI isn't here to replace you. It's here to be your caffeine-fueled sidekick.** Let's explore how to use artificial intelligence to supercharge your property management game while keeping your humanity intact.
 
+Start with our [property manager tool hub](/for/property-managers) and [lease administration capabilities](/tags/lease-administration) in the directory.
+
 ## 🔧 The Maintenance Prediction Revolution
 
 Remember when you used to react to problems? Yeah, those days are gone – and good riddance!

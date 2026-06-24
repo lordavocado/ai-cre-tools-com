@@ -9,7 +9,10 @@ import { getSeoCluster, interpolateSeoText } from '@/config/seo-clusters';
 import {
   filterItemsByCategorySlug,
   getFeaturedTools,
+  buildPaginatedMetadata,
+  getIndexableTags,
 } from '@/lib/seo-pages';
+import { getTagsForCategory } from '@/config/seo-tags';
 
 export const revalidate = 3600;
 
@@ -30,9 +33,16 @@ async function getCategoryToolCount(slug: string): Promise<number> {
 }
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ category: string }> }
+  {
+    params,
+    searchParams,
+  }: {
+    params: Promise<{ category: string }>;
+    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
 ): Promise<Metadata> {
   const { category: slug } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const categories = await getCategories(false);
   const category = categories.find((cat) => cat.slug === slug);
   const seoCluster = getSeoCluster(slug);
@@ -55,6 +65,14 @@ export async function generateMetadata(
     'software comparison',
   ];
 
+  const pagination = buildPaginatedMetadata({
+    basePath: `/categories/${slug}`,
+    page: resolvedSearchParams.page,
+    hasFilters: false,
+    title,
+    description,
+  });
+
   return {
     title,
     description,
@@ -70,9 +88,8 @@ export async function generateMetadata(
       title,
       description,
     },
-    alternates: {
-      canonical: `${siteConfig.url}/categories/${slug}`,
-    },
+    alternates: pagination.alternates,
+    robots: pagination.robots,
   };
 }
 
@@ -111,6 +128,11 @@ export default async function CategoryPage({
 
   const itemsInCategory = filterItemsByCategorySlug(allItems, slug);
   const featuredTools = getFeaturedTools(itemsInCategory);
+  const indexableTagSlugs = new Set(getIndexableTags(allItems).map((t) => t.slug));
+  const relatedTags = getTagsForCategory(slug)
+    .filter((tag) => indexableTagSlugs.has(tag.slug))
+    .slice(0, 3)
+    .map((tag) => ({ slug: tag.slug, label: tag.label }));
 
   return (
     <CategoryPageClient
@@ -122,6 +144,7 @@ export default async function CategoryPage({
       currentPage={currentPage}
       seoCluster={seoCluster}
       featuredTools={featuredTools}
+      relatedTags={relatedTags}
     />
   );
 }
