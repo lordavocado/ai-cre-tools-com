@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { notifyNewToolSubmission } from '@/lib/submission-notifications';
 import { storeToolSubmission } from '@/lib/supabase';
 import { isSupabaseStorageConfigured } from '@/lib/tool-submissions-config';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
@@ -88,6 +89,19 @@ export async function POST(request: NextRequest) {
       submittedAt: new Date().toISOString(),
       status: 'pending',
     });
+
+    try {
+      await notifyNewToolSubmission({
+        submissionId,
+        website,
+        email,
+        comment,
+        name: trimmedName || undefined,
+        category: trimmedCategory || undefined,
+      });
+    } catch (notificationError) {
+      console.error('Tool submission notification email failed:', notificationError);
+    }
 
     return NextResponse.json({
       success: true,

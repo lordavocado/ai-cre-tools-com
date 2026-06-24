@@ -57,6 +57,18 @@ MAILCHIMP_AUDIENCE_ID=your-audience-id
 - **Purpose**: Enables newsletter subscription functionality
 - **Required**: No
 
+### Tool Submission Notifications (Optional)
+```bash
+RESEND_API_KEY=re_your_resend_api_key
+SUBMISSION_NOTIFY_EMAIL=you@example.com
+RESEND_FROM_EMAIL=AI CRE Tools <notifications@aicretools.com>
+```
+- **Purpose**: Sends you an email when someone submits a new tool via `/submit-tool`
+- **Required**: No (submissions still work without it)
+- **RESEND_API_KEY**: API key from [Resend](https://resend.com)
+- **SUBMISSION_NOTIFY_EMAIL**: Your inbox; comma-separate multiple addresses if needed
+- **RESEND_FROM_EMAIL**: Optional sender address. Must use a domain verified in Resend (or `onboarding@resend.dev` while testing)
+
 ## Setup Instructions
 
 1. Copy the required variables to your `.env.local` file
