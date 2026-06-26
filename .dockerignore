@@ -1,0 +1,48 @@
+# Dependencies & build output
+node_modules
+.next
+out
+build
+coverage
+
+# Git & IDE
+.git
+.gitignore
+.cursor
+.agents
+.claude
+.firecrawl
+.playwright-mcp
+.tasks
+.worktrees
+.gstack
+
+# Env & secrets (injected at runtime by Coolify)
+.env
+.env.*
+!.env.example
+
+# Docs & dev scripts — not needed in production image
+docs
+scripts
+*.md
+!README.md
+
+# Heavy dev-only artifacts
+ai-cre-tools-com
+skills-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+*.pem
+.cache
+.vercel
+.genkit
+
+# Screenshot / design artifacts
+*.jpeg
+*.jpg
+aicretools-*.png
+openalternative-*.png

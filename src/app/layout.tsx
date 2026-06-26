@@ -312,12 +312,16 @@ export default function RootLayout({
                 <ScriptExecutionMonitor />
               </>
             )}
-            <PerformanceMonitor
-              enableConsoleLogging={process.env.NODE_ENV === 'development'}
-              enableRealUserMonitoring={true}
-              thresholdWarnings={true}
-            />
-            <HydrationTracker />
+            {process.env.NODE_ENV === 'development' && (
+              <>
+                <PerformanceMonitor
+                  enableConsoleLogging
+                  enableRealUserMonitoring={false}
+                  thresholdWarnings
+                />
+                <HydrationTracker />
+              </>
+            )}
             <div className="relative flex min-h-dvh flex-col bg-background">
               <Header />
               <main className="flex-1">{children}</main>
