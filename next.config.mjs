@@ -3,6 +3,7 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  serverExternalPackages: ['@mailchimp/mailchimp_marketing'],
 
   experimental: {
     optimizePackageImports: [
@@ -44,6 +45,7 @@ const nextConfig = {
       'node_modules/puppeteer-core/**',
       'node_modules/lighthouse/**',
       'node_modules/genkit-cli/**',
+      'node_modules/typescript/**',
     ],
   },
 

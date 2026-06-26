@@ -1,11 +1,16 @@
 "use client";
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Menu, Search } from 'lucide-react';
-import { GlobalSearch } from './GlobalSearch';
 import { siteConfig } from '@/config/site';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const GlobalSearch = dynamic(
+  () => import('./GlobalSearch').then((mod) => mod.GlobalSearch),
+  { ssr: false }
+);
 
 /** Site logo mark shown in header and mobile drawer. */
 function Logo({ className }: { className?: string }) {
@@ -26,20 +31,32 @@ function Logo({ className }: { className?: string }) {
 export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
 
+  useEffect(() => {
+    function handleSearchShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+
+    document.addEventListener('keydown', handleSearchShortcut);
+    return () => document.removeEventListener('keydown', handleSearchShortcut);
+  }, []);
+
   return (
     <>
-      {/* GlobalSearch overlay — mounted outside header so it can cover full screen */}
-      <GlobalSearch
-        placeholder="Search tools… (⌘K)"
-        isOpen={searchOpen}
-        onClose={() => setSearchOpen(false)}
-      />
+      {searchOpen && (
+        <GlobalSearch
+          placeholder="Search tools… (⌘K)"
+          isOpen={searchOpen}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
 
       <header className="sticky top-0 z-[9998] w-full border-b border-[#e0e0e0] bg-white">
         <div className="mx-auto flex h-[50px] max-w-[1200px] items-center justify-between gap-6 px-6">
           <Logo className="shrink-0" />
 
-          {/* Desktop nav */}
           <nav className="hidden md:flex md:items-center md:gap-1">
             {siteConfig.nav.items.map((item) => (
               <Link
@@ -52,9 +69,7 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Right: search pill + mobile menu */}
           <div className="flex items-center gap-3">
-            {/* Search pill trigger — opens GlobalSearch overlay */}
             <button
               onClick={() => setSearchOpen(true)}
               className="hidden md:flex items-center gap-2 rounded-[8px] border border-[#e0e0e0] bg-white px-3 py-1.5 text-sm text-[#737373] hover:border-[#1f1f1f] hover:text-[#1f1f1f] transition-colors duration-100"
@@ -64,7 +79,6 @@ export function Header() {
               <span>Search tools...</span>
             </button>
 
-            {/* Mobile menu */}
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
@@ -97,7 +111,6 @@ export function Header() {
         </div>
       </header>
 
-      {/* Nav fade mask — gradient that softly fades content beneath the header */}
       <div className="nav-fade-mask pointer-events-none h-8 w-full" />
     </>
   );

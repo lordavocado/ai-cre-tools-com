@@ -11,6 +11,7 @@ if (typeof window !== 'undefined') {
 
 import type { DirectoryItem, Category } from '@/types';
 import { createClient } from '@supabase/supabase-js';
+import { unstable_cache } from 'next/cache';
 import { normalizeToolDescription } from '@/lib/tool-content';
 
 // --- Configuration ---
@@ -395,6 +396,32 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
 
 // --- Main Data Fetching Functions ---
 
+async function fetchAllDirectoryItemsFromDb(): Promise<DirectoryItem[]> {
+  const supabase = getSupabaseClient();
+
+  const { data, error } = await supabase
+    .from(TABLE_NAME)
+    .select('*')
+    .order('display_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to fetch directory items: ${error.message}`);
+  }
+
+  if (!data) {
+    return [];
+  }
+
+  return data.map(transformSupabaseRowToDirectoryItem);
+}
+
+const getCachedAllDirectoryItems = unstable_cache(
+  fetchAllDirectoryItemsFromDb,
+  ['directory-items-all'],
+  { revalidate: 300, tags: ['directory-items'] }
+);
+
 /**
  * Retrieves directory items with optional search and category filtering
  * Server-side rendered with intelligent caching for optimal performance
@@ -407,30 +434,28 @@ export async function getDirectoryItems(
   categoryFilter?: string
 ): Promise<DirectoryItem[]> {
   try {
-    // Check if we have valid cached data and no specific search/filter
-    if (allItemsCache && isCacheValid(allItemsCacheTimestamp) && !searchTerm && !categoryFilter) {
-      return allItemsCache;
+    if (!searchTerm && !categoryFilter) {
+      const items = await getCachedAllDirectoryItems();
+      allItemsCache = items;
+      allItemsCacheTimestamp = Date.now();
+      return items;
     }
 
-    // Get fresh data from Supabase
     const supabase = getSupabaseClient();
-    
+
     let query = supabase
       .from(TABLE_NAME)
       .select('*')
       .order('display_order', { ascending: true })
       .order('name', { ascending: true });
 
-    // Apply search filter if provided
     if (searchTerm) {
       const searchTermLower = searchTerm.toLowerCase();
       query = query.or(`name.ilike.%${searchTermLower}%,one_liner.ilike.%${searchTermLower}%,description.ilike.%${searchTermLower}%`);
     }
 
-    // Apply category filter if provided
     if (categoryFilter) {
       const categoryFilters = categoryFilter.split(',').map(c => c.trim());
-      // Use Supabase's array operators for category filtering
       const categoryConditions = categoryFilters.map(cat => `category.ilike.%${cat}%`).join(',');
       query = query.or(categoryConditions);
     }
@@ -446,16 +471,7 @@ export async function getDirectoryItems(
       return [];
     }
 
-    // Transform Supabase data to DirectoryItem format
-    const items = data.map(transformSupabaseRowToDirectoryItem);
-
-    // Update cache only if no search/filter was applied
-    if (!searchTerm && !categoryFilter) {
-      allItemsCache = items;
-      allItemsCacheTimestamp = Date.now();
-    }
-
-    return items;
+    return data.map(transformSupabaseRowToDirectoryItem);
 
   } catch (error) {
     console.error('Error fetching directory items from Supabase:', error);
