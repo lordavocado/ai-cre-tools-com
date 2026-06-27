@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import {
+  deleteToolSubmission,
   getToolSubmissionById,
   getToolSubmissions,
   ToolResearchStatus,
@@ -74,12 +75,18 @@ const acceptAutoPublishSchema = z.object({
   submissionId: z.string(),
 });
 
+const deleteSubmissionSchema = z.object({
+  action: z.literal('deleteSubmission'),
+  submissionId: z.string(),
+});
+
 const submissionPatchSchema = z.discriminatedUnion('action', [
   acceptAutoPublishSchema,
   updateStatusSchema,
   updateDetailsSchema,
   retryResearchSchema,
   publishSubmissionSchema,
+  deleteSubmissionSchema,
 ]);
 
 type EditableSubmissionFields = z.infer<typeof editableSubmissionFieldsSchema>;
@@ -444,6 +451,31 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: `Submission status updated to ${action.status}`,
+      });
+    }
+
+    if (action.action === 'deleteSubmission') {
+      const existingSubmission = await getToolSubmissionById(action.submissionId);
+
+      if (!existingSubmission) {
+        return NextResponse.json(
+          { error: 'Submission not found' },
+          { status: 404 }
+        );
+      }
+
+      const success = await deleteToolSubmission(action.submissionId);
+
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Submission could not be deleted' },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Submission permanently deleted',
       });
     }
 

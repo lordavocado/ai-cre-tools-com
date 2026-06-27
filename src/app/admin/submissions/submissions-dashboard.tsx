@@ -40,6 +40,7 @@ import {
   Sparkles,
   AlertCircle,
   Rocket,
+  Trash2,
 } from 'lucide-react';
 
 type SubmissionFormState = {
@@ -56,7 +57,7 @@ type SubmissionFormState = {
   researchStatus: 'pending' | 'completed' | 'failed';
 };
 
-type PendingAction = 'approveAuto' | 'approveManual' | 'reject' | 'retry' | 'save' | null;
+type PendingAction = 'approveAuto' | 'approveManual' | 'reject' | 'retry' | 'save' | 'delete' | null;
 
 const STATUS_TABS: ToolSubmissionStatus[] = ['pending', 'approved', 'rejected'];
 
@@ -113,6 +114,7 @@ export default function SubmissionsDashboard() {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [autoPublishingId, setAutoPublishingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ToolSubmissionStatus>('pending');
+  const [submissionToDelete, setSubmissionToDelete] = useState<ToolSubmission | null>(null);
   const { toast } = useToast();
 
   const redirectToLogin = useCallback(() => {
@@ -454,6 +456,64 @@ export default function SubmissionsDashboard() {
     }
   }, [fetchSubmissions, persistSubmissionUpdates, redirectToLogin, selectedSubmission, toast]);
 
+  const handleDelete = useCallback(async () => {
+    if (!submissionToDelete) {
+      return;
+    }
+
+    setPendingAction('delete');
+
+    try {
+      const response = await fetch('/api/admin/submissions', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'deleteSubmission',
+          submissionId: submissionToDelete.submissionId,
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (response.ok) {
+        toast({
+          title: 'Deleted',
+          description: data?.message || 'Submission permanently removed.',
+        });
+
+        if (selectedSubmission?.submissionId === submissionToDelete.submissionId) {
+          setSelectedSubmission(null);
+        }
+
+        setSubmissionToDelete(null);
+        await fetchSubmissions({ background: true });
+        return;
+      }
+
+      if (response.status === 401) {
+        redirectToLogin();
+        return;
+      }
+
+      toast({
+        title: 'Error',
+        description: data?.error || 'Failed to delete submission',
+        variant: 'destructive',
+      });
+    } catch (error) {
+      console.error('Error deleting submission:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete submission',
+        variant: 'destructive',
+      });
+    } finally {
+      setPendingAction(null);
+    }
+  }, [fetchSubmissions, redirectToLogin, selectedSubmission, submissionToDelete, toast]);
+
   const handleSaveChanges = async () => {
     if (!selectedSubmission || !formState) {
       return;
@@ -638,6 +698,7 @@ export default function SubmissionsDashboard() {
             <SubmissionsList
               submissions={status === activeTab ? activeSubmissions : submissions.filter((submission) => submission.status === status)}
               onViewDetails={setSelectedSubmission}
+              onDelete={setSubmissionToDelete}
               onAcceptAuto={
                 systemStatus?.researchProviderConfigured && systemStatus?.supabaseAdminConfigured
                   ? handleAcceptAutoPublish
@@ -914,6 +975,16 @@ export default function SubmissionsDashboard() {
               <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-between">
                 <div className="flex flex-wrap gap-2">
                   <Button
+                    onClick={() => setSubmissionToDelete(selectedSubmission)}
+                    disabled={pendingAction !== null}
+                    variant="outline"
+                    className="rounded-[8px] border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </Button>
+
+                  <Button
                     onClick={handleRetryResearch}
                     disabled={
                       pendingAction !== null
@@ -1017,6 +1088,44 @@ export default function SubmissionsDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!submissionToDelete} onOpenChange={(open) => !open && setSubmissionToDelete(null)}>
+        <DialogContent className="max-w-md rounded-[8px] border-[#e0e0e0]">
+          <DialogHeader>
+            <DialogTitle className="text-[#0f172a]">Delete submission?</DialogTitle>
+            <DialogDescription className="text-[#737373]">
+              This permanently removes the submission from the queue. It cannot be undone.
+              {submissionToDelete && (
+                <span className="mt-2 block font-medium text-[#1f1f1f]">
+                  {submissionToDelete.name || submissionToDelete.website}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setSubmissionToDelete(null)}
+              disabled={pendingAction === 'delete'}
+              className="rounded-[8px] border-[#e0e0e0]"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => void handleDelete()}
+              disabled={pendingAction === 'delete'}
+            >
+              {pendingAction === 'delete' ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Delete permanently
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -1037,6 +1146,7 @@ function StatusLine({ ok, label }: { ok: boolean; label: string }) {
 interface SubmissionsListProps {
   submissions: ToolSubmission[];
   onViewDetails: (submission: ToolSubmission) => void;
+  onDelete: (submission: ToolSubmission) => void;
   onAcceptAuto?: (submission: ToolSubmission) => void;
   autoPublishingId: string | null;
   acceptAutoUnavailableReason?: string;
@@ -1045,6 +1155,7 @@ interface SubmissionsListProps {
 function SubmissionsList({
   submissions,
   onViewDetails,
+  onDelete,
   onAcceptAuto,
   autoPublishingId,
   acceptAutoUnavailableReason,
@@ -1146,6 +1257,16 @@ function SubmissionsList({
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   View Details
+                </Button>
+                <Button
+                  onClick={() => onDelete(submission)}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-[8px] border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  title="Permanently delete this submission"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
                 </Button>
               </div>
             </div>

@@ -986,3 +986,35 @@ export async function updateToolSubmission(
     return undefined;
   }
 }
+
+/**
+ * Permanently deletes a tool submission from Supabase.
+ * @param submissionId - Unique identifier for the submission
+ * @returns Promise resolving to boolean indicating success
+ */
+export async function deleteToolSubmission(submissionId: string): Promise<boolean> {
+  try {
+    const supabase = getSupabaseClient();
+
+    const { error } = await (supabase
+      .from(SUBMISSIONS_TABLE) as any)
+      .delete()
+      .eq('submission_id', submissionId);
+
+    if (error) {
+      console.error('Supabase delete error:', error);
+      throw new Error(`Failed to delete submission: ${error.message}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error deleting tool submission:', error);
+
+    if (error instanceof Error && error.message.includes('not properly configured')) {
+      console.warn('Supabase not configured, returning false');
+      return false;
+    }
+
+    return false;
+  }
+}

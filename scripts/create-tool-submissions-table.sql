@@ -49,6 +49,11 @@ create policy "Allow update" on public.tool_submissions
   for update
   using (true);
 
+-- Policy: Allow delete (needed for admin to remove invalid submissions)
+create policy "Allow delete" on public.tool_submissions
+  for delete
+  using (true);
+
 -- Auto-update updated_at timestamp
 create or replace function update_tool_submissions_updated_at()
 returns trigger as $$
@@ -67,5 +72,5 @@ create trigger update_tool_submissions_updated_at
 
 -- Grant permissions
 grant usage on schema public to anon, authenticated;
-grant select, insert on public.tool_submissions to anon;
+grant select, insert, update, delete on public.tool_submissions to anon;
 grant select, insert, update, delete on public.tool_submissions to authenticated;
