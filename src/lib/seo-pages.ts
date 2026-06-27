@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { SeoFaq } from '@/config/seo-clusters';
-import { interpolateSeoText } from '@/config/seo-clusters';
+import { getSeoCluster, interpolateSeoText } from '@/config/seo-clusters';
+import { getCategoryLabel } from '@/config/design-tokens';
 import {
   getAllSeoTags,
   getSeoTag,
@@ -165,4 +166,59 @@ export function buildTagPageMetadata(
     title: interpolateSeoText(tag.metaTitle, { toolCount }),
     description: interpolateSeoText(tag.metaDescription, { toolCount }),
   };
+}
+
+const SEO_TITLE_MAX = 60;
+const SEO_DESCRIPTION_MAX = 155;
+
+function truncateAtWord(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  const truncated = text.slice(0, maxLength - 3);
+  const lastSpace = truncated.lastIndexOf(' ');
+  if (lastSpace > maxLength * 0.6) {
+    return `${truncated.slice(0, lastSpace)}...`;
+  }
+  return `${truncated}...`;
+}
+
+/**
+ * Category-aware tool page metadata aligned with docs/SEO-KEYWORDS.md clusters.
+ */
+export function generateToolPageMeta(
+  name: string,
+  tagline: string | undefined,
+  categorySlugs: string[],
+): { title: string; description: string; keywords: string[] } {
+  const primarySlug = categorySlugs[0];
+  const cluster = primarySlug ? getSeoCluster(primarySlug) : undefined;
+  const categoryLabel = primarySlug ? getCategoryLabel(primarySlug) : 'Commercial Real Estate';
+
+  const titleCore = cluster
+    ? `${name} — ${cluster.primaryKeyword}`
+    : `${name} Review & Features`;
+  const title = truncateAtWord(`${titleCore} | AI CRE Tools`, SEO_TITLE_MAX);
+
+  const shortTagline =
+    tagline?.trim() ||
+    `${name} for ${categoryLabel.toLowerCase()} teams`;
+
+  const descriptionCore = cluster
+    ? `${name}: ${shortTagline}. Compare features, pricing & alternatives among ${cluster.primaryKeyword} tools.`
+    : `${name}: ${shortTagline}. Compare features, pricing & alternatives for CRE teams.`;
+  const description = truncateAtWord(descriptionCore, SEO_DESCRIPTION_MAX);
+
+  const keywords = [
+    name,
+    `${name} review`,
+    `${name} pricing`,
+    `${name} alternatives`,
+    `${name} features`,
+    ...(cluster
+      ? [cluster.primaryKeyword, ...cluster.secondaryKeywords.slice(0, 4)]
+      : ['commercial real estate ai tools']),
+    categoryLabel,
+    'cre software comparison',
+  ];
+
+  return { title, description, keywords };
 }

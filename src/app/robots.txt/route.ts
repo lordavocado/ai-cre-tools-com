@@ -15,6 +15,11 @@ Allow: /about
 Allow: /categories
 Allow: /guides
 Allow: /blog
+Allow: /for
+Allow: /tags
+Allow: /compare
+Allow: /glossary
+Allow: /all-tools
 Allow: /favorites
 Allow: /privacy-policy
 Allow: /terms-of-service
@@ -32,14 +37,15 @@ Disallow: /api/*
 Disallow: /_next/*
 Disallow: /private/*
 
-# Block AI crawlers that may not respect robots.txt
+# Allow Google AI features (Search Generative Experience / AI Overviews)
+User-agent: Google-Extended
+Allow: /
+
+# Block training crawlers that may not respect robots.txt
 User-agent: GPTBot
 Disallow: /
 
 User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: Google-Extended
 Disallow: /
 
 # Allow social media crawlers with specific rules

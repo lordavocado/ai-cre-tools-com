@@ -141,12 +141,20 @@ export async function GET() {
         priority: 0.7, // Increased priority for category pages
       }));
 
-    const personaPages = getAllSeoPersonaSlugs().map((slug) => ({
-      url: `${baseUrl}/for/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.75,
-    }));
+    const personaPages = [
+      {
+        url: `${baseUrl}/for`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      },
+      ...getAllSeoPersonaSlugs().map((slug) => ({
+        url: `${baseUrl}/for/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.75,
+      })),
+    ];
 
     const indexableTagSlugs = await getIndexableTagSlugs();
     const tagHubPages = [

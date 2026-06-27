@@ -297,6 +297,59 @@ export default async function Home({ searchParams }: HomeProps) {
         </div>
       </section>
 
+      <section className="border-b border-[#e0e0e0] bg-white py-16 md:py-20">
+        <div className="container px-6">
+          <div className="mx-auto max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+              Guide
+            </p>
+            <h2 className="mt-2 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-[#1f1f1f] sm:text-[32px]">
+              Commercial real estate AI software, compared
+            </h2>
+            <div className="mt-6 space-y-4 text-base leading-relaxed text-[#737373]">
+              <p>
+                {siteConfig.name} is a focused directory of commercial real estate AI tools for US
+                B2B teams — investors underwriting deals, developers managing construction,
+                brokers running transactions, and operators running buildings. We organize software
+                by CRE workflow, not generic SaaS categories, so you can compare platforms that
+                match how your team actually works.
+              </p>
+              <p>
+                Start with{' '}
+                <Link href="/categories/property-analysis-valuation" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  commercial real estate investment analysis software
+                </Link>
+                ,{' '}
+                <Link href="/tags/lease-abstraction" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  lease abstraction AI software
+                </Link>
+                ,{' '}
+                <Link href="/categories/property-management-operations" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  property management AI software
+                </Link>
+                , or browse{' '}
+                <Link href="/for/investors" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  AI tools for real estate investors
+                </Link>
+                {' '}and{' '}
+                <Link href="/for/developers" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  AI tools for real estate developers
+                </Link>
+                . Use{' '}
+                <Link href="/compare" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  side-by-side comparisons
+                </Link>
+                {' '}and the{' '}
+                <Link href="/glossary" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                  CRE glossary
+                </Link>
+                {' '}to evaluate vendors before you buy.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-12 md:py-16">
         <div className="container px-6">
           <div className="mb-6">
@@ -342,6 +395,13 @@ export default async function Home({ searchParams }: HomeProps) {
                 {persona.shortLabel}
               </Link>
             ))}
+            <Link
+              href="/for"
+              className="inline-flex items-center gap-1 rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#737373] hover:text-[#1f1f1f]"
+            >
+              All roles
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </section>

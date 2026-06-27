@@ -197,6 +197,36 @@ const GLOSSARY_TERMS: SeoGlossaryTerm[] = [
     relatedTagSlugs: ['leasing-automation', 'transaction-management'],
     relatedCategorySlugs: ['marketing-leasing-enablement', 'transactions-brokerage'],
   },
+  {
+    slug: 'offering-memorandum',
+    term: 'Offering Memorandum',
+    h1: 'What Is an Offering Memorandum (OM) in CRE?',
+    metaTitle: 'Offering Memorandum Definition | AI CRE Tools Glossary',
+    metaDescription:
+      'An offering memorandum (OM) markets a CRE asset for sale. Learn how AI tools parse OMs for underwriting.',
+    definition:
+      'An offering memorandum (OM) is a marketing document investment sales brokers prepare to market a commercial property for sale. It typically includes executive summary, property overview, tenant roster, financials, market context, and photos. Underwriters and acquisition analysts ingest OMs during screening and underwriting. AI document tools extract rent rolls, NOI, and key assumptions from OMs into models—reducing manual rekeying. OM quality and completeness affect buyer interest and pricing; software should flag missing exhibits common in institutional deals.',
+    faqs: [
+      { question: 'How do AI tools use offering memoranda?', answer: 'They extract structured data for financial models and diligence checklists, with human review on material assumptions.' },
+    ],
+    relatedTagSlugs: ['underwriting', 'document-automation'],
+    relatedCategorySlugs: ['property-analysis-valuation', 'transactions-brokerage'],
+  },
+  {
+    slug: 'brokerage-crm',
+    term: 'Brokerage CRM',
+    h1: 'What Is a Commercial Real Estate Brokerage CRM?',
+    metaTitle: 'CRE Brokerage CRM Definition | AI CRE Tools Glossary',
+    metaDescription:
+      'A CRE brokerage CRM tracks deals, clients, and commissions. Learn how AI assists broker workflows.',
+    definition:
+      'A commercial real estate brokerage CRM is customer relationship management software built for how brokers work—properties, spaces, listings, tours, LOIs, commissions, and co-broker splits—not generic B2B sales pipelines. Teams use CRM to protect relationships, forecast deal flow, and coordinate marketing. AI features draft outreach, summarize comps, and suggest follow-ups on stale opportunities. Adoption matters more than feature depth; the best CRM is one reps log activity into daily.',
+    faqs: [
+      { question: 'How is a CRE CRM different from Salesforce?', answer: 'CRE CRMs model assets, deal types, and commission structures native to investment sales and leasing.' },
+    ],
+    relatedTagSlugs: ['transaction-management'],
+    relatedCategorySlugs: ['transactions-brokerage'],
+  },
 ];
 
 const termBySlug = new Map(GLOSSARY_TERMS.map((t) => [t.slug, t]));

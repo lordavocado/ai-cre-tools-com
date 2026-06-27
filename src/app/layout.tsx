@@ -16,7 +16,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: `${siteConfig.name} — Best AI Real Estate Tools Directory`,
-    template: `%s | ${siteConfig.name}`,
+    // Pages set full titles (keyword + brand). Avoid duplicating "| AI CRE Tools".
+    template: '%s',
   },
   description: siteConfig.description,
   keywords: getAllSEOKeywords(),

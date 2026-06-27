@@ -5,13 +5,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, Twitter, Linkedin, Facebook } from "lucide-react";
 import { DirectoryItemCard } from "@/components/listing/DirectoryItemCard";
-import { siteConfig, generateToolMeta } from "@/config/site";
+import { siteConfig } from "@/config/site";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { getCategoryLabel } from "@/config/design-tokens";
+import { getSeoCluster } from "@/config/seo-clusters";
 import { ToolFavicon } from "@/components/ui/tool-favicon";
 import { normalizeToolDescription } from "@/lib/tool-content";
 import { hasEnoughAlternatives } from "@/config/seo-alternatives";
-import { findIndexableTagSlugForFeature } from "@/lib/seo-pages";
+import { findIndexableTagSlugForFeature, generateToolPageMeta } from "@/lib/seo-pages";
 
 function getWebsiteLabel(website: string): string {
   try {
@@ -59,17 +60,15 @@ export async function generateMetadata(
     return { title: "Tool Not Found" };
   }
 
-  const toolMeta = generateToolMeta(item.name, item.tagline, item.description);
-  const canonicalUrl = `${siteConfig.url}/${slug}`;
   const categories = item.category.split(",").map((cat) => cat.trim()).filter(Boolean);
+  const toolMeta = generateToolPageMeta(item.name, item.tagline, categories);
+  const canonicalUrl = `${siteConfig.url}/${slug}`;
 
   return {
     title: toolMeta.title,
     description: toolMeta.description,
     keywords: [
-      ...toolMeta.keywords.split(", "),
-      ...categories.map((cat) => `${cat} tools`),
-      ...siteConfig.seo.primaryKeywords,
+      ...toolMeta.keywords,
       "tool review",
       "software comparison",
       "CRE AI software",
@@ -136,6 +135,7 @@ export default async function DirectoryItemPage({
 
   const categories = item.category.split(",").map((cat) => cat.trim()).filter(Boolean);
   const primaryCategory = categories[0];
+  const seoCluster = primaryCategory ? getSeoCluster(primaryCategory) : undefined;
 
   const allItemsInCategory = primaryCategory
     ? await getDirectoryItems(undefined, primaryCategory)
@@ -171,7 +171,7 @@ export default async function DirectoryItemPage({
             "@type": "SoftwareApplication",
             name: item.name,
             description: item.description || item.tagline,
-            url: item.website,
+            url: item.website || toolPageUrl,
             applicationCategory:
               item.category?.includes("management")
                 ? "BusinessApplication"
@@ -234,13 +234,11 @@ export default async function DirectoryItemPage({
             keywords: [
               item.name,
               item.category,
-              "AI",
-              "artificial intelligence",
+              seoCluster?.primaryKeyword,
+              ...(seoCluster?.secondaryKeywords.slice(0, 3) ?? []),
               "commercial real estate",
               "CRE",
               "PropTech",
-              "automation",
-              "efficiency",
             ].filter(Boolean),
           }),
         }}
@@ -307,9 +305,14 @@ export default async function DirectoryItemPage({
               </div>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#1f1f1f] sm:text-[36px]">
+                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#0f172a] sm:text-[36px]">
                   {item.name}
                 </h1>
+                {seoCluster && (
+                  <p className="mt-2 text-sm font-medium text-[#629649]">
+                    {seoCluster.primaryKeyword} for commercial real estate teams
+                  </p>
+                )}
                 {item.tagline && (
                   <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#737373] sm:text-[17px]">
                     {item.tagline}

@@ -73,14 +73,19 @@ export function Footer() {
               {[
                 { href: '/all-tools', label: 'All Tools (A–Z)' },
                 { href: '/categories', label: 'All Categories' },
+                { href: '/for', label: 'Tools by Role' },
                 { href: '/tags', label: 'Browse by Capability' },
                 { href: '/compare', label: 'Tool Comparisons' },
                 { href: '/glossary', label: 'CRE Glossary' },
-                { href: '/categories/property-analysis-valuation', label: 'Property Analysis' },
-                { href: '/categories/marketing-leasing-enablement', label: 'Marketing & Leasing' },
-                { href: '/categories/asset-portfolio-management', label: 'Asset Management' },
+                { href: '/categories/property-search-acquisition', label: 'Deal Sourcing' },
+                { href: '/categories/property-analysis-valuation', label: 'Investment Analysis' },
+                { href: '/categories/legal-compliance-due-diligence', label: 'Due Diligence' },
+                { href: '/categories/development-construction', label: 'Development' },
+                { href: '/categories/marketing-leasing-enablement', label: 'Leasing' },
+                { href: '/categories/asset-portfolio-management', label: 'Portfolio Management' },
                 { href: '/categories/property-management-operations', label: 'Property Management' },
-                { href: '/categories/transactions-brokerage', label: 'Transactions' },
+                { href: '/categories/transactions-brokerage', label: 'Transactions & CRM' },
+                { href: '/categories/productivity-copilots', label: 'AI Copilots' },
               ].map(({ href, label }) => (
                 <Link
                   key={href}
