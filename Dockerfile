@@ -5,6 +5,7 @@ WORKDIR /app
 
 FROM base AS deps
 RUN apk add --no-cache python3 make g++ build-base pkgconfig cairo-dev pango-dev jpeg-dev giflib-dev librsvg-dev
+ENV CXXFLAGS="-std=c++17"
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
