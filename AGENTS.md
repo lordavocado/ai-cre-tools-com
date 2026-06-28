@@ -34,6 +34,11 @@ There is no automated test suite; validate with `typecheck`, `lint`, and manual 
 3. **Types** — Strict TypeScript; avoid `any`.
 4. **Verification** — After substantive edits, run `npm run typecheck` and `npm run lint`.
 5. **Cleanup** — Remove dead code, debug `console.log`s, and unused imports; document non-obvious public APIs as described in CLAUDE.md.
+6. **Git commits** — Use the repo owner identity so GitHub/Vercel attribute pushes to `lordavocado`:
+   - **Name:** `Nichlas Kvist Campos`
+   - **Email:** `nichlaskvistj@gmail.com` (verified on the `lordavocado` GitHub account)
+   - **Remote:** `https://github.com/lordavocado/ai-cre-tools-com.git`
+   - Do not commit with Cursor/agent default emails or other GitHub accounts — Vercel can reject deployments when the commit author is not a project member.
 
 ## High-signal paths
 
