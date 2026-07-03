@@ -142,7 +142,8 @@ function shouldUseSecureAdminCookie(request?: NextRequest) {
     return request.nextUrl.protocol === 'https:' || request.headers.get('x-forwarded-proto') === 'https';
   }
 
-  return Boolean(process.env.VERCEL);
+  // Production behind Coolify/Traefik: default secure when no request context (e.g. server actions)
+  return true;
 }
 
 export function createAdminSessionCookieOptions(request?: NextRequest) {

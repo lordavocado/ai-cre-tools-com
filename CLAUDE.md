@@ -146,6 +146,12 @@ src/
 - Mailchimp integration for newsletter functionality
 - PostHog for analytics (optional)
 
+**Production deployment (Coolify only)**:
+- Deploys via Coolify on Hetzner using the root `Dockerfile` (Next.js `output: 'standalone'`, port 3000)
+- Push to `master` triggers Coolify rebuilds via GitHub webhook
+- Do not add `vercel.json` or Vercel-specific config — production is self-hosted, not Vercel
+- Set env vars in the Coolify application UI (see `docs/ENVIRONMENT_VARIABLES.md`)
+
 ## Important Files to Know
 
 - `src/config/site.ts` - Central site configuration and SEO settings

@@ -157,7 +157,7 @@ export default function PrivacyPolicyPage() {
           <ul>
             <li><strong>Mailchimp:</strong> Newsletter email delivery (GDPR and CCPA compliant)</li>
             <li><strong>PostHog:</strong> Privacy-focused analytics (data anonymized, no personal tracking)</li>
-            <li><strong>Vercel:</strong> Website hosting and performance monitoring</li>
+            <li><strong>Self-hosted infrastructure:</strong> Website hosting (Hetzner via Coolify)</li>
             <li><strong>Google Sheets:</strong> Secure data storage for tool submissions (encrypted)</li>
             <li><strong>Cloudflare:</strong> CDN and security services (privacy-compliant)</li>
           </ul>

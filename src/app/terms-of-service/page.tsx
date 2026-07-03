@@ -246,7 +246,7 @@ export default function TermsOfServicePage() {
           <ul>
             <li><strong>Mailchimp:</strong> Newsletter delivery</li>
             <li><strong>PostHog:</strong> Analytics and insights</li>
-            <li><strong>Vercel:</strong> Website hosting</li>
+            <li><strong>Self-hosted infrastructure:</strong> Website hosting (Hetzner via Coolify)</li>
             <li><strong>Google Sheets:</strong> Data management</li>
           </ul>
 

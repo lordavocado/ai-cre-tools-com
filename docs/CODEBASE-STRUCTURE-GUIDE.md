@@ -296,7 +296,7 @@ scripts/
 ├── 📄 components.json         # shadcn/ui configuration
 ├── 📄 postcss.config.mjs      # PostCSS configuration
 ├── 📄 package.json            # Dependencies and scripts
-└── 📄 vercel.json             # Vercel deployment configuration
+└── 📄 Dockerfile              # Coolify / Docker production build
 ```
 
 ## Data Flow Architecture
@@ -430,7 +430,7 @@ npm run build → Static Generation → Asset Optimization → Production Bundle
 
 ### 3. Deployment Flow
 ```
-Git Push → Vercel → Build → Deploy → CDN Distribution
+Git Push → Coolify → Docker Build → Deploy → Cloudflare CDN
 ```
 
 ## Key Integration Points

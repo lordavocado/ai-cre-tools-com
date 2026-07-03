@@ -19,7 +19,7 @@ function redirectToCanonicalHost(request: NextRequest): NextResponse | null {
   // Preview / local dev: never redirect unknown hosts
   if (
     rawHost === 'localhost' ||
-    rawHost.endsWith('.vercel.app') ||
+    rawHost.endsWith('.sslip.io') ||
     rawHost.endsWith('.local')
   ) {
     return null;

@@ -233,11 +233,18 @@ NEXT_PUBLIC_POSTHOG_KEY="your-posthog-key"
 NEXT_PUBLIC_POSTHOG_HOST="https://app.posthog.com"
 ```
 
-#### **B. Deployment Options**
-- **Vercel** (Recommended): Zero-config deployment
-- **Netlify**: Jamstack-focused hosting
-- **AWS Amplify**: Full-stack AWS integration
-- **Custom VPS**: Full control over infrastructure
+#### **B. Deployment (Coolify)**
+Production deploys via **Coolify** on Hetzner using the repo `Dockerfile` (Next.js standalone, port 3000).
+
+1. Push to `master` on GitHub — the Coolify webhook rebuilds the app.
+2. Set environment variables in the Coolify application (see `docs/ENVIRONMENT_VARIABLES.md`).
+3. Domains: `aicretools.com`, `www.aicretools.com` (Cloudflare → Coolify/Traefik).
+
+Local Docker smoke test:
+```bash
+docker build -t ai-cre-tools-com .
+docker run --rm -p 3000:3000 --env-file .env.local ai-cre-tools-com
+```
 
 ### **8. ⚙️ Advanced Features**
 
@@ -331,7 +338,7 @@ src/
 - **Newsletter**: Mailchimp integration
 - **Analytics**: PostHog (optional)
 - **AI Features**: Google GenKit
-- **Deployment**: Vercel-optimized
+- **Deployment**: Coolify (Docker / Hetzner)
 
 ## 📖 **Additional Documentation**
 
