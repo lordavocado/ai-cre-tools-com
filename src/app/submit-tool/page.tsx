@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Check, Loader2, Send, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, CircleX, Clock3, RotateCcw, Send, Sparkles } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -64,15 +64,56 @@ const submitToolSchema = z.object({
 
 type SubmitToolFormData = z.infer<typeof submitToolSchema>;
 
+type ReviewResult =
+  | {
+      decision: 'accepted';
+      message: string;
+      tool: {
+        name: string;
+        slug: string;
+        category: string;
+        tagline: string;
+      };
+    }
+  | {
+      decision: 'rejected';
+      message: string;
+      reason: string;
+    }
+  | {
+      decision: 'needs_attention';
+      message: string;
+      reason: string;
+    };
+
+function isReviewResult(value: unknown): value is ReviewResult {
+  if (!value || typeof value !== 'object' || !('decision' in value)) {
+    return false;
+  }
+
+  return value.decision === 'accepted'
+    || value.decision === 'rejected'
+    || value.decision === 'needs_attention';
+}
+
+function getResponseMessage(value: unknown) {
+  if (value && typeof value === 'object' && 'message' in value && typeof value.message === 'string') {
+    return value.message;
+  }
+
+  return null;
+}
+
 const nextSteps = [
-  'We review each submission for relevance to commercial real estate and AI.',
-  'If we accept it, we enrich the listing (automated research when available, otherwise manual curation).',
-  'We may email you if something about the product or URL is unclear.',
-  'Approved tools are usually published within a few business days.',
+  'AI verifies a credible connection to real estate or the built environment.',
+  'Relevant tools are researched and written in the AI CRE Tools editorial voice.',
+  'Accepted listings are added to the directory automatically.',
+  'You will see the decision here as soon as the review is complete.',
 ];
 
 export default function SubmitToolPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reviewResult, setReviewResult] = useState<ReviewResult | null>(null);
   const { toast } = useToast();
 
   const form = useForm<SubmitToolFormData>({
@@ -106,18 +147,15 @@ export default function SubmitToolPage() {
         body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
+      const result: unknown = await response.json().catch(() => null);
 
-      if (response.ok) {
-        toast({
-          title: "Submission received",
-          description: result.message || "Your tool submission has been received and will be reviewed.",
-        });
+      if (response.ok && isReviewResult(result)) {
+        setReviewResult(result);
         form.reset();
       } else {
         toast({
           title: "Submission failed",
-          description: result.message || "An error occurred while submitting your tool. Please try again.",
+          description: getResponseMessage(result) || "An error occurred while submitting your tool. Please try again.",
           variant: "destructive",
         });
       }
@@ -146,7 +184,7 @@ export default function SubmitToolPage() {
               Add an AI CRE tool to the directory
             </h1>
             <p className="mx-auto mt-4 max-w-lg text-pretty text-[16px] leading-relaxed text-[#737373]">
-              Share a product we should list for CRE professionals. We need the official site, your email, and a short pitch; optional fields help us classify faster.
+              Share the official site and a short explanation. Our AI checks the fit, researches the product, and publishes approved tools automatically.
             </p>
             <Link
               href="/"
@@ -173,13 +211,21 @@ export default function SubmitToolPage() {
                     </h2>
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-[#737373]">
-                    Required fields are marked below. Everything else helps our reviewers but is optional.
+                    Required fields are marked below. Our AI reviews, writes, and publishes suitable tools automatically.
                   </p>
                 </div>
               </div>
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {isSubmitting ? (
+                <AutomatedReviewBox />
+              ) : reviewResult ? (
+                <ReviewResultBox
+                  result={reviewResult}
+                  onSubmitAnother={() => setReviewResult(null)}
+                />
+              ) : (
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                   <div className="space-y-6">
                     <FieldSectionLabel>Required</FieldSectionLabel>
 
@@ -323,20 +369,12 @@ export default function SubmitToolPage() {
                     disabled={isSubmitting}
                     size="lg"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Submitting…
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4" />
-                        Submit for review
-                      </>
-                    )}
+                    <Send className="h-4 w-4" />
+                    Submit for AI review
                   </Button>
-                </form>
-              </Form>
+                  </form>
+                </Form>
+              )}
             </div>
 
             {/* Next steps — calm secondary panel */}
@@ -358,6 +396,109 @@ export default function SubmitToolPage() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+const reviewStages = [
+  'Checking relevance to real estate and the built environment…',
+  'Researching the product and its capabilities…',
+  'Writing the directory entry in our editorial voice…',
+  'Running final checks before publication…',
+];
+
+function AutomatedReviewBox() {
+  const [stageIndex, setStageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setStageIndex((current) => Math.min(current + 1, reviewStages.length - 1));
+    }, 4500);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-[8px] border border-[#dcebd7] bg-[#f7fbf5] px-6 py-10 text-center" role="status" aria-live="polite">
+      <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#629649] shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+        <Sparkles className="h-5 w-5 animate-pulse" aria-hidden />
+      </span>
+      <h3 className="mt-5 text-lg font-semibold tracking-tight text-[#0f172a]">
+        AI is reviewing your submission
+      </h3>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#737373]">
+        {reviewStages[stageIndex]}
+      </p>
+      <div className="mx-auto mt-6 flex max-w-xs gap-2" aria-hidden>
+        {reviewStages.map((stage, index) => (
+          <span
+            key={stage}
+            className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${index <= stageIndex ? 'bg-[#629649]' : 'bg-[#dce5d8]'}`}
+          />
+        ))}
+      </div>
+      <p className="mt-5 text-xs text-[#999999]">Please keep this page open while the review finishes.</p>
+    </div>
+  );
+}
+
+function ReviewResultBox({ result, onSubmitAnother }: { result: ReviewResult; onSubmitAnother: () => void }) {
+  if (result.decision === 'accepted') {
+    return (
+      <div className="rounded-[8px] border border-[#cfe4c8] bg-[#f7fbf5] px-6 py-8 text-center" role="status">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f5ec] text-[#2f7448]">
+          <Check className="h-6 w-6 stroke-[2.5]" aria-hidden />
+        </span>
+        <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#629649]">Approved</p>
+        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-[#0f172a]">{result.tool.name}</h3>
+        <p className="mx-auto mt-3 max-w-md text-base font-medium text-[#2f7448]">
+          It will be online within 5 minutes.
+        </p>
+        <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#737373]">{result.tool.tagline}</p>
+        <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+          <Button asChild className="h-11 rounded-[8px] px-5 shadow-none">
+            <Link href={`/${result.tool.slug}`}>View listing</Link>
+          </Button>
+          <Button type="button" variant="outline" className="h-11 rounded-[8px] px-5" onClick={onSubmitAnother}>
+            <RotateCcw className="h-4 w-4" aria-hidden />
+            Submit another tool
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (result.decision === 'needs_attention') {
+    return (
+      <div className="rounded-[8px] border border-[#eadfbf] bg-[#fffdf7] px-6 py-8 text-center" role="status">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f8f0d9] text-[#8a6a1f]">
+          <Clock3 className="h-6 w-6 stroke-[2.5]" aria-hidden />
+        </span>
+        <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8a6a1f]">Saved for a quick check</p>
+        <h3 className="mt-2 text-xl font-semibold tracking-tight text-[#0f172a]">The AI needs a little more evidence</h3>
+        <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#737373]">
+          We saved the submission instead of making an uncertain decision. It will stay offline until it has been checked.
+        </p>
+        <Button type="button" variant="outline" className="mt-7 h-11 rounded-[8px] px-5" onClick={onSubmitAnother}>
+          <RotateCcw className="h-4 w-4" aria-hidden />
+          Submit another tool
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-[8px] border border-[#ead9d6] bg-[#fffafa] px-6 py-8 text-center" role="status">
+      <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#f8e9e7] text-[#9b4b42]">
+        <CircleX className="h-6 w-6" aria-hidden />
+      </span>
+      <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9b4b42]">Not approved</p>
+      <h3 className="mt-2 text-xl font-semibold tracking-tight text-[#0f172a]">Not a fit for the directory</h3>
+      <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#737373]">{result.reason}</p>
+      <Button type="button" variant="outline" className="mt-7 h-11 rounded-[8px] px-5" onClick={onSubmitAnother}>
+        <RotateCcw className="h-4 w-4" aria-hidden />
+        Submit another tool
+      </Button>
     </div>
   );
 }

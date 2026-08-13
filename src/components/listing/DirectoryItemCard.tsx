@@ -1,6 +1,6 @@
 "use client";
 
-import type { DirectoryItem } from "@/types";
+import type { DirectoryListItem } from "@/types";
 import Link from "next/link";
 import { SafeImage } from "@/components/ui/safe-image";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -8,7 +8,7 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 /** Props for DirectoryItemCard */
 interface DirectoryItemCardProps {
   /** The directory item to display */
-  item: DirectoryItem;
+  item: DirectoryListItem;
 }
 
 /**

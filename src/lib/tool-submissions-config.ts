@@ -22,27 +22,18 @@ export function isSupabaseStorageConfigured() {
 
 export function isSupabaseAdminConfigured() {
   return hasRealValue(process.env.NEXT_PUBLIC_SUPABASE_URL)
-    && hasRealValue(process.env.SUPABASE_SERVICE_ROLE_KEY);
+    && (
+      hasRealValue(process.env.SUPABASE_SECRET_KEY)
+      || hasRealValue(process.env.SUPABASE_SERVICE_ROLE_KEY)
+    );
 }
 
-export function isPerplexityConfigured() {
-  return Boolean(process.env.PERPLEXITY_API_KEY);
-}
-
-export function isTavilyConfigured() {
-  return Boolean(process.env.TAVILY_API_KEY);
+export function isOpenAIConfigured() {
+  return hasRealValue(process.env.OPENAI_API_KEY);
 }
 
 export function getConfiguredResearchProvider() {
-  if (isTavilyConfigured()) {
-    return 'tavily' as const;
-  }
-
-  if (isPerplexityConfigured()) {
-    return 'perplexity' as const;
-  }
-
-  return null;
+  return isOpenAIConfigured() ? 'openai' as const : null;
 }
 
 export function isResearchProviderConfigured() {
@@ -56,7 +47,7 @@ export function getToolSubmissionSystemStatus() {
     supabaseAdminConfigured: isSupabaseAdminConfigured(),
     researchProviderConfigured: isResearchProviderConfigured(),
     researchProvider: getConfiguredResearchProvider(),
-    tavilyConfigured: isTavilyConfigured(),
-    perplexityConfigured: isPerplexityConfigured(),
+    openAIConfigured: isOpenAIConfigured(),
+    researchModel: process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || 'gpt-5.6',
   };
 }

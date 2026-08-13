@@ -34,25 +34,9 @@ create index idx_tool_submissions_email on public.tool_submissions(email);
 -- Enable Row Level Security
 alter table public.tool_submissions enable row level security;
 
--- Policy: Allow anonymous users to insert submissions (for the public form)
-create policy "Allow anonymous insert" on public.tool_submissions
-  for insert
-  with check (true);
-
--- Policy: Allow all users to read submissions (needed for admin dashboard)
-create policy "Allow read" on public.tool_submissions
-  for select
-  using (true);
-
--- Policy: Allow all users to update submissions (needed for admin actions)
-create policy "Allow update" on public.tool_submissions
-  for update
-  using (true);
-
--- Policy: Allow delete (needed for admin to remove invalid submissions)
-create policy "Allow delete" on public.tool_submissions
-  for delete
-  using (true);
+-- Submissions contain email addresses and are accessed only by server-side routes
+-- using a Supabase secret/service-role key. No anon/authenticated policies are needed.
+revoke all on table public.tool_submissions from anon, authenticated;
 
 -- Auto-update updated_at timestamp
 create or replace function update_tool_submissions_updated_at()
@@ -69,8 +53,3 @@ create trigger update_tool_submissions_updated_at
   before update on public.tool_submissions
   for each row
   execute function update_tool_submissions_updated_at();
-
--- Grant permissions
-grant usage on schema public to anon, authenticated;
-grant select, insert, update, delete on public.tool_submissions to anon;
-grant select, insert, update, delete on public.tool_submissions to authenticated;

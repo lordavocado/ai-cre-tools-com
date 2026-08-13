@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export function FeaturedOn() {
   return (
     <section className="border-t border-gray-200 py-10 md:py-14">
@@ -11,11 +13,13 @@ export function FeaturedOn() {
               rel="noopener noreferrer"
               className="hover:opacity-80 transition-opacity"
             >
-              <img 
+              <Image
                 src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" 
                 width={120} 
+                height={40}
                 alt="Fazier badge" 
                 className="h-auto"
+                unoptimized
               />
             </a>
             <a 
@@ -24,12 +28,13 @@ export function FeaturedOn() {
               rel="noopener noreferrer"
               className="hover:opacity-80 transition-opacity"
             >
-              <img 
+              <Image
                 src="https://startupfa.me/badges/featured-badge-small.webp" 
                 alt="Featured on Startup Fame" 
                 width={224} 
                 height={36}
                 className="h-auto"
+                unoptimized
               />
             </a>
           </div>

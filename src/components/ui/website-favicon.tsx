@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from 'next/image';
 import { cn } from "@/lib/utils";
 import { Globe } from "lucide-react";
 
@@ -37,13 +38,16 @@ export function WebsiteFavicon({
     }
 
     return (
-      <img
+      <Image
         src={faviconUrl}
         alt={`${url.hostname} favicon`}
         className={cn("rounded-sm", sizeClasses[size], className)}
         onError={() => setHasError(true)}
         onLoad={() => setIsLoading(false)}
         style={{ display: isLoading ? 'none' : 'block' }}
+        width={32}
+        height={32}
+        unoptimized
       />
     );
   } catch (error) {

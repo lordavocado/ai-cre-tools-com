@@ -298,7 +298,7 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json(
           {
             error:
-              'Automatic accept requires an AI research provider. Set TAVILY_API_KEY or PERPLEXITY_API_KEY, or use “Publish using form fields” instead.',
+              'Automatic accept requires OpenAI research. Set OPENAI_API_KEY, or use “Publish using form fields” instead.',
           },
           { status: 503 }
         );
@@ -515,13 +515,19 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      /** When no Tavily/Perplexity key is set, admins publish using only saved submission + form fields. */
+      /** When no OpenAI key is set, admins publish using only saved submission + form fields. */
       const researchResult = isResearchProviderConfigured()
         ? await researchTool(
           preparedSubmission.website,
           preparedSubmission.comment
         )
         : {
+            is_relevant: true,
+            confidence: 1,
+            relevance_reason: 'Publishing from administrator-provided fields without automated research.',
+            evidence: [],
+            model: 'admin-fields',
+            response_id: '',
             slug: '',
             website: preparedSubmission.website,
             name: '',

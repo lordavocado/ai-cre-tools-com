@@ -1,4 +1,4 @@
-import type { DirectoryItem } from "@/types";
+import type { DirectoryListItem } from "@/types";
 import { DirectoryItemCard } from "./DirectoryItemCard";
 import { DirectoryPagination } from "./DirectoryPagination";
 import { AlertCircle } from "lucide-react";
@@ -6,7 +6,7 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { getDirectoryPageSlice } from "@/lib/directory-pagination";
 
 interface DirectoryGridProps {
-  items: DirectoryItem[];
+  items: DirectoryListItem[];
   currentPage?: number;
   basePath?: string;
   query?: Record<string, string | undefined>;

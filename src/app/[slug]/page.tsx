@@ -1,6 +1,7 @@
 import { getDirectoryItemBySlug, getDirectoryItems } from "@/lib/supabase";
 import { isValidSlug, isValidSlugFormat } from "@/lib/routing-utils-client";
 import type { Metadata } from "next";
+import Image from 'next/image';
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, Twitter, Linkedin, Facebook } from "lucide-react";
@@ -374,11 +375,14 @@ export default async function DirectoryItemPage({
         <section className="border-b border-[#e0e0e0] bg-white py-8 md:py-10">
           <div className="container px-6">
             <div className="overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-[#fafafa] shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
-              <img
+              <Image
                 src={item.heroScreenshotUrl}
                 alt={`${item.name} screenshot`}
                 className="w-full object-cover"
-                loading="lazy"
+                width={1600}
+                height={900}
+                sizes="(max-width: 768px) 100vw, 1200px"
+                unoptimized
               />
             </div>
           </div>

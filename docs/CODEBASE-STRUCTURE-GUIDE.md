@@ -188,7 +188,7 @@ src/lib/
 ├── 📄 markdown.ts             # Markdown processing
 ├── 📄 mailchimp.ts            # Email integration
 ├── 📄 posthog.ts              # Analytics configuration
-└── 📄 perplexity.ts           # AI integration (if used)
+└── 📄 tool-research.ts        # OpenAI Responses API research and editorial review
 ```
 
 **Data Flow:**

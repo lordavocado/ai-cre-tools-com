@@ -110,6 +110,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
       { protocol: 'https', hostname: 'via.placeholder.com', pathname: '/**' },
       { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
+      { protocol: 'https', hostname: 'fazier.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'startupfa.me', pathname: '/**' },
       { protocol: 'https', hostname: 'api.producthunt.com', pathname: '/**' },
       {
         protocol: 'https',

@@ -34,7 +34,8 @@
     "lucide-react": "^0.536.0",
     "marked": "^16.1.2",
     "marked-highlight": "^2.2.2",
-    "next": "15.4.10",
+    "next": "^15.5.22",
+    "openai": "7.4.0",
     "posthog-js": "^1.261.1",
     "posthog-node": "^5.8.1",
     "prismjs": "^1.30.0",
@@ -46,7 +47,7 @@
     "zod": "^4.0.15"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^15.4.6",
+    "@next/bundle-analyzer": "^15.5.22",
     "@types/mailchimp__mailchimp_marketing": "^3.0.21",
     "@types/node": "^24.2.0",
     "@types/prismjs": "^1.26.5",
@@ -60,5 +61,9 @@
     "puppeteer": "^24.17.0",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "sharp": "^0.35.0",
+    "postcss": "^8.5.18"
   }
 }

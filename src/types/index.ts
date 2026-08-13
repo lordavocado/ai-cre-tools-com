@@ -37,6 +37,12 @@ export interface DirectoryItem {
   };
 }
 
+/** Minimal, safe-to-serialize data required by directory cards and browser filtering. */
+export type DirectoryListItem = Pick<
+  DirectoryItem,
+  'id' | 'slug' | 'name' | 'tagline' | 'category' | 'website' | 'imageUrl' | 'features'
+>;
+
 export interface Category {
   id: string;
   slug: string;

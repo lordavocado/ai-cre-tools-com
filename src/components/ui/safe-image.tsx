@@ -104,6 +104,9 @@ export function SafeImage({
   }
 
   return (
+    // This source is directory data and may be an arbitrary vendor logo. The component
+    // falls back safely; forcing it through Next's optimizer would reject valid vendors.
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={currentSrc}
       alt={alt}
@@ -117,4 +120,4 @@ export function SafeImage({
       } as React.CSSProperties}
     />
   );
-} 
+}

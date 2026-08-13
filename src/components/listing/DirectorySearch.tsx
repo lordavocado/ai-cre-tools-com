@@ -39,6 +39,13 @@ function DirectorySearchContent({
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    setSearchTerm(initialSearchTerm);
+    setSelectedCategories(
+      initialCategoryFilter ? initialCategoryFilter.split(',').map((category) => category.trim()) : []
+    );
+  }, [initialSearchTerm, initialCategoryFilter]);
+
   const updateUrl = useCallback(() => {
     if (!mounted) return;
 
@@ -58,10 +65,13 @@ function DirectorySearchContent({
       } else {
         targetPathname = currentPathname;
       }
-    } else {
+    } else if (searchTerm || selectedCategories.length > 0) {
+      targetPathname = "/search";
       if (selectedCategories.length > 0) {
         queryParams.set("category", selectedCategories.join(","));
       }
+    } else if (currentPathname === "/search") {
+      targetPathname = "/";
     }
 
     const currentParams = new URLSearchParams(window.location.search);
@@ -82,7 +92,7 @@ function DirectorySearchContent({
         router.replace(newUrl, { scroll: false });
       });
     }
-  }, [searchTerm, selectedCategories, currentPathname, initialCategoryFilter, mounted, router]);
+  }, [searchTerm, selectedCategories, currentPathname, initialSearchTerm, initialCategoryFilter, mounted, router]);
 
   useEffect(() => {
     if (!mounted) return;

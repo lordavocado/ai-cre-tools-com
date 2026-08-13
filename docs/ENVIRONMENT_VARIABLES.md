@@ -33,12 +33,30 @@ GOOGLE_SHEETS_DOC_ID=your-google-sheets-document-id
 - **Purpose**: Enables Google Sheets integration for tool data
 - **Required**: No (will fallback to empty data)
 
-### Perplexity AI API
+### OpenAI Responses API
 ```bash
-PERPLEXITY_API_KEY=your-perplexity-api-key
+OPENAI_API_KEY=sk-your-server-only-api-key
+OPENAI_TOOL_SUBMISSION_MODEL=gpt-5.6
+OPENAI_TOOL_SUBMISSION_REASONING_EFFORT=medium
+OPENAI_TOOL_SUBMISSION_MIN_CONFIDENCE=0.82
 ```
-- **Purpose**: Enables automated tool research and data enrichment
-- **Required**: No
+- **Purpose**: Runs relevance review, built-in web research, structured directory copy generation, and evidence collection in one Responses API call
+- **Required**: Yes for the public `/submit-tool` automation
+- **Model**: `gpt-5.6` is the default alias; override it only after testing the replacement on representative submissions
+- **Reasoning**: `medium` is the balanced default; supported configured values are `none`, `low`, `medium`, `high`, `xhigh`, and `max`
+- **Confidence gate**: Decisions below `0.82`, or without a verified official source, remain pending for attention instead of being accepted or rejected
+- **Security**: `OPENAI_API_KEY` is server-only and must never use a `NEXT_PUBLIC_` prefix
+
+### Automated Tool Publishing
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=sb_publishable_your_key
+SUPABASE_SECRET_KEY=sb_secret_your_server_key
+# Legacy fallback: SUPABASE_SERVICE_ROLE_KEY=your-server-only-service-role-key
+```
+- **Purpose**: Stores each submission and writes accepted tools to `ecosystem_apps`
+- **Required**: Yes for `/submit-tool`
+- **Security**: `SUPABASE_SECRET_KEY` and the legacy `SUPABASE_SERVICE_ROLE_KEY` are server-only and must never use a `NEXT_PUBLIC_` prefix
 
 ### PostHog Analytics
 ```bash
@@ -63,7 +81,7 @@ RESEND_API_KEY=re_your_resend_api_key
 SUBMISSION_NOTIFY_EMAIL=you@example.com
 RESEND_FROM_EMAIL=AI CRE Tools <notifications@aicretools.com>
 ```
-- **Purpose**: Sends you an email when someone submits a new tool via `/submit-tool`
+- **Purpose**: Emails the directory owner after the AI accepts, rejects, or defers a tool, including its confidence, evidence, rationale, and every field written for accepted listings
 - **Required**: No (submissions still work without it)
 - **RESEND_API_KEY**: API key from [Resend](https://resend.com)
 - **SUBMISSION_NOTIFY_EMAIL**: Your inbox; comma-separate multiple addresses if needed

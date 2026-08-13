@@ -98,9 +98,9 @@ type SubmissionSystemStatus = {
   supabaseStorageConfigured: boolean;
   supabaseAdminConfigured: boolean;
   researchProviderConfigured: boolean;
-  researchProvider: 'tavily' | 'perplexity' | null;
-  tavilyConfigured: boolean;
-  perplexityConfigured: boolean;
+  researchProvider: 'openai' | null;
+  openAIConfigured: boolean;
+  researchModel: string;
 };
 
 export default function SubmissionsDashboard() {
@@ -604,7 +604,7 @@ export default function SubmissionsDashboard() {
         title="Tool submissions"
         description={
           <>
-            Use <span className="font-semibold text-[#1f1f1f]">Accept</span> for one-step AI research, auto-fill, verification, and live publish (Tavily or Perplexity + Supabase service role). Open a row to edit copy, or use{' '}
+            Use <span className="font-semibold text-[#1f1f1f]">Accept</span> for one-step AI research, auto-fill, verification, and live publish (OpenAI Responses API + Supabase service role). Open a row to edit copy, or use{' '}
             <span className="font-semibold text-[#1f1f1f]">Publish using form fields</span> for full manual control.
           </>
         }
@@ -632,13 +632,10 @@ export default function SubmissionsDashboard() {
           <CardContent className="grid gap-2 text-sm text-[#737373] sm:grid-cols-2">
             <StatusLine ok={systemStatus.supabaseStorageConfigured} label="Supabase URL + anon key (queue storage)" />
             <StatusLine ok={systemStatus.supabaseAdminConfigured} label="Service role key (Accept & publish to live directory)" />
-            <StatusLine ok={systemStatus.researchProviderConfigured} label="Tavily or Perplexity API (required for one-click Accept)" />
+            <StatusLine ok={systemStatus.researchProviderConfigured} label="OpenAI Responses API (required for one-click Accept)" />
             {systemStatus.researchProviderConfigured && (
               <p className="sm:col-span-2 text-xs text-[#737373]">
-                Active provider: <span className="font-medium text-[#0f172a]">{systemStatus.researchProvider}</span>
-                {systemStatus.tavilyConfigured && systemStatus.perplexityConfigured ? (
-                  <span> (Tavily takes precedence when both are set.)</span>
-                ) : null}
+                Active setup: <span className="font-medium text-[#0f172a]">OpenAI Responses API · {systemStatus.researchModel}</span>
               </p>
             )}
           </CardContent>
@@ -709,7 +706,7 @@ export default function SubmissionsDashboard() {
                 !systemStatus?.supabaseAdminConfigured
                   ? 'Configure SUPABASE_SERVICE_ROLE_KEY'
                   : !systemStatus?.researchProviderConfigured
-                    ? 'Configure TAVILY_API_KEY or PERPLEXITY_API_KEY'
+                    ? 'Configure OPENAI_API_KEY'
                     : undefined
               }
             />
@@ -728,7 +725,7 @@ export default function SubmissionsDashboard() {
                     Submission Details
                   </DialogTitle>
                 <DialogDescription className="text-[#737373]">
-                  <span className="font-semibold text-[#1f1f1f]">Accept</span> runs full AI research, normalizes the listing, checks required fields, and publishes live — no manual pass required. Use the fields below only if you want to tweak copy first, then choose &quot;Publish using form fields&quot;. One-click Accept needs Tavily or Perplexity plus the Supabase service role key.
+                  <span className="font-semibold text-[#1f1f1f]">Accept</span> runs OpenAI web research, normalizes the listing, checks required fields, and publishes live — no manual pass required. Use the fields below only if you want to tweak copy first, then choose &quot;Publish using form fields&quot;. One-click Accept needs the OpenAI and Supabase server keys.
                 </DialogDescription>
                 </DialogHeader>
 
@@ -994,7 +991,7 @@ export default function SubmissionsDashboard() {
                     className="rounded-[8px] border-[#e0e0e0]"
                     title={
                       systemStatus && !systemStatus.researchProviderConfigured
-                        ? 'Set TAVILY_API_KEY or PERPLEXITY_API_KEY to run automated research'
+                        ? 'Set OPENAI_API_KEY to run automated research'
                         : undefined
                     }
                   >
@@ -1060,7 +1057,7 @@ export default function SubmissionsDashboard() {
                         !systemStatus?.supabaseAdminConfigured
                           ? 'Set SUPABASE_SERVICE_ROLE_KEY'
                           : !systemStatus?.researchProviderConfigured
-                            ? 'Set TAVILY_API_KEY or PERPLEXITY_API_KEY for one-click accept'
+                            ? 'Set OPENAI_API_KEY for one-click accept'
                             : undefined
                       }
                     >

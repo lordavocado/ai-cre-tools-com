@@ -24,6 +24,8 @@ const BLOCKED_IP_RANGES = [
   /^fe80::/i, // IPv6 link-local
 ];
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
 function isAllowedDomain(hostname: string): boolean {
   return ALLOWED_DOMAINS.some(domain => 
     hostname === domain || hostname.endsWith('.' + domain)
@@ -32,6 +34,41 @@ function isAllowedDomain(hostname: string): boolean {
 
 function isBlockedIP(hostname: string): boolean {
   return BLOCKED_IP_RANGES.some(range => range.test(hostname));
+}
+
+async function readImageWithLimit(response: Response): Promise<Uint8Array> {
+  const contentLength = Number(response.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > MAX_IMAGE_BYTES) {
+    throw new Error('Image exceeds the maximum allowed size');
+  }
+
+  if (!response.body) {
+    throw new Error('Image response has no body');
+  }
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    totalBytes += value.byteLength;
+    if (totalBytes > MAX_IMAGE_BYTES) {
+      await reader.cancel();
+      throw new Error('Image exceeds the maximum allowed size');
+    }
+    chunks.push(value);
+  }
+
+  const image = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    image.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return image;
 }
 
 export async function GET(request: NextRequest) {
@@ -104,27 +141,39 @@ export async function GET(request: NextRequest) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout per strategy
 
-        const response = await fetch(imageUrl, {
-          signal: controller.signal,
-          headers: strategy.headers as HeadersInit,
-        });
-
-        clearTimeout(timeoutId);
+        let response: Response;
+        try {
+          response = await fetch(imageUrl, {
+            signal: controller.signal,
+            headers: strategy.headers as HeadersInit,
+            // Do not follow redirects: the destination would otherwise bypass
+            // the allowlist and could turn this public endpoint into an SSRF proxy.
+            redirect: 'manual',
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
         if (response.ok) {
           const contentType = response.headers.get('content-type');
           
           // Validate content type
           if (contentType && contentType.startsWith('image/')) {
-            const imageBuffer = await response.arrayBuffer();
+            const imageBuffer = await readImageWithLimit(response);
 
-            return new NextResponse(imageBuffer, {
+            return new NextResponse(
+              imageBuffer.buffer.slice(
+                imageBuffer.byteOffset,
+                imageBuffer.byteOffset + imageBuffer.byteLength
+              ) as ArrayBuffer,
+              {
               headers: {
                 'Content-Type': contentType,
                 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
                 'Access-Control-Allow-Origin': '*',
               },
-            });
+              }
+            );
           }
         }
 
@@ -141,18 +190,25 @@ export async function GET(request: NextRequest) {
       const faviconUrl = `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=64`;
       
       const faviconResponse = await fetch(faviconUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ImageProxy/1.0)' }
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ImageProxy/1.0)' },
+        redirect: 'manual',
       });
 
       if (faviconResponse.ok) {
-        const faviconBuffer = await faviconResponse.arrayBuffer();
-        return new NextResponse(faviconBuffer, {
+        const faviconBuffer = await readImageWithLimit(faviconResponse);
+        return new NextResponse(
+          faviconBuffer.buffer.slice(
+            faviconBuffer.byteOffset,
+            faviconBuffer.byteOffset + faviconBuffer.byteLength
+          ) as ArrayBuffer,
+          {
           headers: {
             'Content-Type': 'image/png',
             'Cache-Control': 'public, max-age=86400',
             'Access-Control-Allow-Origin': '*',
           },
-        });
+          }
+        );
       }
     } catch (faviconError) {
       // Favicon fallback also failed
@@ -165,4 +221,4 @@ export async function GET(request: NextRequest) {
     // Return a fallback image or placeholder
     return NextResponse.redirect(new URL('/ai-cre-tools-logo.jpg', request.url));
   }
-} 
+}

@@ -9,6 +9,7 @@ if (typeof window !== 'undefined') {
 import { createClient } from '@supabase/supabase-js';
 import type { AdminTool } from '@/types';
 import { clearSupabaseCache } from '@/lib/supabase';
+import { revalidateDirectoryCache } from '@/lib/supabase-cache';
 import { normalizeToolDescription } from '@/lib/tool-content';
 import { resolveCategoryInfo } from '@/lib/utils';
 
@@ -89,17 +90,17 @@ function getSupabaseAdminClient() {
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serverKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
     throw new Error('NEXT_PUBLIC_SUPABASE_URL is not properly configured.');
   }
 
-  if (!serviceRoleKey || serviceRoleKey.includes('placeholder')) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not properly configured.');
+  if (!serverKey || serverKey.includes('placeholder')) {
+    throw new Error('SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY is not properly configured.');
   }
 
-  supabaseAdminClient = createClient(supabaseUrl, serviceRoleKey, {
+  supabaseAdminClient = createClient(supabaseUrl, serverKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -318,6 +319,7 @@ export async function updateAdminTool(input: AdminToolUpdateInput) {
   }
 
   clearSupabaseCache();
+  revalidateDirectoryCache();
   return mapAdminToolRow(data as AdminToolRow);
 }
 
@@ -354,6 +356,7 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
     }
 
     clearSupabaseCache();
+    revalidateDirectoryCache();
     return mapAdminToolRow(data as AdminToolRow);
   }
 
@@ -372,5 +375,6 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
   }
 
   clearSupabaseCache();
+  revalidateDirectoryCache();
   return mapAdminToolRow(data as AdminToolRow);
 }

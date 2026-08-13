@@ -1,39 +1,23 @@
 import type { Category } from "@/types";
 import { Hero } from "@/components/landing/Hero";
-import { DirectorySearch, type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
-import { DirectoryGrid } from "@/components/listing/DirectoryGrid";
-import { getDirectoryItems, getCategories } from "@/lib/supabase";
+import { type DirectorySearchCategory } from "@/components/listing/DirectorySearch";
+import { HomeDirectory } from '@/components/listing/HomeDirectory';
+import { getDirectoryListItems, getCategories } from "@/lib/supabase";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { FeaturedOn } from '@/components/sections/FeaturedOn';
 import { FAQ } from '@/components/sections/FAQ';
-import { parseDirectoryPage } from '@/lib/directory-pagination';
 import { getAllSeoPersonas } from '@/config/seo-personas';
 import { getTopTagSlugs } from '@/config/seo-tags';
-import { buildPaginatedMetadata } from '@/lib/seo-pages';
 
 const HOME_TITLE = 'Best Commercial Real Estate AI Tools (2026) | AI CRE Tools';
 const HOME_DESCRIPTION =
   'Discover and compare the best commercial real estate AI tools. Software for investors, brokers, asset managers, and operators — one focused CRE directory.';
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ search?: string; category?: string; page?: string }>;
-}): Promise<Metadata> {
-  const resolved = await searchParams;
-  const hasFilters = Boolean(resolved.search?.trim() || resolved.category?.trim());
-  const pagination = buildPaginatedMetadata({
-    basePath: '/',
-    page: resolved.page,
-    hasFilters,
-    title: HOME_TITLE,
-    description: HOME_DESCRIPTION,
-  });
-
-  return {
+export const metadata: Metadata = {
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     keywords: [
@@ -76,35 +60,16 @@ export async function generateMetadata({
         },
       ],
     },
-    alternates: pagination.alternates,
-    robots: pagination.robots,
+    alternates: { canonical: siteConfig.url },
+    robots: { index: true, follow: true },
   };
-}
 
 export const revalidate = 3600;
 
-interface HomeProps {
-  searchParams: Promise<{
-    search?: string;
-    category?: string;
-    page?: string;
-  }>;
-}
-
-export default async function Home({ searchParams }: HomeProps) {
-  const resolvedSearchParams = await searchParams;
-  const { search, category, page } = resolvedSearchParams;
-  const searchTerm = search || "";
-  const categoryFilter = category || "";
-  const currentPage = parseDirectoryPage(page);
-  const directoryQuery = {
-    search: searchTerm || undefined,
-    category: categoryFilter || undefined,
-  };
-
+export default async function Home() {
   try {
     // Items fetched first so the module-level cache is warm when getCategories runs
-    const initialItems = await getDirectoryItems(searchTerm, categoryFilter);
+    const initialItems = await getDirectoryListItems();
     let categoriesFromSheet: Category[];
     try {
       categoriesFromSheet = await getCategories(true);
@@ -244,18 +209,15 @@ export default async function Home({ searchParams }: HomeProps) {
             </Link>
           </div>
 
-          <DirectorySearch
-            categories={searchCategories}
-            initialSearchTerm={searchTerm}
-            initialCategoryFilter={categoryFilter}
-            totalItems={initialItems.length}
-          />
-          <DirectoryGrid
-            items={initialItems}
-            currentPage={currentPage}
-            basePath="/"
-            query={directoryQuery}
-          />
+          <Suspense
+            fallback={
+              <div className="py-12 text-center text-sm text-[#737373]">
+                Loading directory…
+              </div>
+            }
+          >
+            <HomeDirectory items={initialItems} categories={searchCategories} />
+          </Suspense>
         </div>
       </section>
 

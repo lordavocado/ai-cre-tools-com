@@ -9,38 +9,55 @@ if (typeof window !== 'undefined') {
   throw new Error('This module can only be used on the server side');
 }
 
-import type { DirectoryItem, Category } from '@/types';
+import type { DirectoryItem, DirectoryListItem, Category } from '@/types';
 import { createClient } from '@supabase/supabase-js';
 import { unstable_cache } from 'next/cache';
 import { normalizeToolDescription } from '@/lib/tool-content';
 
 // --- Configuration ---
 
-// Database table and column mappings
+// Database table
 const TABLE_NAME = 'ecosystem_apps';
 
-// Column mappings from Supabase to DirectoryItem interface
-const COLUMN_MAPPINGS = {
-  SLUG: 'slug',
-  NAME: 'name',
-  TAGLINE: 'one_liner',
-  DESCRIPTION: 'description',
-  CATEGORY: 'category',
-  WEBSITE: 'website_url',
-  IMAGE_URL: 'icon_url',
-  SCREENSHOT_URL: 'screenshot_url',
-  SCREENSHOT_PATH: 'screenshot_path',
-  FEATURES: 'features',
-  COUNTRY: 'country',
-  CITY: 'city',
-  DISPLAY_ORDER: 'display_order',
-  CREATED_AT: 'created_at',
-  UPDATED_AT: 'updated_at',
+const DIRECTORY_ITEM_COLUMNS = [
+  'slug',
+  'name',
+  'one_liner',
+  'description',
+  'category',
+  'website_url',
+  'icon_url',
+  'screenshot_url',
+  'screenshot_path',
+  'features',
+  'country',
+  'city',
+  'display_order',
+  'updated_at',
+].join(',');
+
+/** Database shape required by the public directory. Keep this in sync with the query above. */
+type EcosystemAppRow = {
+  slug: string;
+  name: string;
+  one_liner: string | null;
+  description: string | null;
+  category: string | null;
+  website_url: string | null;
+  icon_url: string | null;
+  screenshot_url: string | null;
+  screenshot_path: string | null;
+  features: string[] | null;
+  country: string | null;
+  city: string | null;
+  display_order: number | null;
+  updated_at: string | null;
 };
 
 // --- Supabase Client Setup ---
 
 let supabaseClient: ReturnType<typeof createClient> | null = null;
+let supabaseSubmissionClient: ReturnType<typeof createClient> | null = null;
 
 /**
  * Get or create Supabase client instance with proper configuration
@@ -75,6 +92,32 @@ function getSupabaseClient() {
   }
 }
 
+/** Uses a server-only elevated key for private submission records and status changes. */
+function getSupabaseSubmissionClient() {
+  if (supabaseSubmissionClient) {
+    return supabaseSubmissionClient;
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serverKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || supabaseUrl.includes('placeholder')) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL is not properly configured.');
+  }
+  if (!serverKey || serverKey.includes('placeholder')) {
+    throw new Error('SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY is not properly configured.');
+  }
+
+  supabaseSubmissionClient = createClient(supabaseUrl, serverKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+
+  return supabaseSubmissionClient;
+}
+
 // --- Caching Layer for Performance ---
 
 // Enhanced caching with timestamps for server-side rendering
@@ -96,21 +139,22 @@ function isCacheValid(timestamp: number): boolean {
  * @param row - Raw row from Supabase
  * @returns Transformed DirectoryItem
  */
-function transformSupabaseRowToDirectoryItem(row: any): DirectoryItem {
+function transformSupabaseRowToDirectoryItem(row: EcosystemAppRow): DirectoryItem {
   return {
-    id: row[COLUMN_MAPPINGS.SLUG], // Use slug as ID
-    slug: row[COLUMN_MAPPINGS.SLUG],
-    name: row[COLUMN_MAPPINGS.NAME] || '',
-    tagline: row[COLUMN_MAPPINGS.TAGLINE] || '',
-    description: row[COLUMN_MAPPINGS.DESCRIPTION] || '',
-    category: row[COLUMN_MAPPINGS.CATEGORY] || '',
-    website: row[COLUMN_MAPPINGS.WEBSITE] || '',
-    imageUrl: row[COLUMN_MAPPINGS.IMAGE_URL] || undefined,
-    screenshotUrl: row[COLUMN_MAPPINGS.SCREENSHOT_URL] || undefined,
-    screenshotPath: row[COLUMN_MAPPINGS.SCREENSHOT_PATH] || undefined,
-    features: transformFeatures(row[COLUMN_MAPPINGS.FEATURES] || []),
-    country: row[COLUMN_MAPPINGS.COUNTRY] || undefined,
-    city: row[COLUMN_MAPPINGS.CITY] || undefined,
+    id: row.slug, // Use slug as ID
+    slug: row.slug,
+    name: row.name,
+    tagline: row.one_liner || '',
+    description: row.description || '',
+    category: row.category || '',
+    website: row.website_url || '',
+    imageUrl: row.icon_url || undefined,
+    screenshotUrl: row.screenshot_url || undefined,
+    screenshotPath: row.screenshot_path || undefined,
+    features: transformFeatures(row.features || []),
+    country: row.country || undefined,
+    city: row.city || undefined,
+    lastUpdated: row.updated_at || undefined,
   };
 }
 
@@ -401,7 +445,7 @@ async function fetchAllDirectoryItemsFromDb(): Promise<DirectoryItem[]> {
 
   const { data, error } = await supabase
     .from(TABLE_NAME)
-    .select('*')
+    .select(DIRECTORY_ITEM_COLUMNS)
     .order('display_order', { ascending: true })
     .order('name', { ascending: true });
 
@@ -445,7 +489,7 @@ export async function getDirectoryItems(
 
     let query = supabase
       .from(TABLE_NAME)
-      .select('*')
+      .select(DIRECTORY_ITEM_COLUMNS)
       .order('display_order', { ascending: true })
       .order('name', { ascending: true });
 
@@ -492,6 +536,21 @@ export async function getDirectoryItems(
   }
 }
 
+/** Returns the compact data shape used by directory cards and client-side filtering. */
+export async function getDirectoryListItems(): Promise<DirectoryListItem[]> {
+  const items = await getDirectoryItems();
+  return items.map((item) => ({
+    id: item.id,
+    slug: item.slug,
+    name: item.name,
+    tagline: item.tagline,
+    category: item.category,
+    website: item.website,
+    imageUrl: item.imageUrl,
+    features: item.features,
+  }));
+}
+
 /**
  * Retrieves a specific directory item by its slug
  * Server-side rendered for optimal performance
@@ -504,7 +563,7 @@ export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryIte
     
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .select('*')
+      .select(DIRECTORY_ITEM_COLUMNS)
       .eq('slug', slug)
       .single();
 
@@ -574,7 +633,7 @@ export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem
     // Get featured items using display_order (prioritized tools first) and limit results
     const { data, error } = await supabase
       .from(TABLE_NAME)
-      .select('*')
+      .select(DIRECTORY_ITEM_COLUMNS)
       .order('display_order', { ascending: true })
       .order('name', { ascending: true })
       .limit(limit);
@@ -746,7 +805,7 @@ export async function storeToolSubmission(submissionData: Omit<ToolSubmission, '
   const submissionId = `submission_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseSubmissionClient();
 
     const insertData: ToolSubmissionRow = {
       submission_id: submissionId,
@@ -797,7 +856,7 @@ export async function storeToolSubmission(submissionData: Omit<ToolSubmission, '
  */
 export async function getToolSubmissions(status?: 'pending' | 'approved' | 'rejected'): Promise<ToolSubmission[]> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseSubmissionClient();
 
     let query = supabase
       .from(SUBMISSIONS_TABLE)
@@ -840,7 +899,7 @@ export async function getToolSubmissions(status?: 'pending' | 'approved' | 'reje
  */
 export async function getToolSubmissionById(submissionId: string): Promise<ToolSubmission | undefined> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseSubmissionClient();
 
     const { data, error } = await (supabase
       .from(SUBMISSIONS_TABLE) as any)
@@ -881,7 +940,7 @@ export async function updateSubmissionStatus(
   status: ToolSubmissionStatus
 ): Promise<boolean> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseSubmissionClient();
 
     // Use raw SQL via rpc or direct update with type bypass
     // The table isn't in generated types yet, so we use any casting
@@ -920,7 +979,7 @@ export async function updateToolSubmission(
   updates: ToolSubmissionUpdateInput
 ): Promise<ToolSubmission | undefined> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseSubmissionClient();
 
     const updateData: Record<string, string | null> = {};
 
@@ -994,7 +1053,7 @@ export async function updateToolSubmission(
  */
 export async function deleteToolSubmission(submissionId: string): Promise<boolean> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseSubmissionClient();
 
     const { error } = await (supabase
       .from(SUBMISSIONS_TABLE) as any)

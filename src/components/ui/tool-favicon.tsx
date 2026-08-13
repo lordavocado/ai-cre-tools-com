@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface ToolFaviconProps {
   website: string;
@@ -33,12 +34,15 @@ export function ToolFavicon({ website, name, apiSize = 64, className = '' }: Too
   }
 
   return (
-    <img
+    <Image
       src={`https://www.google.com/s2/favicons?sz=${apiSize}&domain=${domain}`}
       alt=""
       aria-hidden="true"
       className={`object-contain ${className}`}
       onError={() => setFailed(true)}
+      width={apiSize}
+      height={apiSize}
+      unoptimized
     />
   );
 }
