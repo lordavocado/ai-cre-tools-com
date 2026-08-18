@@ -36,15 +36,15 @@ GOOGLE_SHEETS_DOC_ID=your-google-sheets-document-id
 ### OpenAI Responses API
 ```bash
 OPENAI_API_KEY=sk-your-server-only-api-key
-OPENAI_TOOL_SUBMISSION_MODEL=gpt-5.6
+OPENAI_TOOL_SUBMISSION_MODEL=gpt-5.6-terra
 OPENAI_TOOL_SUBMISSION_REASONING_EFFORT=medium
 OPENAI_TOOL_SUBMISSION_MIN_CONFIDENCE=0.82
 ```
 - **Purpose**: Runs relevance review, built-in web research, structured directory copy generation, and evidence collection in one Responses API call
 - **Required**: Yes for the public `/submit-tool` automation
-- **Model**: `gpt-5.6` is the default alias; override it only after testing the replacement on representative submissions
+- **Model**: `gpt-5.6-terra` is the default. Terra preserves Responses API web search, reasoning, and structured outputs while balancing evaluation quality and cost. Override it only after testing the replacement on representative submissions
 - **Reasoning**: `medium` is the balanced default; supported configured values are `none`, `low`, `medium`, `high`, `xhigh`, and `max`
-- **Confidence gate**: Decisions below `0.82`, or without a verified official source, remain pending for attention instead of being accepted or rejected
+- **Confidence gate**: Decisions below `0.82` or without verified web evidence remain pending. Acceptances additionally require verified evidence from the submitted product; high-confidence rejections may rely on verified independent evidence
 - **Security**: `OPENAI_API_KEY` is server-only and must never use a `NEXT_PUBLIC_` prefix
 
 ### Automated Tool Publishing

@@ -7,6 +7,9 @@ if (typeof window !== 'undefined') {
   throw new Error('tool-submissions-config can only be used on the server side');
 }
 
+/** Cost-balanced GPT-5.6 tier used by the autonomous submission evaluator. */
+export const DEFAULT_TOOL_SUBMISSION_MODEL = 'gpt-5.6-terra';
+
 function hasRealValue(value: string | undefined) {
   return Boolean(value && !value.includes('placeholder'));
 }
@@ -48,6 +51,6 @@ export function getToolSubmissionSystemStatus() {
     researchProviderConfigured: isResearchProviderConfigured(),
     researchProvider: getConfiguredResearchProvider(),
     openAIConfigured: isOpenAIConfigured(),
-    researchModel: process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || 'gpt-5.6',
+    researchModel: process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || DEFAULT_TOOL_SUBMISSION_MODEL,
   };
 }

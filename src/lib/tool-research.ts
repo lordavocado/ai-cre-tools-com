@@ -5,8 +5,8 @@ import { zodTextFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import { generateSEOSlug } from '@/lib/routing-utils';
 import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
+import { DEFAULT_TOOL_SUBMISSION_MODEL } from '@/lib/tool-submissions-config';
 
-const DEFAULT_MODEL = 'gpt-5.6';
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.82;
 const MIN_DESCRIPTION_LENGTH = 260;
 const MAX_DESCRIPTION_LENGTH = 460;
@@ -68,7 +68,7 @@ export type ToolResearchResult = {
 };
 
 function getModel() {
-  return process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || DEFAULT_MODEL;
+  return process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || DEFAULT_TOOL_SUBMISSION_MODEL;
 }
 
 function getReasoningEffort(): ReasoningEffort {
