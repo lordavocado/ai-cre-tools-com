@@ -1,11 +1,17 @@
 import 'server-only';
 
 import { finalizeAutoPublishDraft, verifyAutoPublishDraft } from '@/lib/submission-auto-publish';
-import { publishToolFromSubmission } from '@/lib/supabase-admin';
+import {
+  getAdminToolBySlug,
+  normalizeWebsiteUrl,
+  publishToolFromSubmission,
+} from '@/lib/supabase-admin';
 import {
   getToolSubmissionById,
+  getToolSubmissions,
   updateSubmissionStatus,
   updateToolSubmission,
+  type ToolSubmission,
   type ToolResearchStatus,
 } from '@/lib/supabase';
 import {
@@ -45,6 +51,125 @@ function pickFirst(...values: Array<string | undefined>) {
   return values.find((value) => Boolean(value?.trim()))?.trim() ?? '';
 }
 
+function normalizeDuplicateName(value: string | undefined) {
+  return value?.trim().toLocaleLowerCase().replace(/[^a-z0-9]+/g, '') ?? '';
+}
+
+function websitesMatch(left: string, right: string) {
+  try {
+    return normalizeWebsiteUrl(left) === normalizeWebsiteUrl(right);
+  } catch {
+    return left.trim().toLocaleLowerCase() === right.trim().toLocaleLowerCase();
+  }
+}
+
+async function findCompletedDuplicate(submission: ToolSubmission) {
+  const submissions = await getToolSubmissions();
+  const submissionName = normalizeDuplicateName(submission.name);
+
+  return submissions.find((candidate) => {
+    if (
+      candidate.submissionId === submission.submissionId
+      || candidate.researchStatus !== 'completed'
+      || candidate.status === 'pending'
+    ) {
+      return false;
+    }
+
+    if (websitesMatch(candidate.website, submission.website)) {
+      return true;
+    }
+
+    return candidate.status === 'approved'
+      && submissionName.length >= 4
+      && submissionName === normalizeDuplicateName(candidate.name);
+  });
+}
+
+async function resolveCompletedDuplicate(
+  submission: ToolSubmission
+): Promise<SubmissionAutomationOutcome | null> {
+  const duplicate = await findCompletedDuplicate(submission);
+
+  if (!duplicate) {
+    return null;
+  }
+
+  const duplicateReview = {
+    confidence: 1,
+    evidence: [{
+      claim: 'This website or product already has a completed submission decision.',
+      url: duplicate.website,
+      sourceType: 'official' as const,
+      verifiedByWebSearch: false,
+    }],
+    model: 'completed-submission-deduplication',
+    responseId: '',
+  };
+
+  if (duplicate.status === 'rejected') {
+    await updateToolSubmission(submission.submissionId, {
+      website: duplicate.website,
+      name: duplicate.name ?? submission.name ?? '',
+      researchStatus: 'completed',
+    });
+    const statusUpdated = await updateSubmissionStatus(submission.submissionId, 'rejected');
+
+    if (!statusUpdated) {
+      throw new Error('The duplicate rejection decision could not be saved.');
+    }
+
+    return {
+      decision: 'rejected',
+      ...duplicateReview,
+      reason: 'An equivalent submission was already evaluated and rejected.',
+      name: pickFirst(duplicate.name, submission.name, new URL(submission.website).hostname),
+      website: submission.website,
+    };
+  }
+
+  if (!duplicate.slug) {
+    return null;
+  }
+
+  const existingTool = await getAdminToolBySlug(duplicate.slug);
+
+  if (!existingTool) {
+    return null;
+  }
+
+  const finalizedSubmission = await updateToolSubmission(submission.submissionId, {
+    website: existingTool.websiteUrl,
+    slug: existingTool.slug,
+    name: existingTool.name,
+    category: getCategoryDisplayName(existingTool.category),
+    features: existingTool.features.join(', '),
+    oneLiner: existingTool.oneLiner,
+    description: existingTool.description,
+    country: existingTool.country,
+    city: existingTool.city,
+    iconLink: existingTool.iconUrl,
+    researchStatus: 'completed',
+  });
+
+  if (!finalizedSubmission) {
+    throw new Error('The duplicate submission record could not be synchronized.');
+  }
+
+  const statusUpdated = await updateSubmissionStatus(submission.submissionId, 'approved');
+
+  if (!statusUpdated) {
+    throw new Error('The duplicate approval decision could not be saved.');
+  }
+
+  return {
+    decision: 'accepted',
+    ...duplicateReview,
+    reason: 'This product is already approved and live; the existing listing was preserved.',
+    tool: existingTool,
+  };
+}
+
 function researchUpdates(result: ToolResearchResult) {
   return {
     website: result.website,
@@ -70,17 +195,22 @@ function verifyEditorialQuality(result: ToolResearchResult) {
     return 'The AI could not create a sufficiently specific tagline.';
   }
 
-  if (result.description.trim().length < 120) {
-    return 'The AI could not create a sufficiently complete description.';
+  const descriptionLength = result.description.trim().length;
+  if (descriptionLength < 260 || descriptionLength > 460) {
+    return 'The AI description must be a clean 260-460 characters.';
   }
 
   const features = result.features
-    .split(/[\n,]/)
+    .split(result.features.includes('\n') ? /\n+/ : /,/)
     .map((feature) => feature.trim())
     .filter(Boolean);
 
-  if (features.length < 3) {
-    return 'The AI could not verify enough concrete product capabilities.';
+  if (features.length < 4 || features.length > 6) {
+    return 'The AI must create 4-6 verified capability tags.';
+  }
+
+  if (features.some((feature) => feature.length > 48 || /[,;:.]$/.test(feature))) {
+    return 'The AI capability tags must be short phrases without punctuation.';
   }
 
   return null;
@@ -95,6 +225,12 @@ export async function automateToolSubmission(submissionId: string): Promise<Subm
 
   if (!submission) {
     throw new Error('The saved submission could not be loaded for automated review.');
+  }
+
+  const duplicateOutcome = await resolveCompletedDuplicate(submission);
+
+  if (duplicateOutcome) {
+    return duplicateOutcome;
   }
 
   const research = await researchTool(submission.website, submission.comment);

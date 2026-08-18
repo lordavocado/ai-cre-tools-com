@@ -43,7 +43,7 @@ This is a **Next.js 15 directory/marketplace application** built for showcasing 
 - **Data Source**: Supabase Database (configured in `src/lib/supabase.ts`)
 - **Content Management**: Supabase `ecosystem_apps` table serves as the database for directory items
 - **Categories**: Hardcoded categories defined in `src/lib/supabase.ts` with rich descriptions
-- **Routing**: Next.js App Router with dynamic routes for tools (`[slug]`) and categories (`[category]`)
+- **Routing**: Next.js App Router with dynamic routes for tools (`tools/[slug]`) and categories (`[category]`)
 
 ### Key Architecture Components
 
@@ -100,7 +100,8 @@ This is a **Next.js 15 directory/marketplace application** built for showcasing 
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── [slug]/             # Dynamic tool detail pages
+│   ├── tools/[slug]/       # Canonical dynamic tool detail pages
+│   ├── [slug]/             # Legacy tool URL redirects
 │   ├── categories/         # Category index + categories/[category]/
 │   ├── blog/               # Blog index + blog/[slug]/
 │   ├── guides/             # Guides index + guides/[slug]/

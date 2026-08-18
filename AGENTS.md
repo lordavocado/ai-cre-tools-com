@@ -46,7 +46,7 @@ There is no automated test suite; validate with `typecheck`, `lint`, and manual 
 - `src/config/site.ts` — Site metadata and SEO templates
 - `src/lib/supabase.ts` — Supabase client, queries, caching, category definitions
 - `src/types/index.ts` — `DirectoryItem`, `Category`, etc.
-- `src/app/` — Routes (`[slug]`, `categories/`, `api/`)
+- `src/app/` — Routes (`tools/[slug]`, `categories/`, `api/`); root `[slug]` only preserves legacy redirects
 - `src/components/listing/`, `src/components/category/`, `src/components/layout/` — Feature UI
 
 ## Environment (overview)

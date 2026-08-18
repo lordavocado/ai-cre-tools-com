@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { getToolPath } from '@/lib/tool-routes';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -457,7 +458,7 @@ function ReviewResultBox({ result, onSubmitAnother }: { result: ReviewResult; on
         <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#737373]">{result.tool.tagline}</p>
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
           <Button asChild className="h-11 rounded-[8px] px-5 shadow-none">
-            <Link href={`/${result.tool.slug}`}>View listing</Link>
+            <Link href={getToolPath(result.tool.slug)}>View listing</Link>
           </Button>
           <Button type="button" variant="outline" className="h-11 rounded-[8px] px-5" onClick={onSubmitAnother}>
             <RotateCcw className="h-4 w-4" aria-hidden />

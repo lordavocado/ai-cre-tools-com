@@ -4,6 +4,7 @@ import 'server-only';
 
 import { siteConfig } from '@/config/site';
 import type { SubmissionAutomationOutcome } from '@/lib/submission-automation';
+import { getToolPath } from '@/lib/tool-routes';
 
 export type ToolSubmissionDecisionNotification = {
   submissionId: string;
@@ -80,7 +81,7 @@ async function sendNotificationEmail(message: { subject: string; html: string; t
 export async function notifyToolSubmissionDecision(notification: ToolSubmissionDecisionNotification) {
   const { outcome } = notification;
   const accepted = outcome.decision === 'accepted';
-  const toolUrl = accepted ? `${siteConfig.url}/${outcome.tool.slug}` : '';
+  const toolUrl = accepted ? `${siteConfig.url}${getToolPath(outcome.tool.slug)}` : '';
   const name = accepted ? outcome.tool.name : outcome.name;
   const website = accepted ? outcome.tool.websiteUrl : outcome.website;
   const decisionLabel = accepted
@@ -100,7 +101,7 @@ export async function notifyToolSubmissionDecision(notification: ToolSubmissionD
         ['Slug', escapeHtml(outcome.tool.slug)],
         ['Category', escapeHtml(outcome.tool.category)],
         ['Tagline', escapeHtml(outcome.tool.oneLiner)],
-        ['Features', escapeHtml(outcome.tool.features.join(', '))],
+        ['Tags', escapeHtml(outcome.tool.features.join(', '))],
         ['Description', escapeHtml(outcome.tool.description)],
         ['Location', escapeHtml([outcome.tool.city, outcome.tool.country].filter(Boolean).join(', ') || 'Not verified')],
       ]
@@ -148,7 +149,7 @@ export async function notifyToolSubmissionDecision(notification: ToolSubmissionD
           `Slug: ${outcome.tool.slug}`,
           `Category: ${outcome.tool.category}`,
           `Tagline: ${outcome.tool.oneLiner}`,
-          `Features: ${outcome.tool.features.join(', ')}`,
+          `Tags: ${outcome.tool.features.join(', ')}`,
           `Description: ${outcome.tool.description}`,
           `Location: ${[outcome.tool.city, outcome.tool.country].filter(Boolean).join(', ') || 'Not verified'}`,
         ]

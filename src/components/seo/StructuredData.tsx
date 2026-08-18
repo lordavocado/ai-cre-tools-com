@@ -1,5 +1,6 @@
 import type { Guide } from "@/lib/markdown";
 import { siteConfig } from "@/config/site";
+import { getToolPath } from "@/lib/tool-routes";
 
 interface ArticleStructuredDataProps {
   guide: Guide;
@@ -47,7 +48,7 @@ export function ArticleStructuredData({ guide, url }: ArticleStructuredDataProps
       mentions: guide.relatedItems.map(slug => ({
         "@type": "SoftwareApplication",
         name: slug.replace('-', ' '),
-        url: `${siteConfig.url}/${slug}`,
+        url: `${siteConfig.url}${getToolPath(slug)}`,
       }))
     })
   };
@@ -126,4 +127,4 @@ export function WebsiteStructuredData({ searchUrl }: WebsiteStructuredDataProps)
       dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
     />
   );
-} 
+}

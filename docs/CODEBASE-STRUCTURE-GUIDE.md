@@ -34,7 +34,7 @@ src/app/
 ├── 📄 error.tsx               # Global error boundary
 ├── 📄 actions.ts              # Server actions
 │
-├── 📁 [slug]/                 # Dynamic tool detail pages
+├── 📁 tools/[slug]/           # Canonical dynamic tool detail pages
 │   └── 📄 page.tsx            # Tool detail page component
 │
 ├── 📁 categories/             # Category browsing
@@ -73,7 +73,7 @@ src/app/
 
 **Key Connections:**
 - `layout.tsx` → Global layout for all pages
-- `[slug]/page.tsx` → Dynamic tool pages using `getDirectoryItemBySlug()`
+- `tools/[slug]/page.tsx` → Dynamic tool pages using `getDirectoryItemBySlug()`
 - `categories/[category]/page.tsx` → Dynamic category pages using `getCategoryBySlug()`
 - `api/` routes → Server-side data processing and external API integration
 
@@ -370,7 +370,7 @@ User Interactions → Client Components → Custom Hooks → Local Storage / Con
 
 ### 3. Page Files
 - **Next.js Convention**: `page.tsx` for pages, `layout.tsx` for layouts
-- **Dynamic Routes**: `[slug]/page.tsx`, `[category]/page.tsx`
+- **Dynamic Routes**: `tools/[slug]/page.tsx`, `[category]/page.tsx`
 - **API Routes**: `route.ts` for API endpoints
 
 ### 4. Asset Files

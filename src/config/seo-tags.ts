@@ -1,5 +1,6 @@
 /**
- * Curated SEO tag pages — matched against tool features[] (no DB column).
+ * Curated SEO tag pages — matched against capability tags stored in features[]
+ * to preserve the established ecosystem_apps schema.
  * Aligned with docs/SEO-KEYWORDS.md P2 workflow terms.
  */
 

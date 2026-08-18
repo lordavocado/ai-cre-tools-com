@@ -14,7 +14,7 @@ Primary window: 90-day trend
 | Week (ISO) | Cluster | Target Keywords | Top-20 Count | Avg Position | Impressions | Clicks | CTR | Primary Landing Pages | Winners | Losers | Notes |
 |---|---|---:|---:|---:|---:|---:|---:|---|---|---|---|
 | 2026-W10 | Investor | 8 | 0 | - | 0 | 0 | 0% | /, /for/investors, /categories/asset-portfolio-management | - | - | Baseline |
-| 2026-W24 | All pSEO | 40+ | - | - | - | - | - | /tags/*, /compare/*, /glossary/*, /[slug]/alternatives | - | - | pSEO 100% rollout baseline |
+| 2026-W24 | All pSEO | 40+ | - | - | - | - | - | /tags/*, /compare/*, /glossary/*, /tools/[slug]/alternatives | - | - | pSEO 100% rollout baseline |
 
 ## Cluster Mapping
 - Investor → `/for/investors`, `/categories/property-search-acquisition`, `/categories/property-analysis-valuation`, `/tags/underwriting`, `/tags/deal-sourcing`
@@ -31,7 +31,7 @@ Primary window: 90-day trend
 | Personas | `/for/*` | Config only | `/for/investors`, `/for/brokers` |
 | Categories | `/categories/*` | DB category | `/categories/property-analysis-valuation` |
 | Tags | `/tags` | ≥3 matching tools | `/tags/lease-abstraction`, `/tags/underwriting` |
-| Alternatives | — | ≥3 same-category alts | `/[tool-slug]/alternatives` |
+| Alternatives | — | ≥3 same-category alts | `/tools/[tool-slug]/alternatives` |
 | Comparisons | `/compare` | Curated + both tools resolve | `/compare/diligence-tools-leaders` |
 | Glossary | `/glossary` | Config only | `/glossary/cap-rate`, `/glossary/noi` |
 
@@ -59,7 +59,7 @@ Primary window: 90-day trend
 - Next actions:
 
 ### Alternatives & Comparisons
-- Top `/[slug]/alternatives` pages by impressions:
+- Top `/tools/[slug]/alternatives` pages by impressions:
 - Top `/compare/[pair]` pages by impressions:
 - Next actions:
 

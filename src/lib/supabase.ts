@@ -152,6 +152,7 @@ function transformSupabaseRowToDirectoryItem(row: EcosystemAppRow): DirectoryIte
     screenshotUrl: row.screenshot_url || undefined,
     screenshotPath: row.screenshot_path || undefined,
     features: transformFeatures(row.features || []),
+    tags: row.features || [],
     country: row.country || undefined,
     city: row.city || undefined,
     lastUpdated: row.updated_at || undefined,
@@ -548,6 +549,7 @@ export async function getDirectoryListItems(): Promise<DirectoryListItem[]> {
     website: item.website,
     imageUrl: item.imageUrl,
     features: item.features,
+    tags: item.tags,
   }));
 }
 

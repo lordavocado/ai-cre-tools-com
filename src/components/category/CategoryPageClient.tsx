@@ -10,6 +10,7 @@ import { getPersonaShortLabel } from '@/config/seo-personas';
 import { siteConfig } from '@/config/site';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import { buildFaqStructuredData } from '@/lib/seo-pages';
+import { getToolPath } from '@/lib/tool-routes';
 import {
   CheckCircle, Zap, Users, Shield, ArrowRight,
   ChevronRight, Sparkles,
@@ -82,7 +83,7 @@ export function CategoryPageClient({
                 position: index + 1,
                 name: item.name,
                 description: item.tagline,
-                url: `${siteConfig.url}/${item.slug}`,
+                url: `${siteConfig.url}${getToolPath(item.slug)}`,
                 applicationCategory: category.name,
                 operatingSystem: "Web-based",
               })),
@@ -152,7 +153,7 @@ export function CategoryPageClient({
                 {featuredTools.map((tool) => (
                   <Link
                     key={tool.slug}
-                    href={`/${tool.slug}`}
+                    href={getToolPath(tool.slug)}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-3 py-1 text-sm text-[#1f1f1f] transition hover:border-[rgba(98,150,73,0.4)] hover:bg-[#fafafa]"
                   >
                     {tool.name}

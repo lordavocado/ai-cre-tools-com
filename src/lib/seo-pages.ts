@@ -40,6 +40,7 @@ function getSearchableItemText(item: DirectoryItem): string {
     item.name,
     item.tagline,
     item.description,
+    ...(item.tags ?? []),
     ...(item.features?.map((feature) => feature.name) ?? []),
   ].filter(Boolean);
 

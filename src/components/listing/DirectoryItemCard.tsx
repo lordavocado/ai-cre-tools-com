@@ -4,6 +4,7 @@ import type { DirectoryListItem } from "@/types";
 import Link from "next/link";
 import { SafeImage } from "@/components/ui/safe-image";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { getToolPath } from "@/lib/tool-routes";
 
 /** Props for DirectoryItemCard */
 interface DirectoryItemCardProps {
@@ -31,10 +32,11 @@ function getDomainLabel(website: string | undefined): string | null {
  */
 function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   const domainLabel = getDomainLabel(item.website);
+  const tags = item.tags ?? item.features?.map((feature) => feature.name) ?? [];
 
   return (
     <Link
-      href={`/${item.slug}`}
+      href={getToolPath(item.slug)}
       className="flex flex-col bg-white border border-[#e0e0e0] rounded-[8px] p-5 gap-3 transition-all duration-100 hover:border-[#c8c8c8] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
     >
       {/* Header row: favicon + name + domain */}
@@ -64,14 +66,14 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
       )}
 
       {/* Use-case tags — max 2, pinned to card bottom */}
-      {item.features && item.features.length > 0 && (
+      {tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          {item.features.slice(0, 2).map((feature) => (
+          {tags.slice(0, 2).map((tag) => (
             <span
-              key={feature.name}
+              key={tag}
               className="rounded-[6px] border border-[#e8e8e8] bg-[#fafafa] px-2 py-0.5 text-[11px] text-[#737373]"
             >
-              {feature.name}
+              {tag}
             </span>
           ))}
         </div>
@@ -82,7 +84,7 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
 
 /**
  * A card component for displaying a directory item with favicon, name, domain,
- * tagline, and up to two feature tags. Wrapped in an ErrorBoundary.
+ * tagline, and up to two capability tags. Wrapped in an ErrorBoundary.
  * @component
  * @example
  * ```tsx

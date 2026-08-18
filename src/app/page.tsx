@@ -12,6 +12,7 @@ import { FeaturedOn } from '@/components/sections/FeaturedOn';
 import { FAQ } from '@/components/sections/FAQ';
 import { getAllSeoPersonas } from '@/config/seo-personas';
 import { getTopTagSlugs } from '@/config/seo-tags';
+import { getToolPath } from '@/lib/tool-routes';
 
 const HOME_TITLE = 'Best Commercial Real Estate AI Tools (2026) | AI CRE Tools';
 const HOME_DESCRIPTION =
@@ -128,7 +129,7 @@ export default async function Home() {
                     "@type": "SoftwareApplication",
                     name: item.name,
                     description: item.tagline,
-                    url: `${siteConfig.url}/${item.slug}`,
+                    url: `${siteConfig.url}${getToolPath(item.slug)}`,
                     applicationCategory: "BusinessApplication",
                     operatingSystem: "Web-based",
                   },

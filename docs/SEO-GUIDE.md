@@ -92,7 +92,7 @@ description: "{toolName}: {toolDescription} Compare features, pricing..."
   - Comparison tables and filtering
 
 ### Tool Detail Pages SEO
-- **URL Pattern**: `/[tool-slug]`
+- **URL Pattern**: `/tools/[tool-slug]`
 - **Title Pattern**: "[Tool Name] - [Tool Tagline] | AI CRE Tools"
 - **Content Strategy**:
   - Detailed tool descriptions
@@ -114,7 +114,7 @@ description: "{toolName}: {toolDescription} Compare features, pricing..."
 
 ### 3. URL Structure
 - **Clean URLs**: No query parameters or unnecessary paths
-- **Semantic Structure**: `/categories/[category]` and `/[tool-slug]`
+- **Semantic Structure**: `/categories/[category]` and `/tools/[tool-slug]`
 - **Canonical URLs**: Properly implemented across all pages
 
 ## Content SEO Strategy

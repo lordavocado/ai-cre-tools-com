@@ -17,6 +17,7 @@ import { getEligibleAlternativeSlugs } from '@/config/seo-alternatives';
 import { getResolvedComparisons } from '@/config/seo-comparisons';
 import { getAllGlossarySlugs } from '@/config/seo-glossary';
 import type { DirectoryItem } from '@/types';
+import { getToolAlternativesPath, getToolPath } from '@/lib/tool-routes';
 
 /**
  * Generates and returns XML sitemap
@@ -125,7 +126,7 @@ export async function GET() {
     const directoryPages = directoryItems
       .filter(item => isValidSlugFormat(item.slug) && isValidSlug(item.slug))
       .map(item => ({
-        url: `${baseUrl}/${item.slug}`,
+        url: `${baseUrl}${getToolPath(item.slug)}`,
         lastModified: new Date(item.lastUpdated || Date.now()),
         changeFrequency: 'weekly' as const,
         priority: 0.8, // Increased priority for tool pages as they're key content
@@ -204,7 +205,7 @@ export async function GET() {
 
     const alternativeSlugs = await getEligibleAlternativeSlugs();
     const alternativePages = alternativeSlugs.map((slug) => ({
-      url: `${baseUrl}/${slug}/alternatives`,
+      url: `${baseUrl}${getToolAlternativesPath(slug)}`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.75,

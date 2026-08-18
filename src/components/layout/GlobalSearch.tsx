@@ -6,6 +6,7 @@ import { Search, Loader2, FileText, Folder, Wrench, Clock, X } from "lucide-reac
 import { cn } from "@/lib/utils";
 import type { DirectoryItem, Category } from "@/types";
 import { WebsiteFavicon } from "@/components/ui/website-favicon";
+import { getToolPath } from "@/lib/tool-routes";
 
 /** Minimal shape required for relevance scoring across tools, categories, and blog posts */
 interface SearchableItem {
@@ -122,7 +123,7 @@ export function GlobalSearch({ className, placeholder = "Search tools... (⌘K)"
             id: tool.id,
             title: tool.name,
             description: tool.tagline,
-            url: `/${tool.slug}`,
+            url: getToolPath(tool.slug),
             category: tool.category,
             relevanceScore,
             tags: tool.tags,

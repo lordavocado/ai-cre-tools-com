@@ -23,6 +23,7 @@ function itemMatchesSearch(item: DirectoryListItem, searchTerm: string): boolean
     item.name,
     item.tagline,
     item.category,
+    ...(item.tags ?? []),
     ...(item.features?.map((feature) => feature.name) ?? []),
   ]
     .filter(Boolean)

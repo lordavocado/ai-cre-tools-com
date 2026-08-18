@@ -64,7 +64,7 @@ Categories are defined in `src/lib/supabase.ts`:
 src/
 ├── lib/supabase.ts           # Database layer (SERVER-SIDE ONLY)
 ├── types/index.ts            # TypeScript interfaces
-├── app/                      # Next.js App Router (categories/, [slug]/, guides/, blog/, favorites/, admin/, submit-tool/)
+├── app/                      # Next.js App Router (categories/, tools/[slug]/, guides/, blog/, favorites/, admin/, submit-tool/)
 └── components/               # UI + features (ui/, listing/, category/, performance/, layout/)
 ```
 

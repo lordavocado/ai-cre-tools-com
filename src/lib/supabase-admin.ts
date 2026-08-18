@@ -128,8 +128,10 @@ function parseFeatures(features: string | string[] | null | undefined) {
     return [];
   }
 
+  // Automated reviews serialize capability tags on separate lines so a legacy
+  // feature containing an internal comma is not accidentally split into fragments.
   return features
-    .split(/[\n,]/)
+    .split(features.includes('\n') ? /\n+/ : /,/)
     .map((feature) => feature.trim())
     .filter(Boolean);
 }

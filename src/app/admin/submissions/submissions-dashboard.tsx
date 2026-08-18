@@ -604,7 +604,7 @@ export default function SubmissionsDashboard() {
         title="Tool submissions"
         description={
           <>
-            Use <span className="font-semibold text-[#1f1f1f]">Accept</span> for one-step AI research, auto-fill, verification, and live publish (OpenAI Responses API + Supabase service role). Open a row to edit copy, or use{' '}
+            Use <span className="font-semibold text-[#1f1f1f]">Run evaluator</span> for one-step relevance review, duplicate checking, copy generation, and an automatic accept or reject decision (OpenAI Responses API + Supabase service role). Open a row to edit copy, or use{' '}
             <span className="font-semibold text-[#1f1f1f]">Publish using form fields</span> for full manual control.
           </>
         }
@@ -631,8 +631,8 @@ export default function SubmissionsDashboard() {
           </CardHeader>
           <CardContent className="grid gap-2 text-sm text-[#737373] sm:grid-cols-2">
             <StatusLine ok={systemStatus.supabaseStorageConfigured} label="Supabase URL + anon key (queue storage)" />
-            <StatusLine ok={systemStatus.supabaseAdminConfigured} label="Service role key (Accept & publish to live directory)" />
-            <StatusLine ok={systemStatus.researchProviderConfigured} label="OpenAI Responses API (required for one-click Accept)" />
+            <StatusLine ok={systemStatus.supabaseAdminConfigured} label="Service role key (evaluate & publish to live directory)" />
+            <StatusLine ok={systemStatus.researchProviderConfigured} label="OpenAI Responses API (required for the evaluator)" />
             {systemStatus.researchProviderConfigured && (
               <p className="sm:col-span-2 text-xs text-[#737373]">
                 Active setup: <span className="font-medium text-[#0f172a]">OpenAI Responses API · {systemStatus.researchModel}</span>
@@ -1066,7 +1066,7 @@ export default function SubmissionsDashboard() {
                       ) : (
                         <Rocket className="mr-2 h-4 w-4" />
                       )}
-                      Accept
+                      Run evaluator
                     </Button>
                   </div>
                 )}

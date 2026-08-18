@@ -27,6 +27,11 @@ import {
   verifyAutoPublishDraft,
   type MergedPublishDraft,
 } from '@/lib/submission-auto-publish';
+import { automateToolSubmission } from '@/lib/submission-automation';
+import {
+  notifyToolSubmissionDecision,
+  notifyToolSubmissionFailure,
+} from '@/lib/submission-notifications';
 
 const editableSubmissionFieldsSchema = z.object({
   website: z.string().url().optional(),
@@ -313,123 +318,46 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      const researchResult = await researchTool(submission.website, submission.comment);
-      const researchStatus = researchResult.research_status as ToolResearchStatus;
-
-      const merged = buildPublishDraft({
-        submission,
-        researchResult,
-        manualOverrides: {},
-      });
-
-      if (!merged) {
-        return NextResponse.json(
-          { error: 'Could not build a publish draft from this submission.' },
-          { status: 500 }
-        );
-      }
-
-      const draft = finalizeAutoPublishDraft(merged as MergedPublishDraft, {
-        website: submission.website,
-        comment: submission.comment,
-      });
-
-      const verifyError = verifyAutoPublishDraft(draft);
-      if (verifyError) {
-        const partial = await updateToolSubmission(action.submissionId, {
-          researchStatus,
-          name: draft.name,
-          category: draft.category,
-          oneLiner: draft.oneLiner,
-          description: draft.description,
-          features: draft.features,
-          slug: draft.slug,
-        });
-
-        return NextResponse.json(
-          {
-            error: `Auto-publish verification failed: ${verifyError}`,
-            submission: partial,
-          },
-          { status: 422 }
-        );
-      }
-
-      const publishValidationError = validatePublishDraft(draft);
-
-      if (publishValidationError) {
-        const partial = await updateToolSubmission(action.submissionId, {
-          researchStatus,
-          name: draft.name,
-          category: draft.category,
-          oneLiner: draft.oneLiner,
-          description: draft.description,
-          features: draft.features,
-          slug: draft.slug,
-        });
-
-        return NextResponse.json(
-          {
-            error: publishValidationError,
-            submission: partial,
-          },
-          { status: 422 }
-        );
-      }
-
       try {
-        const publishedTool = await publishToolFromSubmission({ draft });
-        const finalizedSubmission = await updateToolSubmission(action.submissionId, {
-          website: publishedTool.websiteUrl,
-          slug: publishedTool.slug,
-          name: publishedTool.name,
-          category: getCategoryDisplayName(publishedTool.category),
-          features: publishedTool.features.join(', '),
-          oneLiner: publishedTool.oneLiner,
-          description: publishedTool.description,
-          country: publishedTool.country,
-          city: publishedTool.city,
-          iconLink: publishedTool.iconUrl,
-          researchStatus,
-        });
+        const outcome = await automateToolSubmission(action.submissionId);
 
-        if (!finalizedSubmission) {
-          return NextResponse.json(
-            { error: 'The tool was published, but the submission record could not be updated afterward.' },
-            { status: 500 }
-          );
+        try {
+          await notifyToolSubmissionDecision({
+            submissionId: action.submissionId,
+            submitterEmail: submission.email,
+            outcome,
+          });
+        } catch (notificationError) {
+          console.error('Tool submission decision email failed:', notificationError);
         }
 
-        const statusUpdated = await updateSubmissionStatus(action.submissionId, 'approved');
-
-        if (!statusUpdated) {
-          return NextResponse.json(
-            { error: 'The tool was published, but the submission status could not be marked as approved.' },
-            { status: 500 }
-          );
-        }
-
-        const approvedSubmission = await getToolSubmissionById(action.submissionId);
+        const updatedSubmission = await getToolSubmissionById(action.submissionId);
 
         return NextResponse.json({
           success: true,
-          message:
-            'Researched, auto-verified, and published to the live directory.',
-          submission: approvedSubmission ?? finalizedSubmission,
-          tool: publishedTool,
+          decision: outcome.decision,
+          message: outcome.decision === 'accepted'
+            ? 'Evaluator accepted the submission and confirmed the live listing.'
+            : outcome.decision === 'rejected'
+              ? 'Evaluator rejected the submission as outside the directory scope.'
+              : 'Evaluator saved its research but deferred the decision for attention.',
+          submission: updatedSubmission,
+          tool: outcome.decision === 'accepted' ? outcome.tool : undefined,
+          reason: outcome.reason,
         });
-      } catch (publishError) {
+      } catch (evaluationError) {
         const message =
-          publishError instanceof Error ? publishError.message : 'Publish failed';
-        await updateToolSubmission(action.submissionId, {
-          researchStatus,
-          name: draft.name,
-          category: draft.category,
-          oneLiner: draft.oneLiner,
-          description: draft.description,
-          features: draft.features,
-          slug: draft.slug,
-        });
+          evaluationError instanceof Error ? evaluationError.message : 'Evaluation failed';
+
+        try {
+          await notifyToolSubmissionFailure({
+            submissionId: action.submissionId,
+            website: submission.website,
+            error: message,
+          });
+        } catch (notificationError) {
+          console.error('Tool submission failure email failed:', notificationError);
+        }
 
         return NextResponse.json(
           { error: message },

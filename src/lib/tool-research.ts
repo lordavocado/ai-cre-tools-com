@@ -8,6 +8,10 @@ import { TOOL_SUBMISSION_CATEGORIES } from '@/lib/tool-submission-categories';
 
 const DEFAULT_MODEL = 'gpt-5.6';
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.82;
+const MIN_DESCRIPTION_LENGTH = 260;
+const MAX_DESCRIPTION_LENGTH = 460;
+const MIN_TAG_COUNT = 4;
+const MAX_TAG_COUNT = 6;
 
 const reasoningEfforts = ['none', 'low', 'medium', 'high', 'xhigh', 'max'] as const;
 type ReasoningEffort = (typeof reasoningEfforts)[number];
@@ -25,9 +29,12 @@ const ToolReviewSchema = z.object({
   website: z.string(),
   name: z.string(),
   category: z.enum(TOOL_SUBMISSION_CATEGORIES),
-  features: z.array(z.string()),
+  tags: z
+    .array(z.string().min(2).max(48))
+    .min(MIN_TAG_COUNT)
+    .max(MAX_TAG_COUNT),
   one_liner: z.string(),
-  description: z.string(),
+  description: z.string().min(MIN_DESCRIPTION_LENGTH).max(MAX_DESCRIPTION_LENGTH),
   country: z.string(),
   city: z.string(),
   icon_link: z.string(),
@@ -156,8 +163,10 @@ function buildInstructions() {
     'Return a confidence score from 0 to 1 for the relevance decision and evidence for the most important claims. Include the exact source-page URL for every evidence item. Mark a source official only when it belongs to the submitted product or company.',
     'If relevant, create the complete directory entry in the AI CRE Tools voice: professional, authoritative, practical, direct, accessible, and free of hype.',
     `Choose exactly one category from: ${TOOL_SUBMISSION_CATEGORIES.join(', ')}.`,
-    'Write a concise and specific one_liner. Write one plain-language description paragraph of 3-5 sentences covering what the product does, its practical workflow, who it helps, and why it matters to the sector.',
-    'Return 4-6 concrete features as short phrases. Do not fabricate capabilities, pricing, metrics, customers, locations, or company details.',
+    'Write a concise and specific one_liner.',
+    `Write exactly one clean description paragraph of 2-3 sentences and ${MIN_DESCRIPTION_LENGTH}-${MAX_DESCRIPTION_LENGTH} characters. Aim for 320-400 characters. Cover what the product does, its practical workflow, and who it helps. Use direct language, vary sentence openings, and remove filler, repetition, marketing claims, and generic conclusions.`,
+    `Return ${MIN_TAG_COUNT}-${MAX_TAG_COUNT} verified capability tags. Each tag must be a concise 2-5 word noun phrase, use title case, contain no commas or ending punctuation, and describe a workflow users would recognize. Prefer established terms such as Lease Abstraction, AI Underwriting, Due Diligence, Deal Sourcing, Portfolio Analytics, Lease Administration, Transaction Management, Property Valuation, Construction Management, Real Estate Copilot, Property Management, Market Analysis, Document Automation, Leasing Automation, and Data Integration when they accurately fit.`,
+    'Do not fabricate capabilities, pricing, metrics, customers, locations, or company details.',
     'Use the canonical official website when verified. Leave city, country, and icon_link blank when they cannot be verified. icon_link must be a direct image URL, not a page URL.',
     'Even for an irrelevant product, return the best verified basic identity fields; those fields will not be published.',
   ].join('\n');
@@ -262,9 +271,14 @@ export async function researchTool(website: string, userComment: string): Promis
       website: normalizedWebsite,
       name: fallbackName,
       category: parsed.category,
-      features: parsed.features.map((feature) => feature.trim()).filter(Boolean).join(', '),
+      // The existing directory schema stores capability tags in `features`.
+      // Newline serialization preserves any legacy punctuation during publication.
+      features: parsed.tags
+        .map((tag) => tag.replace(/\s+/g, ' ').replace(/[.,;:]+$/g, '').trim())
+        .filter(Boolean)
+        .join('\n'),
       one_liner: parsed.one_liner.trim(),
-      description: parsed.description.trim(),
+      description: parsed.description.replace(/\s+/g, ' ').trim(),
       country: parsed.country.trim(),
       city: parsed.city.trim(),
       icon_link: parsed.icon_link.trim(),

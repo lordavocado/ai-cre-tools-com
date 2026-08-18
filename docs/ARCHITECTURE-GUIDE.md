@@ -22,7 +22,7 @@ The platform is built as a **modern Next.js 15 directory application** designed 
 ├─────────────────────────────────────────────────────────────┤
 │  Next.js 15 App Router                                      │
 │  ├── Static Pages (/, /categories, /about)                  │
-│  ├── Dynamic Pages (/[slug], /categories/[category])        │
+│  ├── Dynamic Pages (/tools/[slug], /categories/[category])  │
 │  ├── API Routes (/api/*)                                    │
 │  └── Static Assets & Images                                 │
 └─────────────────────────────────────────────────────────────┘
@@ -64,7 +64,7 @@ The platform is built as a **modern Next.js 15 directory application** designed 
 ```
 src/app/
 ├── page.tsx                    # Homepage
-├── [slug]/page.tsx            # Dynamic tool detail pages
+├── tools/[slug]/page.tsx      # Canonical dynamic tool detail pages
 ├── categories/
 │   ├── page.tsx               # Category listing
 │   └── [category]/page.tsx    # Category detail pages

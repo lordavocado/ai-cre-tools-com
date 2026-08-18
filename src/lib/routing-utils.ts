@@ -4,6 +4,7 @@
  */
 
 import { siteConfig } from '@/config/site';
+import { getToolPath } from '@/lib/tool-routes';
 
 // Static route slugs that should never conflict with dynamic content
 const RESERVED_SLUGS = [
@@ -21,6 +22,7 @@ const RESERVED_SLUGS = [
   'admin',
   'api',
   'guides',
+  'tools',
   '_next',
   'sitemap.xml',
   'robots.txt',
@@ -41,6 +43,7 @@ const RESERVED_PATTERNS = [
   /^tags\/.*/,
   /^compare\/.*/,
   /^glossary\/.*/,
+  /^tools\/.*/,
 ] as const;
 
 /**
@@ -312,7 +315,7 @@ export async function generateURLSuggestions(requestedPath: string): Promise<Arr
       const similarity = calculateStringSimilarity(cleanPath, tool.slug);
       if (similarity > 0.3) { // Only suggest if reasonably similar
         suggestions.push({
-          url: `/${tool.slug}`,
+          url: getToolPath(tool.slug),
           title: tool.name,
           type: 'tool',
           similarity

@@ -21,6 +21,7 @@ const RESERVED_SLUGS = [
   'admin',
   'api',
   'guides',
+  'tools',
   '_next',
   'sitemap.xml',
   'robots.txt',
@@ -41,6 +42,7 @@ const RESERVED_PATTERNS = [
   /^tags\/.*/,
   /^compare\/.*/,
   /^glossary\/.*/,
+  /^tools\/.*/,
 ] as const;
 
 /**

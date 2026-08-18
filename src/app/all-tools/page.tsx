@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getDirectoryItems } from "@/lib/supabase";
 import { siteConfig } from "@/config/site";
 import { getCategoryLabel } from "@/config/design-tokens";
+import { getToolPath } from "@/lib/tool-routes";
 
 export const revalidate = 3600;
 
@@ -58,7 +59,7 @@ export default async function AllToolsPage() {
                 "@type": "ListItem",
                 position: index + 1,
                 name: item.name,
-                url: `${siteConfig.url}/${item.slug}`,
+                url: `${siteConfig.url}${getToolPath(item.slug)}`,
               })),
             },
           }),
@@ -115,7 +116,7 @@ export default async function AllToolsPage() {
                   return (
                     <li key={item.slug}>
                       <Link
-                        href={`/${item.slug}`}
+                        href={getToolPath(item.slug)}
                         className="group flex flex-col rounded-[8px] border border-[#e0e0e0] bg-white px-4 py-3 transition-colors hover:border-[#c8c8c8]"
                       >
                         <span className="text-sm font-medium text-[#1f1f1f] group-hover:text-[#629649]">

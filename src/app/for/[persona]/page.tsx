@@ -18,6 +18,7 @@ import { getTagsForCategory } from '@/config/seo-tags';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import { ArrowRight, ChevronRight } from 'lucide-react';
+import { getToolPath } from '@/lib/tool-routes';
 
 export const revalidate = 3600;
 
@@ -135,7 +136,7 @@ export default async function PersonaPage({
                 '@type': 'ListItem',
                 position: index + 1,
                 name: item.name,
-                url: `${siteConfig.url}/${item.slug}`,
+                url: `${siteConfig.url}${getToolPath(item.slug)}`,
               })),
             },
           }),

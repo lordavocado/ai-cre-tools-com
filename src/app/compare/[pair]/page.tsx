@@ -11,6 +11,7 @@ import {
 import { buildFaqStructuredData } from '@/lib/seo-pages';
 import { getCategoryLabel } from '@/config/design-tokens';
 import { ExternalLink } from 'lucide-react';
+import { getToolAlternativesPath, getToolPath } from '@/lib/tool-routes';
 
 export const revalidate = 3600;
 
@@ -101,10 +102,10 @@ export default async function ComparePage({
               <tr className="border-b border-[#e0e0e0]">
                 <th className="py-3 pr-4 font-semibold text-[#737373]"> </th>
                 <th className="py-3 pr-4 font-semibold text-[#1f1f1f]">
-                  <Link href={`/${toolA.slug}`} className="hover:text-[#629649]">{toolA.name}</Link>
+                  <Link href={getToolPath(toolA.slug)} className="hover:text-[#629649]">{toolA.name}</Link>
                 </th>
                 <th className="py-3 font-semibold text-[#1f1f1f]">
-                  <Link href={`/${toolB.slug}`} className="hover:text-[#629649]">{toolB.name}</Link>
+                  <Link href={getToolPath(toolB.slug)} className="hover:text-[#629649]">{toolB.name}</Link>
                 </th>
               </tr>
             </thead>
@@ -145,14 +146,14 @@ export default async function ComparePage({
             <div className="rounded-[8px] border border-[#e0e0e0] bg-white p-5">
               <h3 className="font-semibold text-[#1f1f1f]">{toolA.name}</h3>
               <p className="mt-2 text-sm leading-7 text-[#737373]">{comparison.whenChooseA}</p>
-              <Link href={`/${toolA.slug}/alternatives`} className="mt-3 inline-block text-sm font-medium text-[#629649] hover:underline">
+              <Link href={getToolAlternativesPath(toolA.slug)} className="mt-3 inline-block text-sm font-medium text-[#629649] hover:underline">
                 More {toolA.name} alternatives
               </Link>
             </div>
             <div className="rounded-[8px] border border-[#e0e0e0] bg-white p-5">
               <h3 className="font-semibold text-[#1f1f1f]">{toolB.name}</h3>
               <p className="mt-2 text-sm leading-7 text-[#737373]">{comparison.whenChooseB}</p>
-              <Link href={`/${toolB.slug}/alternatives`} className="mt-3 inline-block text-sm font-medium text-[#629649] hover:underline">
+              <Link href={getToolAlternativesPath(toolB.slug)} className="mt-3 inline-block text-sm font-medium text-[#629649] hover:underline">
                 More {toolB.name} alternatives
               </Link>
             </div>

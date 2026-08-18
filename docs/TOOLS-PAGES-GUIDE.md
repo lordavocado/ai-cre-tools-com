@@ -48,14 +48,14 @@ interface DirectoryItem {
 ## Tool Detail Pages Architecture
 
 ### URL Structure
-- **Pattern**: `/[tool-slug]`
-- **File**: `src/app/[slug]/page.tsx`
+- **Pattern**: `/tools/[tool-slug]`
+- **File**: `src/app/tools/[slug]/page.tsx`
 - **Dynamic Routing**: Next.js dynamic routes with static generation
 
 ### SEO Implementation
 
 #### Metadata Generation
-**Function**: `generateMetadata()` at `src/app/[slug]/page.tsx:39-124`
+**Function**: `generateMetadata()` in `src/app/tools/[slug]/page.tsx`
 
 ```typescript
 // Automatic SEO meta generation
@@ -73,19 +73,19 @@ const toolMeta = generateToolMeta(item.name, item.tagline, item.description);
 #### Structured Data Implementation
 **Multiple Schema Types**:
 
-1. **SoftwareApplication Schema** (`src/app/[slug]/page.tsx:145-253`)
+1. **SoftwareApplication Schema** (`src/app/tools/[slug]/page.tsx`)
    - Complete software application markup
    - Pricing and availability information
    - Author and publisher information
    - Breadcrumb navigation
    - Industry topic associations
 
-2. **Review Schema** (`src/app/[slug]/page.tsx:256-282`)
+2. **Review Schema** (`src/app/tools/[slug]/page.tsx`)
    - Rating and review information
    - Professional reviewer attribution
    - Review body content
 
-3. **FAQ Schema** (`src/app/[slug]/page.tsx:284-303`)
+3. **FAQ Schema** (`src/app/tools/[slug]/page.tsx`)
    - Feature-based FAQ generation
    - Question and answer pairs
    - Knowledge graph enhancement
@@ -97,28 +97,28 @@ const toolMeta = generateToolMeta(item.name, item.tagline, item.description);
 
 **Main Content Sections**:
 
-1. **Hero Card** (`src/app/[slug]/page.tsx:309-362`)
+1. **Hero Card** (`src/app/tools/[slug]/page.tsx`)
    - Tool logo and branding
    - Name, tagline, and rating
    - Primary CTA and favorite button
    - Detailed description
 
-2. **Features Section** (`src/app/[slug]/page.tsx:364-385`)
+2. **Features Section** (`src/app/tools/[slug]/page.tsx`)
    - Grid display of key features
    - Feature descriptions and explanations
    - Interactive hover effects
 
-3. **Pros & Cons Analysis** (`src/app/[slug]/page.tsx:387-434`)
+3. **Pros & Cons Analysis** (`src/app/tools/[slug]/page.tsx`)
    - Side-by-side comparison layout
    - Categorized advantages and limitations
    - Visual indicators and styling
 
-4. **Tags Display** (`src/app/[slug]/page.tsx:437-457`)
+4. **Tags Display** (`src/app/tools/[slug]/page.tsx`)
    - Searchable tag badges
    - Category-based organization
    - Filtering integration
 
-#### Sidebar Content (`src/app/[slug]/page.tsx:462-550`)
+#### Sidebar Content (`src/app/tools/[slug]/page.tsx`)
 
 **Quick Information Panel**:
 - Pricing information
@@ -127,7 +127,7 @@ const toolMeta = generateToolMeta(item.name, item.tagline, item.description);
 - Social media links
 - Direct access CTA
 
-**Related Tools Section** (`src/app/[slug]/page.tsx:552-564`)
+**Related Tools Section** (`src/app/tools/[slug]/page.tsx`)
 - Algorithmic tool suggestions
 - Same-category filtering
 - Card-based presentation

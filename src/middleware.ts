@@ -56,7 +56,7 @@ export function middleware(request: NextRequest) {
   const redirectMap: Record<string, string> = {
     '/home': '/',
     '/index': '/',
-    '/tools': '/categories',
+    '/tools': '/all-tools',
     '/directory': '/categories',
     '/contact': '/about',
     '/privacy': '/privacy-policy',
