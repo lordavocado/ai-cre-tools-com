@@ -246,7 +246,12 @@ export async function researchTool(website: string, userComment: string): Promis
       }
     });
     const meetsConfidenceThreshold = parsed.confidence >= getConfidenceThreshold();
-    const decisionIsSafe = meetsConfidenceThreshold && hasVerifiedEvidence && hasOfficialEvidence;
+    // Publishing requires evidence from the product itself. A rejection can still
+    // be safe when verified independent evidence establishes that the submitted
+    // domain is not a product or has no claimed built-environment application.
+    const decisionIsSafe = meetsConfidenceThreshold
+      && hasVerifiedEvidence
+      && (!parsed.is_relevant || hasOfficialEvidence);
     let normalizedWebsite = website;
     try {
       const parsedWebsite = parsed.website.trim();
@@ -263,7 +268,7 @@ export async function researchTool(website: string, userComment: string): Promis
       confidence: parsed.confidence,
       relevance_reason: decisionIsSafe
         ? parsed.relevance_reason.trim()
-        : `Needs attention: ${parsed.relevance_reason.trim()} (confidence ${Math.round(parsed.confidence * 100)}%; a verified official source and ${Math.round(getConfidenceThreshold() * 100)}% confidence are required).`,
+        : `Needs attention: ${parsed.relevance_reason.trim()} (confidence ${Math.round(parsed.confidence * 100)}%; verified web evidence, ${Math.round(getConfidenceThreshold() * 100)}% confidence, and official product evidence for an acceptance are required).`,
       evidence,
       model,
       response_id: response.id,

@@ -1,5 +1,5 @@
 # Multi-stage build for Coolify / Hetzner — minimal runtime image via Next.js standalone
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
