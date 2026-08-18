@@ -9,7 +9,6 @@ import type { SeoCluster } from '@/config/seo-clusters';
 import { getPersonaShortLabel } from '@/config/seo-personas';
 import { siteConfig } from '@/config/site';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
-import { buildFaqStructuredData } from '@/lib/seo-pages';
 import { getToolPath } from '@/lib/tool-routes';
 import {
   CheckCircle, Zap, Users, Shield, ArrowRight,
@@ -89,13 +88,6 @@ export function CategoryPageClient({
               })),
             },
           }),
-        }}
-      />
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildFaqStructuredData(seoCluster.faqs)),
         }}
       />
 

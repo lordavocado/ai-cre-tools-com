@@ -4,8 +4,6 @@ import { siteConfig } from '@/config/site';
 export async function GET() {
   const host = new URL(siteConfig.url).host;
   const robotsTxt = `# Robots.txt for ${siteConfig.name}
-# Generated on ${new Date().toISOString()}
-
 # Allow all crawlers to access the site
 User-agent: *
 Allow: /
@@ -17,6 +15,9 @@ Allow: /guides
 Allow: /blog
 Allow: /for
 Allow: /tags
+Allow: /use-cases
+Allow: /asset-classes
+Allow: /integrations
 Allow: /compare
 Allow: /glossary
 Allow: /all-tools
@@ -28,13 +29,11 @@ Allow: /submit-tool
 # Block access to sensitive areas
 Disallow: /api/
 Disallow: /admin/
-Disallow: /_next/
 Disallow: /private/
 Disallow: *.json$
 Disallow: /search?*
 Disallow: /admin/*
 Disallow: /api/*
-Disallow: /_next/*
 Disallow: /private/*
 
 # Allow Google AI features (Search Generative Experience / AI Overviews)

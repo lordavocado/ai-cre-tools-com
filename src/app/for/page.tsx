@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getDirectoryItems } from '@/lib/supabase';
 import { siteConfig } from '@/config/site';
 import { getAllSeoPersonas } from '@/config/seo-personas';
-import { filterItemsByCategories } from '@/lib/seo-pages';
+import { filterItemsByPersona } from '@/lib/seo-pages';
 import type { DirectoryItem } from '@/types';
 import { ArrowRight } from 'lucide-react';
 
@@ -42,7 +42,7 @@ export default async function ForHubPage() {
 
   const personasWithCounts = personas.map((persona) => ({
     ...persona,
-    toolCount: filterItemsByCategories(items, persona.categorySlugs).length,
+    toolCount: filterItemsByPersona(items, persona.slug, persona.categorySlugs).length,
   }));
 
   return (

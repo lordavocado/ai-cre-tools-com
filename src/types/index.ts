@@ -1,3 +1,13 @@
+import type {
+  ToolAssetClass,
+  ToolDeployment,
+  ToolEditorialStatus,
+  ToolPersona,
+  ToolPricingModel,
+  ToolPricingPeriod,
+  ToolWorkflow,
+} from '@/config/tool-taxonomy';
+
 export interface DirectoryItem {
   id: string;
   slug: string;
@@ -21,6 +31,26 @@ export interface DirectoryItem {
   features?: { name: string; description?: string }[];
   pricing?: string;
   bestFor?: string;
+  workflows: ToolWorkflow[];
+  personas: ToolPersona[];
+  assetClasses: ToolAssetClass[];
+  integrations: string[];
+  geographicCoverage: string[];
+  deploymentOptions: ToolDeployment[];
+  securityCertifications: string[];
+  inputTypes: string[];
+  outputTypes: string[];
+  limitations: string[];
+  pricingModel: ToolPricingModel;
+  startingPriceAmount?: number;
+  startingPriceCurrency?: string;
+  pricingPeriod?: ToolPricingPeriod;
+  hasFreeTrial?: boolean;
+  hasFreePlan?: boolean;
+  sourceUrls: string[];
+  lastVerifiedAt?: string;
+  editorialStatus: ToolEditorialStatus;
+  pseoEligible: boolean;
   tags?: string[];
   rating?: number;
   reviewCount?: number;
@@ -28,6 +58,7 @@ export interface DirectoryItem {
   cons?: string[];
   foundedYear?: number;
   lastUpdated?: string;
+  createdAt?: string;
   country?: string;
   city?: string;
   socials?: {
@@ -88,6 +119,28 @@ export interface AdminTool {
   heroScreenshotUrl?: string;
   heroScreenshotPath?: string;
   displayOrder: number;
+  workflows: ToolWorkflow[];
+  personas: ToolPersona[];
+  assetClasses: ToolAssetClass[];
+  integrations: string[];
+  geographicCoverage: string[];
+  deploymentOptions: ToolDeployment[];
+  securityCertifications: string[];
+  inputTypes: string[];
+  outputTypes: string[];
+  limitations: string[];
+  pricingModel: ToolPricingModel;
+  startingPriceAmount: number | null;
+  startingPriceCurrency: string;
+  pricingPeriod: ToolPricingPeriod | null;
+  hasFreeTrial: boolean | null;
+  hasFreePlan: boolean | null;
+  bestFor: string;
+  sourceUrls: string[];
+  lastVerifiedAt: string;
+  editorialStatus: ToolEditorialStatus;
+  pseoEligible: boolean;
+  normalizedDataAvailable: boolean;
   createdAt: string;
   updatedAt: string;
 }

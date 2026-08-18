@@ -85,8 +85,8 @@ const toolMeta = generateToolMeta(item.name, item.tagline, item.description);
    - Professional reviewer attribution
    - Review body content
 
-3. **FAQ Schema** (`src/app/tools/[slug]/page.tsx`)
-   - Feature-based FAQ generation
+3. **Structured data** (`src/app/tools/[slug]/page.tsx`)
+   - Evidence-backed `SoftwareApplication` data only; never infer pricing, reviews, or freshness
    - Question and answer pairs
    - Knowledge graph enhancement
 

@@ -179,6 +179,23 @@ While primarily a directory site, local SEO factors include:
 - **Category Interconnection**: Strategic category cross-linking
 - **Tool Relationships**: Related tool suggestions
 - **Content Hubs**: Comprehensive topic coverage
+- **Long-tail Use Cases**: `/use-cases/[workflow]/for/[persona]` intersects qualified capability and role cohorts. Pages link from both parent hubs and matching tool profiles.
+- **Asset Classes**: `/asset-classes/[asset-class]` targets property-type searches such as multifamily or hospitality software. A page requires at least three tools with explicit structured data or a strict documented legacy match.
+- **Integrations**: `/integrations/[integration]` targets compatibility searches such as CRE software that integrates with Yardi. A page requires at least three tools with documented integration support.
+- **Comparisons**: `/compare/[tool-a]-vs-[tool-b]` uses real product names and only pairs evidence-rich tools in the same primary category. The legacy generic comparison URLs permanently redirect to their product-name canonical URLs.
+
+### Dynamic pSEO qualification
+
+Use-case pages are generated from the tool dataset rather than a manually maintained page list. A combination is indexable only when it:
+
+- Contains at least three editorially eligible tools.
+- Matches the curated workflow/persona taxonomy or explicit normalized tool fields.
+- Has a materially different tool cohort from both parent pages.
+- Does not duplicate the tool set of another generated use case.
+
+Qualified pages appear in `/sitemaps/use-cases.xml`. Draft, stale, rejected, or otherwise pSEO-ineligible tools cannot create or enter these pages.
+
+Asset-class and integration pages use the same eligibility gate, a minimum cohort of three, and a maximum cohort of 60. Qualified pages appear in `/sitemaps/markets.xml`; unsupported values return 404 and never enter internal links or sitemaps. Free-form filter combinations remain non-indexable to prevent crawl-space expansion.
 
 ## SEO Maintenance Checklist
 
@@ -203,10 +220,10 @@ While primarily a directory site, local SEO factors include:
 ## Implementation Best Practices
 
 ### Content Guidelines
-- **Keyword Density**: Natural keyword integration (2-3% density)
-- **Content Length**: Minimum 300 words per page
+- **Keyword use**: Use the query language naturally in titles and useful copy; do not target a keyword-density percentage.
+- **Content usefulness**: Publish only when the page answers a distinct search intent with specific, decision-useful information. There is no minimum word count.
 - **Unique Content**: No duplicate content across pages
-- **Regular Updates**: Fresh content signals to search engines
+- **Accurate updates**: Change content and sitemap dates only when the underlying tool data or editorial content changes.
 
 ### Technical Guidelines
 - **Schema Markup**: Comprehensive structured data

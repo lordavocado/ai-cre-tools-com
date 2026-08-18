@@ -33,7 +33,18 @@ const DIRECTORY_ITEM_COLUMNS = [
   'country',
   'city',
   'display_order',
+  'created_at',
   'updated_at',
+].join(',');
+
+const NORMALIZED_DIRECTORY_ITEM_COLUMNS = [
+  DIRECTORY_ITEM_COLUMNS,
+  'workflows', 'personas', 'asset_classes', 'integrations',
+  'geographic_coverage', 'deployment_options', 'security_certifications',
+  'input_types', 'output_types', 'limitations', 'pricing_model',
+  'starting_price_amount', 'starting_price_currency', 'pricing_period',
+  'has_free_trial', 'has_free_plan', 'best_for', 'source_urls',
+  'last_verified_at', 'editorial_status', 'pseo_eligible',
 ].join(',');
 
 /** Database shape required by the public directory. Keep this in sync with the query above. */
@@ -51,7 +62,29 @@ type EcosystemAppRow = {
   country: string | null;
   city: string | null;
   display_order: number | null;
+  created_at: string | null;
   updated_at: string | null;
+  workflows?: DirectoryItem['workflows'] | null;
+  personas?: DirectoryItem['personas'] | null;
+  asset_classes?: DirectoryItem['assetClasses'] | null;
+  integrations?: string[] | null;
+  geographic_coverage?: string[] | null;
+  deployment_options?: DirectoryItem['deploymentOptions'] | null;
+  security_certifications?: string[] | null;
+  input_types?: string[] | null;
+  output_types?: string[] | null;
+  limitations?: string[] | null;
+  pricing_model?: DirectoryItem['pricingModel'] | null;
+  starting_price_amount?: number | string | null;
+  starting_price_currency?: string | null;
+  pricing_period?: DirectoryItem['pricingPeriod'] | null;
+  has_free_trial?: boolean | null;
+  has_free_plan?: boolean | null;
+  best_for?: string | null;
+  source_urls?: string[] | null;
+  last_verified_at?: string | null;
+  editorial_status?: DirectoryItem['editorialStatus'] | null;
+  pseo_eligible?: boolean | null;
 };
 
 // --- Supabase Client Setup ---
@@ -140,6 +173,11 @@ function isCacheValid(timestamp: number): boolean {
  * @returns Transformed DirectoryItem
  */
 function transformSupabaseRowToDirectoryItem(row: EcosystemAppRow): DirectoryItem {
+  const normalizedDataAvailable = row.editorial_status !== undefined;
+  const startingPrice = row.starting_price_amount == null
+    ? undefined
+    : Number(row.starting_price_amount);
+
   return {
     id: row.slug, // Use slug as ID
     slug: row.slug,
@@ -155,8 +193,48 @@ function transformSupabaseRowToDirectoryItem(row: EcosystemAppRow): DirectoryIte
     tags: row.features || [],
     country: row.country || undefined,
     city: row.city || undefined,
+    workflows: row.workflows ?? [],
+    personas: row.personas ?? [],
+    assetClasses: row.asset_classes ?? [],
+    integrations: row.integrations ?? [],
+    geographicCoverage: row.geographic_coverage ?? [],
+    deploymentOptions: row.deployment_options ?? [],
+    securityCertifications: row.security_certifications ?? [],
+    inputTypes: row.input_types ?? [],
+    outputTypes: row.output_types ?? [],
+    limitations: row.limitations ?? [],
+    pricingModel: row.pricing_model ?? 'unknown',
+    startingPriceAmount: Number.isFinite(startingPrice) ? startingPrice : undefined,
+    startingPriceCurrency: row.starting_price_currency ?? undefined,
+    pricingPeriod: row.pricing_period ?? undefined,
+    hasFreeTrial: row.has_free_trial ?? undefined,
+    hasFreePlan: row.has_free_plan ?? undefined,
+    bestFor: row.best_for ?? undefined,
+    sourceUrls: row.source_urls ?? [],
+    lastVerifiedAt: row.last_verified_at ?? undefined,
+    editorialStatus: row.editorial_status ?? 'legacy',
+    pseoEligible: normalizedDataAvailable ? row.pseo_eligible === true : true,
     lastUpdated: row.updated_at || undefined,
+    createdAt: row.created_at || undefined,
   };
+}
+
+function isMissingNormalizedColumnError(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false;
+  return error.code === '42703'
+    || error.code === 'PGRST204'
+    || /column .* does not exist|could not find .* column/i.test(error.message ?? '');
+}
+
+async function fetchDirectoryRows(columns: string): Promise<EcosystemAppRow[]> {
+  const { data, error } = await getSupabaseClient()
+    .from(TABLE_NAME)
+    .select(columns)
+    .order('display_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as unknown as EcosystemAppRow[];
 }
 
 /**
@@ -442,23 +520,17 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
 // --- Main Data Fetching Functions ---
 
 async function fetchAllDirectoryItemsFromDb(): Promise<DirectoryItem[]> {
-  const supabase = getSupabaseClient();
+  try {
+    return (await fetchDirectoryRows(NORMALIZED_DIRECTORY_ITEM_COLUMNS))
+      .map(transformSupabaseRowToDirectoryItem);
+  } catch (error) {
+    if (!isMissingNormalizedColumnError(error as { code?: string; message?: string })) {
+      throw new Error(`Failed to fetch directory items: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 
-  const { data, error } = await supabase
-    .from(TABLE_NAME)
-    .select(DIRECTORY_ITEM_COLUMNS)
-    .order('display_order', { ascending: true })
-    .order('name', { ascending: true });
-
-  if (error) {
-    throw new Error(`Failed to fetch directory items: ${error.message}`);
+    return (await fetchDirectoryRows(DIRECTORY_ITEM_COLUMNS))
+      .map(transformSupabaseRowToDirectoryItem);
   }
-
-  if (!data) {
-    return [];
-  }
-
-  return data.map(transformSupabaseRowToDirectoryItem);
 }
 
 const getCachedAllDirectoryItems = unstable_cache(
@@ -490,7 +562,7 @@ export async function getDirectoryItems(
 
     let query = supabase
       .from(TABLE_NAME)
-      .select(DIRECTORY_ITEM_COLUMNS)
+      .select(NORMALIZED_DIRECTORY_ITEM_COLUMNS)
       .order('display_order', { ascending: true })
       .order('name', { ascending: true });
 
@@ -505,7 +577,28 @@ export async function getDirectoryItems(
       query = query.or(categoryConditions);
     }
 
-    const { data, error } = await query;
+    let { data, error } = await query;
+
+    if (isMissingNormalizedColumnError(error)) {
+      let legacyQuery = supabase
+        .from(TABLE_NAME)
+        .select(DIRECTORY_ITEM_COLUMNS)
+        .order('display_order', { ascending: true })
+        .order('name', { ascending: true });
+
+      if (searchTerm) {
+        const searchTermLower = searchTerm.toLowerCase();
+        legacyQuery = legacyQuery.or(`name.ilike.%${searchTermLower}%,one_liner.ilike.%${searchTermLower}%,description.ilike.%${searchTermLower}%`);
+      }
+      if (categoryFilter) {
+        const categoryConditions = categoryFilter.split(',').map((cat) => `category.ilike.%${cat.trim()}%`).join(',');
+        legacyQuery = legacyQuery.or(categoryConditions);
+      }
+
+      const legacyResult = await legacyQuery;
+      data = legacyResult.data;
+      error = legacyResult.error;
+    }
 
     if (error) {
       console.error('Supabase query error:', error);
@@ -563,11 +656,21 @@ export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryIte
   try {
     const supabase = getSupabaseClient();
     
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from(TABLE_NAME)
-      .select(DIRECTORY_ITEM_COLUMNS)
+      .select(NORMALIZED_DIRECTORY_ITEM_COLUMNS)
       .eq('slug', slug)
       .single();
+
+    if (isMissingNormalizedColumnError(error)) {
+      const legacyResult = await supabase
+        .from(TABLE_NAME)
+        .select(DIRECTORY_ITEM_COLUMNS)
+        .eq('slug', slug)
+        .single();
+      data = legacyResult.data;
+      error = legacyResult.error;
+    }
 
     if (error) {
       if (error.code === 'PGRST116') {

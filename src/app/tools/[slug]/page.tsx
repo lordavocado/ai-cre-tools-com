@@ -15,6 +15,17 @@ import { normalizeToolDescription } from "@/lib/tool-content";
 import { hasEnoughAlternatives } from "@/config/seo-alternatives";
 import { findIndexableTagSlugForFeature, generateToolPageMeta } from "@/lib/seo-pages";
 import { getToolAlternativesPath, getToolPath } from "@/lib/tool-routes";
+import {
+  TOOL_ASSET_CLASS_OPTIONS,
+  TOOL_DEPLOYMENT_OPTIONS,
+  TOOL_PERSONA_OPTIONS,
+  TOOL_PRICING_MODELS,
+  TOOL_PRICING_PERIODS,
+  TOOL_WORKFLOW_OPTIONS,
+  getTaxonomyLabel,
+} from "@/config/tool-taxonomy";
+import { getIndexableUseCases } from "@/lib/seo-use-cases";
+import { getIndexableAssetPages, getIndexableIntegrationPages } from "@/lib/seo-market-pages";
 
 function getWebsiteLabel(website: string): string {
   try {
@@ -89,9 +100,7 @@ export async function generateMetadata(
         },
       ],
       locale: siteConfig.seo.openGraph.locale,
-      type: "article",
-      publishedTime: item.lastUpdated || new Date().toISOString(),
-      modifiedTime: item.lastUpdated || new Date().toISOString(),
+      type: "website",
     },
     twitter: {
       card: siteConfig.seo.twitter.card,
@@ -162,6 +171,49 @@ export default async function DirectoryItemPage({
   const websiteLabel = item.website ? getWebsiteLabel(item.website) : null;
   const showAlternativesLink = hasEnoughAlternatives(item, allItems);
   const capabilityTags = item.tags ?? item.features?.map((feature) => feature.name) ?? [];
+  const structuredOffer = item.startingPriceAmount !== undefined && item.startingPriceCurrency
+    ? {
+        "@type": "Offer",
+        price: item.startingPriceAmount.toString(),
+        priceCurrency: item.startingPriceCurrency,
+        url: item.website || toolPageUrl,
+      }
+    : item.hasFreePlan === true || item.pricingModel === 'free'
+      ? { "@type": "Offer", price: "0", url: item.website || toolPageUrl }
+      : undefined;
+  const pricingLabel = item.startingPriceAmount !== undefined && item.startingPriceCurrency
+    ? `${new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: item.startingPriceCurrency,
+        maximumFractionDigits: 2,
+      }).format(item.startingPriceAmount)}${item.pricingPeriod
+        ? ` ${getTaxonomyLabel(TOOL_PRICING_PERIODS, item.pricingPeriod).toLowerCase()}`
+        : ''}`
+    : item.hasFreePlan === true || item.pricingModel === 'free'
+      ? 'Free plan available'
+      : item.pricingModel !== 'unknown'
+        ? getTaxonomyLabel(TOOL_PRICING_MODELS, item.pricingModel)
+        : undefined;
+  const buyingDetails = [
+    { label: 'Workflows', values: item.workflows.map((value) => getTaxonomyLabel(TOOL_WORKFLOW_OPTIONS, value)) },
+    { label: 'Best for roles', values: item.personas.map((value) => getTaxonomyLabel(TOOL_PERSONA_OPTIONS, value)) },
+    { label: 'Asset classes', values: item.assetClasses.map((value) => getTaxonomyLabel(TOOL_ASSET_CLASS_OPTIONS, value)) },
+    { label: 'Integrations', values: item.integrations },
+    { label: 'Deployment', values: item.deploymentOptions.map((value) => getTaxonomyLabel(TOOL_DEPLOYMENT_OPTIONS, value)) },
+    { label: 'Geographic coverage', values: item.geographicCoverage },
+    { label: 'Security', values: item.securityCertifications },
+    { label: 'Inputs', values: item.inputTypes },
+    { label: 'Outputs', values: item.outputTypes },
+  ].filter((detail) => detail.values.length > 0);
+  const itemUseCases = getIndexableUseCases(allItems)
+    .filter((useCase) => useCase.tools.some((tool) => tool.slug === item.slug))
+    .slice(0, 4);
+  const itemMarketPages = [
+    ...getIndexableAssetPages(allItems),
+    ...getIndexableIntegrationPages(allItems),
+  ]
+    .filter((page) => page.tools.some((tool) => tool.slug === item.slug))
+    .slice(0, 4);
 
   return (
     <>
@@ -174,32 +226,17 @@ export default async function DirectoryItemPage({
             "@type": "SoftwareApplication",
             name: item.name,
             description: item.description || item.tagline,
-            url: item.website || toolPageUrl,
-            applicationCategory:
-              item.category?.includes("management")
-                ? "BusinessApplication"
-                : item.category?.includes("analysis")
-                  ? "DeveloperApplication"
-                  : "BusinessApplication",
-            operatingSystem: "Web-based",
+            url: toolPageUrl,
+            sameAs: item.website || undefined,
+            applicationCategory: "BusinessApplication",
             applicationSubCategory: item.category || "CRE AI Tool",
-            softwareVersion: item.lastUpdated
-              ? new Date(item.lastUpdated).getFullYear().toString()
-              : undefined,
-            downloadUrl: item.website,
-            screenshot: item.imageUrl,
-            offers: {
-              "@type": "Offer",
-              price: item.pricing ? item.pricing.replace(/[^\d.]/g, "") || "0" : "0",
-              priceCurrency: "USD",
-              availability: "https://schema.org/InStock",
-              seller: { "@type": "Organization", name: item.name },
-            },
-            aggregateRating: item.rating
+            screenshot: item.heroScreenshotUrl || item.screenshotUrl || undefined,
+            offers: structuredOffer,
+            aggregateRating: item.rating && item.reviewCount && item.reviewCount > 0
               ? {
                   "@type": "AggregateRating",
                   ratingValue: item.rating,
-                  reviewCount: item.reviewCount || 1,
+                  reviewCount: item.reviewCount,
                   bestRating: 5,
                   worstRating: 1,
                 }
@@ -218,10 +255,8 @@ export default async function DirectoryItemPage({
                 url: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
               },
             },
-            datePublished: item.foundedYear
-              ? `${item.foundedYear}-01-01`
-              : new Date().toISOString(),
-            dateModified: item.lastUpdated || new Date().toISOString(),
+            datePublished: item.createdAt || undefined,
+            dateModified: item.lastUpdated || undefined,
             mainEntityOfPage: {
               "@type": "WebPage",
               "@id": toolPageUrl,
@@ -247,31 +282,6 @@ export default async function DirectoryItemPage({
           }),
         }}
       />
-
-      {item.rating && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Review",
-              author: { "@type": "Person", name: "CRE Professional" },
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: item.rating,
-                bestRating: 5,
-                worstRating: 1,
-              },
-              reviewBody: `${item.name} is rated ${item.rating}/5 by CRE professionals for its AI-powered capabilities in commercial real estate.`,
-              itemReviewed: {
-                "@type": "SoftwareApplication",
-                name: item.name,
-                description: item.description || item.tagline,
-              },
-            }),
-          }}
-        />
-      )}
 
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="border-b border-[#e0e0e0] bg-white py-6 md:py-8">
@@ -436,6 +446,72 @@ export default async function DirectoryItemPage({
                 </section>
               )}
 
+              {(item.bestFor || buyingDetails.length > 0 || item.limitations.length > 0) && (
+                <section className="border-t border-[#e0e0e0] pt-10">
+                  <SectionHeading eyebrow="Buying guide" title="Fit and requirements" />
+                  {item.bestFor && (
+                    <div className="mb-5 rounded-[8px] border border-[#dcebd5] bg-[#f6faf4] p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#527c3e]">Best for</p>
+                      <p className="mt-1.5 text-sm leading-6 text-[#1f1f1f]">{item.bestFor}</p>
+                    </div>
+                  )}
+                  {buyingDetails.length > 0 && (
+                    <dl className="grid gap-3 sm:grid-cols-2">
+                      {buyingDetails.map((detail) => (
+                        <div key={detail.label} className="rounded-[8px] border border-[#e0e0e0] bg-white p-4">
+                          <dt className="text-xs font-semibold uppercase tracking-[0.08em] text-[#999999]">{detail.label}</dt>
+                          <dd className="mt-2 text-sm leading-6 text-[#1f1f1f]">{detail.values.join(', ')}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+                  {item.limitations.length > 0 && (
+                    <div className="mt-3 rounded-[8px] border border-amber-200 bg-amber-50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-amber-800">Known limitations</p>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-amber-950">
+                        {item.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {itemUseCases.length > 0 && (
+                <section className="border-t border-[#e0e0e0] pt-10">
+                  <SectionHeading eyebrow="Use cases" title={`Where ${item.name} fits`} />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {itemUseCases.map((useCase) => (
+                      <Link
+                        key={useCase.path}
+                        href={useCase.path}
+                        className="group rounded-[8px] border border-[#e0e0e0] bg-white p-4 hover:border-[rgba(98,150,73,0.45)]"
+                      >
+                        <p className="text-sm font-semibold text-[#1f1f1f] group-hover:text-[#629649]">{useCase.title}</p>
+                        <p className="mt-1 text-xs text-[#737373]">Compare {useCase.tools.length} matching tools</p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {itemMarketPages.length > 0 && (
+                <section className="border-t border-[#e0e0e0] pt-10">
+                  <SectionHeading eyebrow="Related shortlists" title={`More ways to compare ${item.name}`} />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {itemMarketPages.map((page) => (
+                      <Link
+                        key={page.path}
+                        href={page.path}
+                        className="group rounded-[8px] border border-[#e0e0e0] bg-white p-4 hover:border-[rgba(98,150,73,0.45)]"
+                      >
+                        <p className="text-sm font-semibold text-[#1f1f1f] group-hover:text-[#629649]">{page.title}</p>
+                        <p className="mt-1 text-xs text-[#737373]">Compare {page.tools.length} documented tools</p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+
               {((item.pros && item.pros.length > 0) ||
                 (item.cons && item.cons.length > 0)) && (
                 <section className="border-t border-[#e0e0e0] pt-10">
@@ -524,12 +600,18 @@ export default async function DirectoryItemPage({
                       </dd>
                     </div>
                   )}
-                  {item.pricing && (
+                  {pricingLabel && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
                       <dt className="text-sm text-[#737373]">Pricing</dt>
                       <dd className="text-right text-sm font-medium text-[#1f1f1f]">
-                        {item.pricing}
+                        {pricingLabel}
                       </dd>
+                    </div>
+                  )}
+                  {item.hasFreeTrial === true && (
+                    <div className="flex items-start justify-between gap-4 px-4 py-3.5">
+                      <dt className="text-sm text-[#737373]">Free trial</dt>
+                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">Available</dd>
                     </div>
                   )}
                   {item.foundedYear && (
@@ -549,6 +631,31 @@ export default async function DirectoryItemPage({
                     </div>
                   )}
                 </dl>
+
+                {item.editorialStatus === 'verified' && item.lastVerifiedAt && (
+                  <div className="border-t border-[#e0e0e0] px-4 py-3.5">
+                    <p className="text-xs font-medium text-[#527c3e]">
+                      Data verified {new Date(item.lastVerifiedAt).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric',
+                      })}
+                    </p>
+                    {item.sourceUrls.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                        {item.sourceUrls.map((sourceUrl, index) => (
+                          <Link
+                            key={sourceUrl}
+                            href={sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-[#2563eb] hover:underline"
+                          >
+                            Source {index + 1}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {hasSocials && (
                   <div className="flex items-center gap-1.5 border-t border-[#e0e0e0] px-4 py-3.5">

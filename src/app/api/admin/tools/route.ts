@@ -9,6 +9,36 @@ import {
   isAuthenticatedAdminApiRequest,
 } from '@/lib/admin-auth';
 import { isSupabaseAdminConfigured } from '@/lib/tool-submissions-config';
+import {
+  TOOL_ASSET_CLASS_OPTIONS,
+  TOOL_DEPLOYMENT_OPTIONS,
+  TOOL_EDITORIAL_STATUSES,
+  TOOL_PERSONA_OPTIONS,
+  TOOL_PRICING_MODELS,
+  TOOL_PRICING_PERIODS,
+  TOOL_WORKFLOW_OPTIONS,
+  type ToolAssetClass,
+  type ToolDeployment,
+  type ToolEditorialStatus,
+  type ToolPersona,
+  type ToolPricingModel,
+  type ToolPricingPeriod,
+  type ToolWorkflow,
+} from '@/config/tool-taxonomy';
+
+const optionValues = (options: ReadonlyArray<{ value: string }>) => new Set(options.map((option) => option.value));
+const workflowValues = optionValues(TOOL_WORKFLOW_OPTIONS);
+const personaValues = optionValues(TOOL_PERSONA_OPTIONS);
+const assetClassValues = optionValues(TOOL_ASSET_CLASS_OPTIONS);
+const deploymentValues = optionValues(TOOL_DEPLOYMENT_OPTIONS);
+const pricingModelValues = optionValues(TOOL_PRICING_MODELS);
+const pricingPeriodValues = optionValues(TOOL_PRICING_PERIODS);
+const editorialStatusValues = optionValues(TOOL_EDITORIAL_STATUSES);
+
+const trimmedStringArray = z.array(z.string().trim().min(1).max(160)).max(50);
+const urlArray = z.array(z.string().url()).max(20);
+const controlledValue = <T extends string>(values: Set<string>, label: string) =>
+  z.custom<T>((value) => typeof value === 'string' && values.has(value), `Invalid ${label}`);
 
 const updateToolSchema = z.object({
   originalSlug: z.string().min(1),
@@ -39,6 +69,43 @@ const updateToolSchema = z.object({
   city: z.string().optional(),
   iconUrl: z.string().url({ message: 'Please enter a valid icon URL' }).or(z.literal('')).optional(),
   displayOrder: z.number().int(),
+  workflows: z.array(controlledValue<ToolWorkflow>(workflowValues, 'workflow')).max(TOOL_WORKFLOW_OPTIONS.length),
+  personas: z.array(controlledValue<ToolPersona>(personaValues, 'persona')).max(TOOL_PERSONA_OPTIONS.length),
+  assetClasses: z.array(controlledValue<ToolAssetClass>(assetClassValues, 'asset class')).max(TOOL_ASSET_CLASS_OPTIONS.length),
+  integrations: trimmedStringArray,
+  geographicCoverage: trimmedStringArray,
+  deploymentOptions: z.array(controlledValue<ToolDeployment>(deploymentValues, 'deployment option')).max(TOOL_DEPLOYMENT_OPTIONS.length),
+  securityCertifications: trimmedStringArray,
+  inputTypes: trimmedStringArray,
+  outputTypes: trimmedStringArray,
+  limitations: trimmedStringArray,
+  pricingModel: controlledValue<ToolPricingModel>(pricingModelValues, 'pricing model'),
+  startingPriceAmount: z.number().nonnegative().nullable(),
+  startingPriceCurrency: z.string().trim().regex(/^$|^[A-Za-z]{3}$/, 'Use a three-letter ISO currency code').optional(),
+  pricingPeriod: controlledValue<ToolPricingPeriod>(pricingPeriodValues, 'pricing period').nullable(),
+  hasFreeTrial: z.boolean().nullable(),
+  hasFreePlan: z.boolean().nullable(),
+  bestFor: z.string().trim().max(500).optional(),
+  sourceUrls: urlArray,
+  lastVerifiedAt: z.string().datetime({ offset: true }).or(z.literal('')).optional(),
+  editorialStatus: controlledValue<ToolEditorialStatus>(editorialStatusValues, 'editorial status'),
+  pseoEligible: z.boolean(),
+}).superRefine((value, context) => {
+  if (value.editorialStatus === 'verified' && (!value.lastVerifiedAt || value.sourceUrls.length === 0)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['editorialStatus'],
+      message: 'Verified tools require a verification date and at least one source URL',
+    });
+  }
+
+  if (value.pseoEligible && value.editorialStatus !== 'verified' && value.editorialStatus !== 'legacy') {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['pseoEligible'],
+      message: 'Only verified or legacy tools can be included in pSEO pages',
+    });
+  }
 });
 
 export async function GET(request: NextRequest) {

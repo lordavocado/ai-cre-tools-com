@@ -9,7 +9,6 @@ import {
 } from '@/config/seo-glossary';
 import { getSeoCluster } from '@/config/seo-clusters';
 import { getSeoTag } from '@/config/seo-tags';
-import { buildFaqStructuredData } from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -73,13 +72,6 @@ export default async function GlossaryTermPage({
           }),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildFaqStructuredData(entry.faqs)),
-        }}
-      />
-
       <article className="container px-6 py-16 md:py-20">
         <nav className="mb-8 text-sm text-[#737373]">
           <Link href="/" className="hover:text-[#1f1f1f]">Home</Link>

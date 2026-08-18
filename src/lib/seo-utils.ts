@@ -84,24 +84,6 @@ export function generateBreadcrumbStructuredData(breadcrumbs: Array<{ name: stri
 }
 
 /**
- * Generate FAQ structured data
- */
-export function generateFAQStructuredData(faqs: Array<{ question: string; answer: string }>) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
-}
-
-/**
  * Generate Article structured data
  */
 export function generateArticleStructuredData({
@@ -197,10 +179,10 @@ export function generateSoftwareStructuredData({
         name,
       },
     } : undefined,
-    aggregateRating: rating ? {
+    aggregateRating: rating && reviewCount && reviewCount > 0 ? {
       "@type": "AggregateRating",
       ratingValue: rating,
-      reviewCount: reviewCount || 1,
+      reviewCount,
       bestRating: 5,
       worstRating: 1,
     } : undefined,
@@ -310,4 +292,4 @@ export function generateRobotsContent({
   if (!videoPreview) directives.push('novideoindex');
   
   return directives.join(', ');
-} 
+}

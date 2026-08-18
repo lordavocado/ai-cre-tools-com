@@ -49,12 +49,25 @@ create table public.ecosystem_apps (
 | `created_at` | `timestamptz` | NOT NULL, DEFAULT now() | Record creation timestamp |
 | `updated_at` | `timestamptz` | NOT NULL, DEFAULT now() | Last update timestamp |
 
+### Normalized buying and editorial fields
+
+Migration `supabase/migrations/20260818122434_normalize_tool_buying_data.sql` adds queryable fields used by pSEO and tool buying guides:
+
+| Group | Columns |
+|---|---|
+| Fit | `workflows`, `personas`, `asset_classes`, `best_for` |
+| Technical | `integrations`, `deployment_options`, `security_certifications`, `input_types`, `output_types`, `geographic_coverage`, `limitations` |
+| Pricing | `pricing_model`, `starting_price_amount`, `starting_price_currency`, `pricing_period`, `has_free_trial`, `has_free_plan` |
+| Evidence | `source_urls`, `last_verified_at`, `editorial_status`, `pseo_eligible` |
+
+Existing rows are backfilled as `legacy` and remain pSEO-eligible. New rows default to `draft` and are excluded from derived pSEO cohorts until editorial verification. A `verified` row requires a verification timestamp and at least one source URL. The public tool profile remains available independently of `pseo_eligible`.
+
 ### Data Types & Constraints
 
 #### `slug` (Primary Key)
 - Must be URL-safe (lowercase, hyphens, no spaces)
 - Examples: `dreamoffice`, `elise-ai`, `prop-marker`
-- Used in URLs: `/[slug]`
+- Used in URLs: `/tools/[slug]`
 
 #### `category`
 - Must match existing hardcoded category slugs:
@@ -96,6 +109,12 @@ USING GIN (to_tsvector('english', coalesce(name,'') || ' ' || coalesce(one_liner
 
 -- Features array index
 CREATE INDEX ecosystem_apps_features_gin ON ecosystem_apps USING GIN (features);
+
+-- Normalized pSEO filters (created by the migration)
+CREATE INDEX ecosystem_apps_workflows_gin ON ecosystem_apps USING GIN (workflows);
+CREATE INDEX ecosystem_apps_personas_gin ON ecosystem_apps USING GIN (personas);
+CREATE INDEX ecosystem_apps_asset_classes_gin ON ecosystem_apps USING GIN (asset_classes);
+CREATE INDEX ecosystem_apps_integrations_gin ON ecosystem_apps USING GIN (integrations);
 ```
 
 ### Triggers

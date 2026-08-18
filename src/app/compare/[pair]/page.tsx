@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { getDirectoryItems } from '@/lib/supabase';
 import { siteConfig } from '@/config/site';
 import { getSeoCluster } from '@/config/seo-clusters';
@@ -8,7 +8,6 @@ import {
   getComparisonBySlug,
   getResolvableComparisonSlugs,
 } from '@/config/seo-comparisons';
-import { buildFaqStructuredData } from '@/lib/seo-pages';
 import { getCategoryLabel } from '@/config/design-tokens';
 import { ExternalLink } from 'lucide-react';
 import { getToolAlternativesPath, getToolPath } from '@/lib/tool-routes';
@@ -33,11 +32,11 @@ export async function generateMetadata({
   return {
     title: comparison.metaTitle,
     description: comparison.metaDescription,
-    alternates: { canonical: `${siteConfig.url}/compare/${pair}` },
+    alternates: { canonical: `${siteConfig.url}/compare/${comparison.slug}` },
     openGraph: {
       title: comparison.metaTitle,
       description: comparison.metaDescription,
-      url: `${siteConfig.url}/compare/${pair}`,
+      url: `${siteConfig.url}/compare/${comparison.slug}`,
     },
   };
 }
@@ -51,6 +50,7 @@ export default async function ComparePage({
   const items = await getDirectoryItems();
   const comparison = getComparisonBySlug(pair, items);
   if (!comparison) notFound();
+  if (pair !== comparison.slug) permanentRedirect(`/compare/${comparison.slug}`);
 
   const cluster = getSeoCluster(comparison.relatedCategorySlug);
   const { toolA, toolB } = comparison;
@@ -63,6 +63,31 @@ export default async function ComparePage({
       a: toolA.features?.slice(0, 4).map((f) => f.name).join(', ') || '—',
       b: toolB.features?.slice(0, 4).map((f) => f.name).join(', ') || '—',
     },
+    {
+      label: 'Workflows',
+      a: toolA.workflows.join(', ') || 'Not documented',
+      b: toolB.workflows.join(', ') || 'Not documented',
+    },
+    {
+      label: 'Best for',
+      a: toolA.bestFor || 'Not documented',
+      b: toolB.bestFor || 'Not documented',
+    },
+    {
+      label: 'Integrations',
+      a: toolA.integrations.slice(0, 5).join(', ') || 'Not documented',
+      b: toolB.integrations.slice(0, 5).join(', ') || 'Not documented',
+    },
+    {
+      label: 'Asset classes',
+      a: toolA.assetClasses.join(', ') || 'Not documented',
+      b: toolB.assetClasses.join(', ') || 'Not documented',
+    },
+    {
+      label: 'Deployment',
+      a: toolA.deploymentOptions.join(', ') || 'Not documented',
+      b: toolB.deploymentOptions.join(', ') || 'Not documented',
+    },
     { label: 'Pricing', a: toolA.pricing || 'Contact vendor', b: toolB.pricing || 'Contact vendor' },
   ];
 
@@ -71,10 +96,25 @@ export default async function ComparePage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildFaqStructuredData(comparison.faqs)),
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: comparison.h1,
+            description: comparison.metaDescription,
+            url: `${siteConfig.url}/compare/${comparison.slug}`,
+            mainEntity: {
+              '@type': 'ItemList',
+              numberOfItems: 2,
+              itemListElement: [toolA, toolB].map((tool, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                name: tool.name,
+                url: `${siteConfig.url}${getToolPath(tool.slug)}`,
+              })),
+            },
+          }),
         }}
       />
-
       <section className="border-b border-[#e0e0e0] bg-white py-12 md:py-16">
         <div className="container px-6">
           <nav className="mb-6 text-sm text-[#737373]">

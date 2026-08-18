@@ -10,8 +10,7 @@ import {
 } from '@/config/seo-personas';
 import { getSeoCluster } from '@/config/seo-clusters';
 import {
-  filterItemsByCategories,
-  buildFaqStructuredData,
+  filterItemsByPersona,
   getIndexableTags,
 } from '@/lib/seo-pages';
 import { getTagsForCategory } from '@/config/seo-tags';
@@ -19,6 +18,7 @@ import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { getToolPath } from '@/lib/tool-routes';
+import { getIndexableUseCases } from '@/lib/seo-use-cases';
 
 export const revalidate = 3600;
 
@@ -26,10 +26,10 @@ export async function generateStaticParams() {
   return getAllSeoPersonaSlugs().map((persona) => ({ persona }));
 }
 
-async function getPersonaToolCount(categorySlugs: string[]): Promise<number> {
+async function getPersonaToolCount(personaSlug: string, categorySlugs: string[]): Promise<number> {
   try {
     const items = await getDirectoryItems();
-    return filterItemsByCategories(items, categorySlugs).length;
+    return filterItemsByPersona(items, personaSlug, categorySlugs).length;
   } catch {
     return 0;
   }
@@ -47,7 +47,7 @@ export async function generateMetadata({
     return { title: 'Page Not Found' };
   }
 
-  const toolCount = await getPersonaToolCount(seoPersona.categorySlugs);
+  const toolCount = await getPersonaToolCount(slug, seoPersona.categorySlugs);
   const title = interpolateSeoText(seoPersona.metaTitle, { toolCount });
   const description = interpolateSeoText(seoPersona.metaDescription, { toolCount });
 
@@ -88,7 +88,7 @@ export default async function PersonaPage({
     getCategories(),
   ]);
 
-  const itemsForPersona = filterItemsByCategories(allItems, seoPersona.categorySlugs);
+  const itemsForPersona = filterItemsByPersona(allItems, slug, seoPersona.categorySlugs);
   const personaCategories = seoPersona.categorySlugs
     .map((catSlug) => categories.find((c) => c.slug === catSlug))
     .filter((c) => c !== undefined);
@@ -102,6 +102,11 @@ export default async function PersonaPage({
         .map((tag) => [tag.slug, tag])
     ).values(),
   ].slice(0, 6);
+  const useCaseByWorkflow = new Map(
+    getIndexableUseCases(allItems)
+      .filter((useCase) => useCase.persona.slug === slug)
+      .map((useCase) => [useCase.workflow.slug, useCase.path])
+  );
 
   const pageUrl = `${siteConfig.url}/for/${slug}`;
 
@@ -140,13 +145,6 @@ export default async function PersonaPage({
               })),
             },
           }),
-        }}
-      />
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildFaqStructuredData(seoPersona.faqs)),
         }}
       />
 
@@ -264,7 +262,7 @@ export default async function PersonaPage({
               {personaTags.map((tag) => (
                 <Link
                   key={tag.slug}
-                  href={`/tags/${tag.slug}`}
+                  href={useCaseByWorkflow.get(tag.slug) ?? `/tags/${tag.slug}`}
                   className="rounded-full border border-[#e0e0e0] bg-white px-4 py-1.5 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[rgba(98,150,73,0.4)] hover:text-[#629649]"
                 >
                   {tag.label}

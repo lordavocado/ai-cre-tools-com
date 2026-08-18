@@ -135,6 +135,7 @@ export const siteConfig = {
       { href: '/#directory', label: 'Tools' },
       { href: '/all-tools', label: 'A–Z Index' },
       { href: '/categories', label: 'Categories' },
+      { href: '/use-cases', label: 'Use Cases' },
       { href: '/for', label: 'By Role' },
       { href: '/blog', label: 'Blog' },
       { href: '/favorites', label: 'Favorites' },
@@ -254,4 +255,4 @@ export const computedSiteConfig = {
     description: interpolateText(siteConfig.footer.description),
     copyright: interpolateText(siteConfig.footer.copyright),
   },
-}; 
+};

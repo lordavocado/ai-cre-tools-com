@@ -327,7 +327,7 @@ export function generateToolMeta(
 - **Organization Schema**: Company and website information
 - **SoftwareApplication Schema**: Detailed tool information
 - **Review Schema**: Rating and review data
-- **FAQ Schema**: Feature-based question/answer pairs
+- **Structured data**: Evidence-backed software, breadcrumb, article, and collection markup
 - **BreadcrumbList Schema**: Navigation structure
 
 ### 3. URL Architecture

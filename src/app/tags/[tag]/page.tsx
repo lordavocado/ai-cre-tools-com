@@ -6,7 +6,6 @@ import { siteConfig } from '@/config/site';
 import { getSeoTag } from '@/config/seo-tags';
 import { getSeoCluster } from '@/config/seo-clusters';
 import {
-  buildFaqStructuredData,
   buildTagPageMetadata,
   filterItemsByTag,
   getIndexableTags,
@@ -16,6 +15,7 @@ import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { getToolPath } from '@/lib/tool-routes';
+import { getIndexableUseCases } from '@/lib/seo-use-cases';
 
 export const revalidate = 3600;
 
@@ -72,6 +72,8 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
   const relatedTags = seoTag.relatedTagSlugs
     .map((tagSlug) => indexable.find((t) => t.slug === tagSlug))
     .filter((t) => t !== undefined);
+  const roleUseCases = getIndexableUseCases(allItems)
+    .filter((useCase) => useCase.workflow.slug === slug);
 
   const pageUrl = `${siteConfig.url}/tags/${slug}`;
 
@@ -99,13 +101,6 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
           }),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildFaqStructuredData(seoTag.faqs)),
-        }}
-      />
-
       <section className="border-b border-[#e0e0e0] bg-white py-12 md:py-16">
         <div className="container px-6">
           <nav className="mb-8 flex items-center gap-1.5 text-sm text-[#737373]">
@@ -138,6 +133,36 @@ export default async function TagPage({ params }: { params: Promise<{ tag: strin
           </div>
         </div>
       </section>
+
+      {roleUseCases.length > 0 && (
+        <section className="border-b border-[#e0e0e0] bg-white py-12 md:py-16">
+          <div className="container px-6">
+            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+              <div>
+                <h2 className="text-2xl font-semibold text-[#1f1f1f]">Explore by team</h2>
+                <p className="mt-1 text-sm text-[#737373]">
+                  Narrow this workflow to tools qualified for a specific CRE role.
+                </p>
+              </div>
+              <Link href="/use-cases" className="text-sm font-medium text-[#629649] hover:underline">
+                All use cases
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {roleUseCases.map((useCase) => (
+                <Link
+                  key={useCase.path}
+                  href={useCase.path}
+                  className="group rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-5 hover:border-[rgba(98,150,73,0.45)] hover:bg-white"
+                >
+                  <h3 className="font-semibold text-[#1f1f1f] group-hover:text-[#629649]">{useCase.title}</h3>
+                  <p className="mt-2 text-sm text-[#737373]">{useCase.tools.length} matching tools</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {relatedCategories.length > 0 && (
         <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-16 md:py-20">

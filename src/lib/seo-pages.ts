@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import type { SeoFaq } from '@/config/seo-clusters';
 import { getSeoCluster, interpolateSeoText } from '@/config/seo-clusters';
 import { getCategoryLabel } from '@/config/design-tokens';
 import {
@@ -35,6 +34,22 @@ export function filterItemsByCategories(
   });
 }
 
+export function isPseoEligible(item: DirectoryItem): boolean {
+  return item.pseoEligible;
+}
+
+export function filterItemsByPersona(
+  items: DirectoryItem[],
+  personaSlug: string,
+  fallbackCategorySlugs: string[]
+): DirectoryItem[] {
+  return items.filter((item) => {
+    if (!isPseoEligible(item)) return false;
+    if (item.personas.length > 0) return item.personas.includes(personaSlug as DirectoryItem['personas'][number]);
+    return filterItemsByCategories([item], fallbackCategorySlugs).length > 0;
+  });
+}
+
 function getSearchableItemText(item: DirectoryItem): string {
   const parts = [
     item.name,
@@ -48,13 +63,16 @@ function getSearchableItemText(item: DirectoryItem): string {
 }
 
 export function itemMatchesTag(item: DirectoryItem, tag: SeoTag): boolean {
+  if (item.workflows.length > 0) {
+    return item.workflows.includes(tag.slug as DirectoryItem['workflows'][number]);
+  }
   const haystack = getSearchableItemText(item);
   const matchers = tag.featureMatchers.map((m) => m.toLowerCase());
   return matchers.some((matcher) => haystack.includes(matcher));
 }
 
 export function filterItemsByTag(items: DirectoryItem[], tag: SeoTag): DirectoryItem[] {
-  return items.filter((item) => itemMatchesTag(item, tag));
+  return items.filter((item) => isPseoEligible(item) && itemMatchesTag(item, tag));
 }
 
 export function getTagToolCount(items: DirectoryItem[], tagSlug: string): number {
@@ -105,21 +123,6 @@ export function findIndexableTagSlugForFeature(
 /** First N tools — callers should pass items already sorted by display_order, name. */
 export function getFeaturedTools(items: DirectoryItem[], limit = 3): DirectoryItem[] {
   return items.slice(0, limit);
-}
-
-export function buildFaqStructuredData(faqs: SeoFaq[]): object {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer,
-      },
-    })),
-  };
 }
 
 export interface PaginatedMetadataInput {

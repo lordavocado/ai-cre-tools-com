@@ -26,6 +26,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import {
   AdminContent,
@@ -39,6 +41,15 @@ import {
 import { isValidSlug, isValidSlugFormat } from '@/lib/routing-utils-client';
 import { cn, resolveCategoryInfo } from '@/lib/utils';
 import type { AdminTool } from '@/types';
+import {
+  TOOL_ASSET_CLASS_OPTIONS,
+  TOOL_DEPLOYMENT_OPTIONS,
+  TOOL_EDITORIAL_STATUSES,
+  TOOL_PERSONA_OPTIONS,
+  TOOL_PRICING_MODELS,
+  TOOL_PRICING_PERIODS,
+  TOOL_WORKFLOW_OPTIONS,
+} from '@/config/tool-taxonomy';
 
 type CategoryOption = {
   slug: string;
@@ -58,7 +69,33 @@ type ToolEditorState = {
   city: string;
   iconUrl: string;
   displayOrder: string;
+  workflows: AdminTool['workflows'];
+  personas: AdminTool['personas'];
+  assetClasses: AdminTool['assetClasses'];
+  deploymentOptions: AdminTool['deploymentOptions'];
+  integrationsText: string;
+  geographicCoverageText: string;
+  securityCertificationsText: string;
+  inputTypesText: string;
+  outputTypesText: string;
+  limitationsText: string;
+  pricingModel: AdminTool['pricingModel'];
+  startingPriceAmount: string;
+  startingPriceCurrency: string;
+  pricingPeriod: AdminTool['pricingPeriod'] | '';
+  hasFreeTrial: boolean | null;
+  hasFreePlan: boolean | null;
+  bestFor: string;
+  sourceUrlsText: string;
+  lastVerifiedAt: string;
+  editorialStatus: AdminTool['editorialStatus'];
+  pseoEligible: boolean;
+  normalizedDataAvailable: boolean;
 };
+
+function splitLines(value: string): string[] {
+  return value.split('\n').map((entry) => entry.trim()).filter(Boolean);
+}
 
 function getInitialToolEditorState(tool: AdminTool): ToolEditorState {
   return {
@@ -74,7 +111,70 @@ function getInitialToolEditorState(tool: AdminTool): ToolEditorState {
     city: tool.city,
     iconUrl: tool.iconUrl,
     displayOrder: String(tool.displayOrder),
+    workflows: tool.workflows,
+    personas: tool.personas,
+    assetClasses: tool.assetClasses,
+    deploymentOptions: tool.deploymentOptions,
+    integrationsText: tool.integrations.join('\n'),
+    geographicCoverageText: tool.geographicCoverage.join('\n'),
+    securityCertificationsText: tool.securityCertifications.join('\n'),
+    inputTypesText: tool.inputTypes.join('\n'),
+    outputTypesText: tool.outputTypes.join('\n'),
+    limitationsText: tool.limitations.join('\n'),
+    pricingModel: tool.pricingModel,
+    startingPriceAmount: tool.startingPriceAmount == null ? '' : String(tool.startingPriceAmount),
+    startingPriceCurrency: tool.startingPriceCurrency,
+    pricingPeriod: tool.pricingPeriod ?? '',
+    hasFreeTrial: tool.hasFreeTrial,
+    hasFreePlan: tool.hasFreePlan,
+    bestFor: tool.bestFor,
+    sourceUrlsText: tool.sourceUrls.join('\n'),
+    lastVerifiedAt: tool.lastVerifiedAt ? tool.lastVerifiedAt.slice(0, 16) : '',
+    editorialStatus: tool.editorialStatus,
+    pseoEligible: tool.pseoEligible,
+    normalizedDataAvailable: tool.normalizedDataAvailable,
   };
+}
+
+function ToggleOptionGrid<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: ReadonlyArray<{ value: T; label: string }>;
+  value: T[];
+  onChange: (value: T[]) => void;
+}) {
+  return (
+    <fieldset className="space-y-2">
+      <legend className="text-sm font-medium text-[#1f1f1f]">{label}</legend>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => {
+          const selected = value.includes(option.value);
+          return (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => onChange(selected
+                ? value.filter((entry) => entry !== option.value)
+                : [...value, option.value])}
+              className={cn(
+                'rounded-full border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#629649]',
+                selected
+                  ? 'border-[#629649] bg-[#eef6ea] text-[#365c27]'
+                  : 'border-[#e0e0e0] bg-white text-[#525252] hover:border-[#bdbdbd]'
+              )}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
 }
 
 function getToolSlugValidationError(slug: string, originalSlug: string, tools: AdminTool[]) {
@@ -224,6 +324,29 @@ export default function ToolsDashboard({
       return;
     }
 
+    const startingPriceAmount = toolEditor.startingPriceAmount === ''
+      ? null
+      : Number(toolEditor.startingPriceAmount);
+
+    if (startingPriceAmount !== null && (!Number.isFinite(startingPriceAmount) || startingPriceAmount < 0)) {
+      toast({
+        title: 'Invalid starting price',
+        description: 'Starting price must be a positive number or left blank.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const sourceUrls = splitLines(toolEditor.sourceUrlsText);
+    if (toolEditor.editorialStatus === 'verified' && (!toolEditor.lastVerifiedAt || sourceUrls.length === 0)) {
+      toast({
+        title: 'Verification incomplete',
+        description: 'Verified tools need a verification date and at least one source URL.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setSavingTool(true);
 
     try {
@@ -248,6 +371,29 @@ export default function ToolsDashboard({
           city: toolEditor.city,
           iconUrl: toolEditor.iconUrl,
           displayOrder,
+          workflows: toolEditor.workflows,
+          personas: toolEditor.personas,
+          assetClasses: toolEditor.assetClasses,
+          deploymentOptions: toolEditor.deploymentOptions,
+          integrations: splitLines(toolEditor.integrationsText),
+          geographicCoverage: splitLines(toolEditor.geographicCoverageText),
+          securityCertifications: splitLines(toolEditor.securityCertificationsText),
+          inputTypes: splitLines(toolEditor.inputTypesText),
+          outputTypes: splitLines(toolEditor.outputTypesText),
+          limitations: splitLines(toolEditor.limitationsText),
+          pricingModel: toolEditor.pricingModel,
+          startingPriceAmount,
+          startingPriceCurrency: toolEditor.startingPriceCurrency,
+          pricingPeriod: toolEditor.pricingPeriod || null,
+          hasFreeTrial: toolEditor.hasFreeTrial,
+          hasFreePlan: toolEditor.hasFreePlan,
+          bestFor: toolEditor.bestFor,
+          sourceUrls,
+          lastVerifiedAt: toolEditor.lastVerifiedAt
+            ? new Date(toolEditor.lastVerifiedAt).toISOString()
+            : '',
+          editorialStatus: toolEditor.editorialStatus,
+          pseoEligible: toolEditor.pseoEligible,
         }),
       });
 
@@ -355,7 +501,7 @@ export default function ToolsDashboard({
         </Card>
 
         <Card className={cn(adminCardClass, 'overflow-hidden p-0')}>
-          <CardContent className="p-0">
+          <CardContent className="overflow-x-auto p-0">
             <Table>
             <TableHeader>
               <TableRow className="border-[#e0e0e0] bg-[#fafafa] hover:bg-[#fafafa]">
@@ -363,6 +509,8 @@ export default function ToolsDashboard({
                 <TableHead className="text-[#737373]">Slug</TableHead>
                 <TableHead className="text-[#737373]">Website</TableHead>
                 <TableHead className="text-[#737373]">Category</TableHead>
+                <TableHead className="text-[#737373]">Editorial</TableHead>
+                <TableHead className="text-[#737373]">pSEO</TableHead>
                 <TableHead className="text-[#737373]">Display order</TableHead>
                 <TableHead className="text-[#737373]">Updated</TableHead>
                 <TableHead className="text-right text-[#737373]">Actions</TableHead>
@@ -371,7 +519,7 @@ export default function ToolsDashboard({
             <TableBody>
               {filteredTools.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-[#737373]">
+                  <TableCell colSpan={9} className="py-8 text-center text-[#737373]">
                     No live tools found.
                   </TableCell>
                 </TableRow>
@@ -395,6 +543,16 @@ export default function ToolsDashboard({
                     </a>
                   </TableCell>
                   <TableCell>{resolveCategoryInfo(tool.category).displayName}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="rounded-[6px] border-[#e0e0e0] font-normal">
+                      {TOOL_EDITORIAL_STATUSES.find((status) => status.value === tool.editorialStatus)?.label ?? tool.editorialStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className={tool.pseoEligible ? 'text-[#527c3e]' : 'text-[#999999]'}>
+                      {tool.pseoEligible ? 'Included' : 'Excluded'}
+                    </span>
+                  </TableCell>
                   <TableCell>{tool.displayOrder}</TableCell>
                   <TableCell>{new Date(tool.updatedAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
@@ -431,7 +589,15 @@ export default function ToolsDashboard({
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Tabs defaultValue="basics" className="mt-2">
+                <TabsList className="grid w-full grid-cols-3 rounded-[8px]">
+                  <TabsTrigger value="basics">Basics</TabsTrigger>
+                  <TabsTrigger value="discovery">Discovery</TabsTrigger>
+                  <TabsTrigger value="editorial">Editorial</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="basics" className="mt-5">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="tool-name" className="text-[#1f1f1f]">Name</Label>
                   <Input
@@ -559,7 +725,230 @@ export default function ToolsDashboard({
                     className={adminInputClass}
                   />
                 </div>
-              </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="discovery" className="mt-5 space-y-6">
+                  {!toolEditor.normalizedDataAvailable && (
+                    <Alert className="border-amber-200 bg-amber-50 text-amber-900">
+                      <AlertTitle>Database migration required</AlertTitle>
+                      <AlertDescription>
+                        Apply the normalized tool-data migration before editing discovery fields. Basic edits remain safe.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <fieldset disabled={!toolEditor.normalizedDataAvailable} className="space-y-6 disabled:opacity-55">
+                    <ToggleOptionGrid
+                      label="Workflows"
+                      options={TOOL_WORKFLOW_OPTIONS}
+                      value={toolEditor.workflows}
+                      onChange={(workflows) => setToolEditor({ ...toolEditor, workflows })}
+                    />
+                    <ToggleOptionGrid
+                      label="Personas"
+                      options={TOOL_PERSONA_OPTIONS}
+                      value={toolEditor.personas}
+                      onChange={(personas) => setToolEditor({ ...toolEditor, personas })}
+                    />
+                    <ToggleOptionGrid
+                      label="Asset classes"
+                      options={TOOL_ASSET_CLASS_OPTIONS}
+                      value={toolEditor.assetClasses}
+                      onChange={(assetClasses) => setToolEditor({ ...toolEditor, assetClasses })}
+                    />
+                    <ToggleOptionGrid
+                      label="Deployment"
+                      options={TOOL_DEPLOYMENT_OPTIONS}
+                      value={toolEditor.deploymentOptions}
+                      onChange={(deploymentOptions) => setToolEditor({ ...toolEditor, deploymentOptions })}
+                    />
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {([
+                        ['tool-integrations', 'Integrations', 'integrationsText'],
+                        ['tool-geography', 'Geographic coverage', 'geographicCoverageText'],
+                        ['tool-security', 'Security certifications', 'securityCertificationsText'],
+                        ['tool-inputs', 'Input types', 'inputTypesText'],
+                        ['tool-outputs', 'Output types', 'outputTypesText'],
+                        ['tool-limitations', 'Known limitations', 'limitationsText'],
+                      ] as const).map(([id, label, field]) => (
+                        <div key={id} className="space-y-2">
+                          <Label htmlFor={id}>{label}</Label>
+                          <Textarea
+                            id={id}
+                            rows={4}
+                            value={toolEditor[field]}
+                            onChange={(event) => setToolEditor({ ...toolEditor, [field]: event.target.value })}
+                            placeholder="One value per line"
+                            className={adminTextareaClass}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="border-t border-[#e0e0e0] pt-6">
+                      <h3 className="mb-4 text-sm font-semibold text-[#1f1f1f]">Buying information</h3>
+                      <div className="grid gap-4 md:grid-cols-3">
+                        <div className="space-y-2">
+                          <Label>Pricing model</Label>
+                          <Select
+                            value={toolEditor.pricingModel}
+                            onValueChange={(pricingModel: AdminTool['pricingModel']) => setToolEditor({ ...toolEditor, pricingModel })}
+                          >
+                            <SelectTrigger className={adminSelectTriggerClass}><SelectValue /></SelectTrigger>
+                            <SelectContent>{TOOL_PRICING_MODELS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                            ))}</SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="tool-starting-price">Starting price</Label>
+                          <Input
+                            id="tool-starting-price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={toolEditor.startingPriceAmount}
+                            onChange={(event) => setToolEditor({ ...toolEditor, startingPriceAmount: event.target.value })}
+                            className={adminInputClass}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="tool-currency">Currency</Label>
+                          <Input
+                            id="tool-currency"
+                            maxLength={3}
+                            value={toolEditor.startingPriceCurrency}
+                            onChange={(event) => setToolEditor({ ...toolEditor, startingPriceCurrency: event.target.value.toUpperCase() })}
+                            placeholder="USD"
+                            className={adminInputClass}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Pricing period</Label>
+                          <Select
+                            value={toolEditor.pricingPeriod || 'none'}
+                            onValueChange={(value) => setToolEditor({
+                              ...toolEditor,
+                              pricingPeriod: value === 'none' ? '' : value as AdminTool['pricingPeriod'],
+                            })}
+                          >
+                            <SelectTrigger className={adminSelectTriggerClass}><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Not specified</SelectItem>
+                              {TOOL_PRICING_PERIODS.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {([
+                          ['Free trial', 'hasFreeTrial'],
+                          ['Free plan', 'hasFreePlan'],
+                        ] as const).map(([label, field]) => (
+                          <div key={field} className="space-y-2">
+                            <Label>{label}</Label>
+                            <Select
+                              value={toolEditor[field] == null ? 'unknown' : toolEditor[field] ? 'yes' : 'no'}
+                              onValueChange={(value) => setToolEditor({
+                                ...toolEditor,
+                                [field]: value === 'unknown' ? null : value === 'yes',
+                              })}
+                            >
+                              <SelectTrigger className={adminSelectTriggerClass}><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="unknown">Unknown</SelectItem>
+                                <SelectItem value="yes">Yes</SelectItem>
+                                <SelectItem value="no">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ))}
+                        <div className="space-y-2 md:col-span-3">
+                          <Label htmlFor="tool-best-for">Best for</Label>
+                          <Textarea
+                            id="tool-best-for"
+                            rows={3}
+                            value={toolEditor.bestFor}
+                            onChange={(event) => setToolEditor({ ...toolEditor, bestFor: event.target.value })}
+                            placeholder="Specific team size, role, workflow, or asset class"
+                            className={adminTextareaClass}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </fieldset>
+                </TabsContent>
+
+                <TabsContent value="editorial" className="mt-5 space-y-5">
+                  {!toolEditor.normalizedDataAvailable && (
+                    <Alert className="border-amber-200 bg-amber-50 text-amber-900">
+                      <AlertTitle>Editorial workflow unavailable</AlertTitle>
+                      <AlertDescription>
+                        Apply the Supabase migration first. Until then, current records keep legacy pSEO eligibility.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <fieldset disabled={!toolEditor.normalizedDataAvailable} className="space-y-5 disabled:opacity-55">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>Editorial status</Label>
+                        <Select
+                          value={toolEditor.editorialStatus}
+                          onValueChange={(editorialStatus: AdminTool['editorialStatus']) => setToolEditor({
+                            ...toolEditor,
+                            editorialStatus,
+                            pseoEligible: editorialStatus === 'legacy' || editorialStatus === 'verified'
+                              ? toolEditor.pseoEligible
+                              : false,
+                          })}
+                        >
+                          <SelectTrigger className={adminSelectTriggerClass}><SelectValue /></SelectTrigger>
+                          <SelectContent>{TOOL_EDITORIAL_STATUSES.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}</SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="tool-verified-at">Last verified</Label>
+                        <Input
+                          id="tool-verified-at"
+                          type="datetime-local"
+                          value={toolEditor.lastVerifiedAt}
+                          onChange={(event) => setToolEditor({ ...toolEditor, lastVerifiedAt: event.target.value })}
+                          className={adminInputClass}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tool-sources">Source URLs</Label>
+                      <Textarea
+                        id="tool-sources"
+                        rows={5}
+                        value={toolEditor.sourceUrlsText}
+                        onChange={(event) => setToolEditor({ ...toolEditor, sourceUrlsText: event.target.value })}
+                        placeholder="One first-party or authoritative URL per line"
+                        className={adminTextareaClass}
+                      />
+                    </div>
+                    <label className="flex items-start gap-3 rounded-[8px] border border-[#e0e0e0] p-4">
+                      <input
+                        type="checkbox"
+                        checked={toolEditor.pseoEligible}
+                        disabled={toolEditor.editorialStatus !== 'legacy' && toolEditor.editorialStatus !== 'verified'}
+                        onChange={(event) => setToolEditor({ ...toolEditor, pseoEligible: event.target.checked })}
+                        className="mt-1 h-4 w-4 accent-[#629649]"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-[#1f1f1f]">Include in derived pSEO pages</span>
+                        <span className="mt-1 block text-sm leading-6 text-[#737373]">
+                          Controls alternatives, capability, persona, and comparison cohorts. The main tool profile stays public.
+                        </span>
+                      </span>
+                    </label>
+                  </fieldset>
+                </TabsContent>
+              </Tabs>
 
               <DialogFooter>
                 <Button

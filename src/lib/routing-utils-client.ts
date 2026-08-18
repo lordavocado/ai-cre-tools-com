@@ -22,8 +22,12 @@ const RESERVED_SLUGS = [
   'api',
   'guides',
   'tools',
+  'use-cases',
+  'asset-classes',
+  'integrations',
   '_next',
   'sitemap.xml',
+  'sitemaps',
   'robots.txt',
   'favicon.ico',
   'og-image.png',
@@ -43,6 +47,10 @@ const RESERVED_PATTERNS = [
   /^compare\/.*/,
   /^glossary\/.*/,
   /^tools\/.*/,
+  /^use-cases\/.*/,
+  /^asset-classes\/.*/,
+  /^integrations\/.*/,
+  /^sitemaps\/.*/,
 ] as const;
 
 /**

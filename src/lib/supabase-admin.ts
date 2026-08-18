@@ -31,6 +31,27 @@ type AdminToolRow = {
   display_order: number | null;
   created_at: string;
   updated_at: string;
+  workflows?: AdminTool['workflows'] | null;
+  personas?: AdminTool['personas'] | null;
+  asset_classes?: AdminTool['assetClasses'] | null;
+  integrations?: string[] | null;
+  geographic_coverage?: string[] | null;
+  deployment_options?: AdminTool['deploymentOptions'] | null;
+  security_certifications?: string[] | null;
+  input_types?: string[] | null;
+  output_types?: string[] | null;
+  limitations?: string[] | null;
+  pricing_model?: AdminTool['pricingModel'] | null;
+  starting_price_amount?: number | string | null;
+  starting_price_currency?: string | null;
+  pricing_period?: AdminTool['pricingPeriod'] | null;
+  has_free_trial?: boolean | null;
+  has_free_plan?: boolean | null;
+  best_for?: string | null;
+  source_urls?: string[] | null;
+  last_verified_at?: string | null;
+  editorial_status?: AdminTool['editorialStatus'] | null;
+  pseo_eligible?: boolean | null;
 };
 
 export type PublishableToolDraft = {
@@ -59,6 +80,27 @@ export type AdminToolUpdateInput = {
   city?: string;
   iconUrl?: string;
   displayOrder: number;
+  workflows: AdminTool['workflows'];
+  personas: AdminTool['personas'];
+  assetClasses: AdminTool['assetClasses'];
+  integrations: string[];
+  geographicCoverage: string[];
+  deploymentOptions: AdminTool['deploymentOptions'];
+  securityCertifications: string[];
+  inputTypes: string[];
+  outputTypes: string[];
+  limitations: string[];
+  pricingModel: AdminTool['pricingModel'];
+  startingPriceAmount: number | null;
+  startingPriceCurrency?: string;
+  pricingPeriod: AdminTool['pricingPeriod'];
+  hasFreeTrial: boolean | null;
+  hasFreePlan: boolean | null;
+  bestFor?: string;
+  sourceUrls: string[];
+  lastVerifiedAt?: string;
+  editorialStatus: AdminTool['editorialStatus'];
+  pseoEligible: boolean;
 };
 
 let supabaseAdminClient: ReturnType<typeof createClient> | null = null;
@@ -137,6 +179,9 @@ function parseFeatures(features: string | string[] | null | undefined) {
 }
 
 function mapAdminToolRow(row: AdminToolRow): AdminTool {
+  const normalizedDataAvailable = row.editorial_status !== undefined;
+  const startingPrice = row.starting_price_amount == null ? null : Number(row.starting_price_amount);
+
   return {
     slug: row.slug,
     name: row.name,
@@ -151,6 +196,28 @@ function mapAdminToolRow(row: AdminToolRow): AdminTool {
     screenshotUrl: row.screenshot_url ?? '',
     screenshotPath: row.screenshot_path ?? '',
     displayOrder: row.display_order ?? 999,
+    workflows: row.workflows ?? [],
+    personas: row.personas ?? [],
+    assetClasses: row.asset_classes ?? [],
+    integrations: row.integrations ?? [],
+    geographicCoverage: row.geographic_coverage ?? [],
+    deploymentOptions: row.deployment_options ?? [],
+    securityCertifications: row.security_certifications ?? [],
+    inputTypes: row.input_types ?? [],
+    outputTypes: row.output_types ?? [],
+    limitations: row.limitations ?? [],
+    pricingModel: row.pricing_model ?? 'unknown',
+    startingPriceAmount: Number.isFinite(startingPrice) ? startingPrice : null,
+    startingPriceCurrency: row.starting_price_currency ?? '',
+    pricingPeriod: row.pricing_period ?? null,
+    hasFreeTrial: row.has_free_trial ?? null,
+    hasFreePlan: row.has_free_plan ?? null,
+    bestFor: row.best_for ?? '',
+    sourceUrls: row.source_urls ?? [],
+    lastVerifiedAt: row.last_verified_at ?? '',
+    editorialStatus: row.editorial_status ?? 'legacy',
+    pseoEligible: normalizedDataAvailable ? row.pseo_eligible === true : true,
+    normalizedDataAvailable,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -253,6 +320,19 @@ async function getToolByWebsite(websiteUrl: string) {
   return ((data as AdminToolRow[] | null) ?? [])[0] ?? null;
 }
 
+async function hasNormalizedToolSchema(): Promise<boolean> {
+  const { error } = await getSupabaseAdminClient()
+    .from(ECOSYSTEM_APPS_TABLE)
+    .select('editorial_status')
+    .limit(1);
+
+  if (!error) return true;
+  if (error.code === '42703' || error.code === 'PGRST204' || /column .* does not exist|could not find .* column/i.test(error.message)) {
+    return false;
+  }
+  throw new Error(`Failed to inspect the live tool schema: ${error.message}`);
+}
+
 async function resolveUniqueSlug(baseSlug: string, websiteUrl: string) {
   const normalizedWebsite = normalizeWebsiteUrl(websiteUrl);
   let candidate = baseSlug;
@@ -295,7 +375,12 @@ export async function getAdminToolBySlug(slug: string) {
 
 export async function updateAdminTool(input: AdminToolUpdateInput) {
   const supabase = getSupabaseAdminClient();
-  const payload = buildPayload({
+  const currentRow = await getToolBySlug(input.originalSlug);
+  if (!currentRow) {
+    throw new Error(`Tool "${input.originalSlug}" no longer exists.`);
+  }
+
+  const basicPayload = buildPayload({
     slug: input.slug,
     name: input.name,
     websiteUrl: input.websiteUrl,
@@ -308,6 +393,33 @@ export async function updateAdminTool(input: AdminToolUpdateInput) {
     iconUrl: input.iconUrl,
     displayOrder: input.displayOrder,
   });
+
+  const payload = currentRow.editorial_status === undefined
+    ? basicPayload
+    : {
+        ...basicPayload,
+        workflows: input.workflows,
+        personas: input.personas,
+        asset_classes: input.assetClasses,
+        integrations: input.integrations,
+        geographic_coverage: input.geographicCoverage,
+        deployment_options: input.deploymentOptions,
+        security_certifications: input.securityCertifications,
+        input_types: input.inputTypes,
+        output_types: input.outputTypes,
+        limitations: input.limitations,
+        pricing_model: input.pricingModel,
+        starting_price_amount: input.startingPriceAmount,
+        starting_price_currency: trimNullable(input.startingPriceCurrency)?.toUpperCase() ?? null,
+        pricing_period: input.pricingPeriod,
+        has_free_trial: input.hasFreeTrial,
+        has_free_plan: input.hasFreePlan,
+        best_for: trimNullable(input.bestFor),
+        source_urls: input.sourceUrls,
+        last_verified_at: trimNullable(input.lastVerifiedAt),
+        editorial_status: input.editorialStatus,
+        pseo_eligible: input.pseoEligible,
+      };
 
   const { data, error } = await (supabase
     .from(ECOSYSTEM_APPS_TABLE) as any)
@@ -339,6 +451,15 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
     city: input.draft.city,
     iconUrl: input.draft.iconLink,
   });
+  const normalizedSchemaAvailable = await hasNormalizedToolSchema();
+  const editorialPayload = normalizedSchemaAvailable
+    ? {
+        editorial_status: 'draft',
+        pseo_eligible: false,
+        source_urls: [payload.website_url],
+        last_verified_at: null,
+      }
+    : {};
 
   const existingTool = await getToolByWebsite(payload.website_url);
 
@@ -347,6 +468,7 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
       .from(ECOSYSTEM_APPS_TABLE) as any)
       .update({
         ...payload,
+        ...editorialPayload,
         slug: existingTool.slug,
       })
       .eq('slug', existingTool.slug)
@@ -367,6 +489,7 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
     .from(ECOSYSTEM_APPS_TABLE) as any)
     .insert({
       ...payload,
+      ...editorialPayload,
       slug: finalSlug,
     })
     .select('*')
