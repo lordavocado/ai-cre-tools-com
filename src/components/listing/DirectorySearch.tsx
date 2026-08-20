@@ -118,34 +118,34 @@ function DirectorySearchContent({
       {/* Search bar row */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999999]" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <input
             type="text"
             placeholder="Search tools, capabilities, workflows…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             aria-label="Search directory"
-            className="h-11 w-full rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-white pl-10 pr-10 text-sm text-[#1f1f1f] placeholder:text-[#999999] outline-none focus:border-[#629649] focus:ring-1 focus:ring-[#629649] transition-all"
+            className="h-11 w-full rounded-lg border border-border bg-background pl-10 pr-12 text-base text-foreground outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring/30 sm:text-sm"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a0a0] hover:text-[#737373] transition-colors"
+              className="absolute right-1 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Clear search"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
         </div>
 
-        <div className="hidden md:inline-flex h-11 shrink-0 items-center rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-white px-4 text-sm text-[#737373]">
+        <div className="hidden h-11 shrink-0 items-center rounded-lg border border-border bg-background px-4 text-sm text-muted-foreground tabular-nums md:inline-flex" role="status" aria-live="polite">
           {isPending ? "Updating…" : `${totalItems} tools`}
         </div>
 
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-[8px] border-[1.25px] border-[#e0e0e0] bg-white px-3 text-sm text-[#737373] hover:text-[#1f1f1f] transition-colors"
+            className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm text-muted-foreground transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Clear all filters"
           >
             <X className="h-3.5 w-3.5" />
@@ -161,10 +161,10 @@ function DirectorySearchContent({
             type="button"
             onClick={() => setSelectedCategories([])}
             aria-pressed={selectedCategories.length === 0}
-            className={`shrink-0 rounded-[6px] px-3 py-3 md:py-1.5 text-sm font-medium transition-colors ${
+            className={`shrink-0 rounded-md px-3 py-3 text-sm font-medium transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:py-2 ${
               selectedCategories.length === 0
-                ? "bg-[#1f1f1f] text-white"
-                : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#efefef] hover:border-[#c8c8c8]"
+                ? "bg-foreground text-background"
+                : "border border-border bg-secondary text-foreground hover:border-foreground/20 hover:bg-secondary"
             }`}
           >
             All
@@ -177,10 +177,10 @@ function DirectorySearchContent({
                 type="button"
                 onClick={() => toggleCategory(category.slug)}
                 aria-pressed={isActive}
-                className={`shrink-0 rounded-[6px] px-3 py-3 md:py-1.5 text-sm font-medium transition-colors ${
+                className={`shrink-0 rounded-md px-3 py-3 text-sm font-medium transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:py-2 ${
                   isActive
-                    ? "bg-[#1f1f1f] text-white border-transparent"
-                    : "border border-[#e0e0e0] bg-[#fafafa] text-[#1f1f1f] hover:bg-[#efefef] hover:border-[#c8c8c8]"
+                    ? "border-transparent bg-foreground text-background"
+                    : "border border-border bg-secondary text-foreground hover:border-foreground/20 hover:bg-secondary"
                 }`}
               >
                 {category.name}

@@ -44,10 +44,10 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {eyebrow}
       </p>
-      <h2 className="mt-1 text-xl font-semibold tracking-[-0.01em] text-[#1f1f1f] sm:text-2xl">
+      <h2 className="mt-1 text-balance text-xl font-semibold tracking-[-0.01em] text-foreground sm:text-2xl">
         {title}
       </h2>
     </div>
@@ -164,7 +164,7 @@ export default async function DirectoryItemPage({
     (item.socials.twitter || item.socials.linkedin || item.socials.facebook);
 
   const toolPageUrl = `${siteConfig.url}${getToolPath(slug)}`;
-  const descriptionText = normalizeToolDescription(item.description);
+  const descriptionText = normalizeToolDescription(item.description, item.slug);
   const descriptionParagraphs = descriptionText
     ? descriptionText.split("\n\n").filter(Boolean)
     : [];
@@ -298,12 +298,12 @@ export default async function DirectoryItemPage({
               Tools
             </Link>
             <span aria-hidden="true">/</span>
-            <span className="truncate text-[#1f1f1f]">{item.name}</span>
+            <span className="truncate text-foreground">{item.name}</span>
           </nav>
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex min-w-0 items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-white sm:h-16 sm:w-16">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background ring-1 ring-inset ring-black/10 sm:h-16 sm:w-16">
                 {item.website ? (
                   <ToolFavicon
                     website={item.website}
@@ -312,23 +312,23 @@ export default async function DirectoryItemPage({
                     className="h-9 w-9 sm:h-10 sm:w-10"
                   />
                 ) : (
-                  <span className="text-xl font-bold text-[#a0a0a0]">
+                  <span className="text-xl font-bold text-muted-foreground">
                     {item.name.charAt(0)}
                   </span>
                 )}
               </div>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#0f172a] sm:text-[36px]">
+                <h1 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-foreground sm:text-[36px]">
                   {item.name}
                 </h1>
                 {seoCluster && (
-                  <p className="mt-2 text-sm font-medium text-[#629649]">
+                  <p className="mt-2 text-sm font-medium text-primary">
                     {seoCluster.primaryKeyword} for commercial real estate teams
                   </p>
                 )}
                 {item.tagline && (
-                  <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#737373] sm:text-[17px]">
+                  <p className="mt-2 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-[17px]">
                     {item.tagline}
                   </p>
                 )}
@@ -341,7 +341,7 @@ export default async function DirectoryItemPage({
                           <Link
                             key={tag}
                             href={`/tags/${tagSlug}`}
-                            className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f] transition-colors hover:border-[rgba(98,150,73,0.4)] hover:text-[#629649]"
+                            className="rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-foreground transition-[color,border-color,transform] motion-safe:active:scale-[0.97] hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             {tag}
                           </Link>
@@ -350,7 +350,7 @@ export default async function DirectoryItemPage({
                       return (
                         <span
                           key={tag}
-                          className="rounded-full border border-[#e8e8e8] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#1f1f1f]"
+                          className="rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-medium text-foreground"
                         >
                           {tag}
                         </span>
@@ -365,16 +365,16 @@ export default async function DirectoryItemPage({
               <FavoriteButton
                 toolId={item.id}
                 variant="icon"
-                className="h-11 w-11 rounded-[8px] border border-[#e0e0e0] bg-white p-0 text-[#737373] shadow-none transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                className="h-11 w-11 rounded-lg border border-border bg-background p-0 text-muted-foreground shadow-none hover:bg-secondary hover:text-foreground"
               />
               {item.website && (
                 <Link
                   href={item.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-11 items-center gap-1.5 rounded-[8px] bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors duration-100 hover:bg-primary/90"
+                  className="inline-flex h-11 items-center gap-1.5 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-[background-color,transform] duration-150 motion-safe:active:scale-[0.97] hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Visit Website
+                  Visit website
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                 </Link>
               )}
@@ -385,12 +385,12 @@ export default async function DirectoryItemPage({
 
       {/* ── Screenshot ────────────────────────────────────────────────── */}
       {item.heroScreenshotUrl && (
-        <section className="border-b border-[#e0e0e0] bg-white py-8 md:py-10">
+        <section className="border-b border-border bg-background py-8 md:py-10">
           <div className="container px-6">
-            <div className="overflow-hidden rounded-[10px] border border-[#e0e0e0] bg-[#fafafa] shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+            <div className="overflow-hidden rounded-xl bg-secondary shadow-sm ring-1 ring-inset ring-black/10">
               <Image
                 src={item.heroScreenshotUrl}
-                alt={`${item.name} screenshot`}
+                alt={`${item.name} product interface`}
                 className="w-full object-cover"
                 width={1600}
                 height={900}
@@ -403,7 +403,7 @@ export default async function DirectoryItemPage({
       )}
 
       {/* ── Main content + sidebar ────────────────────────────────────── */}
-      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-10 md:py-14">
+      <section className="border-b border-border bg-secondary py-10 md:py-14">
         <div className="container px-6">
           <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-12">
             <div className="min-w-0 space-y-10">
@@ -414,7 +414,7 @@ export default async function DirectoryItemPage({
                     {descriptionParagraphs.map((paragraph, index) => (
                       <p
                         key={index}
-                        className="text-base leading-[1.75] text-[#1f1f1f]"
+                        className="break-words text-base leading-[1.75] text-foreground [overflow-wrap:anywhere]"
                       >
                         {paragraph}
                       </p>
@@ -564,21 +564,21 @@ export default async function DirectoryItemPage({
               )}
             </div>
 
-            <aside className="mt-10 lg:sticky lg:top-[66px] lg:mt-0 lg:self-start">
-              <div className="overflow-hidden rounded-[8px] border border-[#e0e0e0] bg-white">
-                <div className="border-b border-[#e0e0e0] px-4 py-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+            <aside className="mt-10 min-w-0 lg:sticky lg:top-[66px] lg:mt-0 lg:self-start">
+              <div className="overflow-hidden rounded-lg border border-border bg-background">
+                <div className="border-b border-border px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                     Tool details
                   </p>
                 </div>
-                <dl className="divide-y divide-[#e0e0e0]">
+                <dl className="divide-y divide-border">
                   {primaryCategory && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-                      <dt className="text-sm text-[#737373]">Category</dt>
-                      <dd className="text-right">
+                      <dt className="shrink-0 text-sm text-muted-foreground">Category</dt>
+                      <dd className="min-w-0 break-words text-right [overflow-wrap:anywhere]">
                         <Link
                           href={`/categories/${primaryCategory}`}
-                          className="text-sm font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
+                          className="text-sm font-medium text-foreground underline-offset-2 transition-colors hover:text-primary hover:underline"
                         >
                           {getCategoryLabel(primaryCategory)}
                         </Link>
@@ -587,13 +587,13 @@ export default async function DirectoryItemPage({
                   )}
                   {websiteLabel && item.website && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-                      <dt className="text-sm text-[#737373]">Website</dt>
-                      <dd className="text-right">
+                      <dt className="shrink-0 text-sm text-muted-foreground">Website</dt>
+                      <dd className="min-w-0 break-words text-right [overflow-wrap:anywhere]">
                         <Link
                           href={item.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm font-medium text-[#1f1f1f] underline-offset-2 transition-colors hover:underline"
+                          className="text-sm font-medium text-foreground underline-offset-2 transition-colors hover:text-primary hover:underline"
                         >
                           {websiteLabel}
                         </Link>
@@ -602,30 +602,30 @@ export default async function DirectoryItemPage({
                   )}
                   {pricingLabel && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-                      <dt className="text-sm text-[#737373]">Pricing</dt>
-                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">
+                      <dt className="shrink-0 text-sm text-muted-foreground">Pricing</dt>
+                      <dd className="min-w-0 break-words text-right text-sm font-medium text-foreground [overflow-wrap:anywhere]">
                         {pricingLabel}
                       </dd>
                     </div>
                   )}
                   {item.hasFreeTrial === true && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-                      <dt className="text-sm text-[#737373]">Free trial</dt>
-                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">Available</dd>
+                      <dt className="shrink-0 text-sm text-muted-foreground">Free trial</dt>
+                      <dd className="min-w-0 break-words text-right text-sm font-medium text-foreground [overflow-wrap:anywhere]">Available</dd>
                     </div>
                   )}
                   {item.foundedYear && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-                      <dt className="text-sm text-[#737373]">Founded</dt>
-                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">
+                      <dt className="shrink-0 text-sm text-muted-foreground">Founded</dt>
+                      <dd className="min-w-0 break-words text-right text-sm font-medium text-foreground tabular-nums [overflow-wrap:anywhere]">
                         {item.foundedYear}
                       </dd>
                     </div>
                   )}
                   {(item.city || item.country) && (
                     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-                      <dt className="text-sm text-[#737373]">Location</dt>
-                      <dd className="text-right text-sm font-medium text-[#1f1f1f]">
+                      <dt className="shrink-0 text-sm text-muted-foreground">Location</dt>
+                      <dd className="min-w-0 break-words text-right text-sm font-medium text-foreground [overflow-wrap:anywhere]">
                         {[item.city, item.country].filter(Boolean).join(", ")}
                       </dd>
                     </div>
@@ -633,8 +633,8 @@ export default async function DirectoryItemPage({
                 </dl>
 
                 {item.editorialStatus === 'verified' && item.lastVerifiedAt && (
-                  <div className="border-t border-[#e0e0e0] px-4 py-3.5">
-                    <p className="text-xs font-medium text-[#527c3e]">
+                  <div className="border-t border-border px-4 py-3.5">
+                    <p className="text-xs font-medium text-primary tabular-nums">
                       Data verified {new Date(item.lastVerifiedAt).toLocaleDateString('en-US', {
                         year: 'numeric', month: 'short', day: 'numeric',
                       })}
@@ -647,7 +647,7 @@ export default async function DirectoryItemPage({
                             href={sourceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-[#2563eb] hover:underline"
+                            className="rounded-sm text-xs text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
                             Source {index + 1}
                           </Link>
@@ -658,14 +658,14 @@ export default async function DirectoryItemPage({
                 )}
 
                 {hasSocials && (
-                  <div className="flex items-center gap-1.5 border-t border-[#e0e0e0] px-4 py-3.5">
+                  <div className="flex items-center gap-1.5 border-t border-border px-4 py-3.5">
                     {item.socials?.twitter && (
                       <Link
                         href={`https://twitter.com/${item.socials.twitter}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Twitter"
-                        className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <Twitter size={14} aria-hidden="true" />
                       </Link>
@@ -676,7 +676,7 @@ export default async function DirectoryItemPage({
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="LinkedIn"
-                        className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <Linkedin size={14} aria-hidden="true" />
                       </Link>
@@ -687,7 +687,7 @@ export default async function DirectoryItemPage({
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Facebook"
-                        className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-[#e0e0e0] text-[#737373] transition-colors hover:bg-[#fafafa] hover:text-[#1f1f1f]"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <Facebook size={14} aria-hidden="true" />
                       </Link>

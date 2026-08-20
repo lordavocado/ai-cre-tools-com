@@ -38,6 +38,23 @@
 }
 
 @layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    --tw-ring-color: hsl(var(--ring));
+  }
+
+  *,
+  *::before,
+  *::after {
+    border-color: hsl(var(--border));
+  }
+
+  a {
+    text-decoration-skip-ink: auto;
+    text-underline-position: from-font;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;
@@ -144,6 +161,27 @@
 
 /* Scrollbar utilities */
 @layer utilities {
+  .border-border {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .border-primary {
+    border-color: hsl(var(--primary)) !important;
+  }
+
+  .divide-border > :not([hidden]) ~ :not([hidden]) {
+    border-color: hsl(var(--border)) !important;
+  }
+
+  .ring-ring {
+    --tw-ring-color: hsl(var(--ring)) !important;
+  }
+
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid hsl(var(--ring)) !important;
+    outline-offset: 2px !important;
+  }
+
   .scrollbar-none {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -156,7 +194,7 @@
 /* Enhanced Global Search Styles */
 @layer components {
   .search-input-enhanced {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .search-input-enhanced:focus {
@@ -165,8 +203,13 @@
   }
 
   .search-dropdown-enhanced {
-    animation: search-dropdown-appear 0.2s ease-out;
     backdrop-filter: blur(8px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .search-dropdown-enhanced {
+      animation: search-dropdown-appear 0.2s ease-out;
+    }
   }
 
   @keyframes search-dropdown-appear {
@@ -182,16 +225,29 @@
 
   /* Search result hover animations */
   .search-result-item {
-    transition: all 0.2s ease-in-out;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
   }
 
-  .search-result-item:hover {
-    transform: translateX(4px);
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .search-result-item:hover {
+      transform: translateX(4px);
+    }
   }
 
   /* Z-index for search dropdown */
   .z-search-dropdown {
     z-index: 9999;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

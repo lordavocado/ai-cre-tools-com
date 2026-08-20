@@ -89,7 +89,7 @@ export function SafeImage({
   // Show loading state during hydration to prevent flashes
   if (!mounted) {
     return (
-      <div className={`${className} bg-slate-50 border border-slate-200 rounded flex items-center justify-center animate-pulse`}>
+      <div className={`${className} flex items-center justify-center rounded border border-border bg-secondary motion-safe:animate-pulse`}>
         <div className="w-4 h-4 bg-slate-200 rounded"></div>
       </div>
     );

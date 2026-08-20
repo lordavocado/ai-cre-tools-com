@@ -86,10 +86,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f1410' },
-  ],
+  themeColor: '#ffffff',
 };
 
 const spaceGrotesk = Space_Grotesk({
@@ -203,8 +200,16 @@ export default function RootLayout({
         <LazyPostHogProvider>
           <FavoritesProvider>
             <div className="relative flex min-h-dvh flex-col bg-background">
+              <a
+                href="#main-content"
+                className="sr-only fixed left-4 top-4 z-[10000] rounded-md bg-background px-4 py-3 text-sm font-semibold text-foreground shadow-lg ring-2 ring-ring focus:not-sr-only"
+              >
+                Skip to content
+              </a>
               <Header />
-              <main className="flex-1">{children}</main>
+              <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-20 outline-none">
+                {children}
+              </main>
               <Footer />
             </div>
             <Toaster />

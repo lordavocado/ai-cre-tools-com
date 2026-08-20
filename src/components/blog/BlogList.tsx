@@ -32,7 +32,7 @@ export function BlogList({ posts }: BlogListProps) {
       {/* Featured Post */}
       <div className="mb-12">
         <h2 className="text-lg font-semibold text-gray-900 mb-6">Featured Article</h2>
-        <div className="rounded-xl border border-gray-200 bg-white overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200">
+        <div className="overflow-hidden rounded-xl border border-border bg-background transition-[border-color,box-shadow,transform] duration-200 hover:border-foreground/20 hover:shadow-md">
           <div className="md:flex">
             {posts[0].imageUrl && (
               <div className="md:w-1/3">
@@ -89,7 +89,7 @@ export function BlogList({ posts }: BlogListProps) {
           {posts.slice(1).map((post) => (
             <div
               key={post.id}
-              className="rounded-xl border border-gray-200 bg-white overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200 flex flex-col"
+              className="flex flex-col overflow-hidden rounded-xl border border-border bg-background transition-[border-color,box-shadow,transform] duration-200 hover:border-foreground/20 hover:shadow-md"
             >
               {post.imageUrl && (
                 <Image

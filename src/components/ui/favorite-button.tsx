@@ -17,7 +17,7 @@ interface FavoriteButtonProps {
 }
 
 const sizeClasses = {
-  sm: "h-8 w-8",
+  sm: "h-10 w-10",
   md: "h-10 w-10", 
   lg: "h-12 w-12",
 };
@@ -69,14 +69,11 @@ export function FavoriteButton({
           variant="outline"
           size="sm"
           disabled
-          className={cn(
-            "transition-all duration-200",
-            className
-          )}
+          className={cn("transition-[color,background-color,border-color,transform] duration-200", className)}
         >
           <Star
             className={cn(
-              "mr-2 transition-all duration-200",
+              "mr-2 transition-[color,fill,transform] duration-200",
               iconSizeClasses.sm,
               "text-muted-foreground",
               iconClassName
@@ -88,35 +85,15 @@ export function FavoriteButton({
     }
 
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled
-              className={cn(
-                sizeClasses[size],
-                "transition-all duration-200",
-                className
-              )}
-              aria-label="Loading favorites"
-            >
-              <Star
-                className={cn(
-                  "transition-all duration-200",
-                  iconSizeClasses[size],
-                  "text-muted-foreground",
-                  iconClassName
-                )}
-              />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Loading favorites...</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Button
+        variant="ghost"
+        size="icon"
+        disabled
+        className={cn(sizeClasses[size], className)}
+        aria-label="Loading favorites"
+      >
+        <Star className={cn(iconSizeClasses[size], "text-muted-foreground", iconClassName)} />
+      </Button>
     );
   }
 
@@ -128,13 +105,13 @@ export function FavoriteButton({
         onClick={handleClick}
         disabled={isLoading}
         className={cn(
-          "transition-all duration-200 hover:scale-105",
+          "transition-[color,background-color,border-color,transform] duration-200",
           className
         )}
       >
         <Star
           className={cn(
-            "mr-2 transition-all duration-200",
+            "mr-2 transition-[color,fill,transform] duration-200",
             iconSizeClasses.sm,
             isFavorited ? "fill-current text-yellow-500" : "text-current",
             iconClassName
@@ -156,17 +133,17 @@ export function FavoriteButton({
             disabled={isLoading}
             className={cn(
               sizeClasses[size],
-              "transition-all duration-200 hover:scale-110 hover:bg-yellow-50",
+              "transition-[color,background-color,transform] duration-200 hover:bg-yellow-50",
               className
             )}
             aria-label={tooltipText}
           >
             <Star
               className={cn(
-                "transition-all duration-200",
+                "transition-[color,fill,transform] duration-200",
                 iconSizeClasses[size],
                 isFavorited 
-                  ? "fill-yellow-500 text-yellow-500 animate-in zoom-in-50 duration-200" 
+                  ? "fill-yellow-500 text-yellow-500 motion-safe:animate-in motion-safe:zoom-in-50 duration-200"
                   : "text-muted-foreground hover:text-yellow-500",
                 iconClassName
               )}
@@ -179,4 +156,4 @@ export function FavoriteButton({
       </Tooltip>
     </TooltipProvider>
   );
-} 
+}

@@ -26,7 +26,11 @@ function decodeHtmlEntities(input: string): string {
   });
 }
 
-export function normalizeToolDescription(input?: string | null): string {
+function escapeRegex(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function normalizeToolDescription(input?: string | null, toolSlug?: string): string {
   if (!input) {
     return '';
   }
@@ -40,10 +44,26 @@ export function normalizeToolDescription(input?: string | null): string {
     .replace(/<\/(?:p|div|section|article|header|footer|aside|main|blockquote|h[1-6]|ul|ol|li|table|tr)>/gi, '\n\n')
     .replace(/<[^>]*>/g, ' ');
 
-  const normalizedParagraphs = decodeHtmlEntities(withPlainTextBreaks)
+  const citationDomainPattern = toolSlug
+    ? new RegExp(
+        `${escapeRegex(toolSlug).replace(/\\-/g, '[-]?')}[a-z0-9-]*\\.(?:ai|app|co|com|design|io|net|org)(?:/[^\\s]*)?`,
+        'gi'
+      )
+    : null;
+  const withoutCitationDomains = citationDomainPattern
+    ? withPlainTextBreaks.replace(citationDomainPattern, '')
+    : withPlainTextBreaks;
+
+  const normalizedParagraphs = decodeHtmlEntities(withoutCitationDomains)
     .replace(/\u00a0/g, ' ')
     .split(/\n{2,}/)
-    .map((paragraph) => paragraph.replace(/[ \t\f\v]+/g, ' ').replace(/\n+/g, ' ').trim())
+    .map((paragraph) =>
+      paragraph
+        .replace(/[ \t\f\v]+/g, ' ')
+        .replace(/\n+/g, ' ')
+        .replace(/\s+([,.;:!?])/g, '$1')
+        .trim()
+    )
     .filter(Boolean);
 
   return normalizedParagraphs.join('\n\n');

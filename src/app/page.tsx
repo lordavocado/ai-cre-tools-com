@@ -191,19 +191,19 @@ export default async function Home() {
         categories={heroCategories}
       />
 
-      <section id="directory" className="border-b border-[#e0e0e0] bg-[#fafafa] py-16 md:py-20">
+      <section id="directory" className="border-b border-border bg-secondary py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">Directory</p>
-              <h2 className="mt-1 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-[#1f1f1f] sm:text-[32px]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Directory</p>
+              <h2 className="mt-1 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-foreground sm:text-[32px]">
                 All tools
               </h2>
-              <p className="mt-2 text-sm text-[#737373]">{initialItems.length} AI tools, curated for CRE professionals.</p>
+              <p className="mt-2 text-sm text-muted-foreground"><span className="tabular-nums">{initialItems.length}</span> AI tools, curated for CRE professionals.</p>
             </div>
             <Link
               href="/all-tools"
-              className="inline-flex w-fit items-center gap-1.5 rounded-[6px] border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa]"
+              className="inline-flex min-h-10 w-fit items-center gap-1.5 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-[background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               Browse A–Z index
               <ArrowRight className="h-3.5 w-3.5" />
@@ -212,7 +212,7 @@ export default async function Home() {
 
           <Suspense
             fallback={
-              <div className="py-12 text-center text-sm text-[#737373]">
+              <div className="py-12 text-center text-sm text-muted-foreground" role="status">
                 Loading directory…
               </div>
             }
@@ -222,17 +222,17 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[#e0e0e0] py-16 md:py-20">
+      <section className="border-b border-border py-16 md:py-20">
         <div className="container px-6">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">Categories</p>
-              <h2 className="mt-1 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-[#1f1f1f] sm:text-[32px]">Browse by category</h2>
-              <p className="mt-2 text-sm text-[#737373]">Organized by CRE workflow, not generic SaaS labels.</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Categories</p>
+              <h2 className="mt-1 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-foreground sm:text-[32px]">Browse by category</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Organized by CRE workflow, not generic SaaS labels.</p>
             </div>
             <Link
               href="/categories"
-              className="inline-flex w-fit items-center gap-1.5 rounded-[6px] border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa]"
+              className="inline-flex min-h-10 w-fit items-center gap-1.5 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-[background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               View all categories
               <ArrowRight className="h-3.5 w-3.5" />
@@ -243,15 +243,15 @@ export default async function Home() {
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
-                className="group flex flex-col gap-3 rounded-[8px] border border-[#e0e0e0] bg-[#fafafa] p-4 transition-colors duration-100 hover:border-[#c8c8c8] hover:bg-white"
+                className="group flex flex-col gap-3 rounded-lg border border-border bg-secondary p-4 transition-[background-color,border-color,box-shadow,transform] duration-150 motion-safe:active:scale-[0.99] hover:border-foreground/20 hover:bg-background hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-white border border-[#e0e0e0] text-xs font-bold text-[#1f1f1f]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-md border border-border bg-background text-xs font-bold text-foreground">
                   {cat.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[#1f1f1f] leading-snug">{cat.name}</p>
+                  <p className="text-sm font-medium leading-snug text-foreground">{cat.name}</p>
                   {cat.itemCount !== undefined && (
-                    <p className="mt-0.5 text-xs text-[#737373]">{cat.itemCount} tools</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">{cat.itemCount} tools</p>
                   )}
                 </div>
               </Link>
@@ -260,16 +260,16 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[#e0e0e0] bg-white py-16 md:py-20">
+      <section className="border-b border-border bg-background py-16 md:py-20">
         <div className="container px-6">
           <div className="mx-auto max-w-3xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Guide
             </p>
-            <h2 className="mt-2 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-[#1f1f1f] sm:text-[32px]">
+            <h2 className="mt-2 text-balance text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-foreground sm:text-[32px]">
               Commercial real estate AI software, compared
             </h2>
-            <div className="mt-6 space-y-4 text-base leading-relaxed text-[#737373]">
+            <div className="mt-6 space-y-4 text-base leading-relaxed text-muted-foreground">
               <p>
                 {siteConfig.name} is a focused directory of commercial real estate AI tools for US
                 B2B teams — investors underwriting deals, developers managing construction,
@@ -279,31 +279,31 @@ export default async function Home() {
               </p>
               <p>
                 Start with{' '}
-                <Link href="/categories/property-analysis-valuation" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/categories/property-analysis-valuation" className="font-medium text-foreground underline-offset-2 hover:underline">
                   commercial real estate investment analysis software
                 </Link>
                 ,{' '}
-                <Link href="/tags/lease-abstraction" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/tags/lease-abstraction" className="font-medium text-foreground underline-offset-2 hover:underline">
                   lease abstraction AI software
                 </Link>
                 ,{' '}
-                <Link href="/categories/property-management-operations" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/categories/property-management-operations" className="font-medium text-foreground underline-offset-2 hover:underline">
                   property management AI software
                 </Link>
                 , or browse{' '}
-                <Link href="/for/investors" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/for/investors" className="font-medium text-foreground underline-offset-2 hover:underline">
                   AI tools for real estate investors
                 </Link>
                 {' '}and{' '}
-                <Link href="/for/developers" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/for/developers" className="font-medium text-foreground underline-offset-2 hover:underline">
                   AI tools for real estate developers
                 </Link>
                 . Use{' '}
-                <Link href="/compare" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/compare" className="font-medium text-foreground underline-offset-2 hover:underline">
                   side-by-side comparisons
                 </Link>
                 {' '}and the{' '}
-                <Link href="/glossary" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+                <Link href="/glossary" className="font-medium text-foreground underline-offset-2 hover:underline">
                   CRE glossary
                 </Link>
                 {' '}to evaluate vendors before you buy.
@@ -313,26 +313,26 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-12 md:py-16">
+      <section className="border-b border-border bg-secondary py-12 md:py-16">
         <div className="container px-6">
           <div className="mb-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">By capability</p>
-            <h2 className="mt-1 text-xl font-medium text-[#1f1f1f] sm:text-2xl">Browse by workflow</h2>
-            <p className="mt-2 text-sm text-[#737373]">Long-tail CRE software topics matched to product features.</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">By capability</p>
+            <h2 className="mt-1 text-xl font-medium text-foreground sm:text-2xl">Browse by workflow</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Long-tail CRE software topics matched to product features.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {getTopTagSlugs(6).map((tagSlug) => (
               <Link
                 key={tagSlug}
                 href={`/tags/${tagSlug}`}
-                className="inline-flex items-center rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[#c8c8c8] hover:bg-[#fafafa]"
+                className="inline-flex min-h-10 items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-[background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:border-foreground/20 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {tagSlug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
               </Link>
             ))}
             <Link
               href="/tags"
-              className="inline-flex items-center gap-1 rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#737373] hover:text-[#1f1f1f]"
+              className="inline-flex min-h-10 items-center gap-1 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground transition-[color,background-color,transform] motion-safe:active:scale-[0.97] hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               All capabilities
               <ArrowRight className="h-3.5 w-3.5" />
@@ -341,26 +341,26 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[#e0e0e0] bg-[#fafafa] py-12 md:py-16">
+      <section className="border-b border-border bg-secondary py-12 md:py-16">
         <div className="container px-6">
           <div className="mb-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#999999]">By role</p>
-            <h2 className="mt-1 text-xl font-medium text-[#1f1f1f] sm:text-2xl">Tools for your team</h2>
-            <p className="mt-2 text-sm text-[#737373]">Curated directories for common CRE roles.</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">By role</p>
+            <h2 className="mt-1 text-xl font-medium text-foreground sm:text-2xl">Tools for your team</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Curated directories for common CRE roles.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {getAllSeoPersonas().map((persona) => (
               <Link
                 key={persona.slug}
                 href={`/for/${persona.slug}`}
-                className="inline-flex items-center rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:border-[#c8c8c8] hover:bg-[#fafafa]"
+                className="inline-flex min-h-10 items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-[background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:border-foreground/20 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {persona.shortLabel}
               </Link>
             ))}
             <Link
               href="/for"
-              className="inline-flex items-center gap-1 rounded-full border border-[#e0e0e0] bg-white px-4 py-2 text-sm font-medium text-[#737373] hover:text-[#1f1f1f]"
+              className="inline-flex min-h-10 items-center gap-1 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground transition-[color,background-color,transform] motion-safe:active:scale-[0.97] hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               All roles
               <ArrowRight className="h-3.5 w-3.5" />
@@ -399,37 +399,37 @@ export default async function Home() {
 
         <section id="directory" className="py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-xl border border-[#e0e0e0] bg-white p-10 text-center">
-              <h2 className="text-2xl font-bold text-[#1f1f1f]">
+            <div className="rounded-xl border border-border bg-background p-10 text-center">
+              <h2 className="text-2xl font-bold text-foreground">
                 {siteConfig.categoryName} directory update in progress
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-base text-[#737373]">
+              <p className="mx-auto mt-3 max-w-xl text-pretty text-base text-muted-foreground">
                 We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-[#629649] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#4a7238]"
+                className="mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-[background-color,transform] motion-safe:active:scale-[0.97] hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Explore Categories <ArrowRight className="h-3.5 w-3.5" />
+                Explore categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="bg-[#fafafa] py-16 md:py-20">
+        <section className="bg-secondary py-16 md:py-20">
           <div className="container px-6">
-            <div className="rounded-xl border border-[#e0e0e0] bg-white p-10 text-center">
-              <h2 className="text-2xl font-bold text-[#1f1f1f]">
-                Browse by Category
+            <div className="rounded-xl border border-border bg-background p-10 text-center">
+              <h2 className="text-2xl font-bold text-foreground">
+                Browse by category
               </h2>
-              <p className="mt-3 text-base text-[#737373]">
+              <p className="mt-3 text-base text-muted-foreground">
                 Our directory is organized by specific use cases in commercial real estate.
               </p>
               <Link
                 href="/categories"
-                className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#e0e0e0] bg-white px-5 py-2 text-sm font-medium text-[#1f1f1f] transition-colors hover:bg-[#fafafa] hover:border-[#c8c8c8]"
+                className="mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border bg-background px-5 py-2 text-sm font-medium text-foreground transition-[background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:border-foreground/20 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                View All Categories <ArrowRight className="h-3.5 w-3.5" />
+                View all categories <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>

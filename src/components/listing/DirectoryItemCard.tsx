@@ -37,11 +37,11 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
   return (
     <Link
       href={getToolPath(item.slug)}
-      className="flex flex-col bg-white border border-[#e0e0e0] rounded-[8px] p-5 gap-3 transition-all duration-100 hover:border-[#c8c8c8] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
+      className="flex flex-col gap-3 rounded-lg border border-border bg-background p-5 transition-[border-color,box-shadow,transform] duration-150 motion-safe:active:scale-[0.99] hover:border-foreground/20 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       {/* Header row: favicon + name + domain */}
       <div className="flex items-start gap-3">
-        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[8px] border border-[#f0f0f0]">
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-background ring-1 ring-inset ring-black/10">
           <SafeImage
             src={item.imageUrl}
             alt={item.name}
@@ -51,16 +51,16 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           />
         </div>
         <div className="min-w-0">
-          <p className="text-[17px] font-semibold leading-tight tracking-[-0.005em] text-[#1f1f1f] truncate">{item.name}</p>
+          <p className="truncate text-[17px] font-semibold leading-tight tracking-[-0.005em] text-foreground">{item.name}</p>
           {domainLabel && (
-            <p className="mt-1 text-xs text-[#a0a0a0] truncate">{domainLabel}</p>
+            <p className="mt-1 truncate text-xs text-muted-foreground">{domainLabel}</p>
           )}
         </div>
       </div>
 
       {/* One-liner tagline — 2 lines for tighter card rhythm */}
       {item.tagline && (
-        <p className="flex-1 text-sm leading-relaxed text-[#737373] line-clamp-2">
+        <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">
           {item.tagline}
         </p>
       )}
@@ -71,7 +71,7 @@ function DirectoryItemCardContent({ item }: DirectoryItemCardProps) {
           {tags.slice(0, 2).map((tag) => (
             <span
               key={tag}
-              className="rounded-[6px] border border-[#e8e8e8] bg-[#fafafa] px-2 py-0.5 text-[11px] text-[#737373]"
+              className="whitespace-nowrap rounded-md border border-border bg-secondary px-2 py-0.5 text-[11px] text-muted-foreground"
             >
               {tag}
             </span>

@@ -19,19 +19,19 @@ export const colors = {
   /** Page and section backgrounds */
   background: '#ffffff',
   /** Card and input surfaces */
-  card: '#fafafa',
+  card: '#ffffff',
   /** Borders, dividers, input edges */
-  border: '#e0e0e0',
+  border: '#e2e8f0',
 
   /** Primary text — headings, body */
-  foreground: '#1f1f1f',
+  foreground: '#0f172a',
   /** Secondary text — subtitles, meta, placeholders */
-  muted: '#737373',
+  muted: '#64748b',
 
   /** Moss green — primary action / accent */
-  primary: '#629649',
+  primary: '#2f7448',
   /** Darker green — hover state for primary */
-  primaryHover: '#4a7238',
+  primaryHover: '#275f3b',
   /** Pale green — chip backgrounds, icon wells */
   primarySubtle: '#f0f9f0',
   /** Soft green — chip borders, focus rings */
@@ -126,7 +126,8 @@ export const radius = {
 // ---------------------------------------------------------------------------
 
 /** Single easing used on all interactive elements */
-export const transition = 'all 100ms cubic-bezier(0, 0, 0.2, 1)';
+export const transition =
+  'color 100ms cubic-bezier(0, 0, 0.2, 1), background-color 100ms cubic-bezier(0, 0, 0.2, 1), border-color 100ms cubic-bezier(0, 0, 0.2, 1), box-shadow 100ms cubic-bezier(0, 0, 0.2, 1), transform 200ms ease-out';
 
 // ---------------------------------------------------------------------------
 // Category slug → display name map

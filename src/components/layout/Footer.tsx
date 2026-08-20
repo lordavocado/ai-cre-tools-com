@@ -16,7 +16,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-[#e0e0e0]">
+    <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-[1200px] px-6">
 
         {/* Main 4-column grid */}
@@ -25,15 +25,15 @@ export function Footer() {
           {/* Col 1: Brand + tagline + social */}
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#629649] text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-[11px] font-bold uppercase tracking-wider text-primary-foreground shadow-sm">
                 AI
               </span>
-              <span className="text-sm font-bold text-[#1f1f1f]">{siteConfig.name}</span>
+              <span className="text-sm font-bold text-foreground">{siteConfig.name}</span>
             </Link>
-            <p className="mt-3 text-sm leading-6 text-[#737373]">
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Find the best AI tools for commercial real estate.
             </p>
-            <p className="mt-2 text-[11px] font-semibold uppercase tracking-widest text-[#737373]">
+            <p className="mt-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
               Curated for investors, brokers &amp; operators
             </p>
 
@@ -43,7 +43,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn — Made by Nichlas, feel free to connect"
-                className="inline-flex items-center gap-2 text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                className="inline-flex min-h-10 items-center gap-2 rounded-md text-muted-foreground transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Linkedin size={16} aria-hidden="true" />
                 <span className="text-xs">Made by Nichlas — feel free to connect</span>
@@ -53,7 +53,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X (formerly Twitter)"
-                className="inline-flex items-center gap-2 text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                className="inline-flex min-h-10 items-center gap-2 rounded-md text-muted-foreground transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {/* X (formerly Twitter) icon */}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -66,7 +66,7 @@ export function Footer() {
 
           {/* Col 2: Browse */}
           <div>
-            <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-foreground">
               Browse
             </h3>
             <nav className="flex flex-col gap-2.5">
@@ -93,7 +93,7 @@ export function Footer() {
                 <Link
                   key={href}
                   href={href}
-                  className="text-sm text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                  className="rounded-sm text-sm text-muted-foreground transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {label}
                 </Link>
@@ -103,15 +103,15 @@ export function Footer() {
 
           {/* Col 3: By role */}
           <div>
-            <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
-              By Role
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-foreground">
+              By role
             </h3>
             <nav className="flex flex-col gap-2.5">
               {getAllSeoPersonas().map((persona) => (
                 <Link
                   key={persona.slug}
                   href={`/for/${persona.slug}`}
-                  className="text-sm text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                  className="rounded-sm text-sm text-muted-foreground transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {persona.shortLabel}
                 </Link>
@@ -123,7 +123,7 @@ export function Footer() {
 
           {/* Col 4: Resources & Submit */}
           <div>
-            <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-foreground">
               Resources
             </h3>
             <nav className="mb-6 flex flex-col gap-2.5">
@@ -137,42 +137,42 @@ export function Footer() {
                 <Link
                   key={href}
                   href={href}
-                  className="text-sm text-[#737373] hover:text-[#1f1f1f] transition-colors duration-100"
+                  className="rounded-sm text-sm text-muted-foreground transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {label}
                 </Link>
               ))}
             </nav>
-            <h3 className="text-sm font-semibold text-[#1f1f1f] mb-3 uppercase tracking-wide">
-              Submit a Tool
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-foreground">
+              Submit a tool
             </h3>
-            <p className="text-sm text-[#737373] mb-3">
+            <p className="mb-3 text-sm text-muted-foreground">
               Know an AI tool for CRE? Add it to the directory.
             </p>
             <Link
               href="/submit-tool"
-              className="inline-flex items-center gap-1.5 rounded-[6px] bg-[#629649] px-4 py-2 text-sm font-medium text-white hover:bg-[#4a7238] transition-colors duration-100"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-[background-color,transform] duration-150 motion-safe:active:scale-[0.97] hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              Submit a Tool
+              Submit a tool
             </Link>
           </div>
 
         </div>
 
         {/* Newsletter row */}
-        <div className="border-t border-[#e0e0e0] py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-[#737373] sm:text-sm">Stay updated on new CRE AI tools</p>
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-border py-5 sm:flex-row">
+          <p className="text-xs text-muted-foreground sm:text-sm">Stay updated on new CRE AI tools</p>
           <NewsletterForm source="footer" variant="brand" size="sm" />
         </div>
 
         {/* Copyright bar */}
-        <div className="border-t border-[#e0e0e0] flex flex-col items-center justify-between gap-4 py-5 text-xs text-[#737373] sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-border py-5 text-xs text-muted-foreground sm:flex-row">
           <p>&copy; {currentYear} {siteConfig.name}. All rights reserved.</p>
           <div className="flex gap-5">
-            <Link href="/privacy-policy" className="hover:text-[#1f1f1f] transition-colors duration-100">
+            <Link href="/privacy-policy" className="rounded-sm transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               Privacy
             </Link>
-            <Link href="/terms-of-service" className="hover:text-[#1f1f1f] transition-colors duration-100">
+            <Link href="/terms-of-service" className="rounded-sm transition-colors duration-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               Terms
             </Link>
           </div>

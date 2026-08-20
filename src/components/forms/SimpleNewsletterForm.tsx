@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useId, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,9 @@ import { Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BRAND = {
-  button: "bg-[#629649] text-white hover:bg-[#4a7238] border-0 shadow-none",
+  button: "border-0 bg-primary text-primary-foreground shadow-none hover:bg-primary/90",
   input:
-    "border-[#629649] bg-white focus-visible:border-[#629649] focus-visible:ring-2 focus-visible:ring-[#629649]/25 placeholder:text-[#737373]",
+    "border-primary bg-background focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/30 placeholder:text-muted-foreground",
 } as const;
 
 interface SubmitButtonProps {
@@ -34,7 +34,7 @@ function SubmitButton({ className, variant, size, iconClassName }: SubmitButtonP
       aria-label="Subscribe to email updates"
       className={cn(
         "shrink-0 font-semibold",
-        isSm ? "h-9 gap-1 rounded-md px-2.5 text-xs" : "h-10 gap-1.5 rounded-[8px] px-3 text-sm",
+        isSm ? "h-11 gap-1.5 rounded-md px-3 text-sm sm:h-9 sm:text-xs" : "h-11 gap-1.5 rounded-lg px-3 text-sm sm:h-10",
         variant === "default" &&
           "bg-neutral-200 text-neutral-900 hover:bg-neutral-300 border border-neutral-300 hover:shadow-lg hover:shadow-neutral-400/30",
         variant === "brand" && BRAND.button,
@@ -49,7 +49,7 @@ function SubmitButton({ className, variant, size, iconClassName }: SubmitButtonP
         )}
         aria-hidden
       />
-      {pending ? "Subscribing..." : "Get email updates"}
+      {pending ? "Subscribing…" : "Get email updates"}
     </Button>
   );
 }
@@ -87,13 +87,16 @@ export function NewsletterForm({
   const { toast } = useToast();
   const emailId = useId();
   const hintId = useId();
+  const errorId = useId();
+  const emailRef = useRef<HTMLInputElement>(null);
   const isSm = size === "sm";
 
   useEffect(() => {
     if (!state.message) return;
     if (state.success && hideFormOnSuccess) return;
+    if (!state.success) emailRef.current?.focus();
     toast({
-      title: state.success ? "Success!" : "Oops!",
+      title: state.success ? "Subscribed" : "Unable to subscribe",
       description: state.message,
       variant: state.success ? "default" : "destructive",
     });
@@ -122,6 +125,7 @@ export function NewsletterForm({
           Email address for newsletter
         </label>
         <Input
+          ref={emailRef}
           id={emailId}
           type="email"
           name="email"
@@ -130,12 +134,13 @@ export function NewsletterForm({
           className={cn(
             "min-w-0 flex-1 md:max-w-none",
             isSm
-              ? "h-9 rounded-md px-2.5 text-xs md:w-48"
-              : "text-sm md:w-64",
+              ? "h-11 rounded-md px-3 text-base sm:h-9 sm:text-sm md:w-48"
+              : "h-11 text-base sm:h-10 sm:text-sm md:w-64",
             variant === "brand" && BRAND.input,
             inputClassName
           )}
-          aria-describedby={hintId}
+          aria-invalid={state.message && !state.success ? true : undefined}
+          aria-describedby={state.message && !state.success ? `${hintId} ${errorId}` : hintId}
         />
         <SubmitButton
           variant={variant}
@@ -148,7 +153,7 @@ export function NewsletterForm({
       </span>
       <input type="hidden" name="source" value={source} />
       {state.message && !state.success && (
-        <p className="mt-2 text-sm text-destructive" role="alert">
+        <p id={errorId} className="mt-2 text-sm text-destructive" role="alert">
           {state.message}
         </p>
       )}
