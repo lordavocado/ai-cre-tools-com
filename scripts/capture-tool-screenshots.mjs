@@ -110,6 +110,27 @@ async function dismissCookieBanner(page) {
   }).catch(() => undefined);
 }
 
+async function dismissObstructiveDialog(page) {
+  await page.keyboard.press('Escape').catch(() => undefined);
+  await page.evaluate(() => {
+    const isVisible = (element) => {
+      if (!(element instanceof HTMLElement)) return false;
+      const style = window.getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0;
+    };
+    const dialogs = Array.from(document.querySelectorAll('dialog, [role="dialog"], [aria-modal="true"]'))
+      .filter(isVisible);
+    const explicitClose = dialogs
+      .flatMap((dialog) => Array.from(dialog.querySelectorAll('button, [role="button"]')))
+      .find((element) => {
+        const label = `${element.getAttribute('aria-label') || ''} ${element.getAttribute('title') || ''} ${element.textContent || ''}`.trim();
+        return /^(close|dismiss|cancel|×|x)$/i.test(label) || /close|dismiss/i.test(label);
+      });
+    if (explicitClose instanceof HTMLElement) explicitClose.click();
+  }).catch(() => undefined);
+}
+
 async function warmLazyContent(page) {
   await page.evaluate(async () => {
     const maximum = Math.min(document.documentElement.scrollHeight, window.innerHeight * 8);
@@ -211,6 +232,8 @@ async function captureToolAssets(page, url) {
 
   await new Promise((resolve) => setTimeout(resolve, 2_000));
   await dismissCookieBanner(page);
+  await dismissObstructiveDialog(page);
+  await new Promise((resolve) => setTimeout(resolve, 250));
   await page.addStyleTag({
     content: '*, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }',
   }).catch(() => undefined);
