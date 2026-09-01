@@ -22,6 +22,9 @@ const nextConfig = {
     optimizeServerReact: true,
     preloadEntriesOnStart: false,
     webpackMemoryOptimizations: true,
+    staticGenerationRetryCount: 1,
+    staticGenerationMaxConcurrency: 2,
+    staticGenerationMinPagesPerWorker: 100,
   },
 
   compiler: {

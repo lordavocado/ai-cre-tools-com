@@ -4,10 +4,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 FROM base AS deps
-RUN apk add --no-cache python3 make g++ build-base pkgconfig cairo-dev pango-dev jpeg-dev giflib-dev librsvg-dev
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci --ignore-scripts
-RUN npm rebuild canvas --build-from-source 2>/dev/null || echo "canvas native build skipped, using fallback"
 
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
