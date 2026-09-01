@@ -96,7 +96,11 @@ function createComparison(toolA: DirectoryItem, toolB: DirectoryItem, categorySl
   };
 }
 
+const comparisonsCache = new WeakMap<DirectoryItem[], ResolvedComparison[]>();
+
 export function getResolvedComparisons(items: DirectoryItem[]): ResolvedComparison[] {
+  const cached = comparisonsCache.get(items);
+  if (cached) return cached;
   const categories = new Map<string, DirectoryItem[]>();
   for (const item of items) {
     const category = primaryCategory(item);
@@ -114,7 +118,9 @@ export function getResolvedComparisons(items: DirectoryItem[]): ResolvedComparis
       }
     }
   }
-  return comparisons.sort((a, b) => a.h1.localeCompare(b.h1));
+  comparisons.sort((a, b) => a.h1.localeCompare(b.h1));
+  comparisonsCache.set(items, comparisons);
+  return comparisons;
 }
 
 function getLegacyComparison(slug: string, items: DirectoryItem[]): ResolvedComparison | null {

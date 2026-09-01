@@ -27,12 +27,8 @@ export async function generateStaticParams() {
 }
 
 async function getPersonaToolCount(personaSlug: string, categorySlugs: string[]): Promise<number> {
-  try {
-    const items = await getDirectoryItems();
-    return filterItemsByPersona(items, personaSlug, categorySlugs).length;
-  } catch {
-    return 0;
-  }
+  const items = await getDirectoryItems();
+  return filterItemsByPersona(items, personaSlug, categorySlugs).length;
 }
 
 export async function generateMetadata({

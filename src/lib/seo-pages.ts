@@ -43,10 +43,11 @@ export function filterItemsByPersona(
   personaSlug: string,
   fallbackCategorySlugs: string[]
 ): DirectoryItem[] {
+  const fallbackCategories = new Set(fallbackCategorySlugs);
   return items.filter((item) => {
     if (!isPseoEligible(item)) return false;
     if (item.personas.length > 0) return item.personas.includes(personaSlug as DirectoryItem['personas'][number]);
-    return filterItemsByCategories([item], fallbackCategorySlugs).length > 0;
+    return item.category.split(',').some((category) => fallbackCategories.has(category.trim()));
   });
 }
 
@@ -85,23 +86,27 @@ export interface IndexableTag extends SeoTag {
   toolCount: number;
 }
 
+// Dataset identity is request-memoized by the data layer. Weak keys do not retain
+// old directory snapshots after revalidation.
+const indexableTagsCache = new WeakMap<DirectoryItem[], IndexableTag[]>();
+
 export function getIndexableTags(items: DirectoryItem[]): IndexableTag[] {
-  return getAllSeoTags()
+  const cached = indexableTagsCache.get(items);
+  if (cached) return cached;
+  const tags = getAllSeoTags()
     .map((tag) => ({
       ...tag,
       toolCount: filterItemsByTag(items, tag).length,
     }))
     .filter((tag) => tag.toolCount >= MIN_TOOLS_FOR_INDEXABLE_TAG);
+  indexableTagsCache.set(items, tags);
+  return tags;
 }
 
 export async function getIndexableTagSlugs(): Promise<string[]> {
   const { getDirectoryItems } = await import('@/lib/supabase');
-  try {
-    const items = await getDirectoryItems();
-    return getIndexableTags(items).map((t) => t.slug);
-  } catch {
-    return [];
-  }
+  const items = await getDirectoryItems();
+  return getIndexableTags(items).map((t) => t.slug);
 }
 
 /** Returns an indexable tag slug when a feature name matches curated matchers. */

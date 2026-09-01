@@ -5,7 +5,7 @@ import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: `All ${siteConfig.categoryName} Categories`,
-  description: `Explore all categories of ${siteConfig.categoryName.toLowerCase()} available in our directory.`,
+  description: 'Browse AI tools for commercial real estate by category, from property management and investment analysis to leasing, brokerage, and construction.',
   alternates: {
     canonical: `${siteConfig.url}/categories`,
   },
@@ -14,7 +14,6 @@ export const metadata: Metadata = {
 import { getCategories } from "@/lib/supabase";
 
 export default async function CategoriesPage() {
-  try {
     const categories = await getCategories();
 
     return (
@@ -79,43 +78,5 @@ export default async function CategoriesPage() {
       />
       </div>
     );
-  } catch (error) {
-    console.error('Error loading categories:', error);
-    
-    return (
-      <div className="container py-16 md:py-24 px-6">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-serif tracking-tight mb-6">
-            Explore {siteConfig.categoryName} Categories
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-12 leading-relaxed">
-            We're currently updating our categories. Please check back soon.
-          </p>
-          
-          <div className="bg-secondary/30 rounded-xl p-12 max-w-4xl mx-auto">
-            <p className="text-lg text-muted-foreground mb-6">
-              Our {siteConfig.categoryName.toLowerCase()} directory is organized by specific use cases in commercial real estate.
-            </p>
-            <p className="text-base text-muted-foreground">
-              Categories include Property Management, Investment Analysis, Market Research, and more.
-            </p>
-          </div>
-        </div>
 
-        {/* Basic Structured Data for error case */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "CollectionPage",
-              name: `All ${siteConfig.categoryName} Categories`,
-              description: `Explore all categories of ${siteConfig.categoryName.toLowerCase()} available in our directory.`,
-              url: `${siteConfig.url}/categories`,
-            })
-          }}
-        />
-      </div>
-    );
-  }
 }

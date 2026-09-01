@@ -34,13 +34,8 @@ export async function generateMetadata({
   if (!seoTag) return { title: 'Tag Not Found' };
 
   const { getDirectoryItems } = await import('@/lib/supabase');
-  let toolCount = 0;
-  try {
-    const items = await getDirectoryItems();
-    toolCount = filterItemsByTag(items, seoTag).length;
-  } catch {
-    toolCount = 0;
-  }
+  const items = await getDirectoryItems();
+  const toolCount = filterItemsByTag(items, seoTag).length;
 
   const { title, description } = buildTagPageMetadata(seoTag, toolCount);
 

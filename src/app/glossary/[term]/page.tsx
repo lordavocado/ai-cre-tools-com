@@ -52,6 +52,12 @@ export default async function GlossaryTermPage({
     .filter((c) => c !== undefined);
 
   const pageUrl = `${siteConfig.url}/glossary/${slug}`;
+  const glossarySlugs = getAllGlossarySlugs();
+  const position = glossarySlugs.indexOf(slug);
+  const relatedTerms = [glossarySlugs[position - 1], glossarySlugs[position + 1]]
+    .filter((term): term is string => Boolean(term))
+    .map(getGlossaryTerm)
+    .filter((term) => term !== undefined);
 
   return (
     <>
@@ -142,6 +148,20 @@ export default async function GlossaryTermPage({
               })}
             </ul>
           </div>
+        )}
+        {relatedTerms.length > 0 && (
+          <nav aria-label="Related glossary terms" className="mt-12 border-t border-[#e0e0e0] pt-8">
+            <h2 className="text-lg font-semibold text-[#1f1f1f]">Continue learning</h2>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {relatedTerms.map((term) => (
+                <li key={term.slug}>
+                  <Link href={`/glossary/${term.slug}`} className="text-sm font-medium text-[#629649] hover:underline">
+                    {term.term}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         )}
       </article>
     </>

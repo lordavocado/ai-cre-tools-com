@@ -26,13 +26,13 @@ export async function GET(
       },
     });
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error(`Error generating ${group} sitemap:`, error);
-    }
-    return new NextResponse(buildUrlSetXml([]), {
+    console.error(`Error generating ${group} sitemap:`, error);
+    return new NextResponse('Sitemap temporarily unavailable', {
+      status: 503,
       headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=300',
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'Retry-After': '60',
       },
     });
   }

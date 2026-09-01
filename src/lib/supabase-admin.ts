@@ -8,7 +8,6 @@ if (typeof window !== 'undefined') {
 
 import { createClient } from '@supabase/supabase-js';
 import type { AdminTool } from '@/types';
-import { clearSupabaseCache } from '@/lib/supabase';
 import { revalidateDirectoryCache } from '@/lib/supabase-cache';
 import { normalizeToolDescription } from '@/lib/tool-content';
 import { resolveCategoryInfo } from '@/lib/utils';
@@ -431,8 +430,6 @@ export async function updateAdminTool(input: AdminToolUpdateInput) {
   if (error) {
     throw new Error(`Failed to update published tool: ${error.message}`);
   }
-
-  clearSupabaseCache();
   revalidateDirectoryCache();
   return mapAdminToolRow(data as AdminToolRow);
 }
@@ -478,8 +475,6 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
     if (error) {
       throw new Error(`Failed to update the existing live tool: ${error.message}`);
     }
-
-    clearSupabaseCache();
     revalidateDirectoryCache();
     return mapAdminToolRow(data as AdminToolRow);
   }
@@ -498,8 +493,6 @@ export async function publishToolFromSubmission(input: { draft: PublishableToolD
   if (error) {
     throw new Error(`Failed to publish tool to the live directory: ${error.message}`);
   }
-
-  clearSupabaseCache();
   revalidateDirectoryCache();
   return mapAdminToolRow(data as AdminToolRow);
 }

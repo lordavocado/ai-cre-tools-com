@@ -9,7 +9,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Search AI CRE Tools',
-  description: 'Search the AI CRE Tools directory by tool, workflow, or category.',
+  description: 'Search AI tools for commercial real estate by name, workflow, or category. Find software for property management, investment analysis, and brokerage.',
   robots: { index: false, follow: true },
   alternates: { canonical: siteConfig.url },
 };

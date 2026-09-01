@@ -68,7 +68,6 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function Home() {
-  try {
     // Items fetched first so the module-level cache is warm when getCategories runs
     const initialItems = await getDirectoryListItems();
     let categoriesFromSheet: Category[];
@@ -377,70 +376,5 @@ export default async function Home() {
 
       </>
     );
-  } catch {
-    return (
-      <>
-        {/* Basic Structured Data for error case */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: siteConfig.name,
-              url: siteConfig.url,
-              description: siteConfig.description,
-              inLanguage: "en-US",
-            }),
-          }}
-        />
 
-        <Hero totalItems={0} />
-
-        <section id="directory" className="py-16 md:py-20">
-          <div className="container px-6">
-            <div className="rounded-xl border border-border bg-background p-10 text-center">
-              <h2 className="text-2xl font-bold text-foreground">
-                {siteConfig.categoryName} directory update in progress
-              </h2>
-              <p className="mx-auto mt-3 max-w-xl text-pretty text-base text-muted-foreground">
-                We're currently updating our directory. Please check back soon for the latest {siteConfig.categoryName.toLowerCase()}.
-              </p>
-              <Link
-                href="/categories"
-                className="mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-[background-color,transform] motion-safe:active:scale-[0.97] hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                Explore categories <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-secondary py-16 md:py-20">
-          <div className="container px-6">
-            <div className="rounded-xl border border-border bg-background p-10 text-center">
-              <h2 className="text-2xl font-bold text-foreground">
-                Browse by category
-              </h2>
-              <p className="mt-3 text-base text-muted-foreground">
-                Our directory is organized by specific use cases in commercial real estate.
-              </p>
-              <Link
-                href="/categories"
-                className="mt-6 inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border bg-background px-5 py-2 text-sm font-medium text-foreground transition-[background-color,border-color,transform] motion-safe:active:scale-[0.97] hover:border-foreground/20 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                View all categories <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Featured On Section */}
-        <FeaturedOn />
-
-        {/* FAQ Section */}
-        <FAQ />
-      </>
-    );
-  }
 }

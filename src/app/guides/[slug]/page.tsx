@@ -40,6 +40,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const guide = await getGuideBySlug(slug);
   if (!guide) notFound();
   const html = await markdownToHtml(guide.content);
+  const guides = await getGuides();
+  const position = guides.findIndex((candidate) => candidate.slug === slug);
+  const adjacentGuides = [guides[position - 1], guides[position + 1]].filter(Boolean);
 
   return (
     <main className="container pl-6 py-12">
@@ -49,6 +52,20 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       <h1 className="text-4xl font-bold mb-4">{guide.title}</h1>
       <p className="text-lg text-muted-foreground mb-8">{guide.excerpt}</p>
       <article className="prose max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: html }} />
+      {adjacentGuides.length > 0 && (
+        <nav aria-label="More guides" className="mt-12 border-t pt-8">
+          <h2 className="text-xl font-semibold">More practical guides</h2>
+          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+            {adjacentGuides.map((candidate) => (
+              <li key={candidate.slug}>
+                <Link href={`/guides/${candidate.slug}`} className="underline-offset-2 hover:underline">
+                  {candidate.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </main>
   );
 }

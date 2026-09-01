@@ -4,7 +4,6 @@ import { getDirectoryItems } from '@/lib/supabase';
 import { siteConfig } from '@/config/site';
 import { getAllSeoPersonas } from '@/config/seo-personas';
 import { filterItemsByPersona } from '@/lib/seo-pages';
-import type { DirectoryItem } from '@/types';
 import { ArrowRight } from 'lucide-react';
 
 export const revalidate = 3600;
@@ -33,12 +32,7 @@ export const metadata: Metadata = {
 
 export default async function ForHubPage() {
   const personas = getAllSeoPersonas();
-  let items: DirectoryItem[] = [];
-  try {
-    items = await getDirectoryItems();
-  } catch {
-    items = [];
-  }
+  const items = await getDirectoryItems();
 
   const personasWithCounts = personas.map((persona) => ({
     ...persona,

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { getCategories, getDirectoryItems } from '@/lib/supabase';
-import type { DirectoryItem } from '@/types';
+import { hasEnoughAlternatives } from '@/config/seo-alternatives';
+import { getToolAlternativesPath } from '@/lib/tool-routes';
 import { siteConfig } from '@/config/site';
 import { CategoryPageClient } from '@/components/category/CategoryPageClient';
 import { parseDirectoryPage } from '@/lib/directory-pagination';
@@ -24,12 +26,8 @@ export async function generateStaticParams() {
 }
 
 async function getCategoryToolCount(slug: string): Promise<number> {
-  try {
-    const items = await getDirectoryItems();
-    return filterItemsByCategorySlug(items, slug).length;
-  } catch {
-    return 0;
-  }
+  const items = await getDirectoryItems();
+  return filterItemsByCategorySlug(items, slug).length;
 }
 
 export async function generateMetadata(
@@ -116,17 +114,10 @@ export default async function CategoryPage({
     notFound();
   }
 
-  let allItems: DirectoryItem[] = [];
-  let itemsLoadError = false;
-
-  try {
-    allItems = await getDirectoryItems();
-  } catch (error) {
-    console.warn(`Failed to load directory items for category ${slug}:`, error);
-    itemsLoadError = true;
-  }
+  const allItems = await getDirectoryItems();
 
   const itemsInCategory = filterItemsByCategorySlug(allItems, slug);
+  const alternativeTools = itemsInCategory.filter((item) => hasEnoughAlternatives(item, allItems));
   const featuredTools = getFeaturedTools(itemsInCategory);
   const indexableTagSlugs = new Set(getIndexableTags(allItems).map((t) => t.slug));
   const relatedTags = getTagsForCategory(slug)
@@ -135,16 +126,32 @@ export default async function CategoryPage({
     .map((tag) => ({ slug: tag.slug, label: tag.label }));
 
   return (
+    <>
     <CategoryPageClient
       category={category}
       categories={categories}
       itemsInCategory={itemsInCategory}
-      itemsLoadError={itemsLoadError}
+      itemsLoadError={false}
       slug={slug}
       currentPage={currentPage}
       seoCluster={seoCluster}
       featuredTools={featuredTools}
       relatedTags={relatedTags}
     />
+    {currentPage === 1 && alternativeTools.length > 0 && (
+      <section className="container px-6 py-10">
+        <h2 className="text-xl font-semibold">Compare alternatives in {category.name}</h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {alternativeTools.map((item) => (
+            <li key={item.slug}>
+              <Link href={getToolAlternativesPath(item.slug)} prefetch={false} className="text-sm underline-offset-2 hover:underline">
+                {item.name} alternatives
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    </>
   );
 }

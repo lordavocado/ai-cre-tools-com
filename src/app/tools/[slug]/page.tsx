@@ -13,6 +13,7 @@ import { getSeoCluster } from "@/config/seo-clusters";
 import { ToolFavicon } from "@/components/ui/tool-favicon";
 import { normalizeToolDescription } from "@/lib/tool-content";
 import { hasEnoughAlternatives } from "@/config/seo-alternatives";
+import { getResolvedComparisons } from "@/config/seo-comparisons";
 import { findIndexableTagSlugForFeature, generateToolPageMeta } from "@/lib/seo-pages";
 import { getToolAlternativesPath, getToolPath } from "@/lib/tool-routes";
 import {
@@ -170,6 +171,8 @@ export default async function DirectoryItemPage({
     : [];
   const websiteLabel = item.website ? getWebsiteLabel(item.website) : null;
   const showAlternativesLink = hasEnoughAlternatives(item, allItems);
+  const itemComparisons = getResolvedComparisons(allItems)
+    .filter((comparison) => comparison.toolA.slug === slug || comparison.toolB.slug === slug);
   const capabilityTags = item.tags ?? item.features?.map((feature) => feature.name) ?? [];
   const structuredOffer = item.startingPriceAmount !== undefined && item.startingPriceCurrency
     ? {
@@ -382,6 +385,23 @@ export default async function DirectoryItemPage({
           </div>
         </div>
       </section>
+
+      {itemComparisons.length > 0 && (
+        <section className="border-b border-border bg-white py-8">
+          <div className="container px-6">
+            <h2 className="text-xl font-semibold">Compare {item.name}</h2>
+            <ul className="mt-4 flex flex-wrap gap-4">
+              {itemComparisons.map((comparison) => (
+                <li key={comparison.slug}>
+                  <Link href={`/compare/${comparison.slug}`} prefetch={false} className="text-sm underline-offset-2 hover:underline">
+                    {comparison.toolA.name} vs {comparison.toolB.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* ── Screenshot ────────────────────────────────────────────────── */}
       {item.heroScreenshotUrl && (

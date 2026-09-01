@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { siteConfig } from '@/config/site';
 
-const CANONICAL_ORIGIN = new URL(siteConfig.url).origin;
 const CANONICAL_HOST = new URL(siteConfig.url).hostname.toLowerCase();
 
 function normalizePathname(pathname: string): string {
@@ -26,7 +25,7 @@ function redirectToCanonicalHost(request: NextRequest): NextResponse | null {
   return null;
 }
 
-/** Normalizes public URLs and applies canonical/security headers. */
+/** Normalizes public URLs and applies security headers; pages own their canonical metadata. */
 export function middleware(request: NextRequest) {
   const hostRedirect = redirectToCanonicalHost(request);
   if (hostRedirect) return hostRedirect;
@@ -81,12 +80,8 @@ export function middleware(request: NextRequest) {
     response.headers.set('X-Robots-Tag', 'noindex, follow');
   }
 
-  if (!request.headers.get('user-agent')?.includes('bot')) {
-    response.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
-  }
-
-  const canonicalPath = lowerCasePath || '/';
-  response.headers.set('Link', `<${CANONICAL_ORIGIN}${canonicalPath}>; rel="canonical"`);
+  // Next owns cache headers, including private responses and its RSC variants.
+  // A blanket canonical here would contradict paginated and filtered metadata.
   return response;
 }
 

@@ -5,7 +5,7 @@ import { getGuides } from '@/lib/markdown';
 
 export const metadata: Metadata = {
   title: `Guides | ${siteConfig.name}`,
-  description: 'Practical guides and tutorials for AI in commercial real estate.',
+  description: 'Practical guides to using AI in commercial real estate. Learn how to evaluate tools, automate workflows, and choose software for your CRE team.',
   alternates: {
     canonical: `${siteConfig.url}/guides`,
   },

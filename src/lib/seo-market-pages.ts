@@ -123,18 +123,29 @@ function buildPage(
   return { ...definition, tools, path, title, description };
 }
 
+const assetPagesCache = new WeakMap<DirectoryItem[], SeoMarketPage[]>();
+const integrationPagesCache = new WeakMap<DirectoryItem[], SeoMarketPage[]>();
+
 export function getIndexableAssetPages(items: DirectoryItem[]): SeoMarketPage[] {
-  return ASSET_DEFINITIONS
+  const cached = assetPagesCache.get(items);
+  if (cached) return cached;
+  const pages = ASSET_DEFINITIONS
     .map((definition) => buildPage(definition, filterByAsset(items, definition), 'asset'))
     .filter((page) => qualifies(page.tools))
     .sort((a, b) => b.tools.length - a.tools.length || a.label.localeCompare(b.label));
+  assetPagesCache.set(items, pages);
+  return pages;
 }
 
 export function getIndexableIntegrationPages(items: DirectoryItem[]): SeoMarketPage[] {
-  return INTEGRATION_DEFINITIONS
+  const cached = integrationPagesCache.get(items);
+  if (cached) return cached;
+  const pages = INTEGRATION_DEFINITIONS
     .map((definition) => buildPage(definition, filterByIntegration(items, definition), 'integration'))
     .filter((page) => qualifies(page.tools))
     .sort((a, b) => b.tools.length - a.tools.length || a.label.localeCompare(b.label));
+  integrationPagesCache.set(items, pages);
+  return pages;
 }
 
 export function getIndexableAssetPage(

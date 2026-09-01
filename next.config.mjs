@@ -4,6 +4,8 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 const nextConfig = {
   output: 'standalone',
   serverExternalPackages: ['@mailchimp/mailchimp_marketing'],
+  // Keep the self-hosted process bounded; generated cache entries remain on disk.
+  cacheMaxMemorySize: 25 * 1024 * 1024,
 
   experimental: {
     optimizePackageImports: [
@@ -18,10 +20,12 @@ const nextConfig = {
       'class-variance-authority',
     ],
     optimizeServerReact: true,
+    preloadEntriesOnStart: false,
+    webpackMemoryOptimizations: true,
   },
 
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
 
   transpilePackages: ['posthog-js'],

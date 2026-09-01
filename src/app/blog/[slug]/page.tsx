@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { BlogPost } from '@/components/blog/BlogPost';
 import { getBlogPost, getAllBlogPosts } from '@/lib/blog';
 import { siteConfig } from '@/config/site';
@@ -76,6 +77,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const posts = await getAllBlogPosts();
+  const position = posts.findIndex((entry) => entry.slug === slug);
+  const adjacentPosts = [posts[position - 1], posts[position + 1]].filter(Boolean);
+
   // Generate structured data for blog post
   const structuredData = {
     "@context": "https://schema.org",
@@ -120,6 +125,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <BlogPost post={post} />
+      {adjacentPosts.length > 0 && (
+        <nav aria-label="More articles" className="mx-auto max-w-6xl px-4 pb-12">
+          <h2 className="text-xl font-semibold">More CRE insights</h2>
+          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+            {adjacentPosts.map((entry) => (
+              <li key={entry.slug}>
+                <Link href={`/blog/${entry.slug}`} className="underline-offset-2 hover:underline">{entry.title}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </>
   );
 }

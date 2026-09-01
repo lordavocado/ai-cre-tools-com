@@ -85,6 +85,14 @@ export default async function AllToolsPage() {
             <Link href="/categories" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
               category
             </Link>
+            , or read our{" "}
+            <Link href="/guides/getting-started" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+              getting-started guide
+            </Link>
+            {" "}and{" "}
+            <Link href="/guides" className="font-medium text-[#1f1f1f] underline-offset-2 hover:underline">
+              practical CRE AI guides
+            </Link>
             .
           </p>
           <p className="mt-2 text-sm text-[#737373]">

@@ -51,20 +51,25 @@ export function getAlternativesForTool(
 }
 
 export function hasEnoughAlternatives(tool: DirectoryItem, allItems: DirectoryItem[]): boolean {
-  return getAlternativesForTool(tool, allItems).length >= MIN_ALTERNATIVES_FOR_INDEX;
+  if (!isPseoEligible(tool)) return false;
+  const primaryCategory = getPrimaryCategorySlug(tool);
+  if (!primaryCategory) return false;
+  let count = 0;
+  for (const candidate of allItems) {
+    if (candidate.slug === tool.slug || !isPseoEligible(candidate)) continue;
+    if (!candidate.category.split(',').some((category) => category.trim() === primaryCategory)) continue;
+    if (++count >= MIN_ALTERNATIVES_FOR_INDEX) return true;
+  }
+  return false;
 }
 
 export async function getEligibleAlternativeSlugs(): Promise<string[]> {
   const { getDirectoryItems } = await import('@/lib/supabase');
   const { isValidSlug, isValidSlugFormat } = await import('@/lib/routing-utils-client');
-  try {
-    const items = await getDirectoryItems();
-    return items
-      .filter((item) => isValidSlugFormat(item.slug) && isValidSlug(item.slug))
-      .filter(isPseoEligible)
-      .filter((item) => hasEnoughAlternatives(item, items))
-      .map((item) => item.slug);
-  } catch {
-    return [];
-  }
+  const items = await getDirectoryItems();
+  return items
+    .filter((item) => isValidSlugFormat(item.slug) && isValidSlug(item.slug))
+    .filter(isPseoEligible)
+    .filter((item) => hasEnoughAlternatives(item, items))
+    .map((item) => item.slug);
 }

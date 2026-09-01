@@ -12,6 +12,7 @@ if (typeof window !== 'undefined') {
 import type { DirectoryItem, DirectoryListItem, Category } from '@/types';
 import { createClient } from '@supabase/supabase-js';
 import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 import { normalizeToolDescription } from '@/lib/tool-content';
 
 // --- Configuration ---
@@ -151,22 +152,6 @@ function getSupabaseSubmissionClient() {
   return supabaseSubmissionClient;
 }
 
-// --- Caching Layer for Performance ---
-
-// Enhanced caching with timestamps for server-side rendering
-let allItemsCache: DirectoryItem[] | null = null;
-let allItemsCacheTimestamp: number = 0;
-const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes cache for optimal performance
-
-/**
- * Check if cache is still valid
- * @param timestamp - Cache timestamp to check
- * @returns True if cache is still valid
- */
-function isCacheValid(timestamp: number): boolean {
-  return Date.now() - timestamp < CACHE_DURATION_MS;
-}
-
 /**
  * Transform Supabase row to DirectoryItem interface
  * @param row - Raw row from Supabase
@@ -231,7 +216,8 @@ async function fetchDirectoryRows(columns: string): Promise<EcosystemAppRow[]> {
     .from(TABLE_NAME)
     .select(columns)
     .order('display_order', { ascending: true })
-    .order('name', { ascending: true });
+    .order('name', { ascending: true })
+    .abortSignal(AbortSignal.timeout(10_000));
 
   if (error) throw error;
   return (data ?? []) as unknown as EcosystemAppRow[];
@@ -501,20 +487,14 @@ export const getCategories = async (includeItemCounts: boolean = true): Promise<
   }
 
   // Calculate itemCount for each category dynamically
-  try {
-    const allDirItems = await getDirectoryItems();
-    return categories.map(category => ({
-      ...category,
-      itemCount: allDirItems.filter(item => {
-        const itemCategories = item.category.split(',').map(cat => cat.trim());
-        return itemCategories.includes(category.slug);
-      }).length
-    }));
-  } catch (error) {
-    // Gracefully handle errors when calculating item counts
-    console.warn('Error calculating category item counts:', error);
-    return categories;
-  }
+  const allDirItems = await getDirectoryItems();
+  return categories.map(category => ({
+    ...category,
+    itemCount: allDirItems.filter(item => {
+      const itemCategories = item.category.split(',').map(cat => cat.trim());
+      return itemCategories.includes(category.slug);
+    }).length
+  }));
 };
 
 // --- Main Data Fetching Functions ---
@@ -525,7 +505,10 @@ async function fetchAllDirectoryItemsFromDb(): Promise<DirectoryItem[]> {
       .map(transformSupabaseRowToDirectoryItem);
   } catch (error) {
     if (!isMissingNormalizedColumnError(error as { code?: string; message?: string })) {
-      throw new Error(`Failed to fetch directory items: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      const message = error instanceof Error ? error.message
+        : typeof error === 'object' && error !== null && 'message' in error ? String(error.message)
+        : 'Unknown error';
+      throw new Error(`Failed to fetch directory items: ${message}`, { cause: error });
     }
 
     return (await fetchDirectoryRows(DIRECTORY_ITEM_COLUMNS))
@@ -533,11 +516,11 @@ async function fetchAllDirectoryItemsFromDb(): Promise<DirectoryItem[]> {
   }
 }
 
-const getCachedAllDirectoryItems = unstable_cache(
+const getCachedAllDirectoryItems = cache(unstable_cache(
   fetchAllDirectoryItemsFromDb,
   ['directory-items-all'],
-  { revalidate: 300, tags: ['directory-items'] }
-);
+  { revalidate: 3600, tags: ['directory-items'] }
+));
 
 /**
  * Retrieves directory items with optional search and category filtering
@@ -550,84 +533,22 @@ export async function getDirectoryItems(
   searchTerm?: string,
   categoryFilter?: string
 ): Promise<DirectoryItem[]> {
-  try {
-    if (!searchTerm && !categoryFilter) {
-      const items = await getCachedAllDirectoryItems();
-      allItemsCache = items;
-      allItemsCacheTimestamp = Date.now();
-      return items;
-    }
+  // Share one dataset between metadata, profiles, filtered pages and recommendations.
+  // Let failures propagate: Next can retain the last successful ISR page instead
+  // of caching an empty directory or converting a temporary outage into a 404.
+  const items = await getCachedAllDirectoryItems();
+  const search = searchTerm?.trim().toLowerCase();
+  const categories = categoryFilter?.split(',').map((category) => category.trim()).filter(Boolean);
 
-    const supabase = getSupabaseClient();
+  if (!search && !categories?.length) return items;
 
-    let query = supabase
-      .from(TABLE_NAME)
-      .select(NORMALIZED_DIRECTORY_ITEM_COLUMNS)
-      .order('display_order', { ascending: true })
-      .order('name', { ascending: true });
-
-    if (searchTerm) {
-      const searchTermLower = searchTerm.toLowerCase();
-      query = query.or(`name.ilike.%${searchTermLower}%,one_liner.ilike.%${searchTermLower}%,description.ilike.%${searchTermLower}%`);
-    }
-
-    if (categoryFilter) {
-      const categoryFilters = categoryFilter.split(',').map(c => c.trim());
-      const categoryConditions = categoryFilters.map(cat => `category.ilike.%${cat}%`).join(',');
-      query = query.or(categoryConditions);
-    }
-
-    let { data, error } = await query;
-
-    if (isMissingNormalizedColumnError(error)) {
-      let legacyQuery = supabase
-        .from(TABLE_NAME)
-        .select(DIRECTORY_ITEM_COLUMNS)
-        .order('display_order', { ascending: true })
-        .order('name', { ascending: true });
-
-      if (searchTerm) {
-        const searchTermLower = searchTerm.toLowerCase();
-        legacyQuery = legacyQuery.or(`name.ilike.%${searchTermLower}%,one_liner.ilike.%${searchTermLower}%,description.ilike.%${searchTermLower}%`);
-      }
-      if (categoryFilter) {
-        const categoryConditions = categoryFilter.split(',').map((cat) => `category.ilike.%${cat.trim()}%`).join(',');
-        legacyQuery = legacyQuery.or(categoryConditions);
-      }
-
-      const legacyResult = await legacyQuery;
-      data = legacyResult.data;
-      error = legacyResult.error;
-    }
-
-    if (error) {
-      console.error('Supabase query error:', error);
-      throw new Error(`Failed to fetch directory items: ${error.message}`);
-    }
-
-    if (!data) {
-      return [];
-    }
-
-    return data.map(transformSupabaseRowToDirectoryItem);
-
-  } catch (error) {
-    console.error('Error fetching directory items from Supabase:', error);
-    
-    // Return cached data if available, otherwise empty array
-    if (allItemsCache && isCacheValid(allItemsCacheTimestamp)) {
-      console.warn('Returning cached data due to fetch error');
-      return allItemsCache;
-    }
-    
-    // For development/build with placeholder environment variables, return empty array
-    if (error instanceof Error && error.message.includes('not properly configured')) {
-      console.warn('Supabase not configured, returning empty array for build compatibility');
-      return [];
-    }
-    
-    return [];
-  }
+  return items.filter((item) => {
+    const matchesSearch = !search || [item.name, item.tagline, item.description]
+      .some((value) => value.toLowerCase().includes(search));
+    const itemCategories = item.category.split(',').map((category) => category.trim());
+    const matchesCategory = !categories?.length || categories.some((category) => itemCategories.includes(category));
+    return matchesSearch && matchesCategory;
+  });
 }
 
 /** Returns the compact data shape used by directory cards and client-side filtering. */
@@ -653,51 +574,8 @@ export async function getDirectoryListItems(): Promise<DirectoryListItem[]> {
  * @returns Promise resolving to directory item or undefined if not found
  */
 export async function getDirectoryItemBySlug(slug: string): Promise<DirectoryItem | undefined> {
-  try {
-    const supabase = getSupabaseClient();
-    
-    let { data, error } = await supabase
-      .from(TABLE_NAME)
-      .select(NORMALIZED_DIRECTORY_ITEM_COLUMNS)
-      .eq('slug', slug)
-      .single();
-
-    if (isMissingNormalizedColumnError(error)) {
-      const legacyResult = await supabase
-        .from(TABLE_NAME)
-        .select(DIRECTORY_ITEM_COLUMNS)
-        .eq('slug', slug)
-        .single();
-      data = legacyResult.data;
-      error = legacyResult.error;
-    }
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // Not found
-        return undefined;
-      }
-      console.error('Supabase query error:', error);
-      throw new Error(`Failed to fetch directory item: ${error.message}`);
-    }
-
-    if (!data) {
-      return undefined;
-    }
-
-    return transformSupabaseRowToDirectoryItem(data);
-
-  } catch (error) {
-    console.error('Error fetching directory item by slug from Supabase:', error);
-    
-    // For development/build with placeholder environment variables, return undefined
-    if (error instanceof Error && error.message.includes('not properly configured')) {
-      console.warn('Supabase not configured, returning undefined for build compatibility');
-      return undefined;
-    }
-    
-    return undefined;
-  }
+  const items = await getDirectoryItems();
+  return items.find((item) => item.slug === slug);
 }
 
 /**
@@ -732,39 +610,8 @@ export async function getCategoryBySlug(slug: string): Promise<Category | undefi
  * @returns Promise resolving to array of featured directory items
  */
 export async function getFeaturedItems(limit: number = 3): Promise<DirectoryItem[]> {
-  try {
-    const supabase = getSupabaseClient();
-    
-    // Get featured items using display_order (prioritized tools first) and limit results
-    const { data, error } = await supabase
-      .from(TABLE_NAME)
-      .select(DIRECTORY_ITEM_COLUMNS)
-      .order('display_order', { ascending: true })
-      .order('name', { ascending: true })
-      .limit(limit);
-
-    if (error) {
-      console.error('Supabase query error:', error);
-      throw new Error(`Failed to fetch featured items: ${error.message}`);
-    }
-
-    if (!data) {
-      return [];
-    }
-
-    return data.map(transformSupabaseRowToDirectoryItem);
-
-  } catch (error) {
-    console.error('Error fetching featured items from Supabase:', error);
-    
-    // For development/build with placeholder environment variables, return empty array
-    if (error instanceof Error && error.message.includes('not properly configured')) {
-      console.warn('Supabase not configured, returning empty array for build compatibility');
-      return [];
-    }
-    
-    return [];
-  }
+  const items = await getDirectoryItems();
+  return items.slice(0, Math.max(0, Math.trunc(limit)));
 }
 
 /**
@@ -779,28 +626,6 @@ export async function submitNewsletter(email: string): Promise<{ success: boolea
 
   // Placeholder implementation - replace with actual Mailchimp integration
   return { success: true, message: 'Newsletter subscription placeholder - Mailchimp integration pending.' };
-}
-
-/**
- * Clears all cached data and resets connections
- * Use this function when you need to force a fresh data fetch
- */
-export function clearSupabaseCache() {
-  allItemsCache = null;
-  allItemsCacheTimestamp = 0;
-}
-
-/**
- * Returns current cache status for debugging
- * @returns Object containing cache state information
- */
-export function getSupabaseCacheStatus() {
-  return {
-    hasCachedData: !!allItemsCache,
-    cacheTimestamp: allItemsCacheTimestamp,
-    cacheAge: Date.now() - allItemsCacheTimestamp,
-    isValid: isCacheValid(allItemsCacheTimestamp),
-  };
 }
 
 // --- Tool Submissions ---

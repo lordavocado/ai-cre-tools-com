@@ -104,15 +104,23 @@ function buildUseCaseDescription(
   return `Compare ${toolCount} ${workflow.label.toLowerCase()} tools for ${persona.name.toLowerCase()}. Review workflow fit, pricing, integrations, and verified product data.`;
 }
 
+const useCasesCache = new WeakMap<DirectoryItem[], SeoUseCase[]>();
+
 export function getIndexableUseCases(items: DirectoryItem[]): SeoUseCase[] {
+  const cached = useCasesCache.get(items);
+  if (cached) return cached;
   const useCases: SeoUseCase[] = [];
   const seenToolSets = new Set<string>();
+  const personas = getAllSeoPersonas().map((persona) => ({
+    persona,
+    tools: filterItemsByPersona(items, persona.slug, persona.categorySlugs),
+  }));
 
   for (const workflow of getAllSeoTags()) {
     const workflowTools = filterItemsByUseCaseWorkflow(items, workflow);
-    for (const persona of getAllSeoPersonas()) {
-      const personaTools = filterItemsByPersona(items, persona.slug, persona.categorySlugs);
-      const tools = filterItemsByUseCase(items, workflow, persona);
+    const workflowSet = new Set(workflowTools);
+    for (const { persona, tools: personaTools } of personas) {
+      const tools = personaTools.filter((item) => workflowSet.has(item));
 
       if (tools.length < MIN_TOOLS_FOR_INDEXABLE_USE_CASE) continue;
       if (tools.length > MAX_TOOLS_FOR_FOCUSED_USE_CASE) continue;
@@ -134,7 +142,9 @@ export function getIndexableUseCases(items: DirectoryItem[]): SeoUseCase[] {
     }
   }
 
-  return useCases.sort((a, b) => b.tools.length - a.tools.length || a.title.localeCompare(b.title));
+  useCases.sort((a, b) => b.tools.length - a.tools.length || a.title.localeCompare(b.title));
+  useCasesCache.set(items, useCases);
+  return useCases;
 }
 
 export function getIndexableUseCase(
