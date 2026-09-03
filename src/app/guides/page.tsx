@@ -2,10 +2,19 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { siteConfig } from '@/config/site';
 import { getGuides } from '@/lib/markdown';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const GUIDES_TITLE = `Guides | ${siteConfig.name}`;
+const GUIDES_DESCRIPTION = 'Practical guides to using AI in commercial real estate. Learn how to evaluate tools, automate workflows, and choose software for your CRE team.';
 
 export const metadata: Metadata = {
-  title: `Guides | ${siteConfig.name}`,
-  description: 'Practical guides to using AI in commercial real estate. Learn how to evaluate tools, automate workflows, and choose software for your CRE team.',
+  title: GUIDES_TITLE,
+  description: GUIDES_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: GUIDES_TITLE,
+    description: GUIDES_DESCRIPTION,
+    url: `${siteConfig.url}/guides`,
+  }),
   alternates: {
     canonical: `${siteConfig.url}/guides`,
   },

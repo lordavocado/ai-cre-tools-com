@@ -11,6 +11,7 @@ import {
 import { getCategoryLabel } from '@/config/design-tokens';
 import { ExternalLink } from 'lucide-react';
 import { getToolAlternativesPath, getToolPath } from '@/lib/tool-routes';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -33,11 +34,11 @@ export async function generateMetadata({
     title: comparison.metaTitle,
     description: comparison.metaDescription,
     alternates: { canonical: `${siteConfig.url}/compare/${comparison.slug}` },
-    openGraph: {
+    openGraph: buildOpenGraphMetadata({
       title: comparison.metaTitle,
       description: comparison.metaDescription,
       url: `${siteConfig.url}/compare/${comparison.slug}`,
-    },
+    }),
   };
 }
 

@@ -218,7 +218,7 @@ const GLOSSARY_TERMS: SeoGlossaryTerm[] = [
     h1: 'What Is a Commercial Real Estate Brokerage CRM?',
     metaTitle: 'CRE Brokerage CRM Definition | AI CRE Tools Glossary',
     metaDescription:
-      'A CRE brokerage CRM tracks deals, clients, and commissions. Learn how AI assists broker workflows.',
+      'A CRE brokerage CRM tracks deals, clients, commissions, listings, and follow-ups. Learn how AI assists daily commercial brokerage workflows.',
     definition:
       'A commercial real estate brokerage CRM is customer relationship management software built for how brokers work—properties, spaces, listings, tours, LOIs, commissions, and co-broker splits—not generic B2B sales pipelines. Teams use CRM to protect relationships, forecast deal flow, and coordinate marketing. AI features draft outreach, summarize comps, and suggest follow-ups on stale opportunities. Adoption matters more than feature depth; the best CRM is one reps log activity into daily.',
     faqs: [

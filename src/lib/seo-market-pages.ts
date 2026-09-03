@@ -117,8 +117,8 @@ function buildPage(
     ? `AI Software for ${definition.label} Real Estate`
     : `CRE Software That Integrates with ${definition.label}`;
   const description = type === 'asset'
-    ? `Compare ${tools.length} AI and software tools with documented support for ${definition.label.toLowerCase()} real estate workflows.`
-    : `Compare ${tools.length} commercial real estate tools with documented ${definition.label} integration support.`;
+    ? `Compare ${tools.length} AI and software tools with documented support for ${definition.label.toLowerCase()} real estate workflows, features, pricing, and integrations.`
+    : `Compare ${tools.length} commercial real estate tools with documented ${definition.label} integration support, workflow fit, features, pricing, and implementation details.`;
 
   return { ...definition, tools, path, title, description };
 }

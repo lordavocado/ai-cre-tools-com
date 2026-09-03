@@ -1,8 +1,8 @@
 ---
 id: investors-ai-co-pilot
 slug: investors-ai-co-pilot
-title: "Real Estate Investors: Your AI Co-Pilot for Smarter Property Investments"
-excerpt: Ever feel like you're flying blind in the investment world? Learn how AI can be your co-pilot, helping you spot opportunities, manage risk, and maximize returns without sacrificing your investment instincts.
+title: "AI for Smarter Real Estate Investing"
+excerpt: See how AI helps real estate investors find opportunities, evaluate risk, and make faster property decisions without replacing human judgment.
 category: Real Estate Investment
 publishedDate: "2024-12-20"
 author: AI CRE Tools Team

@@ -7,6 +7,7 @@ import { getSeoTag } from '@/config/seo-tags';
 import { getSeoCluster } from '@/config/seo-clusters';
 import {
   buildTagPageMetadata,
+  buildOpenGraphMetadata,
   filterItemsByTag,
   getIndexableTags,
   getIndexableTagSlugs,
@@ -42,7 +43,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title, description, url: `${siteConfig.url}/tags/${slug}`, type: 'website' },
+    openGraph: buildOpenGraphMetadata({ title, description, url: `${siteConfig.url}/tags/${slug}` }),
     twitter: { card: 'summary_large_image', title, description },
     alternates: { canonical: `${siteConfig.url}/tags/${slug}` },
   };

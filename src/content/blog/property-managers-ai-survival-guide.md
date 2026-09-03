@@ -1,8 +1,8 @@
 ---
 id: property-managers-ai-survival-guide
 slug: property-managers-ai-survival-guide
-title: "The Property Manager's AI Survival Guide: How to Use AI Without Losing Your Humanity"
-excerpt: Tired of feeling like a robot in your own building? Learn how property managers can harness AI for tenant satisfaction, maintenance magic, and lease administration without sacrificing that personal touch.
+title: "Property Managers' Practical Guide to AI"
+excerpt: Learn how property managers can use AI to improve tenant service, predict maintenance needs, and automate lease administration while keeping a human touch.
 category: Property Management
 publishedDate: "2024-12-19"
 author: AI CRE Tools Team

@@ -143,7 +143,7 @@ const SEO_TAGS: SeoTag[] = [
     h1: 'Commercial Real Estate Transaction Management Software',
     metaTitle: 'CRE Transaction Management (2026) | AI CRE Tools',
     metaDescription:
-      'Compare {toolCount} CRE transaction management tools. Deal pipelines, brokerage CRM, and closing workflows.',
+      'Compare {toolCount} CRE transaction management tools. Review deal pipelines, brokerage CRM, closing workflows, pricing, and integrations.',
     intro:
       'Transaction management software coordinates CRE deals from pitch through closing—parties, documents, deadlines, and commissions. Brokerage CRM features keep client relationships and listing activity in one place with AI assisting comps and follow-ups.',
     faqs: [
@@ -276,7 +276,7 @@ const SEO_TAGS: SeoTag[] = [
     h1: 'Commercial Leasing Automation & Enablement Tools',
     metaTitle: 'CRE Leasing Automation Software (2026) | AI CRE Tools',
     metaDescription:
-      'Compare {toolCount} leasing automation tools for CRE. Marketing, tours, proposals, and vacancy reduction.',
+      'Compare {toolCount} leasing automation tools for CRE. Review marketing, tours, proposals, vacancy reduction, pricing, and integrations.',
     intro:
       'Leasing automation tools help landlords and brokers market space, qualify prospects, and produce proposals faster. AI generates listing copy, powers chatbots for initial inquiries, and prioritizes leads to shorten vacancy periods.',
     faqs: [

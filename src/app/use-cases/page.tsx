@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getDirectoryItems } from '@/lib/supabase';
 import { getIndexableUseCases } from '@/lib/seo-use-cases';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -12,12 +13,11 @@ export const metadata: Metadata = {
   description:
     'Find commercial real estate AI software for specific workflows and teams. Compare qualified tools by use case, role, integrations, and pricing.',
   alternates: { canonical: `${siteConfig.url}/use-cases` },
-  openGraph: {
+  openGraph: buildOpenGraphMetadata({
     title: 'CRE AI Software by Workflow and Role',
     description: 'Qualified CRE software shortlists for specific workflow and team combinations.',
     url: `${siteConfig.url}/use-cases`,
-    type: 'website',
-  },
+  }),
 };
 
 export default async function UseCasesHubPage() {

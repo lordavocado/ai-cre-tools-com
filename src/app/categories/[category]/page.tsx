@@ -12,6 +12,8 @@ import {
   filterItemsByCategorySlug,
   getFeaturedTools,
   buildPaginatedMetadata,
+  buildPaginatedCanonicalUrl,
+  buildOpenGraphMetadata,
   getIndexableTags,
 } from '@/lib/seo-pages';
 import { getTagsForCategory } from '@/config/seo-tags';
@@ -70,17 +72,20 @@ export async function generateMetadata(
     title,
     description,
   });
+  const canonicalUrl = buildPaginatedCanonicalUrl(
+    `/categories/${slug}`,
+    resolvedSearchParams.page,
+  );
 
   return {
     title,
     description,
     keywords,
-    openGraph: {
+    openGraph: buildOpenGraphMetadata({
       title,
       description,
-      url: `${siteConfig.url}/categories/${slug}`,
-      type: 'website',
-    },
+      url: canonicalUrl,
+    }),
     twitter: {
       card: 'summary_large_image',
       title,

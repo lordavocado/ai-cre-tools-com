@@ -10,7 +10,7 @@ readingTime: "5 min"
 imageUrl: "/images/guides/product-analytics-get-started-guide.jpg"
 ---
 
-# Getting Started with CRE AI Tools
+## Getting Started with CRE AI Tools
 
 Commercial Real Estate AI tools are essential for modernizing your property operations and making data-driven decisions. This guide will help you get started with implementing AI solutions in your CRE business.
 

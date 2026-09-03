@@ -10,6 +10,7 @@ import { getPersonaShortLabel } from '@/config/seo-personas';
 import { siteConfig } from '@/config/site';
 import { CATEGORY_ICONS } from '@/lib/category-icons';
 import { getToolPath } from '@/lib/tool-routes';
+import { buildDirectoryPageUrl } from '@/lib/directory-pagination';
 import {
   CheckCircle, Zap, Users, Shield, ArrowRight,
   ChevronRight, Sparkles,
@@ -43,6 +44,7 @@ export function CategoryPageClient({
   const relatedCategories = seoCluster.relatedCategorySlugs
     .map((relSlug) => categories.find((cat) => cat.slug === relSlug))
     .filter((cat): cat is Category => cat !== undefined);
+  const pageUrl = `${siteConfig.url}${buildDirectoryPageUrl(`/categories/${slug}`, currentPage)}`;
 
   const IconComponent = category.icon
     ? CATEGORY_ICONS[category.icon as keyof typeof CATEGORY_ICONS]
@@ -58,7 +60,7 @@ export function CategoryPageClient({
             "@type": "CollectionPage",
             name: seoCluster.h1,
             description: seoCluster.intro,
-            url: `${siteConfig.url}/categories/${slug}`,
+            url: pageUrl,
             isPartOf: {
               "@type": "WebSite",
               name: siteConfig.name,
@@ -69,7 +71,7 @@ export function CategoryPageClient({
               itemListElement: [
                 { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
                 { "@type": "ListItem", position: 2, name: "Categories", item: `${siteConfig.url}/categories` },
-                { "@type": "ListItem", position: 3, name: category.name, item: `${siteConfig.url}/categories/${slug}` },
+                { "@type": "ListItem", position: 3, name: category.name, item: pageUrl },
               ],
             },
             mainEntity: {
@@ -78,13 +80,10 @@ export function CategoryPageClient({
               description: `Directory of ${category.name} AI tools for commercial real estate`,
               numberOfItems: itemsInCategory.length,
               itemListElement: itemsInCategory.map((item, index) => ({
-                "@type": "SoftwareApplication",
+                "@type": "ListItem",
                 position: index + 1,
                 name: item.name,
-                description: item.tagline,
                 url: `${siteConfig.url}${getToolPath(item.slug)}`,
-                applicationCategory: category.name,
-                operatingSystem: "Web-based",
               })),
             },
           }),

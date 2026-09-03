@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { siteConfig } from '@/config/site';
 import { getGuides, getGuideBySlug } from '@/lib/markdown';
 import { markdownToHtml } from '@/lib/markdown-renderer';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export async function generateStaticParams() {
   const guides = await getGuides();
@@ -19,11 +20,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${guide.title} | ${siteConfig.name}`,
     description: guide.excerpt,
-    openGraph: {
+    openGraph: buildOpenGraphMetadata({
       title: guide.title,
       description: guide.excerpt,
       url: `${siteConfig.url}/guides/${guide.slug}`,
-    },
+    }),
     twitter: {
       card: 'summary_large_image',
       title: guide.title,

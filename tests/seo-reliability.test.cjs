@@ -95,11 +95,46 @@ test('failed sitemap generation returns an uncached retryable error', async () =
 });
 
 test('pagination remains indexable with a self-canonical; filters remain noindex', () => {
-  const { buildPaginatedMetadata } = loadModule('src/lib/seo-pages.ts');
+  const { buildPaginatedCanonicalUrl, buildPaginatedMetadata } = loadModule('src/lib/seo-pages.ts');
   const metadata = buildPaginatedMetadata({ basePath: '/categories/property-management-operations', page: '2' });
   assert.equal(metadata.alternates.canonical, 'https://www.aicretools.com/categories/property-management-operations?page=2');
+  assert.equal(
+    buildPaginatedCanonicalUrl('/use-cases/underwriting/for/investors', '2'),
+    'https://www.aicretools.com/use-cases/underwriting/for/investors?page=2'
+  );
   assert.equal(metadata.robots.index, true);
   assert.equal(buildPaginatedMetadata({ basePath: '/', hasFilters: true }).robots.index, false);
+});
+
+test('robots policy permits AI search while consistently opting out of model training', async () => {
+  const { GET } = loadModule('src/app/robots.txt/route.ts', {
+    'next/server': { NextResponse: Response },
+  });
+  const response = await GET();
+  const robots = await response.text();
+
+  assert.match(robots, /User-agent: OAI-SearchBot\nAllow: \//);
+  assert.match(robots, /User-agent: ChatGPT-User\nAllow: \//);
+  for (const bot of ['GPTBot', 'Google-Extended', 'Applebot-Extended', 'ClaudeBot', 'anthropic-ai', 'DeepseekBot', 'Meta-ExternalAgent', 'xAI-Bot']) {
+    assert.match(robots, new RegExp(`User-agent: ${bot}\\nDisallow: /`));
+  }
+});
+
+test('page Open Graph metadata remains complete when a route overrides title and URL', () => {
+  const { buildOpenGraphMetadata } = loadModule('src/lib/seo-pages.ts');
+  const metadata = buildOpenGraphMetadata({
+    title: 'Lease Abstraction AI Software',
+    description: 'Compare lease abstraction tools.',
+    url: 'https://www.aicretools.com/tags/lease-abstraction',
+  });
+
+  assert.equal(metadata.siteName, 'AI CRE Tools');
+  assert.equal(metadata.locale, 'en_US');
+  assert.equal(metadata.type, 'website');
+  assert.equal(metadata.images.length, 1);
+  assert.equal(metadata.images[0].url, 'https://www.aicretools.com/opengraph-image');
+  assert.equal(metadata.images[0].width, 1200);
+  assert.equal(metadata.images[0].height, 630);
 });
 
 test('use-case optimization preserves the existing cohort and eligibility rules', async () => {

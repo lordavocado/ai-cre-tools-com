@@ -11,6 +11,7 @@ import {
 import { getSeoCluster } from '@/config/seo-clusters';
 import {
   filterItemsByPersona,
+  buildOpenGraphMetadata,
   getIndexableTags,
 } from '@/lib/seo-pages';
 import { getTagsForCategory } from '@/config/seo-tags';
@@ -50,12 +51,11 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: {
+    openGraph: buildOpenGraphMetadata({
       title,
       description,
       url: `${siteConfig.url}/for/${slug}`,
-      type: 'website',
-    },
+    }),
     twitter: {
       card: 'summary_large_image',
       title,

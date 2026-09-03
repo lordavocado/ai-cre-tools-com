@@ -184,6 +184,81 @@ export default async function DirectoryItemPage({
     : item.hasFreePlan === true || item.pricingModel === 'free'
       ? { "@type": "Offer", price: "0", url: item.website || toolPageUrl }
       : undefined;
+  const structuredRating = item.rating && item.reviewCount && item.reviewCount > 0
+    ? {
+        "@type": "AggregateRating",
+        ratingValue: item.rating,
+        reviewCount: item.reviewCount,
+        bestRating: 5,
+        worstRating: 1,
+      }
+    : undefined;
+  const breadcrumbStructuredData = {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+      { "@type": "ListItem", position: 2, name: "Tools", item: `${siteConfig.url}/#directory` },
+      { "@type": "ListItem", position: 3, name: item.name, item: toolPageUrl },
+    ],
+  };
+  const toolStructuredData = structuredOffer && structuredRating
+    ? {
+        "@type": "SoftwareApplication",
+        name: item.name,
+        description: item.description || item.tagline,
+        url: toolPageUrl,
+        sameAs: item.website || undefined,
+        applicationCategory: "BusinessApplication",
+        applicationSubCategory: item.category || "CRE AI Tool",
+        operatingSystem: "Web",
+        screenshot: item.heroScreenshotUrl || item.screenshotUrl || undefined,
+        offers: structuredOffer,
+        aggregateRating: structuredRating,
+        author: {
+          "@type": "Organization",
+          name: siteConfig.name,
+          url: siteConfig.url,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: siteConfig.name,
+          url: siteConfig.url,
+          logo: {
+            "@type": "ImageObject",
+            url: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
+          },
+        },
+        datePublished: item.createdAt || undefined,
+        dateModified: item.lastUpdated || undefined,
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": toolPageUrl,
+        },
+        keywords: [
+          item.name,
+          item.category,
+          seoCluster?.primaryKeyword,
+          ...(seoCluster?.secondaryKeywords.slice(0, 3) ?? []),
+          ...capabilityTags,
+          "commercial real estate",
+          "CRE",
+          "PropTech",
+        ].filter(Boolean),
+      }
+    : {
+        "@type": "WebPage",
+        name: item.name,
+        description: item.description || item.tagline,
+        url: toolPageUrl,
+        datePublished: item.createdAt || undefined,
+        dateModified: item.lastUpdated || undefined,
+        about: {
+          "@type": "Thing",
+          name: item.name,
+          description: item.tagline,
+          url: item.website || toolPageUrl,
+        },
+      };
   const pricingLabel = item.startingPriceAmount !== undefined && item.startingPriceCurrency
     ? `${new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -226,62 +301,10 @@ export default async function DirectoryItemPage({
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            name: item.name,
-            description: item.description || item.tagline,
-            url: toolPageUrl,
-            sameAs: item.website || undefined,
-            applicationCategory: "BusinessApplication",
-            applicationSubCategory: item.category || "CRE AI Tool",
-            screenshot: item.heroScreenshotUrl || item.screenshotUrl || undefined,
-            offers: structuredOffer,
-            aggregateRating: item.rating && item.reviewCount && item.reviewCount > 0
-              ? {
-                  "@type": "AggregateRating",
-                  ratingValue: item.rating,
-                  reviewCount: item.reviewCount,
-                  bestRating: 5,
-                  worstRating: 1,
-                }
-              : undefined,
-            author: {
-              "@type": "Organization",
-              name: siteConfig.name,
-              url: siteConfig.url,
-            },
-            publisher: {
-              "@type": "Organization",
-              name: siteConfig.name,
-              url: siteConfig.url,
-              logo: {
-                "@type": "ImageObject",
-                url: `${siteConfig.url}/ai-cre-tools-logo.jpg`,
-              },
-            },
-            datePublished: item.createdAt || undefined,
-            dateModified: item.lastUpdated || undefined,
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": toolPageUrl,
-            },
-            breadcrumb: {
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
-                { "@type": "ListItem", position: 2, name: "Tools", item: `${siteConfig.url}/#directory` },
-                { "@type": "ListItem", position: 3, name: item.name, item: toolPageUrl },
-              ],
-            },
-            keywords: [
-              item.name,
-              item.category,
-              seoCluster?.primaryKeyword,
-              ...(seoCluster?.secondaryKeywords.slice(0, 3) ?? []),
-              ...capabilityTags,
-              "commercial real estate",
-              "CRE",
-              "PropTech",
-            ].filter(Boolean),
+            "@graph": [
+              toolStructuredData,
+              breadcrumbStructuredData,
+            ],
           }),
         }}
       />

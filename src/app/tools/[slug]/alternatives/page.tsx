@@ -13,6 +13,7 @@ import {
 import { DirectoryItemCard } from '@/components/listing/DirectoryItemCard';
 import { getCategoryLabel } from '@/config/design-tokens';
 import { getToolAlternativesPath, getToolPath } from '@/lib/tool-routes';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -38,7 +39,11 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: `${siteConfig.url}${getToolAlternativesPath(slug)}` },
-    openGraph: { title, description, url: `${siteConfig.url}${getToolAlternativesPath(slug)}` },
+    openGraph: buildOpenGraphMetadata({
+      title,
+      description,
+      url: `${siteConfig.url}${getToolAlternativesPath(slug)}`,
+    }),
   };
 }
 

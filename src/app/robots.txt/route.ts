@@ -36,15 +36,36 @@ Disallow: /admin/*
 Disallow: /api/*
 Disallow: /private/*
 
-# Allow Google AI features (Search Generative Experience / AI Overviews)
-User-agent: Google-Extended
+# Allow AI search and user-requested retrieval without opting into model training
+User-agent: OAI-SearchBot
 Allow: /
 
-# Block training crawlers that may not respect robots.txt
+User-agent: ChatGPT-User
+Allow: /
+
+# Apply one consistent opt-out policy to AI model-training crawlers
 User-agent: GPTBot
 Disallow: /
 
-User-agent: ChatGPT-User
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: DeepseekBot
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: xAI-Bot
 Disallow: /
 
 # Allow social media crawlers with specific rules

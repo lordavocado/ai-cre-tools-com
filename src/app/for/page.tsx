@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getDirectoryItems } from '@/lib/supabase';
 import { siteConfig } from '@/config/site';
 import { getAllSeoPersonas } from '@/config/seo-personas';
-import { filterItemsByPersona } from '@/lib/seo-pages';
+import { buildOpenGraphMetadata, filterItemsByPersona } from '@/lib/seo-pages';
 import { ArrowRight } from 'lucide-react';
 
 export const revalidate = 3600;
@@ -21,13 +21,12 @@ export const metadata: Metadata = {
     'cre ai software by role',
   ],
   alternates: { canonical: `${siteConfig.url}/for` },
-  openGraph: {
+  openGraph: buildOpenGraphMetadata({
     title: 'CRE AI Tools by Role | AI CRE Tools',
     description:
       'Role-based directories for commercial real estate AI software — investors, developers, brokers, and operators.',
     url: `${siteConfig.url}/for`,
-    type: 'website',
-  },
+  }),
 };
 
 export default async function ForHubPage() {

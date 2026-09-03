@@ -11,6 +11,42 @@ import { siteConfig } from '@/config/site';
 import type { DirectoryItem } from '@/types';
 import { parseDirectoryPage } from '@/lib/directory-pagination';
 
+interface OpenGraphMetadataInput {
+  title: string;
+  description: string;
+  url: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+}
+
+/** Build a complete Open Graph object because Next.js does not deep-merge nested metadata. */
+export function buildOpenGraphMetadata({
+  title,
+  description,
+  url,
+  imageUrl = `${siteConfig.url}${siteConfig.seo.openGraph.images.default}`,
+  imageAlt = siteConfig.seo.openGraph.images.alt,
+  type = 'website',
+}: OpenGraphMetadataInput): NonNullable<Metadata['openGraph']> {
+  return {
+    title,
+    description,
+    url,
+    siteName: siteConfig.seo.openGraph.siteName,
+    locale: siteConfig.seo.openGraph.locale,
+    type,
+    images: [
+      {
+        url: imageUrl,
+        width: siteConfig.seo.openGraph.images.width,
+        height: siteConfig.seo.openGraph.images.height,
+        alt: imageAlt,
+      },
+    ],
+  };
+}
+
 export function itemMatchesCategory(item: DirectoryItem, categorySlug: string): boolean {
   const itemCategories = item.category.split(',').map((cat) => cat.trim());
   return itemCategories.includes(categorySlug);
@@ -138,6 +174,19 @@ export interface PaginatedMetadataInput {
   description: string;
 }
 
+export function buildPaginatedCanonicalUrl(
+  basePath: string,
+  page?: string | string[],
+): string {
+  const currentPage = parseDirectoryPage(page);
+  const path = basePath.startsWith('/') ? basePath : `/${basePath}`;
+  const canonicalBase = `${siteConfig.url}${path === '/' ? '' : path}`;
+
+  return currentPage > 1
+    ? `${canonicalBase}?page=${currentPage}`
+    : canonicalBase || siteConfig.url;
+}
+
 export function buildPaginatedMetadata({
   basePath,
   page,
@@ -145,10 +194,6 @@ export function buildPaginatedMetadata({
   title,
   description,
 }: PaginatedMetadataInput): Pick<Metadata, 'alternates' | 'robots'> {
-  const currentPage = parseDirectoryPage(page);
-  const path = basePath.startsWith('/') ? basePath : `/${basePath}`;
-  const canonicalBase = `${siteConfig.url}${path === '/' ? '' : path}`;
-
   if (hasFilters) {
     return {
       robots: { index: false, follow: true },
@@ -156,10 +201,7 @@ export function buildPaginatedMetadata({
     };
   }
 
-  const canonical =
-    currentPage > 1
-      ? `${canonicalBase}?page=${currentPage}`
-      : canonicalBase || siteConfig.url;
+  const canonical = buildPaginatedCanonicalUrl(basePath, page);
 
   return {
     robots: { index: true, follow: true },

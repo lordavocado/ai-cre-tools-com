@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const metadata: Metadata = {
   title: `Privacy Policy | ${siteConfig.name} - Data Protection & Privacy Rights`,
@@ -13,13 +14,11 @@ export const metadata: Metadata = {
     'commercial real estate directory privacy',
     ...siteConfig.seo.primaryKeywords.slice(0, 3)
   ],
-  openGraph: {
+  openGraph: buildOpenGraphMetadata({
     title: `Privacy Policy - ${siteConfig.name}`,
     description: `Learn about our data protection practices and privacy commitments for ${siteConfig.categoryName.toLowerCase()} directory users.`,
     url: `${siteConfig.url}/privacy-policy`,
-    siteName: siteConfig.seo.openGraph.siteName,
-    type: 'website',
-  },
+  }),
   alternates: {
     canonical: `${siteConfig.url}/privacy-policy`,
   },

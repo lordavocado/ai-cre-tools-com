@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { siteConfig } from '@/config/site';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const metadata: Metadata = {
   title: `Terms of Service | ${siteConfig.name} - User Agreement & Legal Terms`,
@@ -14,13 +15,11 @@ export const metadata: Metadata = {
     'commercial real estate directory terms',
     ...siteConfig.seo.primaryKeywords.slice(0, 3)
   ],
-  openGraph: {
+  openGraph: buildOpenGraphMetadata({
     title: `Terms of Service - ${siteConfig.name}`,
     description: `User agreement and terms for using ${siteConfig.name}, the leading ${siteConfig.categoryName.toLowerCase()} directory.`,
     url: `${siteConfig.url}/terms-of-service`,
-    siteName: siteConfig.seo.openGraph.siteName,
-    type: 'website',
-  },
+  }),
   alternates: {
     canonical: `${siteConfig.url}/terms-of-service`,
   },

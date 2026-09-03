@@ -124,14 +124,8 @@ export default async function Home() {
                 itemListElement: initialItems.slice(0, 20).map((item, index) => ({
                   "@type": "ListItem",
                   position: index + 1,
-                  item: {
-                    "@type": "SoftwareApplication",
-                    name: item.name,
-                    description: item.tagline,
-                    url: `${siteConfig.url}${getToolPath(item.slug)}`,
-                    applicationCategory: "BusinessApplication",
-                    operatingSystem: "Web-based",
-                  },
+                  name: item.name,
+                  url: `${siteConfig.url}${getToolPath(item.slug)}`,
                 })),
               },
             }),

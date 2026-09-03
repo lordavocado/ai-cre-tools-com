@@ -5,7 +5,11 @@ import { ArrowRight, ChevronRight } from 'lucide-react';
 import { DirectoryGrid } from '@/components/listing/DirectoryGrid';
 import { TOOL_PRICING_MODELS, getTaxonomyLabel } from '@/config/tool-taxonomy';
 import { siteConfig } from '@/config/site';
-import { buildPaginatedMetadata } from '@/lib/seo-pages';
+import {
+  buildOpenGraphMetadata,
+  buildPaginatedCanonicalUrl,
+  buildPaginatedMetadata,
+} from '@/lib/seo-pages';
 import { getDirectoryItems } from '@/lib/supabase';
 import {
   getIndexableUseCase,
@@ -58,17 +62,17 @@ export async function generateMetadata({
     title,
     description: useCase.description,
   });
+  const canonicalUrl = buildPaginatedCanonicalUrl(useCase.path, query.page);
 
   return {
     title,
     description: useCase.description,
     ...pagination,
-    openGraph: {
+    openGraph: buildOpenGraphMetadata({
       title,
       description: useCase.description,
-      url: `${siteConfig.url}${useCase.path}`,
-      type: 'website',
-    },
+      url: canonicalUrl,
+    }),
     twitter: { card: 'summary_large_image', title, description: useCase.description },
   };
 }
@@ -106,7 +110,7 @@ export default async function UseCasePage({
     { label: 'Security evidence', values: security },
     { label: 'Pricing models', values: pricingModels },
   ].filter((signal) => signal.values.length > 0);
-  const pageUrl = `${siteConfig.url}${useCase.path}`;
+  const pageUrl = buildPaginatedCanonicalUrl(useCase.path, query.page);
 
   return (
     <>

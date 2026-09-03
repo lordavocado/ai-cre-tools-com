@@ -17,6 +17,7 @@ import { getToolAlternativesPath, getToolPath } from '@/lib/tool-routes';
 import type { DirectoryItem } from '@/types';
 import { getIndexableUseCases } from '@/lib/seo-use-cases';
 import { getIndexableAssetPages, getIndexableIntegrationPages } from '@/lib/seo-market-pages';
+import { buildDirectoryPageUrl, getDirectoryItemsPerPage } from '@/lib/directory-pagination';
 
 export const SITEMAP_GROUPS = ['tools', 'alternatives', 'taxonomy', 'use-cases', 'markets', 'content'] as const;
 export type SitemapGroup = (typeof SITEMAP_GROUPS)[number];
@@ -48,6 +49,16 @@ function latestItemDate(items: DirectoryItem[]): string | undefined {
     .map((item) => validDate(item.lastUpdated ?? item.createdAt))
     .filter((value): value is string => Boolean(value));
   return timestamps.sort().at(-1);
+}
+
+function getPaginatedEntries(path: string, items: DirectoryItem[]): SitemapEntry[] {
+  const totalPages = Math.ceil(items.length / getDirectoryItemsPerPage());
+  const lastmod = latestItemDate(items);
+
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => ({
+    loc: `${siteConfig.url}${buildDirectoryPageUrl(path, index + 2)}`,
+    lastmod,
+  }));
 }
 
 export function buildUrlSetXml(entries: SitemapEntry[]): string {
@@ -94,10 +105,12 @@ async function getTaxonomyEntries(): Promise<SitemapEntry[]> {
   ];
 
   for (const category of categories) {
+    const categoryItems = filterItemsByCategorySlug(items, category.slug);
     entries.push({
       loc: `${siteConfig.url}/categories/${category.slug}`,
-      lastmod: latestItemDate(filterItemsByCategorySlug(items, category.slug)),
+      lastmod: latestItemDate(categoryItems),
     });
+    entries.push(...getPaginatedEntries(`/categories/${category.slug}`, categoryItems));
   }
 
   for (const slug of getAllSeoPersonaSlugs()) {
@@ -163,6 +176,7 @@ async function getUseCaseEntries(): Promise<SitemapEntry[]> {
       loc: `${siteConfig.url}${useCase.path}`,
       lastmod: latestItemDate(useCase.tools),
     })),
+    ...useCases.flatMap((useCase) => getPaginatedEntries(useCase.path, useCase.tools)),
   ];
 }
 

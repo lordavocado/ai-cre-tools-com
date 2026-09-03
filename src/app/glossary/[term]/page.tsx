@@ -9,6 +9,7 @@ import {
 } from '@/config/seo-glossary';
 import { getSeoCluster } from '@/config/seo-clusters';
 import { getSeoTag } from '@/config/seo-tags';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -29,11 +30,11 @@ export async function generateMetadata({
     title: entry.metaTitle,
     description: entry.metaDescription,
     alternates: { canonical: `${siteConfig.url}/glossary/${slug}` },
-    openGraph: {
+    openGraph: buildOpenGraphMetadata({
       title: entry.metaTitle,
       description: entry.metaDescription,
       url: `${siteConfig.url}/glossary/${slug}`,
-    },
+    }),
   };
 }
 

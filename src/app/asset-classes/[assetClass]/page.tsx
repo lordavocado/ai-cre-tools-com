@@ -4,6 +4,7 @@ import { QualifiedToolCollectionPage } from '@/components/seo/QualifiedToolColle
 import { siteConfig } from '@/config/site';
 import { getIndexableAssetPage, getIndexableAssetPages } from '@/lib/seo-market-pages';
 import { getDirectoryItems } from '@/lib/supabase';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
 
 export const revalidate = 3600;
 
@@ -20,7 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<{ assetClas
     title,
     description: page.description,
     alternates: { canonical: `${siteConfig.url}${page.path}` },
-    openGraph: { title, description: page.description, url: `${siteConfig.url}${page.path}` },
+    openGraph: buildOpenGraphMetadata({
+      title,
+      description: page.description,
+      url: `${siteConfig.url}${page.path}`,
+    }),
   };
 }
 
