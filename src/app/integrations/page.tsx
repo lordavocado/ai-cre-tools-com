@@ -4,12 +4,21 @@ import { ArrowRight } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getIndexableIntegrationPages } from '@/lib/seo-market-pages';
 import { getDirectoryItems } from '@/lib/supabase';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const INTEGRATIONS_TITLE = 'CRE Software Integrations Directory | AI CRE Tools';
+const INTEGRATIONS_DESCRIPTION = 'Find commercial real estate software that works with Yardi, MRI, RealPage, Salesforce, HubSpot, Excel, and other systems.';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'CRE Software Integrations Directory | AI CRE Tools',
-  description: 'Find commercial real estate software that works with Yardi, MRI, RealPage, Salesforce, HubSpot, Excel, and other systems.',
+  title: INTEGRATIONS_TITLE,
+  description: INTEGRATIONS_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: INTEGRATIONS_TITLE,
+    description: INTEGRATIONS_DESCRIPTION,
+    url: `${siteConfig.url}/integrations`,
+  }),
   alternates: { canonical: `${siteConfig.url}/integrations` },
 };
 

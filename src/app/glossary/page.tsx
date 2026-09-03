@@ -2,11 +2,19 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllGlossaryTerms } from '@/config/seo-glossary';
 import { siteConfig } from '@/config/site';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const GLOSSARY_TITLE = 'CRE & AI Glossary | AI CRE Tools';
+const GLOSSARY_DESCRIPTION = 'Definitions for commercial real estate and AI software terms—lease abstraction, underwriting, NOI, cap rates, and more.';
 
 export const metadata: Metadata = {
-  title: 'CRE & AI Glossary | AI CRE Tools',
-  description:
-    'Definitions for commercial real estate and AI software terms—lease abstraction, underwriting, NOI, cap rates, and more.',
+  title: GLOSSARY_TITLE,
+  description: GLOSSARY_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: GLOSSARY_TITLE,
+    description: GLOSSARY_DESCRIPTION,
+    url: `${siteConfig.url}/glossary`,
+  }),
   alternates: { canonical: `${siteConfig.url}/glossary` },
 };
 

@@ -3,13 +3,21 @@ import Link from 'next/link';
 import { getDirectoryItems } from '@/lib/supabase';
 import { siteConfig } from '@/config/site';
 import { getResolvedComparisons } from '@/config/seo-comparisons';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const COMPARE_TITLE = 'CRE AI Tool Comparisons | AI CRE Tools';
+const COMPARE_DESCRIPTION = 'Side-by-side comparisons of commercial real estate AI tools. Compare diligence, underwriting, PM, and brokerage platforms.';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'CRE AI Tool Comparisons | AI CRE Tools',
-  description:
-    'Side-by-side comparisons of commercial real estate AI tools. Compare diligence, underwriting, PM, and brokerage platforms.',
+  title: COMPARE_TITLE,
+  description: COMPARE_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: COMPARE_TITLE,
+    description: COMPARE_DESCRIPTION,
+    url: `${siteConfig.url}/compare`,
+  }),
   alternates: { canonical: `${siteConfig.url}/compare` },
 };
 

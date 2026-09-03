@@ -4,12 +4,21 @@ import { ArrowRight } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { getIndexableAssetPages } from '@/lib/seo-market-pages';
 import { getDirectoryItems } from '@/lib/supabase';
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const ASSET_CLASSES_TITLE = 'CRE AI Software by Asset Class | AI CRE Tools';
+const ASSET_CLASSES_DESCRIPTION = 'Compare commercial real estate AI software by supported asset class, including multifamily, hospitality, office, industrial, and retail.';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'CRE AI Software by Asset Class | AI CRE Tools',
-  description: 'Compare commercial real estate AI software by supported asset class, including multifamily, hospitality, office, industrial, and retail.',
+  title: ASSET_CLASSES_TITLE,
+  description: ASSET_CLASSES_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: ASSET_CLASSES_TITLE,
+    description: ASSET_CLASSES_DESCRIPTION,
+    url: `${siteConfig.url}/asset-classes`,
+  }),
   alternates: { canonical: `${siteConfig.url}/asset-classes` },
 };
 

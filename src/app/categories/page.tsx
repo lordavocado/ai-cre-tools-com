@@ -2,10 +2,19 @@
 import { CategoryCard } from "@/components/category/CategoryCard";
 import type { Metadata } from 'next';
 import { siteConfig } from "@/config/site";
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const CATEGORIES_TITLE = `All ${siteConfig.categoryName} Categories`;
+const CATEGORIES_DESCRIPTION = 'Browse AI tools for commercial real estate by category, from property management and investment analysis to leasing, brokerage, and construction.';
 
 export const metadata: Metadata = {
-  title: `All ${siteConfig.categoryName} Categories`,
-  description: 'Browse AI tools for commercial real estate by category, from property management and investment analysis to leasing, brokerage, and construction.',
+  title: CATEGORIES_TITLE,
+  description: CATEGORIES_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: CATEGORIES_TITLE,
+    description: CATEGORIES_DESCRIPTION,
+    url: `${siteConfig.url}/categories`,
+  }),
   alternates: {
     canonical: `${siteConfig.url}/categories`,
   },
@@ -49,7 +58,7 @@ export default async function CategoriesPage() {
               description: "Directory of AI tool categories for commercial real estate",
               numberOfItems: categories.length,
               itemListElement: categories.map((category, index) => ({
-                "@type": "Category",
+                "@type": "ListItem",
                 position: index + 1,
                 name: category.name,
                 description: category.description,

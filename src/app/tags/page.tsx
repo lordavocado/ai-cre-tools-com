@@ -2,14 +2,21 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getDirectoryItems } from '@/lib/supabase';
 import { siteConfig } from '@/config/site';
-import { getIndexableTags } from '@/lib/seo-pages';
+import { buildOpenGraphMetadata, getIndexableTags } from '@/lib/seo-pages';
+
+const TAGS_TITLE = 'Browse CRE AI Tools by Capability | AI CRE Tools';
+const TAGS_DESCRIPTION = 'Explore commercial real estate AI tools by capability — lease abstraction, underwriting, deal sourcing, portfolio analytics, and more.';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: 'Browse CRE AI Tools by Capability | AI CRE Tools',
-  description:
-    'Explore commercial real estate AI tools by capability — lease abstraction, underwriting, deal sourcing, portfolio analytics, and more.',
+  title: TAGS_TITLE,
+  description: TAGS_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: TAGS_TITLE,
+    description: TAGS_DESCRIPTION,
+    url: `${siteConfig.url}/tags`,
+  }),
   alternates: { canonical: `${siteConfig.url}/tags` },
 };
 

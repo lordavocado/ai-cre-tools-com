@@ -4,12 +4,21 @@ import { getDirectoryItems } from "@/lib/supabase";
 import { siteConfig } from "@/config/site";
 import { getCategoryLabel } from "@/config/design-tokens";
 import { getToolPath } from "@/lib/tool-routes";
+import { buildOpenGraphMetadata } from '@/lib/seo-pages';
+
+const ALL_TOOLS_TITLE = `All AI CRE Tools (A–Z) | ${siteConfig.name}`;
+const ALL_TOOLS_DESCRIPTION = `Browse every AI tool in the ${siteConfig.name} directory. Alphabetical index with links to reviews, features, and comparisons for commercial real estate teams.`;
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: `All AI CRE Tools (A–Z) | ${siteConfig.name}`,
-  description: `Browse every AI tool in the ${siteConfig.name} directory. Alphabetical index with links to reviews, features, and comparisons for commercial real estate teams.`,
+  title: ALL_TOOLS_TITLE,
+  description: ALL_TOOLS_DESCRIPTION,
+  openGraph: buildOpenGraphMetadata({
+    title: ALL_TOOLS_TITLE,
+    description: ALL_TOOLS_DESCRIPTION,
+    url: `${siteConfig.url}/all-tools`,
+  }),
   alternates: {
     canonical: `${siteConfig.url}/all-tools`,
   },
@@ -51,7 +60,6 @@ export default async function AllToolsPage() {
             name: "All AI CRE Tools",
             description: `Complete alphabetical index of ${siteConfig.categoryName.toLowerCase()}.`,
             url: `${siteConfig.url}/all-tools`,
-            numberOfItems: sortedItems.length,
             mainEntity: {
               "@type": "ItemList",
               numberOfItems: sortedItems.length,
