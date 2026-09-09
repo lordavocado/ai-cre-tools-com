@@ -12,9 +12,11 @@ const MIN_DESCRIPTION_LENGTH = 260;
 const MAX_DESCRIPTION_LENGTH = 460;
 const MIN_TAG_COUNT = 4;
 const MAX_TAG_COUNT = 6;
+const OPEN_ROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
 const reasoningEfforts = ['none', 'low', 'medium', 'high', 'xhigh', 'max'] as const;
 type ReasoningEffort = (typeof reasoningEfforts)[number];
+type ResearchProvider = 'openai' | 'openrouter';
 
 const ToolReviewSchema = z.object({
   is_relevant: z.boolean(),
@@ -67,8 +69,17 @@ export type ToolResearchResult = {
   research_status: 'completed' | 'failed';
 };
 
-function getModel() {
-  return process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || DEFAULT_TOOL_SUBMISSION_MODEL;
+function getModel(provider: ResearchProvider | null) {
+  const configuredModel = process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim();
+  if (configuredModel) {
+    return configuredModel;
+  }
+
+  if (provider === 'openai') {
+    return 'gpt-5.6-luna';
+  }
+
+  return DEFAULT_TOOL_SUBMISSION_MODEL;
 }
 
 function getReasoningEffort(): ReasoningEffort {
@@ -96,22 +107,78 @@ function isSameOrganizationHost(left: string, right: string) {
     || rightHost.endsWith(`.${leftHost}`);
 }
 
+function getConfiguredResearchProvider(): ResearchProvider | null {
+  if (process.env.OPENROUTER_API_KEY?.trim()) {
+    return 'openrouter';
+  }
+
+  if (process.env.OPENAI_API_KEY?.trim()) {
+    return 'openai';
+  }
+
+  return null;
+}
+
+function getConfiguredResearchKey() {
+  return process.env.OPENROUTER_API_KEY?.trim() || process.env.OPENAI_API_KEY?.trim();
+}
+
+function getResearchTools(provider: ResearchProvider) {
+  if (provider === 'openrouter') {
+    return [{ type: 'openrouter:web_search', parameters: { search_context_size: 'medium' } }];
+  }
+
+  return [{ type: 'web_search', search_context_size: 'medium' }];
+}
+
+function collectUrlsFromUrlCitation(block: { annotations?: unknown }): string[] {
+  const annotations = block.annotations;
+  if (!Array.isArray(annotations)) {
+    return [];
+  }
+
+  return annotations.flatMap((annotation) => {
+    if (!annotation || typeof annotation !== 'object') {
+      return [];
+    }
+
+    const safeAnnotation = annotation as { type?: unknown; url?: unknown };
+    if (safeAnnotation.type !== 'url_citation' || typeof safeAnnotation.url !== 'string') {
+      return [];
+    }
+
+    return [safeAnnotation.url];
+  });
+}
+
 function getWebSearchSourceUrls(response: Awaited<ReturnType<OpenAI['responses']['parse']>>) {
   const urls = new Set<string>();
 
   for (const item of response.output) {
-    if (item.type !== 'web_search_call') {
-      continue;
+    const itemAsRecord = item as { content?: unknown };
+    if (item.type === 'web_search_call') {
+      if (item.action.type === 'search') {
+        for (const source of item.action.sources ?? []) {
+          urls.add(source.url);
+        }
+      } else if (item.action.type === 'open_page' && item.action.url) {
+        urls.add(item.action.url);
+      } else if (item.action.type === 'find_in_page') {
+        urls.add(item.action.url);
+      }
     }
 
-    if (item.action.type === 'search') {
-      for (const source of item.action.sources ?? []) {
-        urls.add(source.url);
+    if (Array.isArray(itemAsRecord.content)) {
+      for (const block of itemAsRecord.content) {
+        if (!block || typeof block !== 'object') {
+          continue;
+        }
+
+        const blockUrls = collectUrlsFromUrlCitation(block as { annotations?: unknown });
+        for (const blockUrl of blockUrls) {
+          urls.add(blockUrl);
+        }
       }
-    } else if (item.action.type === 'open_page' && item.action.url) {
-      urls.add(item.action.url);
-    } else if (item.action.type === 'find_in_page') {
-      urls.add(item.action.url);
     }
   }
 
@@ -126,17 +193,22 @@ function wasReturnedByWebSearch(evidenceUrl: string, webSearchUrls: string[]) {
   }
 }
 
-function buildFailureResult(website: string, userComment: string, error: unknown): ToolResearchResult {
+function buildFailureResult(
+  website: string,
+  userComment: string,
+  error: unknown,
+  provider: ResearchProvider | null,
+): ToolResearchResult {
   const errorMessage = error instanceof Error
     ? error.message.slice(0, 500)
-    : 'Unknown OpenAI research error';
+    : 'Unknown evaluator research error';
 
   return {
     is_relevant: null,
     confidence: 0,
     relevance_reason: errorMessage,
     evidence: [],
-    model: getModel(),
+    model: getModel(provider),
     response_id: '',
     slug: `tool-${Date.now()}`,
     website,
@@ -177,15 +249,24 @@ function buildInstructions() {
  * Low-confidence or weakly sourced decisions are converted to an explicit manual-review result.
  */
 export async function researchTool(website: string, userComment: string): Promise<ToolResearchResult> {
+  let provider: ResearchProvider | null = null;
   try {
-    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    provider = getConfiguredResearchProvider();
+    const apiKey = getConfiguredResearchKey();
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is not set');
+      throw new Error('OPENROUTER_API_KEY or OPENAI_API_KEY environment variable is not set');
     }
 
-    const model = getModel();
+    const model = getModel(provider);
     const client = new OpenAI({
       apiKey,
+      baseURL: provider === 'openrouter' ? OPEN_ROUTER_BASE_URL : undefined,
+      defaultHeaders: provider === 'openrouter'
+        ? {
+            'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'https://aicretools.com',
+            'X-Title': 'AI CRE Tools',
+          }
+        : undefined,
       maxRetries: 0,
       timeout: 105_000,
     });
@@ -196,7 +277,7 @@ export async function researchTool(website: string, userComment: string): Promis
         effort: getReasoningEffort(),
         context: 'current_turn',
       },
-      tools: [{ type: 'web_search', search_context_size: 'medium' }],
+      tools: getResearchTools(provider || 'openai') as OpenAI.Responses.ResponseCreateParams['tools'],
       tool_choice: 'required',
       include: ['web_search_call.action.sources'],
       instructions: buildInstructions(),
@@ -211,7 +292,7 @@ export async function researchTool(website: string, userComment: string): Promis
 
     const parsed = response.output_parsed;
     if (!parsed) {
-      throw new Error('OpenAI returned no structured review');
+      throw new Error('Evaluator returned no structured review');
     }
 
     const webSearchUrls = getWebSearchSourceUrls(response);
@@ -290,7 +371,7 @@ export async function researchTool(website: string, userComment: string): Promis
       research_status: 'completed',
     };
   } catch (error) {
-    console.error('OpenAI tool research error:', error);
-    return buildFailureResult(website, userComment, error);
+    console.error('Evaluator tool research error:', error);
+    return buildFailureResult(website, userComment, error, provider);
   }
 }

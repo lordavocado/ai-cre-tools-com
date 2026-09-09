@@ -98,7 +98,7 @@ type SubmissionSystemStatus = {
   supabaseStorageConfigured: boolean;
   supabaseAdminConfigured: boolean;
   researchProviderConfigured: boolean;
-  researchProvider: 'openai' | null;
+  researchProvider: 'openrouter' | 'openai' | null;
   openAIConfigured: boolean;
   researchModel: string;
 };
@@ -604,7 +604,7 @@ export default function SubmissionsDashboard() {
         title="Tool submissions"
         description={
           <>
-            Use <span className="font-semibold text-[#1f1f1f]">Run evaluator</span> for one-step relevance review, duplicate checking, copy generation, and an automatic accept or reject decision (OpenAI Responses API + Supabase service role). Open a row to edit copy, or use{' '}
+            Use <span className="font-semibold text-[#1f1f1f]">Run evaluator</span> for one-step relevance review, duplicate checking, copy generation, and an automatic accept or reject decision (OpenRouter/OpenAI Responses API + Supabase service role). Open a row to edit copy, or use{' '}
             <span className="font-semibold text-[#1f1f1f]">Publish using form fields</span> for full manual control.
           </>
         }
@@ -632,10 +632,10 @@ export default function SubmissionsDashboard() {
           <CardContent className="grid gap-2 text-sm text-[#737373] sm:grid-cols-2">
             <StatusLine ok={systemStatus.supabaseStorageConfigured} label="Supabase URL + anon key (queue storage)" />
             <StatusLine ok={systemStatus.supabaseAdminConfigured} label="Service role key (evaluate & publish to live directory)" />
-            <StatusLine ok={systemStatus.researchProviderConfigured} label="OpenAI Responses API (required for the evaluator)" />
+            <StatusLine ok={systemStatus.researchProviderConfigured} label="OpenRouter/OpenAI Responses API (required for the evaluator)" />
             {systemStatus.researchProviderConfigured && (
               <p className="sm:col-span-2 text-xs text-[#737373]">
-                Active setup: <span className="font-medium text-[#0f172a]">OpenAI Responses API · {systemStatus.researchModel}</span>
+                Active setup: <span className="font-medium text-[#0f172a]">{systemStatus.researchProvider === 'openrouter' ? 'OpenRouter' : 'OpenAI'} Responses API · {systemStatus.researchModel}</span>
               </p>
             )}
           </CardContent>
@@ -706,7 +706,7 @@ export default function SubmissionsDashboard() {
                 !systemStatus?.supabaseAdminConfigured
                   ? 'Configure SUPABASE_SERVICE_ROLE_KEY'
                   : !systemStatus?.researchProviderConfigured
-                    ? 'Configure OPENAI_API_KEY'
+                    ? 'Configure OPENROUTER_API_KEY (or OPENAI_API_KEY fallback)'
                     : undefined
               }
             />
@@ -725,7 +725,7 @@ export default function SubmissionsDashboard() {
                     Submission Details
                   </DialogTitle>
                 <DialogDescription className="text-[#737373]">
-                  <span className="font-semibold text-[#1f1f1f]">Accept</span> runs OpenAI web research, normalizes the listing, checks required fields, and publishes live — no manual pass required. Use the fields below only if you want to tweak copy first, then choose &quot;Publish using form fields&quot;. One-click Accept needs the OpenAI and Supabase server keys.
+                  <span className="font-semibold text-[#1f1f1f]">Accept</span> runs evaluator web research, normalizes the listing, checks required fields, and publishes live — no manual pass required. Use the fields below only if you want to tweak copy first, then choose &quot;Publish using form fields&quot;. One-click Accept needs the Responses API + Supabase server keys.
                 </DialogDescription>
                 </DialogHeader>
 
@@ -989,9 +989,9 @@ export default function SubmissionsDashboard() {
                     }
                     variant="outline"
                     className="rounded-[8px] border-[#e0e0e0]"
-                    title={
+                      title={
                       systemStatus && !systemStatus.researchProviderConfigured
-                        ? 'Set OPENAI_API_KEY to run automated research'
+                        ? 'Set OPENROUTER_API_KEY (or OPENAI_API_KEY fallback) to run automated research'
                         : undefined
                     }
                   >
@@ -1055,9 +1055,9 @@ export default function SubmissionsDashboard() {
                       className="rounded-[8px] bg-[#629649] hover:bg-[#548040]"
                       title={
                         !systemStatus?.supabaseAdminConfigured
-                          ? 'Set SUPABASE_SERVICE_ROLE_KEY'
-                          : !systemStatus?.researchProviderConfigured
-                            ? 'Set OPENAI_API_KEY for one-click accept'
+                            ? 'Set SUPABASE_SERVICE_ROLE_KEY'
+                            : !systemStatus?.researchProviderConfigured
+                            ? 'Set OPENROUTER_API_KEY (or OPENAI_API_KEY fallback) for one-click accept'
                             : undefined
                       }
                     >

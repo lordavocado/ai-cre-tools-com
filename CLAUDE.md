@@ -144,9 +144,10 @@ src/
   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` - Supabase anon/public key
   - `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin operations (optional)
-- The automated submission evaluator uses the OpenAI Responses API with built-in web search:
-  - `OPENAI_API_KEY` - Server-only API key
-  - `OPENAI_TOOL_SUBMISSION_MODEL` - Optional override; defaults to `gpt-5.6-terra`
+- The automated submission evaluator uses OpenRouter Responses API (with OpenAI fallback):
+  - `OPENROUTER_API_KEY` - Server-only API key (preferred)
+  - `OPENAI_API_KEY` - Optional fallback when OpenRouter is unavailable
+  - `OPENAI_TOOL_SUBMISSION_MODEL` - Optional override; defaults to `openai/gpt-5.6-luna`
 - Mailchimp integration for newsletter functionality
 - PostHog for analytics (optional)
 

@@ -303,7 +303,7 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json(
           {
             error:
-              'Automatic accept requires OpenAI research. Set OPENAI_API_KEY, or use “Publish using form fields” instead.',
+              'Automatic accept requires evaluator research. Set OPENROUTER_API_KEY (or legacy OPENAI_API_KEY), or use “Publish using form fields” instead.',
           },
           { status: 503 }
         );
@@ -443,7 +443,7 @@ export async function PATCH(request: NextRequest) {
         );
       }
 
-      /** When no OpenAI key is set, admins publish using only saved submission + form fields. */
+      /** When no evaluator key is set, admins publish using only saved submission + form fields. */
       const researchResult = isResearchProviderConfigured()
         ? await researchTool(
           preparedSubmission.website,

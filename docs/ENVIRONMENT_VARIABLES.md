@@ -33,19 +33,21 @@ GOOGLE_SHEETS_DOC_ID=your-google-sheets-document-id
 - **Purpose**: Enables Google Sheets integration for tool data
 - **Required**: No (will fallback to empty data)
 
-### OpenAI Responses API
+### OpenRouter/OpenAI Responses API
 ```bash
-OPENAI_API_KEY=sk-your-server-only-api-key
-OPENAI_TOOL_SUBMISSION_MODEL=gpt-5.6-terra
+OPENROUTER_API_KEY=sk-or-v1-your-server-only-key
+# Optional legacy fallback (supported): OPENAI_API_KEY=sk-your-openai-server-key
+OPENAI_TOOL_SUBMISSION_MODEL=openai/gpt-5.6-luna
 OPENAI_TOOL_SUBMISSION_REASONING_EFFORT=medium
 OPENAI_TOOL_SUBMISSION_MIN_CONFIDENCE=0.82
 ```
 - **Purpose**: Runs relevance review, built-in web research, structured directory copy generation, and evidence collection in one Responses API call
 - **Required**: Yes for the public `/submit-tool` automation
-- **Model**: `gpt-5.6-terra` is the default. Terra preserves Responses API web search, reasoning, and structured outputs while balancing evaluation quality and cost. Override it only after testing the replacement on representative submissions
+- **Model**: `openai/gpt-5.6-luna` is the default when using OpenRouter.
+  If you use OpenAI directly as fallback, set `OPENAI_TOOL_SUBMISSION_MODEL` to `gpt-5.6-luna` (or another supported OpenAI model name).
 - **Reasoning**: `medium` is the balanced default; supported configured values are `none`, `low`, `medium`, `high`, `xhigh`, and `max`
 - **Confidence gate**: Decisions below `0.82` or without verified web evidence remain pending. Acceptances additionally require verified evidence from the submitted product; high-confidence rejections may rely on verified independent evidence
-- **Security**: `OPENAI_API_KEY` is server-only and must never use a `NEXT_PUBLIC_` prefix
+- **Security**: `OPENROUTER_API_KEY` is server-only and must never use a `NEXT_PUBLIC_` prefix. `OPENAI_API_KEY` is also safe-only and can be used as a fallback when OpenRouter is unavailable.
 
 ### Automated Tool Publishing
 ```bash

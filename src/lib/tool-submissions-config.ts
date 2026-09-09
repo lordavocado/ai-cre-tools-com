@@ -8,7 +8,18 @@ if (typeof window !== 'undefined') {
 }
 
 /** Cost-balanced GPT-5.6 tier used by the autonomous submission evaluator. */
-export const DEFAULT_TOOL_SUBMISSION_MODEL = 'gpt-5.6-terra';
+export const DEFAULT_TOOL_SUBMISSION_MODEL = 'openai/gpt-5.6-luna';
+const DEFAULT_OPENAI_MODEL = 'gpt-5.6-luna';
+
+type ResearchProvider = 'openrouter' | 'openai';
+
+export function isOpenAIConfigured() {
+  return hasRealValue(process.env.OPENAI_API_KEY);
+}
+
+function isOpenRouterConfigured() {
+  return hasRealValue(process.env.OPENROUTER_API_KEY);
+}
 
 function hasRealValue(value: string | undefined) {
   return Boolean(value && !value.includes('placeholder'));
@@ -31,19 +42,20 @@ export function isSupabaseAdminConfigured() {
     );
 }
 
-export function isOpenAIConfigured() {
-  return hasRealValue(process.env.OPENAI_API_KEY);
-}
-
 export function getConfiguredResearchProvider() {
-  return isOpenAIConfigured() ? 'openai' as const : null;
+  if (isOpenRouterConfigured()) {
+    return 'openrouter' as ResearchProvider;
+  }
+
+  return isOpenAIConfigured() ? 'openai' as ResearchProvider : null;
 }
 
 export function isResearchProviderConfigured() {
-  return getConfiguredResearchProvider() !== null;
+  return isOpenRouterConfigured() || isOpenAIConfigured();
 }
 
 export function getToolSubmissionSystemStatus() {
+  const configuredResearchProvider = getConfiguredResearchProvider();
   return {
     adminBasicAuthConfigured: isAdminBasicAuthConfigured(),
     supabaseStorageConfigured: isSupabaseStorageConfigured(),
@@ -51,6 +63,9 @@ export function getToolSubmissionSystemStatus() {
     researchProviderConfigured: isResearchProviderConfigured(),
     researchProvider: getConfiguredResearchProvider(),
     openAIConfigured: isOpenAIConfigured(),
-    researchModel: process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim() || DEFAULT_TOOL_SUBMISSION_MODEL,
+    researchModel: process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim()
+      || (configuredResearchProvider === 'openai'
+        ? DEFAULT_OPENAI_MODEL
+        : DEFAULT_TOOL_SUBMISSION_MODEL),
   };
 }
