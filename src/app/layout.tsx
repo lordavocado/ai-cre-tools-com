@@ -5,6 +5,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
+import { WebMcpBootstrap } from '@/components/agent-discovery/WebMcpBootstrap';
 import { cn } from '@/lib/utils';
 import { siteConfig, getAllSEOKeywords } from '@/config/site';
 import { LazyPostHogProvider } from '@/providers/LazyPostHogProvider';
@@ -211,6 +212,7 @@ export default function RootLayout({
                 {children}
               </main>
               <Footer />
+              <WebMcpBootstrap />
             </div>
             <Toaster />
           </FavoritesProvider>

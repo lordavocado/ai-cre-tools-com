@@ -7,6 +7,7 @@ export async function GET() {
 # Allow all crawlers to access the site
 User-agent: *
 Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=no
 
 # Allow access to essential pages
 Allow: /about

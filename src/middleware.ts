@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { siteConfig } from '@/config/site';
+import { discoveryLinkHeaders } from '@/lib/agent-discovery';
 
 const CANONICAL_HOST = new URL(siteConfig.url).hostname.toLowerCase();
 
@@ -25,6 +26,13 @@ function redirectToCanonicalHost(request: NextRequest): NextResponse | null {
   return null;
 }
 
+function shouldRenderMarkdown(request: NextRequest): boolean {
+  if (request.method !== 'GET') return false;
+  const acceptHeader = request.headers.get('accept') ?? '';
+  if (!acceptHeader.includes('text/markdown')) return false;
+  return true;
+}
+
 /** Normalizes public URLs and applies security headers; pages own their canonical metadata. */
 export function middleware(request: NextRequest) {
   const hostRedirect = redirectToCanonicalHost(request);
@@ -40,6 +48,17 @@ export function middleware(request: NextRequest) {
     pathname.includes('.');
 
   if (skipMiddleware) return NextResponse.next();
+
+  if (shouldRenderMarkdown(request) && pathname !== '/.well-known/markdown') {
+    const markdownUrl = request.nextUrl.clone();
+    markdownUrl.pathname = '/.well-known/markdown';
+    markdownUrl.search = '';
+    markdownUrl.searchParams.set(
+      'source',
+      `${pathname}${request.nextUrl.search ?? ''}`
+    );
+    return NextResponse.rewrite(markdownUrl);
+  }
 
   const isGooglebot = /googlebot/i.test(request.headers.get('user-agent') ?? '');
   const normalizedPath = normalizePathname(pathname);
@@ -82,6 +101,9 @@ export function middleware(request: NextRequest) {
 
   // Next owns cache headers, including private responses and its RSC variants.
   // A blanket canonical here would contradict paginated and filtered metadata.
+  if (normalizedPath === '/') {
+    discoveryLinkHeaders.forEach((value) => response.headers.append('Link', value));
+  }
   return response;
 }
 
