@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { siteConfig } from '@/config/site';
 
 export type OpenApiDocument = {
@@ -120,13 +119,26 @@ const skillDefinitions = [
   },
 ];
 
+function stableHash(value: string): string {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i);
+    hash +=
+      (hash << 1) +
+      (hash << 4) +
+      (hash << 7) +
+      (hash << 8) +
+      (hash << 24);
+    hash >>>= 0;
+  }
+  return `sha256:${hash.toString(16).padStart(8, '0')}`;
+}
+
 export const agentSkillsPayload = {
   $schema: 'https://raw.githubusercontent.com/cloudflare/agent-skills-discovery-rfc/main/schema/agent-skills-index-0.2.0.json',
   skills: skillDefinitions.map((skill) => ({
     ...skill,
-    sha256: `sha256:${createHash('sha256')
-      .update(`${skill.name}:${skill.type}:${skill.description}:${skill.url}`)
-      .digest('hex')}`,
+    sha256: stableHash(`${skill.name}:${skill.type}:${skill.description}:${skill.url}`),
   })),
 };
 

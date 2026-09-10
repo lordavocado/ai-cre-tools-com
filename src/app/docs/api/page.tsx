@@ -1,5 +1,6 @@
 import { siteConfig } from '@/config/site';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'AI CRE Tools API Documentation',
@@ -22,39 +23,51 @@ export default function DocsApiPage() {
           <h2 className="mb-3 text-xl font-medium">Discovery endpoints</h2>
           <ul className="list-inside list-disc space-y-2 text-muted-foreground">
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/api-catalog">
+              <Link className="underline underline-offset-4" href="/.well-known/api-catalog">
                 /.well-known/api-catalog
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/openapi.json">
+              <Link className="underline underline-offset-4" href="/.well-known/openapi.json">
                 /.well-known/openapi.json
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/agent-skills/index.json">
+              <Link
+                className="underline underline-offset-4"
+                href="/.well-known/agent-skills/index.json"
+              >
                 /.well-known/agent-skills/index.json
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/oauth-authorization-server">
+              <Link
+                className="underline underline-offset-4"
+                href="/.well-known/oauth-authorization-server"
+              >
                 /.well-known/oauth-authorization-server
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/oauth-protected-resource">
+              <Link
+                className="underline underline-offset-4"
+                href="/.well-known/oauth-protected-resource"
+              >
                 /.well-known/oauth-protected-resource
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/ai-catalog.json">
+              <Link className="underline underline-offset-4" href="/.well-known/ai-catalog.json">
                 /.well-known/ai-catalog.json
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/.well-known/mcp/server-card.json">
+              <Link
+                className="underline underline-offset-4"
+                href="/.well-known/mcp/server-card.json"
+              >
                 /.well-known/mcp/server-card.json
-              </a>
+              </Link>
             </li>
           </ul>
         </section>
@@ -63,19 +76,19 @@ export default function DocsApiPage() {
           <h2 className="mb-3 text-xl font-medium">Health and auth placeholders</h2>
           <ul className="list-inside list-disc space-y-2 text-muted-foreground">
             <li>
-              <a className="underline underline-offset-4" href="/api/health">
+              <Link className="underline underline-offset-4" href="/api/health">
                 /api/health
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/api/mcp">
+              <Link className="underline underline-offset-4" href="/api/mcp">
                 /api/mcp
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="underline underline-offset-4" href="/api/agent-auth/authorize">
+              <Link className="underline underline-offset-4" href="/api/agent-auth/authorize">
                 /api/agent-auth/authorize
-              </a>
+              </Link>
             </li>
           </ul>
         </section>
@@ -83,8 +96,8 @@ export default function DocsApiPage() {
         <section>
           <h2 className="mb-3 text-xl font-medium">Agent registration</h2>
           <p className="text-muted-foreground">
-            See <a className="underline underline-offset-4" href="/auth.md">/auth.md</a> for the registration
-            and claim/revocation metadata expected by agent discovery scans.
+            See <Link className="underline underline-offset-4" href="/auth.md">/auth.md</Link> for
+            the registration and claim/revocation metadata expected by agent discovery scans.
           </p>
           <p className="mt-4 text-sm text-muted-foreground">
             Issuer for metadata: <strong>{siteConfig.url}</strong>.

@@ -4,9 +4,9 @@ const authMd = `# AI CRE Tools Agent Registration
 
 AI agents may discover and register for protected API access using the OAuth metadata:
 
-- `auth.md` (this file): Agent metadata and onboarding instructions
-- `/.well-known/oauth-authorization-server` registration endpoints
-- `/.well-known/oauth-protected-resource` for resource discovery
+- \`auth.md\` (this file): Agent metadata and onboarding instructions
+- \`/.well-known/oauth-authorization-server\` registration endpoints
+- \`/.well-known/oauth-protected-resource\` for resource discovery
 
 ## Supported identity
 
