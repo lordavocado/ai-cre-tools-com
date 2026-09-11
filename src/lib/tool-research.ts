@@ -72,6 +72,10 @@ export type ToolResearchResult = {
 function getModel(provider: ResearchProvider | null) {
   const configuredModel = process.env.OPENAI_TOOL_SUBMISSION_MODEL?.trim();
   if (configuredModel) {
+    if (provider === 'openrouter' && !configuredModel.includes('/')) {
+      return `openai/${configuredModel}`;
+    }
+
     return configuredModel;
   }
 
@@ -279,7 +283,9 @@ export async function researchTool(website: string, userComment: string): Promis
       },
       tools: getResearchTools(provider || 'openai') as OpenAI.Responses.ResponseCreateParams['tools'],
       tool_choice: 'required',
-      include: ['web_search_call.action.sources'],
+      ...(provider === 'openai'
+        ? { include: ['web_search_call.action.sources'] }
+        : {}),
       instructions: buildInstructions(),
       input: `Submitted website: ${website}\nSubmitter's explanation: ${userComment}`,
       text: {
